@@ -13,20 +13,16 @@ set(CMAKE_PREFIX_PATH ${Qt_DIR})
 # Set Qt version
 set(QT_VERSION 5)
 # Set necessary Qt modules
-set(REQUIRED_LIBS_CLIENT Core Widgets Multimedia WebSockets)
-set(REQUIRED_LIBS_SERVER Core WebSockets)
+set(REQUIRED_LIBS Core Widgets Multimedia WebSockets)
 # Set corresponding Qt libraries
-set(REQUIRED_LIBS_QUALIFIED_CLIENT Qt5::Core Qt5::Widgets Qt5::Multimedia Qt5::WebSockets)
-set(REQUIRED_LIBS_QUALIFIED_SERVER Qt5::Core Qt5::WebSockets)
-find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS_CLIENT} REQUIRED)
+set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Widgets Qt5::Multimedia Qt5::WebSockets)
+find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -O3")
 
 # Add code files
-set(SOURCES_CLIENT
-        Client/client.cpp
-
+set(SOURCES
         Animation/animation.cpp
         Animation/animation.h
         Controller/abstract_controller.cpp
@@ -80,16 +76,6 @@ set(SOURCES_CLIENT
         constants.h
         )
 
-# Add code files
-set(SOURCES_SERVER
-        Server/server.cpp
-
-        Model/server_model.cpp
-        Model/server_model.h
-        constants.h
-        )
-
-
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
 
@@ -98,8 +84,8 @@ qt5_add_big_resources(RESOURCES_SERVER
 
         )
 
-add_executable(MMMX-Client ${SOURCES_CLIENT} ${RESOURCES_CLIENT})
-target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED_CLIENT})
+add_executable(MMMX-Client Client/client.cpp ${SOURCES_CLIENT} ${RESOURCES_CLIENT})
+target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
-add_executable(MMMX-Server ${SOURCES_SERVER} ${RESOURCES_SERVER})
-target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED_SERVER})
+add_executable(MMMX-Server Server/server.cpp ${SOURCES_SERVER} ${RESOURCES_SERVER})
+target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
