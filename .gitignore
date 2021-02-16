@@ -59,3 +59,6 @@ CMakeFiles/
 Build/
 .cmake/
 CMakeLists.txt.user
+
+#Server build folder
+build-on-server/
