@@ -7,10 +7,11 @@
 
 class Field {
  public:
+  Field() = default;
 
  private:
-  float width_;
-  float height_;
+  float width_ = 0.f;
+  float height_ = 0.f;
   QImage bg_image_;
 };
 
