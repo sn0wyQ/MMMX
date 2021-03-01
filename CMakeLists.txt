@@ -13,9 +13,9 @@ set(CMAKE_PREFIX_PATH ${Qt_DIR})
 # Set Qt version
 set(QT_VERSION 5)
 # Set necessary Qt modules
-set(REQUIRED_LIBS Core Widgets Multimedia WebSockets)
+set(REQUIRED_LIBS Core Widgets Multimedia WebSockets Network)
 # Set corresponding Qt libraries
-set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Widgets Qt5::Multimedia Qt5::WebSockets)
+set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Widgets Qt5::Multimedia Qt5::WebSockets Qt5::Network)
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -25,12 +25,16 @@ set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -O3")
 set(SOURCES
         Animation/animation.cpp
         Animation/animation.h
-        Controller/abstract_controller.cpp
-        Controller/abstract_controller.h
+        Client/client_controller.cpp
+        Client/client_controller.h
+        Client/client_view.cpp
+        Client/client_view.h
+        Controller/base_controller.cpp
+        Controller/base_controller.h
+        Event/event.cpp
+        Event/event.h
         Field/field.cpp
         Field/field.h
-        GameEvent/game_event.cpp
-        GameEvent/game_event.h
         GameObject/Base/base.cpp
         GameObject/Base/base.h
         GameObject/Building/Mine/mine.cpp
@@ -45,34 +49,42 @@ set(SOURCES
         GameObject/Building/Turret/turret.h
         GameObject/Building/building.cpp
         GameObject/Building/building.h
-        GameObject/Bullet/bullet.cpp
-        GameObject/Bullet/bullet.h
-        GameObject/Entity/Creep/creep.cpp
-        GameObject/Entity/Creep/creep.h
-        GameObject/Entity/Player/active_bonus.cpp
-        GameObject/Entity/Player/active_bonus.h
-        GameObject/Entity/Player/inventory.cpp
-        GameObject/Entity/Player/inventory.h
-        GameObject/Entity/Player/passive_ability.cpp
-        GameObject/Entity/Player/passive_ability.h
-        GameObject/Entity/Player/player.cpp
-        GameObject/Entity/Player/player.h
-        GameObject/Entity/Player/skill.cpp
-        GameObject/Entity/Player/skill.h
-        GameObject/Entity/Player/weapon.cpp
-        GameObject/Entity/Player/weapon.h
-        GameObject/Entity/entity.cpp
-        GameObject/Entity/entity.h
         GameObject/Loot/Bonus/bonus.cpp
         GameObject/Loot/Bonus/bonus.h
         GameObject/Loot/Item/item.cpp
         GameObject/Loot/Item/item.h
         GameObject/Loot/loot.cpp
         GameObject/Loot/loot.h
+        GameObject/MovableObject/Bullet/bullet.cpp
+        GameObject/MovableObject/Bullet/bullet.h
+        GameObject/MovableObject/Entity/Creep/creep.cpp
+        GameObject/MovableObject/Entity/Creep/creep.h
+        GameObject/MovableObject/Entity/Player/active_bonus.cpp
+        GameObject/MovableObject/Entity/Player/active_bonus.h
+        GameObject/MovableObject/Entity/Player/inventory.cpp
+        GameObject/MovableObject/Entity/Player/inventory.h
+        GameObject/MovableObject/Entity/Player/passive_ability.cpp
+        GameObject/MovableObject/Entity/Player/passive_ability.h
+        GameObject/MovableObject/Entity/Player/player.cpp
+        GameObject/MovableObject/Entity/Player/player.h
+        GameObject/MovableObject/Entity/Player/skill.cpp
+        GameObject/MovableObject/Entity/Player/skill.h
+        GameObject/MovableObject/Entity/Player/weapon.cpp
+        GameObject/MovableObject/Entity/Player/weapon.h
+        GameObject/MovableObject/Entity/entity.cpp
+        GameObject/MovableObject/Entity/entity.h
+        GameObject/MovableObject/movable_object.cpp
+        GameObject/MovableObject/movable_object.h
         GameObject/game_object.cpp
         GameObject/game_object.h
         Model/game_data_model.cpp
         Model/game_data_model.h
+        Model/server_model.cpp
+        Model/server_model.h
+        Server/Room/room_controller.cpp
+        Server/Room/room_controller.h
+        Server/server_controller.cpp
+        Server/server_controller.h
         constants.h
         )
 
@@ -84,8 +96,8 @@ qt5_add_big_resources(RESOURCES_SERVER
 
         )
 
-add_executable(MMMX-Client Client/client.cpp ${SOURCES_CLIENT} ${RESOURCES_CLIENT})
+add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT})
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
-add_executable(MMMX-Server Server/server.cpp ${SOURCES_SERVER} ${RESOURCES_SERVER})
+add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER})
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})

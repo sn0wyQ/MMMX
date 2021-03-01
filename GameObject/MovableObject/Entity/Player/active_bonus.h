@@ -11,8 +11,8 @@ class ActiveBonus {
 
  private:
   BonusType bonus_type_;
-  float max_durability_;
-  float current_durability_;
+  float max_durability_ = 0.f;
+  float current_durability_ = 0.f;
   QImage image_;
 };
 

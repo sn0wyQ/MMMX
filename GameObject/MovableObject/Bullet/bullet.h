@@ -3,13 +3,15 @@
 
 #include <QVector2D>
 
-#include "GameObject/game_object.h"
+#include "GameObject/MovableObject/movable_object.h"
 
-class Bullet : public GameObject {
+class Bullet : public MovableObject {
   Q_OBJECT
 
  public:
   Bullet() = default;
+
+  void OnTick() override;
 
  private:
   QVector2D velocity_;

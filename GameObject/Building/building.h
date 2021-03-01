@@ -7,6 +7,7 @@ class Building : public GameObject {
   Q_OBJECT
 
  public:
+  void OnTick() override {};
 
  private:
   int level_;

@@ -12,6 +12,8 @@ class Base : public GameObject {
  public:
   Base() = default;
 
+  void OnTick() override {};
+
  private:
   int owner_id_;
 

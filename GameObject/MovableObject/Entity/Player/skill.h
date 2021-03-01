@@ -9,8 +9,8 @@ class Skill {
 
  private:
   QImage image_;
-  float cool_down_;
-  float cool_down_time_left_;
+  float cool_down_ = 0.f;
+  float cool_down_time_left_ = 0.f;
 };
 
 #endif  // SKILL_H_

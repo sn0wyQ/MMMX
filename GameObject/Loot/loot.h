@@ -9,6 +9,8 @@ class Loot : public GameObject {
  public:
   Loot() = default;
 
+  void OnTick() override {};
+
  private:
 
 };

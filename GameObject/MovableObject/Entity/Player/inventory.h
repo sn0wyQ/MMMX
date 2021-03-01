@@ -8,7 +8,7 @@ class Inventory {
   Inventory() = default;
 
  private:
-  int capacity_;
+  int capacity_ = 0;
   std::vector<Item> items_;
 };
 

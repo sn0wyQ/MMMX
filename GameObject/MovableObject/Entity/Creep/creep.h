@@ -1,13 +1,15 @@
 #ifndef CREEP_H_
 #define CREEP_H_
 
-#include "GameObject/Entity/entity.h"
+#include "GameObject/MovableObject/Entity/entity.h"
 
 class Creep : public Entity {
   Q_OBJECT
 
  public:
   Creep() = default;
+
+  void OnTick() override {};
 
  private:
   int level_;
