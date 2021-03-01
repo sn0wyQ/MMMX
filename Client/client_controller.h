@@ -33,7 +33,7 @@ class ClientController : public BaseController {
   Q_SIGNALS:
   void UpdateView();
 
- public Q_SLOTS:
+  public Q_SLOTS:
   void OnConnected();
   void OnDisconnected();
   void OnControlsEventReceived(const Event& controls_event);

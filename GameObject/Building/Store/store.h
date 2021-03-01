@@ -1,5 +1,5 @@
-#ifndef STORE_H_
-#define STORE_H_
+#ifndef GAMEOBJECT_BUILDING_STORE_STORE_H_
+#define GAMEOBJECT_BUILDING_STORE_STORE_H_
 
 #include "GameObject/Building/building.h"
 
@@ -14,4 +14,4 @@ class Store : public Building {
  private:
 };
 
-#endif  // STORE_H_
+#endif  // GAMEOBJECT_BUILDING_STORE_STORE_H_

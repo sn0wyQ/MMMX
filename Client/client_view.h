@@ -1,5 +1,5 @@
-#ifndef CLIENT_VIEW_H_
-#define CLIENT_VIEW_H_
+#ifndef CLIENT_CLIENT_VIEW_H_
+#define CLIENT_CLIENT_VIEW_H_
 
 #include <memory>
 #include <utility>
@@ -24,7 +24,7 @@ class ClientView : public QMainWindow {
   Q_SIGNALS:
   void AddNewControlsEvent(const Event& controls_event);
 
- public Q_SLOTS:
+  public Q_SLOTS:
   void OnTestButtonPressed();
   void OnUpdate();
 
@@ -39,4 +39,4 @@ class ClientView : public QMainWindow {
   QLabel* enemy_counter_label_;
 };
 
-#endif  // CLIENT_VIEW_H_
+#endif  // CLIENT_CLIENT_VIEW_H_

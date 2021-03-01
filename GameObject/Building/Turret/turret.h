@@ -1,5 +1,5 @@
-#ifndef TURRET_H_
-#define TURRET_H_
+#ifndef GAMEOBJECT_BUILDING_TURRET_TURRET_H_
+#define GAMEOBJECT_BUILDING_TURRET_TURRET_H_
 
 #include "GameObject/Building/building.h"
 
@@ -18,4 +18,4 @@ class Turret : public Building {
   float base_regeneration_;
 };
 
-#endif  // TURRET_H_
+#endif  // GAMEOBJECT_BUILDING_TURRET_TURRET_H_

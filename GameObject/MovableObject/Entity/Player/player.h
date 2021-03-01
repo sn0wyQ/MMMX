@@ -1,5 +1,7 @@
-#ifndef PLAYER_H_
-#define PLAYER_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_
+#define GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_
+
+#include <vector>
 
 #include "GameObject/MovableObject/Entity/Player/active_bonus.h"
 #include "GameObject/MovableObject/Entity/Player/inventory.h"
@@ -43,4 +45,4 @@ class Player : public Entity {
   int deaths_ = 0;
 };
 
-#endif  // PLAYER_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_

@@ -1,5 +1,3 @@
 #include "bullet.h"
 
-void Bullet::OnTick() {
-
-}
+void Bullet::OnTick() {}

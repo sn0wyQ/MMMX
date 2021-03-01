@@ -1,5 +1,5 @@
-#ifndef OBSTACLE_H_
-#define OBSTACLE_H_
+#ifndef GAMEOBJECT_BUILDING_OBSTACLE_OBSTACLE_H_
+#define GAMEOBJECT_BUILDING_OBSTACLE_OBSTACLE_H_
 
 #include "GameObject/Building/building.h"
 
@@ -14,4 +14,4 @@ class Obstacle : public Building {
  private:
 };
 
-#endif  // OBSTACLE_H_
+#endif  // GAMEOBJECT_BUILDING_OBSTACLE_OBSTACLE_H_

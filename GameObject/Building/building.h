@@ -1,5 +1,5 @@
-#ifndef BUILDING_H_
-#define BUILDING_H_
+#ifndef GAMEOBJECT_BUILDING_BUILDING_H_
+#define GAMEOBJECT_BUILDING_BUILDING_H_
 
 #include "GameObject/game_object.h"
 
@@ -13,4 +13,4 @@ class Building : public GameObject {
   int level_;
 };
 
-#endif  // BUILDING_H_
+#endif  // GAMEOBJECT_BUILDING_BUILDING_H_

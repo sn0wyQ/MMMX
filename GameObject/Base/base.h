@@ -1,5 +1,5 @@
-#ifndef BASE_H_
-#define BASE_H_
+#ifndef GAMEOBJECT_BASE_BASE_H_
+#define GAMEOBJECT_BASE_BASE_H_
 
 #include "GameObject/Building/Mine/mine.h"
 #include "GameObject/Building/Store/store.h"
@@ -22,4 +22,4 @@ class Base : public GameObject {
   Turret turret_;
 };
 
-#endif  // BASE_H_
+#endif  // GAMEOBJECT_BASE_BASE_H_

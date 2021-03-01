@@ -1,5 +1,5 @@
-#ifndef BONUS_H_
-#define BONUS_H_
+#ifndef GAMEOBJECT_LOOT_BONUS_BONUS_H_
+#define GAMEOBJECT_LOOT_BONUS_BONUS_H_
 
 #include "GameObject/Loot/loot.h"
 
@@ -21,4 +21,4 @@ class Bonus : public Loot {
   BonusType bonus_type_;
 };
 
-#endif  // BONUS_H_
+#endif  // GAMEOBJECT_LOOT_BONUS_BONUS_H_

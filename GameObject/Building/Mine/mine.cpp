@@ -1,5 +1,3 @@
 #include "mine.h"
 
-void Mine::OnTick() {
-
-}
+void Mine::OnTick() {}

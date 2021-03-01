@@ -1,10 +1,10 @@
-#ifndef LOOT_H_
-#define LOOT_H_
+#ifndef GAMEOBJECT_LOOT_LOOT_H_
+#define GAMEOBJECT_LOOT_LOOT_H_
 
 #include "GameObject/game_object.h"
 
 class Loot : public GameObject {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   Loot() = default;
@@ -12,7 +12,6 @@ class Loot : public GameObject {
   void OnTick() override {};
 
  private:
-
 };
 
-#endif  // LOOT_H_
+#endif  // GAMEOBJECT_LOOT_LOOT_H_

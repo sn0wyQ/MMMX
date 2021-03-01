@@ -1,7 +1,9 @@
-#ifndef SERVER_ROOM_ROOM_H_
-#define SERVER_ROOM_ROOM_H_
+#ifndef SERVER_ROOM_ROOM_CONTROLLER_H_
+#define SERVER_ROOM_ROOM_CONTROLLER_H_
 
 #include <map>
+#include <utility>
+#include <vector>
 
 #include <QDebug>
 
@@ -53,4 +55,4 @@ class RoomController : public BaseController {
   std::map<ClientId, GameObjectId> player_ids_;
 };
 
-#endif  // ROOM_H_
+#endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

@@ -1,5 +1,5 @@
-#ifndef SKILL_H_
-#define SKILL_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_SKILL_H_
+#define GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_SKILL_H_
 
 #include <QImage>
 
@@ -13,4 +13,4 @@ class Skill {
   float cool_down_time_left_ = 0.f;
 };
 
-#endif  // SKILL_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_SKILL_H_

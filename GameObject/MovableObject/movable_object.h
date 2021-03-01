@@ -1,5 +1,5 @@
-#ifndef GAME_OBJECT_MOVABLE_OBJECT_MOVABLE_OBJECT_H_
-#define GAME_OBJECT_MOVABLE_OBJECT_MOVABLE_OBJECT_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_
+#define GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_
 
 #include "GameObject/game_object.h"
 
@@ -12,7 +12,6 @@ class MovableObject : public GameObject {
   void OnTick() override = 0;
 
  private:
-
 };
 
-#endif  // GAME_OBJECT_MOVABLE_OBJECT_MOVABLE_OBJECT_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_

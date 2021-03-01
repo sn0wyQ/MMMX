@@ -1,5 +1,5 @@
-#ifndef ITEM_H_
-#define ITEM_H_
+#ifndef GAMEOBJECT_LOOT_ITEM_ITEM_H_
+#define GAMEOBJECT_LOOT_ITEM_ITEM_H_
 
 #include "GameObject/Loot/loot.h"
 
@@ -24,4 +24,4 @@ class Item : public Loot {
   float usage_time_;
 };
 
-#endif  // ITEM_H_
+#endif  // GAMEOBJECT_LOOT_ITEM_ITEM_H_

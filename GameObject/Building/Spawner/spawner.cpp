@@ -1,5 +1,3 @@
 #include "spawner.h"
 
-void Spawner::OnTick() {
-
-}
+void Spawner::OnTick() {}

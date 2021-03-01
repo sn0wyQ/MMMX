@@ -1,11 +1,11 @@
-#ifndef FIElD_H_
-#define FIElD_H_
+#ifndef FIELD_FIELD_H_
+#define FIELD_FIELD_H_
 
 #include <QImage>
 
 #include "GameObject/game_object.h"
 
- class Field {
+class Field {
  public:
 
  private:
@@ -14,4 +14,4 @@
   QImage bg_image_;
 };
 
-#endif  // FIElD_H_
+#endif  // FIELD_FIELD_H_

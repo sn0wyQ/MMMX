@@ -1,5 +1,3 @@
 #include "obstacle.h"
 
-void Obstacle::OnTick() {
-
-}
+void Obstacle::OnTick() {}

@@ -1,5 +1,3 @@
 #include "turret.h"
 
-void Turret::OnTick() {
-
-}
+void Turret::OnTick() {}

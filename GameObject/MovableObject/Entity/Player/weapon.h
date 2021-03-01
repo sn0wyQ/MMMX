@@ -1,5 +1,5 @@
-#ifndef WEAPON_H_
-#define WEAPON_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_WEAPON_H_
+#define GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_WEAPON_H_
 
 #include <QImage>
 
@@ -18,4 +18,4 @@ class Weapon {
   int max_clip_size_ = 0;
 };
 
-#endif  // WEAPON_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_WEAPON_H_

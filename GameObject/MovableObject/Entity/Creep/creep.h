@@ -1,5 +1,5 @@
-#ifndef CREEP_H_
-#define CREEP_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_
+#define GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_
 
 #include "GameObject/MovableObject/Entity/entity.h"
 
@@ -17,4 +17,4 @@ class Creep : public Entity {
   int gold_for_kill_;
 };
 
-#endif  // CREEP_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_

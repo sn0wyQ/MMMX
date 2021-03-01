@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include <QByteArray>
 
@@ -10,6 +11,7 @@
 #include "Model/server_model.h"
 
 class ServerController : public BaseController {
+  Q_OBJECT
 
  public:
   ServerController();
@@ -18,7 +20,7 @@ class ServerController : public BaseController {
   void HandleEvent(const Event& event) override;
   void Send() override;
 
- public Q_SLOTS:
+  public Q_SLOTS:
   void OnByteArrayReceived(const QByteArray& message);
   void OnEventFromRoomReceived(const Event& event,
                                std::vector<ClientId> receivers);

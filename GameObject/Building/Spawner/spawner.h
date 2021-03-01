@@ -1,5 +1,5 @@
-#ifndef SPAWNER_H_
-#define SPAWNER_H_
+#ifndef GAMEOBJECT_BUILDING_SPAWNER_SPAWNER_H_
+#define GAMEOBJECT_BUILDING_SPAWNER_SPAWNER_H_
 
 #include "GameObject/Building/building.h"
 
@@ -18,4 +18,4 @@ class Spawner : public Building {
   int count_;
 };
 
-#endif  // SPAWNER_H_
+#endif  // GAMEOBJECT_BUILDING_SPAWNER_SPAWNER_H_

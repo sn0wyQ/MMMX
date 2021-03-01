@@ -1,5 +1,5 @@
-#ifndef ANIMATION_H_
-#define ANIMATION_H_
+#ifndef ANIMATION_ANIMATION_H_
+#define ANIMATION_ANIMATION_H_
 
 class Animation {
  public:
@@ -8,4 +8,4 @@ class Animation {
  private:
 };
 
-#endif  // ANIMATION_H_
+#endif  // ANIMATION_ANIMATION_H_

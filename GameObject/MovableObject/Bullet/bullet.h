@@ -1,5 +1,5 @@
-#ifndef BULLET_H_
-#define BULLET_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_BULLET_BULLET_H_
+#define GAMEOBJECT_MOVABLEOBJECT_BULLET_BULLET_H_
 
 #include <QVector2D>
 
@@ -21,4 +21,4 @@ class Bullet : public MovableObject {
   float range_penalty;
 };
 
-#endif  // BULLET_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_BULLET_BULLET_H_

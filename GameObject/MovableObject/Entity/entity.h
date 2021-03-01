@@ -1,5 +1,5 @@
-#ifndef ENTITY_H_
-#define ENTITY_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_
+#define GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_
 
 #include <QVector2D>
 
@@ -21,4 +21,4 @@ class Entity : public MovableObject {
   float max_speed_ = 0.f;
 };
 
-#endif  // ENTITY_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_

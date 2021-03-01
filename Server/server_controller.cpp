@@ -51,8 +51,7 @@ void ServerController::Send() {
         this->SendToClient(
             current_event.GetArg(0),
             Event(EventType(current_event.GetArg(1)),
-                  current_event.GetArgsSubVector(2))
-        );
+                  current_event.GetArgsSubVector(2)));
         break;
       }
 
@@ -60,8 +59,7 @@ void ServerController::Send() {
         this->SendToRoom(
             current_event.GetArg(0),
             Event(EventType(current_event.GetArg(1)),
-                  current_event.GetArgsSubVector(2))
-        );
+                  current_event.GetArgsSubVector(2)));
         break;
       }
 

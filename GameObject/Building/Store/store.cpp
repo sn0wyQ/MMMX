@@ -1,5 +1,3 @@
 #include "store.h"
 
-void Store::OnTick() {
-
-}
+void Store::OnTick() {}

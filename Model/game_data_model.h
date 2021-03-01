@@ -1,7 +1,9 @@
 #ifndef MODEL_GAME_DATA_MODEL_H_
 #define MODEL_GAME_DATA_MODEL_H_
 
+#include <map>
 #include <memory>
+#include <utility>
 
 #include <QDebug>
 
