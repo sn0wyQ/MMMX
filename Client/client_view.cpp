@@ -10,7 +10,8 @@ ClientView::ClientView(
   connect(this,
           &ClientView::AddNewControlsEvent,
           controller_.get(),
-          &ClientController::OnControlsEventReceived); // TODO: change
+          &ClientController::OnControlsEventReceived);
+  // TODO(kmekhovich): change
 
   connect(controller_.get(),
           &ClientController::UpdateView,

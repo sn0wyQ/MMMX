@@ -21,8 +21,8 @@ const QString kVersionString = "0.0.1";
 // Server
 const QString kServerName = "MMMX Server";
 constexpr quint16 kServerPort = 1337;
-const QUrl kServerUrl = QUrl("ws://188.120.224.70:1337");
-// const QUrl kServerUrl = QUrl("ws://localhost:1337");
+// const QUrl kServerUrl = QUrl("ws://188.120.224.70:1337");
+const QUrl kServerUrl = QUrl("ws://localhost:1337");
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 

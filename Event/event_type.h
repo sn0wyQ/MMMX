@@ -1,5 +1,5 @@
-#ifndef EVENT_TYPE_H_
-#define EVENT_TYPE_H_
+#ifndef EVENT_EVENT_TYPE_H_
+#define EVENT_EVENT_TYPE_H_
 
 enum class EventType {
   // MUST always stay in alphabet order
@@ -52,4 +52,4 @@ enum class EventType {
   kPlayerDisconnected,
 };
 
-#endif  // EVENT_TYPE_H_
+#endif  // EVENT_EVENT_TYPE_H_

@@ -2,6 +2,7 @@
 #define SERVER_ROOM_ROOM_CONTROLLER_H_
 
 #include <map>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 

@@ -37,7 +37,8 @@ class ServerModel : public QObject {
   template<typename... Args>
   RoomId AddNewRoom(Args... args);
 
-  std::shared_ptr<ConnectedClient> GetClientByClientId(ClientId client_id) const;
+  std::shared_ptr<ConnectedClient>
+    GetClientByClientId(ClientId client_id) const;
   std::shared_ptr<RoomController> GetRoomByRoomId(RoomId room_id) const;
   std::shared_ptr<RoomController> GetRoomByClientId(ClientId client_id) const;
 
