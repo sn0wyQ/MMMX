@@ -3,8 +3,17 @@
 ServerController::ServerController()
   : web_socket_server_(Constants::kServerName,
                        QWebSocketServer::NonSecureMode) {
+  using std::placeholders::_1;
+  function_for_event_[EventType::kSendEventToClient]
+    = std::bind(&ServerController::AddEventToSend, this, _1);
+  function_for_event_[EventType::kSendEventToRoom]
+      = std::bind(&ServerController::AddEventToSend, this, _1);
+  function_for_event_[EventType::kSetClientsPlayerId]
+      = std::bind(&ServerController::AddEventToSend, this, _1);
+
   if (web_socket_server_.listen(QHostAddress::Any, Constants::kServerPort)) {
-    qInfo() << "Server is running on port" << web_socket_server_.serverPort();
+    qInfo() << "Server is running on " << Constants::kServerUrl.host() << ":"
+    << web_socket_server_.serverPort();
     connect(&web_socket_server_,
             &QWebSocketServer::newConnection,
             this,
@@ -23,55 +32,32 @@ ServerController::~ServerController() {
   web_socket_server_.close();
 }
 
-void ServerController::HandleEvent(const Event& event) {
+void ServerController::SendEvent(const Event& event) {
   switch (event.GetType()) {
-    case EventType::kClientDisconnected: {
-      ClientId client_id = event.GetArg(0);
-      auto room_ptr = model_.GetRoomByClientId(client_id);
-      room_ptr->RemoveClient(client_id);
+    case EventType::kSendEventToClient: {
+      this->SendToClient(
+          event.GetArg(0),
+          Event(EventType(event.GetArg(1)),
+                event.GetArgsSubVector(2)));
       break;
     }
 
-    case EventType::kSendEventToClient:
-    case EventType::kSendEventToRoom:
-    case EventType::kSetClientsPlayerId:
-      this->AddEventToSend(event);
+    case EventType::kSendEventToRoom: {
+      this->SendToRoom(
+          event.GetArg(0),
+          Event(EventType(event.GetArg(1)),
+                event.GetArgsSubVector(2)));
       break;
+    }
 
+    case EventType::kSetClientsPlayerId: {
+      this->SendToClient(event.GetArg(0), event);
+      break;
+    }
+
+    // We only want to send Events either to Client or Room
     default:
       break;
-  }
-}
-
-void ServerController::Send() {
-  while (this->HasEventsToSend()) {
-    Event current_event = this->GetNextEventToSend();
-    switch (current_event.GetType()) {
-      case EventType::kSendEventToClient: {
-        this->SendToClient(
-            current_event.GetArg(0),
-            Event(EventType(current_event.GetArg(1)),
-                  current_event.GetArgsSubVector(2)));
-        break;
-      }
-
-      case EventType::kSendEventToRoom: {
-        this->SendToRoom(
-            current_event.GetArg(0),
-            Event(EventType(current_event.GetArg(1)),
-                  current_event.GetArgsSubVector(2)));
-        break;
-      }
-
-      case EventType::kSetClientsPlayerId: {
-        this->SendToClient(current_event.GetArg(0), current_event);
-        break;
-      }
-
-      // We only want to send Events either to Client or Room
-      default:
-        break;
-    }
   }
 }
 
@@ -85,7 +71,7 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
   std::vector<int> old_args = event.GetArgs();
   args.insert(args.end(), old_args.begin(), old_args.end());
 
-  this->AddEventToHandle(EventType::kSendEventToRoom, args);
+  this->AddEventToHandle(Event(EventType::kSendEventToRoom, args));
 
   qInfo() << "[SERVER] Received" << event
            << "from Client ID:" << client_id;
@@ -106,7 +92,7 @@ void ServerController::OnEventFromRoomReceived(
 
   for (auto client_id : receivers) {
     args.at(0) = client_id;
-    this->AddEventToHandle(EventType::kSendEventToClient, args);
+    this->AddEventToHandle(Event(EventType::kSendEventToClient, args));
   }
 
   qInfo() << "[SERVER] Received" << event
@@ -130,7 +116,7 @@ void ServerController::OnNewClient() {
 
 void ServerController::OnNewRoom(RoomId room_id) {
   auto room_ptr = model_.GetRoomByRoomId(room_id);
-  connect(room_ptr,
+  connect(room_ptr.get(),
           &RoomController::SendEventToServer,
           this,
           &ServerController::OnEventFromRoomReceived);
@@ -141,7 +127,8 @@ void ServerController::OnSocketDisconnected() {
   qInfo() << "[SERVER] Socket disconnected:" << web_socket;
   if (web_socket) {
     ClientId client_id = model_.GetClientIdByWebSocket(web_socket);
-    this->AddEventToHandle(EventType::kClientDisconnected, client_id);
+    this->AddEventToHandle(Event(EventType::kClientDisconnected,
+                                 client_id));
   }
 }
 
@@ -155,4 +142,10 @@ void ServerController::SendToClient(int client_id,
 void ServerController::SendToRoom(int room_id,
                                   const Event& event) {
   model_.GetRoomByRoomId(room_id)->AddEventToHandle(event);
+}
+
+void ServerController::ClientDisconnectedEvent(const Event& event) {
+  ClientId client_id = event.GetArg(0);
+  auto room_ptr = model_.GetRoomByClientId(client_id);
+  room_ptr->RemoveClient(client_id);
 }

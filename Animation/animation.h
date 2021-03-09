@@ -4,8 +4,6 @@
 class Animation {
  public:
   Animation() = default;
-
- private:
 };
 
 #endif  // ANIMATION_ANIMATION_H_

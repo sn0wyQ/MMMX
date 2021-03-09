@@ -20,9 +20,11 @@ class GameDataModel {
   GameDataModel() = default;
 
   void AddPlayer(GameObjectId player_id);
-  Player* GetPlayerByPlayerId(GameObjectId player_id);
-  Player* GetOwnersPlayer();
-  Player* GetTestEnemyPlayer();
+  void DeletePlayer(GameObjectId player_id);
+
+  std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
+  std::shared_ptr<Player> GetOwnersPlayer() const;
+  std::shared_ptr<Player> GetTestEnemyPlayer() const;
   int GetPlayersCount() const;
   bool IsPlayerIdTaken(GameObjectId player_id) const;
 
@@ -34,11 +36,11 @@ class GameDataModel {
   GameObjectId owners_player_id_ = Constants::kNullGameObjectId;
 
   Field map_;
-  std::map<GameObjectId, std::unique_ptr<Building>> buildings_;
-  std::map<GameObjectId, std::unique_ptr<Bullet>> bullets_;
-  std::map<GameObjectId, std::unique_ptr<Creep>> creeps_;
-  std::map<GameObjectId, std::unique_ptr<Loot>> loot_;
-  std::map<GameObjectId, std::unique_ptr<Player>> players_;
+  std::map<GameObjectId, std::shared_ptr<Building>> buildings_;
+  std::map<GameObjectId, std::shared_ptr<Bullet>> bullets_;
+  std::map<GameObjectId, std::shared_ptr<Creep>> creeps_;
+  std::map<GameObjectId, std::shared_ptr<Loot>> loot_;
+  std::map<GameObjectId, std::shared_ptr<Player>> players_;
 };
 
 #endif  // MODEL_GAME_DATA_MODEL_H_

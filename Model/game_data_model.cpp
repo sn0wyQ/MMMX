@@ -1,21 +1,22 @@
 #include "game_data_model.h"
 
-Player* GameDataModel::GetPlayerByPlayerId(GameObjectId player_id) {
-  return players_.at(player_id).get();
+std::shared_ptr<Player>
+    GameDataModel::GetPlayerByPlayerId(GameObjectId player_id) const {
+  return players_.at(player_id);
 }
 
-Player* GameDataModel::GetOwnersPlayer() {
+std::shared_ptr<Player> GameDataModel::GetOwnersPlayer() const {
   if (owners_player_id_ == Constants::kNullGameObjectId) {
     throw std::runtime_error("Owner's player_id isn't set...");
   }
 
-  return players_.at(owners_player_id_).get();
+  return players_.at(owners_player_id_);
 }
 
-Player* GameDataModel::GetTestEnemyPlayer() {
+std::shared_ptr<Player> GameDataModel::GetTestEnemyPlayer() const {
   for (auto iter = players_.begin(); iter != players_.end(); iter++) {
     if (iter->second->GetId() != owners_player_id_) {
-      return iter->second.get();
+      return iter->second;
     }
   }
 
@@ -49,4 +50,10 @@ GameObjectId GameDataModel::GetOwnersPlayerId() const {
 
 void GameDataModel::SetOwnersPlayerId(GameObjectId player_id) {
   owners_player_id_ = player_id;
+}
+
+void GameDataModel::DeletePlayer(GameObjectId player_id) {
+  if (players_.find(player_id) != players_.end()) {
+    players_.erase(player_id);
+  }
 }

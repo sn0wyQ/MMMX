@@ -5,64 +5,25 @@ RoomController::RoomController(RoomId id, int max_clients)
   this->StartTicking();
 }
 
-void RoomController::HandleEvent(const Event& event) {
+void RoomController::SendEvent(const Event& event) {
+  std::vector<ClientId> receivers;
   switch (event.GetType()) {
-    case EventType::kAddNewPlayer: {
-      this->AddEventToSend(event);
-      this->AddEventToSend(EventType::kSetClientsPlayerId,
-                           event.GetArgs());
+    case EventType::kSetClientsPlayerId:
+      receivers.push_back(event.GetArg(0));
       break;
-    }
 
-    case EventType::kPressedTestButton: {
-      auto senders_player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
-      senders_player_ptr->ChangeTestCounter(event.GetArg(1));
-      this->AddEventToSend(EventType::kChangedTestCounter,
-                           senders_player_ptr->GetId(),
-                           event.GetArg(1),
-                           senders_player_ptr->GetTestCounterValue());
+    case EventType::kSharePlayersInRoomIds:
+      receivers.push_back(event.GetArg(0));
       break;
-    }
-
-    case EventType::kSharePlayersInRoomIds: {
-      this->AddEventToSend(event);
-      break;
-    }
-
-    case EventType::kStartGame: {
-      this->AddEventToSend(EventType::kStartGame);
-      room_state_ = RoomState::kInProgress;
-      break;
-    }
 
     default:
       break;
   }
-}
 
-void RoomController::Send() {
-  while (this->HasEventsToSend()) {
-    Event current_event = this->GetNextEventToSend();
+  emit(SendEventToServer(event, receivers));
 
-    std::vector<ClientId> receivers;
-    switch (current_event.GetType()) {
-      case EventType::kSetClientsPlayerId:
-        receivers.push_back(current_event.GetArg(0));
-        break;
-
-      case EventType::kSharePlayersInRoomIds:
-        receivers.push_back(current_event.GetArg(0));
-        break;
-
-      default:
-        break;
-    }
-
-    emit(SendEventToServer(current_event, receivers));
-
-    qInfo().nospace() << "[ROOM ID: " << id_
-                      << "] Sent " << current_event << " to Server";
-  }
+  qInfo().nospace() << "[ROOM ID: " << id_
+                    << "] Sent " << event << " to Server";
 }
 
 void RoomController::AddClient(ClientId client_id) {
@@ -71,7 +32,8 @@ void RoomController::AddClient(ClientId client_id) {
   event_args.insert(event_args.end(),
                     all_player_ids.begin(),
                     all_player_ids.end());
-  this->AddEventToHandle(EventType::kSharePlayersInRoomIds, event_args);
+  this->AddEventToHandle(Event(EventType::kSharePlayersInRoomIds,
+                               event_args));
 
   GameObjectId player_id = 1;
   while (model_.IsPlayerIdTaken(player_id)) {
@@ -79,16 +41,20 @@ void RoomController::AddClient(ClientId client_id) {
   }
   player_ids_.emplace(std::make_pair(client_id, player_id));
   model_.AddPlayer(player_id);
-  this->AddEventToHandle(EventType::kAddNewPlayer, client_id, player_id);
+  this->AddEventToHandle(Event(EventType::kAddNewPlayer,
+                               client_id, player_id));
   qInfo().nospace() << "[ROOM ID: " << id_
           << "] Connected client (ID: " << client_id << ")";
   if (!this->HasFreeSpot()) {
-    this->AddEventToHandle(EventType::kStartGame);
+    this->AddEventToHandle(Event(EventType::kStartGame));
     qInfo().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
 }
 
 void RoomController::RemoveClient(ClientId client_id) {
+  GameObjectId player_id = ClientIdToPlayerId(client_id);
+  model_.DeletePlayer(player_id);
+  this->AddEventToSend(Event(EventType::kPlayerDisconnected, player_id));
   player_ids_.erase(client_id);
 }
 
@@ -108,7 +74,8 @@ std::vector<ClientId> RoomController::GetAllClientsIds() const {
   std::vector<ClientId> result(player_ids_.size());
   int index = 0;
   for (auto [client_id, player_id] : player_ids_) {
-    result[index++] = client_id;
+    result[index] = client_id;
+    index++;
   }
   return result;
 }
@@ -117,7 +84,8 @@ std::vector<GameObjectId> RoomController::GetAllPlayerIds() const {
   std::vector<GameObjectId> result(player_ids_.size());
   int index = 0;
   for (auto [client_id, player_id] : player_ids_) {
-    result[index++] = player_id;
+    result[index] = player_id;
+    index++;
   }
   return result;
 }
@@ -132,4 +100,28 @@ GameObjectId RoomController::ClientIdToPlayerId(ClientId client_id) {
     return Constants::kNullGameObjectId;
   }
   return iter->second;
+}
+
+void RoomController::AddNewPlayerEvent(const Event& event) {
+  this->AddEventToSend(event);
+  this->AddEventToSend(Event(EventType::kSetClientsPlayerId,
+                             event.GetArgs()));
+}
+
+void RoomController::PressedTestButtonEvent(const Event& event) {
+  auto senders_player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
+  senders_player_ptr->ChangeTestCounter(event.GetArg(1));
+  this->AddEventToSend(Event(EventType::kChangedTestCounter,
+                             senders_player_ptr->GetId(),
+                             event.GetArg(1),
+                             senders_player_ptr->GetTestCounterValue()));
+}
+
+void RoomController::SharePlayersInRoomIdsEvent(const Event& event) {
+  this->AddEventToSend(event);
+}
+
+void RoomController::StartGameEvent(const Event& event) {
+  this->AddEventToSend(Event(EventType::kStartGame));
+  room_state_ = RoomState::kInProgress;
 }
