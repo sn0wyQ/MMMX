@@ -9,6 +9,7 @@
 
 #include "Controller/base_controller.h"
 #include "Model/game_data_model.h"
+#include "Server/Room/room_settings.h"
 #include "constants.h"
 
 enum class RoomState {
@@ -40,7 +41,9 @@ class RoomController : public BaseController {
   std::vector<GameObjectId> GetAllPlayerIds() const;
   RoomId GetId() const;
 
-  GameObjectId ClientIdToPlayerId(ClientId client_id);
+  GameObjectId ClientIdToPlayerId(ClientId client_id) const;
+
+  GameObjectId GetNextUnusedPlayerId() const;
 
   Q_SIGNALS:
   void SendEventToServer(const Event& event,
@@ -49,7 +52,7 @@ class RoomController : public BaseController {
  private:
   RoomId id_;
   GameDataModel model_;
-  int max_clients_;
+  RoomSettings room_settings_;
   RoomState room_state_ = RoomState::kWaitingForClients;
   std::unordered_map<ClientId, GameObjectId> player_ids_;
 

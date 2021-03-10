@@ -1,7 +1,7 @@
 #include "room_controller.h"
 
 RoomController::RoomController(RoomId id, int max_clients)
-    : id_(id), max_clients_(max_clients) {
+    : id_(id), room_settings_(max_clients) {
   this->StartTicking();
 }
 
@@ -35,10 +35,7 @@ void RoomController::AddClient(ClientId client_id) {
   this->AddEventToHandle(Event(EventType::kSharePlayersInRoomIds,
                                event_args));
 
-  GameObjectId player_id = 1;
-  while (model_.IsPlayerIdTaken(player_id)) {
-    player_id++;
-  }
+  GameObjectId player_id = this->GetNextUnusedPlayerId();
   player_ids_.emplace(std::make_pair(client_id, player_id));
   model_.AddPlayer(player_id);
   this->AddEventToHandle(Event(EventType::kAddNewPlayer,
@@ -59,7 +56,7 @@ void RoomController::RemoveClient(ClientId client_id) {
 }
 
 bool RoomController::HasFreeSpot() const {
-  return model_.GetPlayersCount() < max_clients_;
+  return model_.GetPlayersCount() < room_settings_.GetMaxClients();
 }
 
 bool RoomController::IsGameInProgress() const {
@@ -85,7 +82,7 @@ std::vector<GameObjectId> RoomController::GetAllPlayerIds() const {
   int index = 0;
   for (auto [client_id, player_id] : player_ids_) {
     result[index] = player_id;
-    index++;
+    ++index;
   }
   return result;
 }
@@ -94,12 +91,20 @@ RoomId RoomController::GetId() const {
   return id_;
 }
 
-GameObjectId RoomController::ClientIdToPlayerId(ClientId client_id) {
+GameObjectId RoomController::ClientIdToPlayerId(ClientId client_id) const {
   auto iter = player_ids_.find(client_id);
   if (iter == player_ids_.end()) {
     return Constants::kNullGameObjectId;
   }
   return iter->second;
+}
+
+GameObjectId RoomController::GetNextUnusedPlayerId() const {
+  GameObjectId player_id = 1;
+  while (model_.IsPlayerIdTaken(player_id)) {
+    player_id++;
+  }
+  return player_id;
 }
 
 void RoomController::AddNewPlayerEvent(const Event& event) {

@@ -4,8 +4,6 @@
 #include "GameObject/Building/building.h"
 
 class Store : public Building {
-  Q_OBJECT
-
  public:
   Store() = default;
 

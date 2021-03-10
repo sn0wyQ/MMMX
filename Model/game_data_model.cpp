@@ -2,26 +2,30 @@
 
 std::shared_ptr<Player>
     GameDataModel::GetPlayerByPlayerId(GameObjectId player_id) const {
-  return players_.at(player_id);
+  auto iter = players_.find(player_id);
+  if (iter != players_.end()) {
+    return iter->second;
+  }
+
+  throw std::runtime_error("[MODEL] Trying to get invalid player...");
 }
 
 std::shared_ptr<Player> GameDataModel::GetOwnersPlayer() const {
   if (owners_player_id_ == Constants::kNullGameObjectId) {
-    throw std::runtime_error("Owner's player_id isn't set...");
+    throw std::runtime_error("[MODEL] Owner's player_id isn't set...");
   }
 
   return players_.at(owners_player_id_);
 }
 
 std::shared_ptr<Player> GameDataModel::GetTestEnemyPlayer() const {
-  for (auto iter = players_.begin(); iter != players_.end(); iter++) {
-    if (iter->second->GetId() != owners_player_id_) {
-      return iter->second;
+  for (const auto& player : players_) {
+    if (player.second->GetId() != owners_player_id_) {
+      return player.second;
     }
   }
 
-  throw std::runtime_error("No enemies...");
-  return nullptr;
+  throw std::runtime_error("[MODEL] No enemies found...");
 }
 
 int GameDataModel::GetPlayersCount() const {
@@ -30,9 +34,10 @@ int GameDataModel::GetPlayersCount() const {
 
 void GameDataModel::AddPlayer(GameObjectId player_id) {
   if (players_.find(player_id) != players_.end()) {
-    qInfo() << "[MODEL] Tried to add new Player ID:" << player_id
-            << ", but this Player already exists";
-    return;
+    std::stringstream error_stream;
+    error_stream << "[MODEL] Tried to add new Player ID:" << player_id
+                 << ", but this Player already exists";
+    throw std::runtime_error(error_stream.str());
   }
 
   players_.emplace(std::make_pair(player_id,
@@ -53,7 +58,8 @@ void GameDataModel::SetOwnersPlayerId(GameObjectId player_id) {
 }
 
 void GameDataModel::DeletePlayer(GameObjectId player_id) {
-  if (players_.find(player_id) != players_.end()) {
-    players_.erase(player_id);
+  auto player_to_delete = players_.find(player_id);
+  if (player_to_delete != players_.end()) {
+    players_.erase(player_to_delete);
   }
 }

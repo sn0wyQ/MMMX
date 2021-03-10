@@ -4,8 +4,6 @@
 #include "GameObject/Building/building.h"
 
 class Turret : public Building {
-  Q_OBJECT
-
  public:
   Turret() = default;
 

@@ -7,8 +7,6 @@
 #include "GameObject/game_object.h"
 
 class Base : public GameObject {
-  Q_OBJECT
-
  public:
   Base() = default;
 

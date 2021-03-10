@@ -15,23 +15,22 @@ std::shared_ptr<ServerModel::ConnectedClient>
   // TODO(Everyone): some mechanism to restore client state if it had
   //  disconnected during last X seconds
 
-  ClientId new_client_id = (connected_clients_.empty() ?
-                                  1 : connected_clients_.rbegin()->first + 1);
+  ClientId new_client_id = GetNextUnusedClientId();
   RoomId room_id;
 
-  bool found_existing_room_with_a_free_place = false;
-  while (!found_existing_room_with_a_free_place
+  bool has_room_with_free_spot = false;
+  while (!has_room_with_free_spot
         && !rooms_with_free_spot_.empty()) {
     if (rooms_with_free_spot_.front()->HasFreeSpot()
         && rooms_with_free_spot_.front()->IsWaitingForClients()) {
       room_id = rooms_with_free_spot_.front()->GetId();
-      found_existing_room_with_a_free_place = true;
+      has_room_with_free_spot = true;
     } else {
       rooms_with_free_spot_.pop();
     }
   }
 
-  if (!found_existing_room_with_a_free_place) {
+  if (!has_room_with_free_spot) {
     room_id = this->AddNewRoom();
     this->AddToRoomsWithFreeSpot(room_id);
   }
@@ -81,11 +80,15 @@ void ServerModel::AddToRoomsWithFreeSpot(RoomId room_id) {
   rooms_with_free_spot_.emplace(rooms_.at(room_id));
 }
 
-
 ClientId ServerModel::GetClientIdByWebSocket(QWebSocket* web_socket) const {
   auto iter = client_ids_.find(web_socket);
   if (iter == client_ids_.end()) {
     return Constants::kNullClientId;
   }
   return iter->second;
+}
+
+ClientId ServerModel::GetNextUnusedClientId() const {
+  return (connected_clients_.empty() ?
+            1 : connected_clients_.rbegin()->first + 1);
 }

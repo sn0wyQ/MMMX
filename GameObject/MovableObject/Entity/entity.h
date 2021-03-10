@@ -6,8 +6,6 @@
 #include "GameObject/MovableObject/movable_object.h"
 
 class Entity : public MovableObject {
-  Q_OBJECT
-
  public:
   Entity() = default;
 

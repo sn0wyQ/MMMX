@@ -7,11 +7,7 @@
 #include "Animation/animation.h"
 #include "constants.h"
 
-class GameObject : public QObject {
-  Q_OBJECT
-  Q_PROPERTY(int id MEMBER id_)
-  Q_PROPERTY(QPoint position MEMBER position_)
-
+class GameObject {
  public:
   GameObject() = default;
   explicit GameObject(GameObjectId id);

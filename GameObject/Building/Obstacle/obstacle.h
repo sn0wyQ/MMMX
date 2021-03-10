@@ -4,8 +4,6 @@
 #include "GameObject/Building/building.h"
 
 class Obstacle : public Building {
-  Q_OBJECT
-
  public:
   Obstacle() = default;
 

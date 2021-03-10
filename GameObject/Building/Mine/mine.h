@@ -4,8 +4,6 @@
 #include "GameObject/Building/building.h"
 
 class Mine : public Building {
-  Q_OBJECT
-
  public:
   Mine() = default;
 

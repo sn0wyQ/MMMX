@@ -62,7 +62,7 @@ qt5_add_big_resources(RESOURCES_CLIENT
 qt5_add_big_resources(RESOURCES_SERVER
         )
 
-add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT})
+add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT} Server/Room/room_settings.cpp Server/Room/room_settings.h)
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER})

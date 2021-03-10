@@ -18,7 +18,7 @@
 class ServerModel : public QObject {
   Q_OBJECT
 
- public:
+ private:
   struct ConnectedClient {
     explicit ConnectedClient(const std::shared_ptr<QWebSocket>& socket_ptr,
                              RoomId room_id = Constants::kNullRoomId);
@@ -29,6 +29,7 @@ class ServerModel : public QObject {
     RoomId room_id = Constants::kNullRoomId;
   };
 
+ public:
   ServerModel() = default;
   ~ServerModel() override = default;
 
@@ -45,6 +46,8 @@ class ServerModel : public QObject {
   void AddToRoomsWithFreeSpot(RoomId room_id);
 
   ClientId GetClientIdByWebSocket(QWebSocket* web_socket) const;
+
+  ClientId GetNextUnusedClientId() const;
 
   Q_SIGNALS:
   void CreatedNewRoom(RoomId room_id);

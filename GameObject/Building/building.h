@@ -4,8 +4,6 @@
 #include "GameObject/game_object.h"
 
 class Building : public GameObject {
-  Q_OBJECT
-
  public:
   void OnTick() override {};
 
