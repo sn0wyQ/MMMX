@@ -57,6 +57,8 @@ void ClientView::OnUpdate() {
     test_button_->setText("Waiting for connection...");
     test_button_->setEnabled(false);
   }
+
+  this->update();
   qInfo() << "[VIEW] Updated";
 }
 

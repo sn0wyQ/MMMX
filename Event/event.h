@@ -65,6 +65,7 @@ class Event : public QObject {
  public:
   Event(const Event& event);
   Event(Event&& event) noexcept;
+
   explicit Event(const QByteArray& message);
   template<typename... Args>
   explicit Event(EventType event_type, Args... args)
