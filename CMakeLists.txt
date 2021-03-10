@@ -54,6 +54,7 @@ set(SOURCES
         Model/game_data_model.cpp
         Model/server_model.cpp
         Server/Room/room_controller.cpp
+        Server/Room/room_settings.cpp
         Server/server_controller.cpp
         )
 
