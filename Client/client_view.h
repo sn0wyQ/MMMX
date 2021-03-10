@@ -23,7 +23,7 @@ class ClientView : public AbstractClientView {
 
   void Update() override;
 
- public Q_SLOTS:
+  public Q_SLOTS:
   void OnTestButtonPressed();
 
  private:
