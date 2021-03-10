@@ -22,6 +22,9 @@ enum class EventType {
   // [2] - result
   kChangedTestCounter,
 
+  // [0] - player_id
+  kPlayerDisconnected,
+
   // [0] - sender_player_id,
   // [1] - random_test_int
   kPressedTestButton,
@@ -47,9 +50,6 @@ enum class EventType {
 
   // No arguments
   kStartGame,
-
-  // [0] - player_id
-  kPlayerDisconnected,
 };
 
 #endif  // EVENT_EVENT_TYPE_H_

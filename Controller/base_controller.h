@@ -38,24 +38,27 @@ class BaseController : public QObject {
  protected:
   BaseController();
 
-  std::map<EventType, std::function<void(const Event&)>> function_for_event_{};
+  void SetFunctionForEvent(const Event& event,
+                           std::function<void(const Event&)> func);
 
  private:
+
   QTimer ticker_;
   QElapsedTimer last_tick_;
-
   std::queue<Event> events_to_handle_;
   std::queue<Event> events_to_send_;
 
-  virtual void AddNewPlayerEvent(const Event& event) = 0;
-  virtual void ClientDisconnectedEvent(const Event& event) = 0;
-  virtual void EndGameEvent(const Event& event) = 0;
-  virtual void ChangedTestCounterEvent(const Event& event) = 0;
-  virtual void PressedTestButtonEvent(const Event& event) = 0;
-  virtual void SetClientsPlayerIdEvent(const Event& event) = 0;
-  virtual void SharePlayersInRoomIdsEvent(const Event& event) = 0;
-  virtual void StartGameEvent(const Event& event) = 0;
-  virtual void PlayerDisconnectedEvent(const Event& event) = 0;
+  std::map<EventType, std::function<void(const Event&)>> function_for_event_{};
+
+  virtual void AddNewPlayerEvent(const Event& event) {};
+  virtual void ClientDisconnectedEvent(const Event& event) {};
+  virtual void EndGameEvent(const Event& event) {};
+  virtual void ChangedTestCounterEvent(const Event& event) {};
+  virtual void PlayerDisconnectedEvent(const Event& event) {};
+  virtual void PressedTestButtonEvent(const Event& event) {};
+  virtual void SetClientsPlayerIdEvent(const Event& event) {};
+  virtual void SharePlayersInRoomIdsEvent(const Event& event) {};
+  virtual void StartGameEvent(const Event& event) {};
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

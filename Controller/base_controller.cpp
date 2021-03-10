@@ -1,5 +1,7 @@
 #include "base_controller.h"
 
+#include <utility>
+
 BaseController::BaseController() {
   using std::placeholders::_1;
   function_for_event_ = {
@@ -21,7 +23,13 @@ BaseController::BaseController() {
       {EventType::kStartGame,
        std::bind(&BaseController::StartGameEvent, this, _1)},
       {EventType::kPlayerDisconnected,
-       std::bind(&BaseController::PlayerDisconnectedEvent, this, _1)}
+       std::bind(&BaseController::PlayerDisconnectedEvent, this, _1)},
+      {EventType::kSendEventToClient,
+       std::bind(&BaseController::AddEventToSend, this, _1)},
+      {EventType::kSendEventToRoom,
+       std::bind(&BaseController::AddEventToSend, this, _1)},
+      {EventType::kSetClientsPlayerId,
+       std::bind(&BaseController::AddEventToSend, this, _1)},
   };
   connect(&ticker_,
           &QTimer::timeout,
@@ -69,3 +77,9 @@ void BaseController::AddEventToSend(const Event& event) {
 void BaseController::HandleEvent(const Event& event) {
   function_for_event_.at(event.GetType())(event);
 }
+
+void BaseController::SetFunctionForEvent(
+    const Event& event, std::function<void(const Event&)> func) {
+  function_for_event_[event.GetType()] = std::move(func);
+}
+

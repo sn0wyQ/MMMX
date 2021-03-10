@@ -7,16 +7,7 @@ ClientView::ClientView(
   setMinimumSize(310, 70);
   setWindowTitle("MMMX game");
 
-  connect(this,
-          &ClientView::AddNewControlsEvent,
-          controller_.get(),
-          &ClientController::OnControlsEventReceived);
-  // TODO(kmekhovich): change
-
-  connect(controller_.get(),
-          &ClientController::UpdateView,
-          this,
-          &ClientView::OnUpdate);
+  controller_->SetView(std::shared_ptr<ClientView>(this));
 
   test_button_ = new QPushButton("Waiting for connection...", this);
   test_button_->setEnabled(false);
@@ -35,12 +26,13 @@ ClientView::ClientView(
 
 void ClientView::OnTestButtonPressed() {
   int random_test_int = QRandomGenerator::global()->bounded(100);
-  emit(AddNewControlsEvent(Event(EventType::kPressedTestButton,
-                                 controller_->GetModel()->GetOwnersPlayerId(),
-                                 random_test_int)));
+  controller_->ReceiveEvent(
+      Event(EventType::kPressedTestButton,
+            controller_->GetModel()->GetOwnersPlayerId(),
+            random_test_int));
 }
 
-void ClientView::OnUpdate() {
+void ClientView::Update() {
   if (controller_->IsInProgress()) {
     test_button_->setText("Counter Add Random Number");
     test_button_->setEnabled(true);
