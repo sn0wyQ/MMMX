@@ -11,7 +11,7 @@
 #include <QWebSocket>
 #include <QWebSocketServer>
 
-#include "Event/event.h"
+#include "Event/event_type.h"
 #include "Server/Room/room_controller.h"
 #include "constants.h"
 
@@ -37,21 +37,21 @@ class ServerModel : public QObject {
   template<typename... Args>
   RoomId AddNewRoom(Args... args);
 
-  ConnectedClient* GetClientByClientId(ClientId client_id);
-
-  RoomController* GetRoomByRoomId(RoomId room_id);
-  RoomController* GetRoomByClientId(ClientId client_id);
+  std::shared_ptr<ConnectedClient>
+    GetClientByClientId(ClientId client_id) const;
+  std::shared_ptr<RoomController> GetRoomByRoomId(RoomId room_id) const;
+  std::shared_ptr<RoomController> GetRoomByClientId(ClientId client_id) const;
 
   void AddToRoomsWithFreeSpot(RoomId room_id);
 
-  ClientId GetClientIdByWebSocket(const QWebSocket* web_socket);
+  ClientId GetClientIdByWebSocket(QWebSocket* web_socket) const;
 
   Q_SIGNALS:
   void CreatedNewRoom(RoomId room_id);
 
  private:
   std::map<ClientId, std::shared_ptr<ConnectedClient>> connected_clients_;
-  std::map<const QWebSocket*, ClientId> client_ids_;
+  std::map<QWebSocket*, ClientId> client_ids_;
   std::map<RoomId, std::shared_ptr<RoomController>> rooms_;
   std::queue<std::shared_ptr<RoomController>> rooms_with_free_spot_;
 };

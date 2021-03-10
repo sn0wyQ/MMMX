@@ -54,15 +54,12 @@ set(SOURCES
         Model/server_model.cpp
         Server/Room/room_controller.cpp
         Server/server_controller.cpp
-        constants.h
         )
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
-
         )
 qt5_add_big_resources(RESOURCES_SERVER
-
         )
 
 add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT})

@@ -5,11 +5,13 @@ ClientView::ClientView(
     : QMainWindow(parent), controller_(std::move(controller)) {
   resize(310, 70);
   setMinimumSize(310, 70);
+  setWindowTitle("MMMX game");
 
   connect(this,
           &ClientView::AddNewControlsEvent,
           controller_.get(),
           &ClientController::OnControlsEventReceived);
+  // TODO(kmekhovich): change
 
   connect(controller_.get(),
           &ClientController::UpdateView,

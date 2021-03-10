@@ -1,6 +1,8 @@
 #ifndef CONTROLLER_BASE_CONTROLLER_H_
 #define CONTROLLER_BASE_CONTROLLER_H_
 
+#include <functional>
+#include <map>
 #include <memory>
 #include <queue>
 
@@ -14,31 +16,29 @@
 
 class BaseController : public QObject {
  public:
-  BaseController();
   ~BaseController() override = default;
 
   // Every Tick() we successively do following:
   // 1) Call HandleEvent() for every Event from events_to_handle_
   // 2) Call Send()
   void Tick();
-  virtual void HandleEvent(const Event&) = 0;
-  virtual void Send() = 0;
+  void HandleEvent(const Event& event);
+  virtual void SendEvent(const Event& event) = 0;
 
-  template<typename... Args>
-  void AddEventToHandle(Args... args) {
-    events_to_handle_.emplace(args...);
-  }
+  void AddEventToHandle(const Event& event);
   // MUST be called ONLY from HandleEvent(...)
-  template<typename... Args>
-  void AddEventToSend(Args... args) {
-    events_to_send_.emplace(args...);
-  }
+  void AddEventToSend(const Event& event);
 
-  bool HasEventsToSend();
-  Event GetNextEventToSend();
+  bool HasEventsToSend() const;
+  bool HasEventsToHandle() const;
 
   void StartTicking();
   void StopTicking();
+
+ protected:
+  BaseController();
+
+  std::map<EventType, std::function<void(const Event&)>> function_for_event_{};
 
  private:
   QTimer ticker_;
@@ -46,6 +46,16 @@ class BaseController : public QObject {
 
   std::queue<Event> events_to_handle_;
   std::queue<Event> events_to_send_;
+
+  virtual void AddNewPlayerEvent(const Event& event) = 0;
+  virtual void ClientDisconnectedEvent(const Event& event) = 0;
+  virtual void EndGameEvent(const Event& event) = 0;
+  virtual void ChangedTestCounterEvent(const Event& event) = 0;
+  virtual void PressedTestButtonEvent(const Event& event) = 0;
+  virtual void SetClientsPlayerIdEvent(const Event& event) = 0;
+  virtual void SharePlayersInRoomIdsEvent(const Event& event) = 0;
+  virtual void StartGameEvent(const Event& event) = 0;
+  virtual void PlayerDisconnectedEvent(const Event& event) = 0;
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

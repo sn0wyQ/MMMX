@@ -58,21 +58,23 @@ RoomId ServerModel::AddNewRoom(Args... args) {
   return room_id;
 }
 
-ServerModel::ConnectedClient* ServerModel::GetClientByClientId(
-    ClientId client_id) {
-  return connected_clients_.at(client_id).get();
+std::shared_ptr<ServerModel::ConnectedClient> ServerModel::GetClientByClientId(
+    ClientId client_id) const {
+  return connected_clients_.at(client_id);
 }
 
-RoomController* ServerModel::GetRoomByRoomId(RoomId room_id) {
-  return rooms_.at(room_id).get();
+std::shared_ptr<RoomController>
+    ServerModel::GetRoomByRoomId(RoomId room_id) const {
+  return rooms_.at(room_id);
 }
 
-RoomController* ServerModel::GetRoomByClientId(ClientId client_id) {
+std::shared_ptr<RoomController>
+    ServerModel::GetRoomByClientId(ClientId client_id) const {
   if (client_id == Constants::kNullClientId) {
     // TODO(Everyone): throw some error and maybe even try to catch it
   }
   RoomId room_id = connected_clients_.at(client_id)->room_id;
-  return rooms_.at(room_id).get();
+  return rooms_.at(room_id);
 }
 
 void ServerModel::AddToRoomsWithFreeSpot(RoomId room_id) {
@@ -80,7 +82,7 @@ void ServerModel::AddToRoomsWithFreeSpot(RoomId room_id) {
 }
 
 
-ClientId ServerModel::GetClientIdByWebSocket(const QWebSocket* web_socket) {
+ClientId ServerModel::GetClientIdByWebSocket(QWebSocket* web_socket) const {
   auto iter = client_ids_.find(web_socket);
   if (iter == client_ids_.end()) {
     return Constants::kNullClientId;

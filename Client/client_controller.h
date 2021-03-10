@@ -22,8 +22,7 @@ class ClientController : public BaseController {
   explicit ClientController(const QUrl& url = Constants::kServerUrl);
   ~ClientController() override = default;
 
-  void HandleEvent(const Event& event) override;
-  void Send() override;
+  void SendEvent(const Event& event) override;
 
   GameDataModel* GetModel();
 
@@ -44,6 +43,16 @@ class ClientController : public BaseController {
   QUrl url_;
   QWebSocket web_socket_;
   GameDataModel model_;
+
+  void AddNewPlayerEvent(const Event& event) override;
+  void ClientDisconnectedEvent(const Event& event) override {};
+  void EndGameEvent(const Event& event) override;
+  void ChangedTestCounterEvent(const Event& event) override;
+  void PressedTestButtonEvent(const Event& event) override;
+  void SetClientsPlayerIdEvent(const Event& event) override;
+  void SharePlayersInRoomIdsEvent(const Event& event) override;
+  void StartGameEvent(const Event& event) override;
+  void PlayerDisconnectedEvent(const Event& event) override;
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

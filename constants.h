@@ -20,14 +20,14 @@ const QString kVersionString = "0.0.1";
 
 // Server
 const QString kServerName = "MMMX Server";
-constexpr quint16 kServerPort = 1337;
-const QUrl kServerUrl = QUrl("ws://188.120.224.70:1337");
-// const QUrl kServerUrl = QUrl("ws://localhost:1337");
+constexpr int kServerPort = 1337;
+// const QString kServerIp = QString("ws://") + "188.120.224.70";
+const QString kServerIp = QString("ws://") + "localhost";
+const QUrl kServerUrl = QUrl(kServerIp + ":" + QString::number(kServerPort));
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 
 // Room
-// constexpr int kDefaultMaxClients = 4;
 constexpr int kDefaultMaxClients = 2;
 
 // Null Values

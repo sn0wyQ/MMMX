@@ -1,7 +1,7 @@
 #ifndef SERVER_ROOM_ROOM_CONTROLLER_H_
 #define SERVER_ROOM_ROOM_CONTROLLER_H_
 
-#include <map>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -27,8 +27,7 @@ class RoomController : public BaseController {
                           int max_clients = Constants::kDefaultMaxClients);
   ~RoomController() override = default;
 
-  void HandleEvent(const Event& event) override;
-  void Send() override;
+  void SendEvent(const Event& event) override;
 
   void AddClient(ClientId client_id);
   void RemoveClient(ClientId client_id);
@@ -52,7 +51,17 @@ class RoomController : public BaseController {
   GameDataModel model_;
   int max_clients_;
   RoomState room_state_ = RoomState::kWaitingForClients;
-  std::map<ClientId, GameObjectId> player_ids_;
+  std::unordered_map<ClientId, GameObjectId> player_ids_;
+
+  void AddNewPlayerEvent(const Event& event) override;
+  void ClientDisconnectedEvent(const Event& event) override {};
+  void EndGameEvent(const Event& event) override {};
+  void ChangedTestCounterEvent(const Event& event) override {};
+  void PressedTestButtonEvent(const Event& event) override;
+  void SetClientsPlayerIdEvent(const Event& event) override {};
+  void SharePlayersInRoomIdsEvent(const Event& event) override;
+  void StartGameEvent(const Event& event) override;
+  void PlayerDisconnectedEvent(const Event& event) override {};
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

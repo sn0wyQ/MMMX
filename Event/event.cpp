@@ -5,11 +5,6 @@ Event::Event(const Event& event) {
   args_ = event.args_;
 }
 
-Event::Event(Event&& event) noexcept {
-  type_ = event.type_;
-  args_.swap(event.args_);
-}
-
 Event::Event(const QByteArray& message) {
   QDataStream data_stream(message);
 

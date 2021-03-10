@@ -10,7 +10,7 @@
 #include <QRandomGenerator>
 
 #include "Client/client_controller.h"
-#include "Event/event.h"
+#include "Event/event_type.h"
 
 
 class ClientView : public QMainWindow {
