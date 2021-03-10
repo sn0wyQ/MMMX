@@ -26,6 +26,7 @@ class BaseController : public QObject {
   virtual void SendEvent(const Event& event) = 0;
 
   void AddEventToHandle(const Event& event);
+  // MUST be called ONLY from HandleEvent(...)
   void AddEventToSend(const Event& event);
 
   bool HasEventsToSend() const;

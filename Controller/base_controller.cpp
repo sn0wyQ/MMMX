@@ -9,7 +9,7 @@ BaseController::BaseController() {
        std::bind(&BaseController::ClientDisconnectedEvent, this, _1)},
       {EventType::kEndGame,
        std::bind(&BaseController::EndGameEvent, this, _1)},
-       {EventType::kChangedTestCounter,
+      {EventType::kChangedTestCounter,
        std::bind(&BaseController::ChangedTestCounterEvent, this, _1)},
       {EventType::kPressedTestButton,
        std::bind(&BaseController::PressedTestButtonEvent, this, _1)},
@@ -67,7 +67,5 @@ void BaseController::AddEventToSend(const Event& event) {
 }
 
 void BaseController::HandleEvent(const Event& event) {
-  if (function_for_event_.find(event.GetType()) != function_for_event_.end()) {
-    function_for_event_[event.GetType()](event);
-  }
+  function_for_event_.at(event.GetType())(event);
 }
