@@ -3,7 +3,7 @@
 ServerController::ServerController()
   : web_socket_server_(Constants::kServerName,
                        QWebSocketServer::NonSecureMode) {
-  if (web_socket_server_.listen(QHostAddress::Any, Constants::kServerPort)) {
+  if (web_socket_server_.listen(QHostAddress::Any,  Constants::kServerPort)) {
     qInfo() << "Server is running on " << Constants::kServerUrl.host() << ":"
     << web_socket_server_.serverPort();
     connect(&web_socket_server_,
@@ -11,11 +11,6 @@ ServerController::ServerController()
             this,
             &ServerController::OnNewClient);
   }
-
-  connect(&model_,
-          &ServerModel::CreatedNewRoom,
-          this,
-          &ServerController::OnNewRoom);
 
   this->StartTicking();
 }
@@ -92,8 +87,43 @@ void ServerController::OnEventFromRoomReceived(
 }
 
 void ServerController::OnNewClient() {
-  std::shared_ptr<ServerModel::ConnectedClient>
-      new_client(model_.AddConnectedClient(&web_socket_server_));
+
+  std::shared_ptr<QWebSocket> current_socket(
+      web_socket_server_.nextPendingConnection());
+
+  // TODO(Everyone): some mechanism to restore client state if it had
+  //  disconnected during last X seconds
+
+  ClientId new_client_id = model_.GetNextUnusedClientId();
+  RoomId room_id;
+
+  bool found_existing_room_with_a_free_place = false;
+  while (!found_existing_room_with_a_free_place
+      && !model_.IsRoomsQueueEmpty()) {
+    if (model_.GetTopRoomInQueue()->HasFreeSpot()
+        && model_.GetTopRoomInQueue()->IsWaitingForClients()) {
+      room_id = model_.GetTopRoomInQueue()->GetId();
+      found_existing_room_with_a_free_place = true;
+    } else {
+      model_.PopTopRoomInQueue();
+    }
+  }
+
+  if (!found_existing_room_with_a_free_place) {
+    room_id = model_.AddNewRoom();
+    NewRoomCreated(room_id);
+    model_.AddToRoomsWithFreeSpot(room_id);
+  }
+
+  auto new_client =
+      std::make_shared<ServerModel::ConnectedClient>(current_socket, room_id);
+
+  model_.SetConnectedClient(new_client_id, new_client);
+  model_.SetClientIdToWebSocket(current_socket, new_client_id);
+  model_.AddClientToRoom(room_id, new_client_id);
+
+  qInfo().nospace() << "[SERVER] New Client: ID - " << new_client_id
+                    << ", RoomController - " << room_id;
 
   connect(new_client->socket.get(),
           &QWebSocket::binaryMessageReceived,
@@ -106,7 +136,7 @@ void ServerController::OnNewClient() {
           &ServerController::OnSocketDisconnected);
 }
 
-void ServerController::OnNewRoom(RoomId room_id) {
+void ServerController::NewRoomCreated(RoomId room_id) {
   auto room_ptr = model_.GetRoomByRoomId(room_id);
   connect(room_ptr.get(),
           &RoomController::SendEventToServer,
