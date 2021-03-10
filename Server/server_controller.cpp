@@ -48,6 +48,15 @@ void ServerController::SendEvent(const Event& event) {
   }
 }
 
+void ServerController::OnTick() {
+  for (auto& room_iter : model_.GetRooms()) {
+    if (!room_iter.second->HasPlayers()
+        && !room_iter.second->IsWaitingForClients()) {
+      model_.DeleteRoom(room_iter.second->GetId());
+    }
+  }
+}
+
 void ServerController::OnByteArrayReceived(const QByteArray& message) {
   auto client_socket_ptr = qobject_cast<QWebSocket*>(sender());
   auto client_id = model_.GetClientIdByWebSocket(client_socket_ptr);

@@ -92,6 +92,8 @@ void ClientController::SendEvent(const Event& event) {
   qInfo() << "[CLIENT] Sent" << event << "to Server";
 }
 
+void ClientController::OnTick() {}
+
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_.DeletePlayer(event.GetArg(0));
 }

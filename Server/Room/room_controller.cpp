@@ -26,6 +26,8 @@ void RoomController::SendEvent(const Event& event) {
                     << "] Sent " << event << " to Server";
 }
 
+void RoomController::OnTick() {}
+
 void RoomController::AddClient(ClientId client_id) {
   std::vector<int> event_args{client_id, model_.GetPlayersCount()};
   std::vector<int> all_player_ids = GetAllPlayerIds();
@@ -53,10 +55,16 @@ void RoomController::RemoveClient(ClientId client_id) {
   model_.DeletePlayer(player_id);
   this->AddEventToSend(Event(EventType::kPlayerDisconnected, player_id));
   player_ids_.erase(client_id);
+  qInfo().nospace() << "[ROOM ID: " << id_
+                    << "] Removed Player ID: " << player_id;
 }
 
 bool RoomController::HasFreeSpot() const {
   return model_.GetPlayersCount() < room_settings_.GetMaxClients();
+}
+
+bool RoomController::HasPlayers() const {
+  return model_.GetPlayersCount() > 0;
 }
 
 bool RoomController::IsGameInProgress() const {

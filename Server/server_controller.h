@@ -18,6 +18,7 @@ class ServerController : public BaseController {
   ~ServerController() override;
 
   void SendEvent(const Event& event) override;
+  void OnTick() override;
 
   void NewRoomCreated(RoomId room_id);
 

@@ -27,6 +27,7 @@ class ClientController : public BaseController {
   ~ClientController() override = default;
 
   void SendEvent(const Event& event) override;
+  void OnTick() override;
 
   GameDataModel* GetModel();
 

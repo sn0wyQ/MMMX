@@ -12,6 +12,10 @@ std::shared_ptr<ServerModel::ConnectedClient> ServerModel::GetClientByClientId(
   return connected_clients_.at(client_id);
 }
 
+std::map<RoomId, std::shared_ptr<RoomController>>& ServerModel::GetRooms() {
+  return rooms_;
+}
+
 std::shared_ptr<RoomController>
     ServerModel::GetRoomByRoomId(RoomId room_id) const {
   return rooms_.at(room_id);
@@ -41,6 +45,14 @@ ClientId ServerModel::GetClientIdByWebSocket(QWebSocket* web_socket) const {
 ClientId ServerModel::GetNextUnusedClientId() const {
   return (connected_clients_.empty() ?
             1 : connected_clients_.rbegin()->first + 1);
+}
+
+void ServerModel::DeleteRoom(RoomId room_id) {
+  auto room_to_delete = rooms_.find(room_id);
+  if (room_to_delete != rooms_.end()) {
+    rooms_.erase(room_to_delete);
+  }
+  qInfo() << "[MODEL] Removed Room ID:" << room_id;
 }
 
 bool ServerModel::IsRoomsQueueEmpty() const {

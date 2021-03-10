@@ -42,6 +42,7 @@ class ServerModel {
 
   std::shared_ptr<ConnectedClient>
     GetClientByClientId(ClientId client_id) const;
+  std::map<RoomId, std::shared_ptr<RoomController>>& GetRooms();
   std::shared_ptr<RoomController> GetRoomByRoomId(RoomId room_id) const;
   std::shared_ptr<RoomController> GetRoomByClientId(ClientId client_id) const;
 
@@ -54,6 +55,8 @@ class ServerModel {
   ClientId GetClientIdByWebSocket(QWebSocket* web_socket) const;
 
   ClientId GetNextUnusedClientId() const;
+
+  void DeleteRoom(RoomId room_id);
 
   void SetConnectedClient(ClientId client_id,
                           std::shared_ptr<ConnectedClient> connected_client);

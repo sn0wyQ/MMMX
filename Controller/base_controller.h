@@ -21,7 +21,9 @@ class BaseController : public QObject {
   // Every Tick() we successively do following:
   // 1) Call HandleEvent() for every Event from events_to_handle_
   // 2) Call Send()
+  // 3) Call OnTick()
   void Tick();
+  virtual void OnTick() = 0;
   void HandleEvent(const Event& event);
   virtual void SendEvent(const Event& event) = 0;
 
@@ -33,7 +35,6 @@ class BaseController : public QObject {
   bool HasEventsToHandle() const;
 
   void StartTicking();
-  void StopTicking();
 
  protected:
   BaseController();
@@ -47,7 +48,7 @@ class BaseController : public QObject {
   std::queue<Event> events_to_handle_;
   std::queue<Event> events_to_send_;
 
-  std::map<EventType, std::function<void(const Event&)>> function_for_event_{};
+  std::map<EventType, std::function<void(const Event&)>> function_for_event_;
 
   virtual void AddNewPlayerEvent(const Event& event) {}
   virtual void ClientDisconnectedEvent(const Event& event) {}

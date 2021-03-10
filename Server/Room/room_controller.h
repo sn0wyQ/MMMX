@@ -29,11 +29,13 @@ class RoomController : public BaseController {
   ~RoomController() override = default;
 
   void SendEvent(const Event& event) override;
+  void OnTick() override;
 
   void AddClient(ClientId client_id);
   void RemoveClient(ClientId client_id);
 
   bool HasFreeSpot() const;
+  bool HasPlayers() const;
   bool IsGameInProgress() const;
   bool IsWaitingForClients() const;
 

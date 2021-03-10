@@ -48,6 +48,7 @@ void BaseController::Tick() {
     this->SendEvent(events_to_send_.front());
     events_to_send_.pop();
   }
+  this->OnTick();
 }
 
 bool BaseController::HasEventsToSend() const {
@@ -61,11 +62,6 @@ bool BaseController::HasEventsToHandle() const {
 void BaseController::StartTicking() {
   ticker_.start(Constants::kTimeToTick);
   last_tick_.start();
-}
-
-void BaseController::StopTicking() {
-  ticker_.stop();
-  last_tick_.invalidate();
 }
 
 void BaseController::AddEventToHandle(const Event& event) {
