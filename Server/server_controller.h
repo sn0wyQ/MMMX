@@ -19,12 +19,13 @@ class ServerController : public BaseController {
 
   void SendEvent(const Event& event) override;
 
-  public Q_SLOTS:
+  void NewRoomCreated(RoomId room_id);
+
+ public Q_SLOTS:
   void OnByteArrayReceived(const QByteArray& message);
   void OnEventFromRoomReceived(const Event& event,
                                std::vector<ClientId> receivers);
   void OnNewClient();
-  void OnNewRoom(RoomId room_id);
   void OnSocketDisconnected();
 
  private:

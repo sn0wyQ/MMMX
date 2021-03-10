@@ -32,10 +32,15 @@ class ServerModel : public QObject {
   ServerModel() = default;
   ~ServerModel() override = default;
 
-  std::shared_ptr<ConnectedClient>
-    AddConnectedClient(QWebSocketServer* web_socket_server);
   template<typename... Args>
-  RoomId AddNewRoom(Args... args);
+  RoomId AddNewRoom(Args... args) {
+    RoomId room_id = (rooms_.empty() ? 1 : rooms_.rbegin()->first + 1);
+    auto room = new RoomController(room_id, args...);
+    rooms_.emplace(room_id, std::shared_ptr<RoomController>(room));
+    qInfo().nospace() << "[SERVER] Created new RoomController (ID: "
+                      << room_id << ")";
+    return room_id;
+  }
 
   std::shared_ptr<ConnectedClient>
     GetClientByClientId(ClientId client_id) const;
@@ -44,16 +49,26 @@ class ServerModel : public QObject {
 
   void AddToRoomsWithFreeSpot(RoomId room_id);
 
+  bool IsConnectedClientsEmpty() const;
+  ClientId GetLastClientId() const;
+
+  bool IsRoomsQueueEmpty() const;
+  std::shared_ptr<RoomController> GetTopRoomInQueue() const;
+  void PopTopRoomInQueue();
+
   ClientId GetClientIdByWebSocket(QWebSocket* web_socket) const;
 
-  Q_SIGNALS:
-  void CreatedNewRoom(RoomId room_id);
+  void SetConnectedClient(ClientId client_id,
+                          std::shared_ptr<ConnectedClient> connected_client);
+  void SetClientIdToWebSocket(const std::shared_ptr<QWebSocket>& web_socket, ClientId client_id);
+  void AddClientToRoom(RoomId room_id, ClientId client_id);
+
 
  private:
   std::map<ClientId, std::shared_ptr<ConnectedClient>> connected_clients_;
   std::map<QWebSocket*, ClientId> client_ids_;
   std::map<RoomId, std::shared_ptr<RoomController>> rooms_;
-  std::queue<std::shared_ptr<RoomController>> rooms_with_free_spot_;
+  std::queue<std::shared_ptr<RoomController>> rooms_queue_;
 };
 
 #endif  // MODEL_SERVER_MODEL_H_

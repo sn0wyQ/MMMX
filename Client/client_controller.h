@@ -1,6 +1,9 @@
 #ifndef CLIENT_CLIENT_CONTROLLER_H_
 #define CLIENT_CLIENT_CONTROLLER_H_
 
+#include <memory>
+#include <utility>
+
 #include <QByteArray>
 #include <QDebug>
 #include <QUrl>
