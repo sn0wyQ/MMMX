@@ -12,12 +12,10 @@
 #include "constants.h"
 
 class Player : public Entity {
-  Q_OBJECT
-
  public:
   Player() = default;
   explicit Player(GameObjectId player_id);
-  ~Player() override = default;
+  ~Player() = default;
 
   void OnTick() override {};
 

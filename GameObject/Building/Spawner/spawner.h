@@ -4,8 +4,6 @@
 #include "GameObject/Building/building.h"
 
 class Spawner : public Building {
-  Q_OBJECT
-
  public:
   Spawner() = default;
 

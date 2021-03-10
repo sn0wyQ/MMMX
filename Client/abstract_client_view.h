@@ -1,5 +1,5 @@
-#ifndef ABSTRACT_CLIENT_VIEW_H
-#define ABSTRACT_CLIENT_VIEW_H
+#ifndef CLIENT_ABSTRACT_CLIENT_VIEW_H_
+#define CLIENT_ABSTRACT_CLIENT_VIEW_H_
 
 #include <QMainWindow>
 
@@ -13,4 +13,4 @@ class AbstractClientView : public QMainWindow {
   virtual void Update() = 0;
 };
 
-#endif //ABSTRACT_CLIENT_VIEW_H
+#endif  // CLIENT_ABSTRACT_CLIENT_VIEW_H_

@@ -13,8 +13,6 @@ enum class ItemType {
 };
 
 class Item : public Loot {
-  Q_OBJECT
-
  public:
   Item() = default;
 

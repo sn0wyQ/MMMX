@@ -11,8 +11,6 @@ enum class BonusType {
 };
 
 class Bonus : public Loot {
-  Q_OBJECT
-
  public:
   Bonus() = default;
 

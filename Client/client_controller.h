@@ -37,7 +37,7 @@ class ClientController : public BaseController {
 
   void ReceiveEvent(const Event& controls_event);
 
- public Q_SLOTS:
+  public Q_SLOTS:
   void OnConnected();
   void OnDisconnected();
   void OnByteArrayReceived(const QByteArray& message);

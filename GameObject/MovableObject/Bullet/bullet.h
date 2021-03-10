@@ -6,8 +6,6 @@
 #include "GameObject/MovableObject/movable_object.h"
 
 class Bullet : public MovableObject {
-  Q_OBJECT
-
  public:
   Bullet() = default;
 

@@ -4,8 +4,6 @@
 #include "GameObject/MovableObject/Entity/entity.h"
 
 class Creep : public Entity {
-  Q_OBJECT
-
  public:
   Creep() = default;
 
