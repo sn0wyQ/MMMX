@@ -9,7 +9,7 @@
 #include <QUrl>
 #include <QWebSocket>
 
-#include "Client/client_view.h"
+#include "Client/abstract_client_view.h"
 #include "Controller/base_controller.h"
 #include "Model/game_data_model.h"
 
@@ -18,8 +18,6 @@ enum class GameState {
   kInProgress,
   kNotStarted
 };
-
-class ClientView;
 
 class ClientController : public BaseController {
   Q_OBJECT
@@ -35,7 +33,7 @@ class ClientController : public BaseController {
   void SetGameState(GameState game_state);
   bool IsInProgress() const;
 
-  void SetView(std::shared_ptr<ClientView> view);
+  void SetView(std::shared_ptr<AbstractClientView> view);
 
   void ReceiveEvent(const Event& controls_event);
 
@@ -49,7 +47,7 @@ class ClientController : public BaseController {
   QUrl url_;
   QWebSocket web_socket_;
   GameDataModel model_;
-  std::shared_ptr<ClientView> view_;
+  std::shared_ptr<AbstractClientView> view_;
 
   void AddNewPlayerEvent(const Event& event) override;
   void EndGameEvent(const Event& event) override;

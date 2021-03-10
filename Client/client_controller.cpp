@@ -96,6 +96,6 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_.DeletePlayer(event.GetArg(0));
 }
 
-void ClientController::SetView(std::shared_ptr<ClientView> view) {
+void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
   view_ = std::move(view);
 }

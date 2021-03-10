@@ -24,6 +24,7 @@ set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -O3")
 # Add code files
 set(SOURCES
         Animation/animation.cpp
+        Client/abstract_client_view.cpp
         Client/client_controller.cpp
         Client/client_view.cpp
         Controller/base_controller.cpp
