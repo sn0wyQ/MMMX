@@ -40,7 +40,7 @@ void ClientController::OnDisconnected() {
   qInfo() << "[CLIENT] Disconnected from" << url_;
 }
 
-void ClientController::OnControlsEventReceived(const Event& controls_event) {
+void ClientController::ReceiveEvent(const Event& controls_event) {
   this->AddEventToHandle(controls_event);
 }
 
@@ -58,12 +58,12 @@ void ClientController::ChangedTestCounterEvent(const Event& event) {
   auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
   player_ptr->SetTestCounterLastDeltaValue(event.GetArg(1));
   player_ptr->SetTestCounterValue(event.GetArg(2));
-  emit(UpdateView());
+  view_->Update();
 }
 
 void ClientController::EndGameEvent(const Event& event) {
   this->SetGameState(GameState::kFinished);
-  emit(UpdateView());
+  view_->Update();
 }
 
 void ClientController::PressedTestButtonEvent(const Event& event) {
@@ -83,7 +83,7 @@ void ClientController::SharePlayersInRoomIdsEvent(const Event& event) {
 
 void ClientController::StartGameEvent(const Event& event) {
   this->SetGameState(GameState::kInProgress);
-  emit(UpdateView());
+  view_->Update();
   qInfo() << "[CLIENT] Started game";
 }
 
@@ -94,4 +94,8 @@ void ClientController::SendEvent(const Event& event) {
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_.DeletePlayer(event.GetArg(0));
+}
+
+void ClientController::SetView(std::shared_ptr<ClientView> view) {
+  view_ = std::move(view);
 }

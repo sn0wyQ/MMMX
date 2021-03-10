@@ -35,15 +35,7 @@ class ServerController : public BaseController {
   QWebSocketServer web_socket_server_;
   ServerModel model_;
 
-  void AddNewPlayerEvent(const Event& event) override {};
   void ClientDisconnectedEvent(const Event& event) override;
-  void EndGameEvent(const Event& event) override {};
-  void ChangedTestCounterEvent(const Event& event) override {};
-  void PressedTestButtonEvent(const Event& event) override {};
-  void SetClientsPlayerIdEvent(const Event& event) override {};
-  void SharePlayersInRoomIdsEvent(const Event& event) override {};
-  void StartGameEvent(const Event& event) override {};
-  void PlayerDisconnectedEvent(const Event& event) override {};
 };
 
 #endif  // SERVER_SERVER_CONTROLLER_H_

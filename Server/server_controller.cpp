@@ -3,14 +3,6 @@
 ServerController::ServerController()
   : web_socket_server_(Constants::kServerName,
                        QWebSocketServer::NonSecureMode) {
-  using std::placeholders::_1;
-  function_for_event_[EventType::kSendEventToClient]
-    = std::bind(&ServerController::AddEventToSend, this, _1);
-  function_for_event_[EventType::kSendEventToRoom]
-      = std::bind(&ServerController::AddEventToSend, this, _1);
-  function_for_event_[EventType::kSetClientsPlayerId]
-      = std::bind(&ServerController::AddEventToSend, this, _1);
-
   if (web_socket_server_.listen(QHostAddress::Any, Constants::kServerPort)) {
     qInfo() << "Server is running on " << Constants::kServerUrl.host() << ":"
     << web_socket_server_.serverPort();

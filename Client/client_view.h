@@ -10,8 +10,9 @@
 #include <QRandomGenerator>
 
 #include "Client/client_controller.h"
-#include "Event/event_type.h"
+#include "Event/event.h"
 
+class ClientController;
 
 class ClientView : public QMainWindow {
   Q_OBJECT
@@ -26,7 +27,7 @@ class ClientView : public QMainWindow {
 
   public Q_SLOTS:
   void OnTestButtonPressed();
-  void OnUpdate();
+  void Update();
 
  private:
   void paintEvent(QPaintEvent* paint_event) override;

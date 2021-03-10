@@ -6,6 +6,7 @@
 #include <QUrl>
 #include <QWebSocket>
 
+#include "Client/client_view.h"
 #include "Controller/base_controller.h"
 #include "Model/game_data_model.h"
 
@@ -14,6 +15,8 @@ enum class GameState {
   kInProgress,
   kNotStarted
 };
+
+class ClientView;
 
 class ClientController : public BaseController {
   Q_OBJECT
@@ -29,13 +32,13 @@ class ClientController : public BaseController {
   void SetGameState(GameState game_state);
   bool IsInProgress() const;
 
-  Q_SIGNALS:
-  void UpdateView();
+  void SetView(std::shared_ptr<ClientView> view);
 
-  public Q_SLOTS:
+  void ReceiveEvent(const Event& controls_event);
+
+ public Q_SLOTS:
   void OnConnected();
   void OnDisconnected();
-  void OnControlsEventReceived(const Event& controls_event);
   void OnByteArrayReceived(const QByteArray& message);
 
  private:
@@ -43,16 +46,16 @@ class ClientController : public BaseController {
   QUrl url_;
   QWebSocket web_socket_;
   GameDataModel model_;
+  std::shared_ptr<ClientView> view_;
 
   void AddNewPlayerEvent(const Event& event) override;
-  void ClientDisconnectedEvent(const Event& event) override {};
   void EndGameEvent(const Event& event) override;
   void ChangedTestCounterEvent(const Event& event) override;
+  void PlayerDisconnectedEvent(const Event& event) override;
   void PressedTestButtonEvent(const Event& event) override;
   void SetClientsPlayerIdEvent(const Event& event) override;
   void SharePlayersInRoomIdsEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
-  void PlayerDisconnectedEvent(const Event& event) override;
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_
