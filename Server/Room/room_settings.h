@@ -1,5 +1,5 @@
-#ifndef ROOM_ROOM_SETTINGS_H_
-#define ROOM_ROOM_SETTINGS_H_
+#ifndef SERVER_ROOM_ROOM_SETTINGS_H_
+#define SERVER_ROOM_ROOM_SETTINGS_H_
 
 class RoomSettings {
  public:
@@ -12,4 +12,4 @@ class RoomSettings {
   int max_clients_;
 };
 
-#endif  // ROOM_ROOM_SETTINGS_H_
+#endif  // SERVER_ROOM_ROOM_SETTINGS_H_
