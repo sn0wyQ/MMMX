@@ -87,7 +87,6 @@ void ServerController::OnEventFromRoomReceived(
 }
 
 void ServerController::OnNewClient() {
-
   std::shared_ptr<QWebSocket> current_socket(
       web_socket_server_.nextPendingConnection());
 

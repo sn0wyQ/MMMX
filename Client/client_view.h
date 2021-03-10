@@ -9,12 +9,11 @@
 #include <QPushButton>
 #include <QRandomGenerator>
 
+#include "Client/abstract_client_view.h"
 #include "Client/client_controller.h"
 #include "Event/event.h"
 
-class ClientController;
-
-class ClientView : public QMainWindow {
+class ClientView : public AbstractClientView {
   Q_OBJECT
 
  public:
@@ -22,12 +21,10 @@ class ClientView : public QMainWindow {
                       QWidget* parent = nullptr);
   ~ClientView() override = default;
 
-  Q_SIGNALS:
-  void AddNewControlsEvent(const Event& controls_event);
+  void Update() override;
 
-  public Q_SLOTS:
+ public Q_SLOTS:
   void OnTestButtonPressed();
-  void Update();
 
  private:
   void paintEvent(QPaintEvent* paint_event) override;

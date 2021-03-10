@@ -15,9 +15,7 @@
 #include "Server/Room/room_controller.h"
 #include "constants.h"
 
-class ServerModel : public QObject {
-  Q_OBJECT
-
+class ServerModel {
  public:
   struct ConnectedClient {
     explicit ConnectedClient(const std::shared_ptr<QWebSocket>& socket_ptr,
@@ -30,7 +28,7 @@ class ServerModel : public QObject {
   };
 
   ServerModel() = default;
-  ~ServerModel() override = default;
+  ~ServerModel() = default;
 
   template<typename... Args>
   RoomId AddNewRoom(Args... args) {
@@ -59,7 +57,8 @@ class ServerModel : public QObject {
 
   void SetConnectedClient(ClientId client_id,
                           std::shared_ptr<ConnectedClient> connected_client);
-  void SetClientIdToWebSocket(const std::shared_ptr<QWebSocket>& web_socket, ClientId client_id);
+  void SetClientIdToWebSocket(const std::shared_ptr<QWebSocket>& web_socket,
+                              ClientId client_id);
   void AddClientToRoom(RoomId room_id, ClientId client_id);
 
  private:

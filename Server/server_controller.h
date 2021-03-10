@@ -21,7 +21,7 @@ class ServerController : public BaseController {
 
   void NewRoomCreated(RoomId room_id);
 
- public Q_SLOTS:
+  public Q_SLOTS:
   void OnByteArrayReceived(const QByteArray& message);
   void OnEventFromRoomReceived(const Event& event,
                                std::vector<ClientId> receivers);
