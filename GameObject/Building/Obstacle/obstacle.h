@@ -8,8 +8,6 @@ class Obstacle : public Building {
   Obstacle() = default;
 
   void OnTick() override;
-
- private:
 };
 
 #endif  // GAMEOBJECT_BUILDING_OBSTACLE_OBSTACLE_H_

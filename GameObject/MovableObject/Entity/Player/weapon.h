@@ -1,7 +1,7 @@
 #ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_WEAPON_H_
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_WEAPON_H_
 
-#include <QImage>
+#include <QPixmap>
 
 class Weapon {
  public:
@@ -11,7 +11,7 @@ class Weapon {
   float base_damage_ = 0.f;
   float bullet_speed_ = 0.f;
   float rate_of_fire_ = 0.f;
-  QImage image_;
+  QPixmap image_;
   int current_clip_size_ = 0;
   float reloading_time_ = 0.f;
   float range_penalty_ = 0.f;

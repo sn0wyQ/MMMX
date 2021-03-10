@@ -8,8 +8,6 @@ class Store : public Building {
   Store() = default;
 
   void OnTick() override;
-
- private:
 };
 
 #endif  // GAMEOBJECT_BUILDING_STORE_STORE_H_

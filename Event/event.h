@@ -7,7 +7,6 @@
 #include <QByteArray>
 #include <QDataStream>
 #include <QDebug>
-#include <QException>
 #include <QObject>
 
 #include "Event/event_type.h"
@@ -40,20 +39,6 @@ class Event : public QObject {
  private:
   EventType type_;
   std::vector<int> args_;
-};
-
-class InvalidGameEventException : public QException {
- public:
-  explicit InvalidGameEventException(Event game_event);
-  ~InvalidGameEventException() override = default;
-
-  void raise() const override;
-  InvalidGameEventException* clone() const override;
-
-  Event game_event() const;
-
- private:
-  Event game_event_;
 };
 
 #endif  // EVENT_EVENT_H_

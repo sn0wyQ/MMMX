@@ -5,7 +5,7 @@ ClientView::ClientView(
     : QMainWindow(parent), controller_(std::move(controller)) {
   resize(310, 70);
   setMinimumSize(310, 70);
-  setWindowTitle("MMMX game");
+  setWindowTitle(Constants::kWindowTitle);
 
   controller_->SetView(std::shared_ptr<ClientView>(this));
 

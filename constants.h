@@ -35,6 +35,9 @@ constexpr ClientId kNullClientId = -1;
 constexpr GameObjectId kNullGameObjectId = -1;
 constexpr RoomId kNullRoomId = -1;
 
+// Client
+const QString kWindowTitle = "MMMX | Version " + kVersionString;
+
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

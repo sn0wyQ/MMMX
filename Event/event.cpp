@@ -62,18 +62,3 @@ QDebug operator<<(QDebug debug, const Event& event) {
   debug.setAutoInsertSpaces(oldSetting);
   return debug.maybeSpace();
 }
-
-InvalidGameEventException::InvalidGameEventException(Event game_event)
-  : game_event_(std::move(game_event)) {}
-
-void InvalidGameEventException::raise() const {
-  throw *this;
-}
-
-InvalidGameEventException* InvalidGameEventException::clone() const {
-  return new InvalidGameEventException(*this);
-}
-
-Event InvalidGameEventException::game_event() const {
-  return game_event_;
-}

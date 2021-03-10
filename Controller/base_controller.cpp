@@ -38,10 +38,12 @@ BaseController::BaseController() {
 }
 
 void BaseController::Tick() {
+  // ЭТО ХЕНДНДЛ ТУТ ПРОСТО МЯСОДРОБИЛКА ХЕНДЛОВ (с) @watislaf
   while (HasEventsToHandle()) {
     this->HandleEvent(events_to_handle_.front());
     events_to_handle_.pop();
   }
+  // А ТУТ СЕНД ТУТ ВСЕ НА СЕНД (с) @watislaf
   while (HasEventsToSend()) {
     this->SendEvent(events_to_send_.front());
     events_to_send_.pop();

@@ -8,8 +8,6 @@ class Loot : public GameObject {
   Loot() = default;
 
   void OnTick() override {};
-
- private:
 };
 
 #endif  // GAMEOBJECT_LOOT_LOOT_H_
