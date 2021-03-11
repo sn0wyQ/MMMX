@@ -20,7 +20,7 @@ class BaseController : public QObject {
 
   // Every Tick() we successively do following:
   // 1) Call HandleEvent() for every Event from events_to_handle_
-  // 2) Call Send()
+  // 2) Call SendEvent() for every Event from events_to_send_
   // 3) Call OnTick()
   void Tick();
   virtual void OnTick() = 0;
@@ -39,8 +39,8 @@ class BaseController : public QObject {
  protected:
   BaseController();
 
-  void SetFunctionForEvent(const Event& event,
-                           std::function<void(const Event&)> func);
+  void SetFunctionForEventType(EventType event_type,
+                               const std::function<void(const Event&)>& func);
 
  private:
   QTimer ticker_;
@@ -48,7 +48,8 @@ class BaseController : public QObject {
   std::queue<Event> events_to_handle_;
   std::queue<Event> events_to_send_;
 
-  std::map<EventType, std::function<void(const Event&)>> function_for_event_;
+  std::array<std::function<void(const Event&)>,
+      static_cast<uint32_t>(EventType::SIZE)> function_for_event_;
 
   virtual void AddNewPlayerEvent(const Event& event) {}
   virtual void ClientDisconnectedEvent(const Event& event) {}
@@ -59,6 +60,8 @@ class BaseController : public QObject {
   virtual void SetClientsPlayerIdEvent(const Event& event) {}
   virtual void SharePlayersInRoomIdsEvent(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
+  virtual void SendEventToClientEvent(const Event& event) {}
+  virtual void SendEventToRoomEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

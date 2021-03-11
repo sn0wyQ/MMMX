@@ -182,3 +182,15 @@ void ServerController::ClientDisconnectedEvent(const Event& event) {
   auto room_ptr = model_.GetRoomByClientId(client_id);
   room_ptr->RemoveClient(client_id);
 }
+
+void ServerController::SetClientsPlayerIdEvent(const Event& event) {
+  this->AddEventToSend(event);
+}
+
+void ServerController::SendEventToClientEvent(const Event& event) {
+  this->AddEventToSend(event);
+}
+
+void ServerController::SendEventToRoomEvent(const Event& event) {
+  this->AddEventToSend(event);
+}

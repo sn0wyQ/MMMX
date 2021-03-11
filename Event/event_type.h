@@ -50,6 +50,8 @@ enum class EventType {
 
   // No arguments
   kStartGame,
+
+  SIZE
 };
 
 #endif  // EVENT_EVENT_TYPE_H_
