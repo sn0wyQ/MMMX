@@ -6,7 +6,6 @@
 
 // code_readability++;
 using ClientId = int;
-using PlayerNickname = QString;
 using GameObjectId = int;
 using RoomId = int;
 

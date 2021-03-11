@@ -11,6 +11,7 @@ ClientController::ClientController(const QUrl& url) : url_(url) {
           this,
           &ClientController::OnDisconnected);
   web_socket_.open(url);
+  this->StartTicking();
 }
 
 GameDataModel* ClientController::GetModel() {
@@ -32,7 +33,6 @@ void ClientController::OnConnected() {
           &ClientController::OnByteArrayReceived);
 
   // TODO(Everyone): Send nickname to server after connection
-  this->StartTicking();
   qInfo().noquote().nospace() << "[CLIENT] Connected to" << url_;
 }
 

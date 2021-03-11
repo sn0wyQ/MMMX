@@ -17,8 +17,7 @@ class ClientView : public AbstractClientView {
   Q_OBJECT
 
  public:
-  explicit ClientView(std::shared_ptr<ClientController> controller,
-                      QWidget* parent = nullptr);
+  explicit ClientView(std::shared_ptr<ClientController> controller);
   ~ClientView() override = default;
 
   void Update() override;

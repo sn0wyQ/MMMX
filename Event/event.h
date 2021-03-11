@@ -12,8 +12,6 @@
 
 class Event : public QObject {
   Q_OBJECT
-  Q_PROPERTY(EventType event_type MEMBER type_)
-  Q_PROPERTY(std::vector<int> event_args MEMBER args_)
 
  public:
   enum class EventType {

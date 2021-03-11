@@ -7,7 +7,7 @@ int main(int argc, char* argv[]) {
   QApplication a(argc, argv);
 
   auto client_controller = std::make_shared<ClientController>();
-  auto client_view = new ClientView(client_controller, nullptr);
+  auto client_view = new ClientView(client_controller);
   client_view->show();
 
   return QApplication::exec();

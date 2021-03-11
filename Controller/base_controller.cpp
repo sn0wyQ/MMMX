@@ -5,8 +5,7 @@
 BaseController::BaseController() {
   using std::placeholders::_1;
   SetFunctionForEventType(EventType::kAddNewPlayer,
-                      std::bind(&BaseController::AddNewPlayerEvent,
-                                this, _1));
+  std::bind(&BaseController::AddNewPlayerEvent, this, _1));
   SetFunctionForEventType(EventType::kClientDisconnected,
    std::bind(&BaseController::ClientDisconnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kEndGame,

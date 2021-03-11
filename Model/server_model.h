@@ -23,7 +23,7 @@ class ServerModel {
 
     std::shared_ptr<QWebSocket> socket;
     // TODO(Everyone): make Client send nickname after connection to server
-    PlayerNickname nickname;
+    QString nickname;
     RoomId room_id = Constants::kNullRoomId;
   };
 

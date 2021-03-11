@@ -50,6 +50,11 @@ void RoomController::AddClient(ClientId client_id) {
 
 void RoomController::RemoveClient(ClientId client_id) {
   GameObjectId player_id = ClientIdToPlayerId(client_id);
+  if (player_id == Constants::kNullClientId) {
+    qInfo().noquote().nospace()
+      << "ERROR: ROOM CONTROLLER REMOVE CLIENT NO SUCH CLIENT";
+    return;
+  }
   model_.DeletePlayer(player_id);
   this->AddEventToSend(Event(EventType::kPlayerDisconnected, player_id));
   player_ids_.erase(client_id);

@@ -4,7 +4,6 @@
 #include <QObject>
 #include <QPoint>
 
-#include "Animation/animation.h"
 #include "constants.h"
 
 class GameObject {
@@ -20,7 +19,6 @@ class GameObject {
  private:
   GameObjectId id_ = Constants::kNullGameObjectId;
   QPoint position_;
-  Animation animation_;
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_
