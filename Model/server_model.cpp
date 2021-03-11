@@ -24,7 +24,7 @@ std::shared_ptr<RoomController>
 std::shared_ptr<RoomController>
     ServerModel::GetRoomByClientId(ClientId client_id) const {
   if (client_id == Constants::kNullClientId) {
-    // TODO(Everyone): throw some error and maybe even try to catch it
+    throw std::runtime_error("[MODEL] Invalid client ID");
   }
   RoomId room_id = connected_clients_.at(client_id)->room_id;
   return rooms_.at(room_id);
@@ -85,9 +85,17 @@ void ServerModel::AddClientToRoom(
 
 void ServerModel::RemoveClient(ClientId client_id) {
   if (connected_clients_.find(client_id) == connected_clients_.end()) {
-    qInfo() << "ERROR SERVER MODEL REMOVE CLIENT NO SUCH CLIENT";
-    return;
+    throw std::runtime_error("[MODEL] Invalid client ID");
   }
   client_ids_.erase(connected_clients_[client_id]->socket.get());
   connected_clients_.erase(client_id);
+}
+
+RoomId ServerModel::AddNewRoom() {
+  RoomId room_id = (rooms_.empty() ? 1 : rooms_.rbegin()->first + 1);
+  auto room = new RoomController(room_id, RoomSettings());
+  rooms_.emplace(room_id, std::shared_ptr<RoomController>(room));
+  qInfo().noquote().nospace() << "[SERVER] Created new RoomController (ID: "
+                              << room_id << ")";
+  return room_id;
 }

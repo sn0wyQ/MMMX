@@ -30,15 +30,7 @@ class ServerModel {
   ServerModel() = default;
   ~ServerModel() = default;
 
-  template<typename... Args>
-  RoomId AddNewRoom(Args... args) {
-    RoomId room_id = (rooms_.empty() ? 1 : rooms_.rbegin()->first + 1);
-    auto room = new RoomController(room_id, args...);
-    rooms_.emplace(room_id, std::shared_ptr<RoomController>(room));
-    qInfo().noquote().nospace() << "[SERVER] Created new RoomController (ID: "
-                      << room_id << ")";
-    return room_id;
-  }
+  RoomId AddNewRoom();
 
   std::shared_ptr<ConnectedClient>
     GetClientByClientId(ClientId client_id) const;

@@ -16,14 +16,13 @@ enum class RoomState {
   // MUST always stay in alphabet order
 
   kFinished,
-  kInProgress,
+  kIsGameInProgress,
   kWaitingForClients,
 };
 
 class RoomController : public BaseController {
  public:
-  explicit RoomController(RoomId id,
-                          int max_clients = Constants::kDefaultMaxClients);
+  explicit RoomController(RoomId id, RoomSettings room_settings);
   ~RoomController() override = default;
 
   QString GetControllerName() const override;

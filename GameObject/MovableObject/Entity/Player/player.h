@@ -8,9 +8,7 @@
 
 class Player : public Entity {
  public:
-  Player() = default;
   explicit Player(GameObjectId player_id);
-  ~Player() = default;
 
   void OnTick() override {};
 

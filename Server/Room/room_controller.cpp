@@ -1,7 +1,7 @@
 #include "room_controller.h"
 
-RoomController::RoomController(RoomId id, int max_clients)
-    : id_(id), room_settings_(max_clients) {
+RoomController::RoomController(RoomId id, RoomSettings room_settings)
+    : id_(id), room_settings_(room_settings) {
   this->StartTicking();
 }
 
@@ -37,9 +37,7 @@ void RoomController::AddClient(ClientId client_id) {
 void RoomController::RemoveClient(ClientId client_id) {
   GameObjectId player_id = ClientIdToPlayerId(client_id);
   if (player_id == Constants::kNullClientId) {
-    qInfo().noquote().nospace()
-      << "ERROR: ROOM CONTROLLER REMOVE CLIENT NO SUCH CLIENT";
-    return;
+    throw std::runtime_error("[ROOM] Invalid client ID");
   }
   model_.DeletePlayer(player_id);
   this->AddEventToSend(Event(EventType::kPlayerDisconnected, player_id));
@@ -58,7 +56,7 @@ bool RoomController::HasPlayers() const {
 }
 
 bool RoomController::IsGameInProgress() const {
-  return room_state_ == RoomState::kInProgress;
+  return room_state_ == RoomState::kIsGameInProgress;
 }
 
 bool RoomController::IsWaitingForClients() const {
@@ -66,21 +64,17 @@ bool RoomController::IsWaitingForClients() const {
 }
 
 std::vector<ClientId> RoomController::GetAllClientsIds() const {
-  std::vector<ClientId> result(player_ids_.size());
-  int index = 0;
+  std::vector<ClientId> result;
   for (auto [client_id, player_id] : player_ids_) {
-    result[index] = client_id;
-    index++;
+    result.push_back(client_id);
   }
   return result;
 }
 
 std::vector<GameObjectId> RoomController::GetAllPlayerIds() const {
-  std::vector<GameObjectId> result(player_ids_.size());
-  int index = 0;
+  std::vector<GameObjectId> result;
   for (auto [client_id, player_id] : player_ids_) {
-    result[index] = player_id;
-    ++index;
+    result.push_back(player_id);
   }
   return result;
 }
@@ -126,7 +120,7 @@ void RoomController::SharePlayersInRoomIdsEvent(const Event& event) {
 
 void RoomController::StartGameEvent(const Event& event) {
   this->AddEventToSend(Event(EventType::kStartGame));
-  room_state_ = RoomState::kInProgress;
+  room_state_ = RoomState::kIsGameInProgress;
 }
 
 QString RoomController::GetControllerName() const {

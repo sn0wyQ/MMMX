@@ -38,6 +38,7 @@ void GameDataModel::AddPlayer(GameObjectId player_id) {
     error_stream << "[MODEL] Tried to add new Player ID:" << player_id
                  << ", but this Player already exists";
     throw std::runtime_error(error_stream.str());
+
   }
 
   players_.emplace(std::make_pair(player_id,
