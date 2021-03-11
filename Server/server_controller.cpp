@@ -4,8 +4,9 @@ ServerController::ServerController()
   : web_socket_server_(Constants::kServerName,
                        QWebSocketServer::NonSecureMode) {
   if (web_socket_server_.listen(QHostAddress::Any,  Constants::kServerPort)) {
-    qInfo().noquote().nospace() << "Server is running on " << Constants::kServerUrl.host() << ":"
-    << web_socket_server_.serverPort();
+    qInfo().noquote().nospace() << "Server is running on "
+      << Constants::kServerUrl.host() << ":"
+      << web_socket_server_.serverPort();
     connect(&web_socket_server_,
             &QWebSocketServer::newConnection,
             this,
