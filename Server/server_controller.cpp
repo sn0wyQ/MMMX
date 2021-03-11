@@ -181,9 +181,11 @@ void ServerController::ProcessEventsFromRoom(
   for (const auto& event : events_from_room) {
     std::vector<ClientId> receivers;
     switch (event.GetType()) {
-      case EventType::kSetClientsPlayerId:receivers.push_back(event.GetArg(0));
+      case EventType::kSetClientsPlayerId:
+        receivers.push_back(event.GetArg(0));
         break;
-      case EventType::kSharePlayersInRoomIds:receivers.push_back(event.GetArg(0));
+      case EventType::kSharePlayersInRoomIds:
+        receivers.push_back(event.GetArg(0));
         break;
       default:
         break;
