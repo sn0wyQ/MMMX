@@ -146,6 +146,9 @@ void ServerController::OnNewClient() {
 
 void ServerController::NewRoomCreated(RoomId room_id) {
   auto room_ptr = model_.GetRoomByRoomId(room_id);
+  // The only way to send event from room to server
+  // Also the only place where we use signal-slots
+  // for two non-pure qt objects
   connect(room_ptr.get(),
           &RoomController::SendEventToServer,
           this,
