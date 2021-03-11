@@ -5,8 +5,7 @@
 
 class MovableObject : public GameObject {
  public:
-  MovableObject() = default;
-
+  explicit MovableObject(GameObjectId id);
   void OnTick() override = 0;
 };
 

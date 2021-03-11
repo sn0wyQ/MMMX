@@ -27,9 +27,6 @@ class ServerModel {
     RoomId room_id = Constants::kNullRoomId;
   };
 
-  ServerModel() = default;
-  ~ServerModel() = default;
-
   RoomId AddNewRoom();
 
   std::shared_ptr<ConnectedClient>

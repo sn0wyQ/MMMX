@@ -1,6 +1,6 @@
 #include "player.h"
 
-Player::Player(GameObjectId player_id) {
+Player::Player(GameObjectId player_id) : Entity(player_id) {
   this->SetId(player_id);
 }
 

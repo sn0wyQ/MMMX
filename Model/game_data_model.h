@@ -13,8 +13,6 @@
 
 class GameDataModel {
  public:
-  GameDataModel() = default;
-
   void AddPlayer(GameObjectId player_id);
   void DeletePlayer(GameObjectId player_id);
 
