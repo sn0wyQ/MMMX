@@ -33,7 +33,6 @@ class ClientController : public BaseController {
 
   GameDataModel* GetModel();
 
-  void SetGameState(GameState game_state);
   bool IsInProgress() const;
 
   void SetView(std::shared_ptr<AbstractClientView> view);

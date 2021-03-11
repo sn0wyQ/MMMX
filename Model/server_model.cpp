@@ -82,3 +82,12 @@ void ServerModel::AddClientToRoom(
     RoomId room_id, ClientId client_id) {
   rooms_.at(room_id)->AddClient(client_id);
 }
+
+void ServerModel::RemoveClient(ClientId client_id) {
+  if (connected_clients_.find(client_id) == connected_clients_.end()) {
+    qInfo() << "ERROR SERVER MODEL REMOVE CLIENT NO SUCH CLIENT";
+    return;
+  }
+  client_ids_.erase(connected_clients_[client_id]->socket.get());
+  connected_clients_.erase(client_id);
+}

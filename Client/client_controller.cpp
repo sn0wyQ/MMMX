@@ -18,10 +18,6 @@ GameDataModel* ClientController::GetModel() {
   return &model_;
 }
 
-void ClientController::SetGameState(GameState game_state) {
-  game_state_ = game_state;
-}
-
 bool ClientController::IsInProgress() const {
   return game_state_ == GameState::kInProgress;
 }
@@ -60,7 +56,7 @@ void ClientController::ChangedTestCounterEvent(const Event& event) {
 }
 
 void ClientController::EndGameEvent(const Event& event) {
-  this->SetGameState(GameState::kFinished);
+  game_state_ = GameState::kFinished;
   view_->Update();
 }
 
@@ -80,7 +76,7 @@ void ClientController::SharePlayersInRoomIdsEvent(const Event& event) {
 }
 
 void ClientController::StartGameEvent(const Event& event) {
-  this->SetGameState(GameState::kInProgress);
+  game_state_ = GameState::kInProgress;
   view_->Update();
   qInfo().noquote().nospace() << "[CLIENT] Started game";
 }
@@ -94,6 +90,8 @@ void ClientController::OnTick() {}
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_.DeletePlayer(event.GetArg(0));
+  game_state_ = GameState::kNotStarted;
+  view_->Update();
 }
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {

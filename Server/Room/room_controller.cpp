@@ -7,21 +7,7 @@ RoomController::RoomController(RoomId id, int max_clients)
 
 void RoomController::SendEvent(const Event& event) {
   BaseController::SendEvent(event);
-  std::vector<ClientId> receivers;
-  switch (event.GetType()) {
-    case EventType::kSetClientsPlayerId:
-      receivers.push_back(event.GetArg(0));
-      break;
-
-    case EventType::kSharePlayersInRoomIds:
-      receivers.push_back(event.GetArg(0));
-      break;
-
-    default:
-      break;
-  }
-
-  emit(SendEventToServer(event, receivers));
+  events_for_server_.push_back(event);
 }
 
 void RoomController::OnTick() {}
@@ -58,6 +44,7 @@ void RoomController::RemoveClient(ClientId client_id) {
   model_.DeletePlayer(player_id);
   this->AddEventToSend(Event(EventType::kPlayerDisconnected, player_id));
   player_ids_.erase(client_id);
+  room_state_ = RoomState::kWaitingForClients;
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
                     << "] Removed Player ID: " << player_id;
 }
@@ -144,4 +131,8 @@ void RoomController::StartGameEvent(const Event& event) {
 
 QString RoomController::GetControllerName() const {
   return "ROOM ID: " + QString::number(id_);
+}
+
+std::vector<Event> RoomController::ClaimEventsForServer() {
+  return std::move(events_for_server_);
 }

@@ -64,6 +64,8 @@ class ServerModel {
                               ClientId client_id);
   void AddClientToRoom(RoomId room_id, ClientId client_id);
 
+  void RemoveClient(ClientId client_id);
+
  private:
   std::map<ClientId, std::shared_ptr<ConnectedClient>> connected_clients_;
   std::map<QWebSocket*, ClientId> client_ids_;

@@ -30,7 +30,7 @@ class GameDataModel {
  private:
   // Used only in ClientController
   GameObjectId owners_player_id_ = Constants::kNullGameObjectId;
-  
+
   std::map<GameObjectId, std::shared_ptr<Player>> players_;
 };
 
