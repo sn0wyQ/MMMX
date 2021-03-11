@@ -34,12 +34,8 @@ int GameDataModel::GetPlayersCount() const {
 
 void GameDataModel::AddPlayer(GameObjectId player_id) {
   if (players_.find(player_id) != players_.end()) {
-    std::stringstream error_stream;
-    error_stream << "[MODEL] Tried to add new Player ID:" << player_id
-                 << ", but this Player already exists";
-    throw std::runtime_error(error_stream.str());
+    throw std::runtime_error("[MODEL] This player_id already exists");
   }
-
   players_.emplace(std::make_pair(player_id,
                                   std::make_unique<Player>(player_id)));
   qInfo().noquote().nospace() << "[MODEL] Added new Player ID:" << player_id;
