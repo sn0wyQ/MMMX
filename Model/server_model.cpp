@@ -52,7 +52,7 @@ void ServerModel::DeleteRoom(RoomId room_id) {
   if (room_to_delete != rooms_.end()) {
     rooms_.erase(room_to_delete);
   }
-  qInfo() << "[MODEL] Removed Room ID:" << room_id;
+  qInfo().noquote().nospace() << "[MODEL] Removed Room ID:" << room_id;
 }
 
 bool ServerModel::IsRoomsQueueEmpty() const {

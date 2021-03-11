@@ -69,10 +69,17 @@ void BaseController::AddEventToSend(const Event& event) {
 }
 
 void BaseController::HandleEvent(const Event& event) {
+  qInfo().noquote().nospace() << "[" << GetControllerName() << "] Handling "
+    << event;
   function_for_event_[static_cast<uint32_t>(event.GetType())](event);
 }
 
 void BaseController::SetFunctionForEventType(
     EventType event_type, const std::function<void(const Event&)>& func) {
   function_for_event_[static_cast<uint32_t>(event_type)] = func;
+}
+
+void BaseController::SendEvent(const Event& event) {
+  qInfo().noquote().nospace() << "[" << GetControllerName() << "] Sending "
+    << event;
 }

@@ -28,6 +28,8 @@ class RoomController : public BaseController {
                           int max_clients = Constants::kDefaultMaxClients);
   ~RoomController() override = default;
 
+  QString GetControllerName() const override;
+
   void SendEvent(const Event& event) override;
   void OnTick() override;
 

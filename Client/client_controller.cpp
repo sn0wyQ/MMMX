@@ -1,7 +1,7 @@
 #include "client_controller.h"
 
 ClientController::ClientController(const QUrl& url) : url_(url) {
-  qInfo() << "[CLIENT] Connecting to" << url.host();
+  qInfo().noquote().nospace() << "[CLIENT] Connecting to" << url.host();
   connect(&web_socket_,
           &QWebSocket::connected,
           this,
@@ -33,11 +33,11 @@ void ClientController::OnConnected() {
 
   // TODO(Everyone): Send nickname to server after connection
   this->StartTicking();
-  qInfo() << "[CLIENT] Connected to" << url_;
+  qInfo().noquote().nospace() << "[CLIENT] Connected to" << url_;
 }
 
 void ClientController::OnDisconnected() {
-  qInfo() << "[CLIENT] Disconnected from" << url_;
+  qInfo().noquote().nospace() << "[CLIENT] Disconnected from" << url_;
 }
 
 void ClientController::ReceiveEvent(const Event& controls_event) {
@@ -46,8 +46,6 @@ void ClientController::ReceiveEvent(const Event& controls_event) {
 
 void ClientController::OnByteArrayReceived(const QByteArray& message) {
   this->AddEventToHandle(Event(message));
-
-  qInfo() << "[CLIENT] Received" << Event(message) << "from Server";
 }
 
 void ClientController::AddNewPlayerEvent(const Event& event) {
@@ -72,7 +70,7 @@ void ClientController::PressedTestButtonEvent(const Event& event) {
 
 void ClientController::SetClientsPlayerIdEvent(const Event& event) {
   model_.SetOwnersPlayerId(event.GetArg(1));
-  qInfo() << "[CLIENT] Set player_id to" << event.GetArg(1);
+  qInfo().noquote().nospace() << "[CLIENT] Set player_id to" << event.GetArg(1);
 }
 
 void ClientController::SharePlayersInRoomIdsEvent(const Event& event) {
@@ -84,12 +82,12 @@ void ClientController::SharePlayersInRoomIdsEvent(const Event& event) {
 void ClientController::StartGameEvent(const Event& event) {
   this->SetGameState(GameState::kInProgress);
   view_->Update();
-  qInfo() << "[CLIENT] Started game";
+  qInfo().noquote().nospace() << "[CLIENT] Started game";
 }
 
 void ClientController::SendEvent(const Event& event) {
+  BaseController::SendEvent(event);
   web_socket_.sendBinaryMessage(event.ToByteArray());
-  qInfo() << "[CLIENT] Sent" << event << "to Server";
 }
 
 void ClientController::OnTick() {}
@@ -100,4 +98,8 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
   view_ = std::move(view);
+}
+
+QString ClientController::GetControllerName() const {
+  return "CLIENT";
 }

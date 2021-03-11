@@ -18,6 +18,7 @@ class BaseController : public QObject {
  public:
   ~BaseController() override = default;
 
+  virtual QString GetControllerName() const = 0;
   // Every Tick() we successively do following:
   // 1) Call HandleEvent() for every Event from events_to_handle_
   // 2) Call SendEvent() for every Event from events_to_send_
@@ -25,7 +26,7 @@ class BaseController : public QObject {
   void Tick();
   virtual void OnTick() = 0;
   void HandleEvent(const Event& event);
-  virtual void SendEvent(const Event& event) = 0;
+  virtual void SendEvent(const Event& event);
 
   void AddEventToHandle(const Event& event);
   // MUST be called ONLY from HandleEvent(...)

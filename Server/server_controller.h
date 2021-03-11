@@ -17,6 +17,8 @@ class ServerController : public BaseController {
   ServerController();
   ~ServerController() override;
 
+  QString GetControllerName() const override;
+
   void SendEvent(const Event& event) override;
   void OnTick() override;
 

@@ -11,7 +11,7 @@
 #include <QWebSocket>
 #include <QWebSocketServer>
 
-#include "Event/event_type.h"
+#include "Event/event.h"
 #include "Server/Room/room_controller.h"
 #include "constants.h"
 
@@ -35,7 +35,7 @@ class ServerModel {
     RoomId room_id = (rooms_.empty() ? 1 : rooms_.rbegin()->first + 1);
     auto room = new RoomController(room_id, args...);
     rooms_.emplace(room_id, std::shared_ptr<RoomController>(room));
-    qInfo().nospace() << "[SERVER] Created new RoomController (ID: "
+    qInfo().noquote().nospace() << "[SERVER] Created new RoomController (ID: "
                       << room_id << ")";
     return room_id;
   }

@@ -53,7 +53,7 @@ void ClientView::Update() {
   }
 
   this->update();
-  qInfo() << "[VIEW] Updated";
+  qInfo().noquote().nospace() << "[VIEW] Updated";
 }
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {

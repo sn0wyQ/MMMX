@@ -6,6 +6,7 @@ RoomController::RoomController(RoomId id, int max_clients)
 }
 
 void RoomController::SendEvent(const Event& event) {
+  BaseController::SendEvent(event);
   std::vector<ClientId> receivers;
   switch (event.GetType()) {
     case EventType::kSetClientsPlayerId:
@@ -21,9 +22,6 @@ void RoomController::SendEvent(const Event& event) {
   }
 
   emit(SendEventToServer(event, receivers));
-
-  qInfo().nospace() << "[ROOM ID: " << id_
-                    << "] Sent " << event << " to Server";
 }
 
 void RoomController::OnTick() {}
@@ -42,11 +40,11 @@ void RoomController::AddClient(ClientId client_id) {
   model_.AddPlayer(player_id);
   this->AddEventToHandle(Event(EventType::kAddNewPlayer,
                                client_id, player_id));
-  qInfo().nospace() << "[ROOM ID: " << id_
+  qInfo().noquote().nospace() << "[ROOM ID: " << id_
           << "] Connected client (ID: " << client_id << ")";
   if (!this->HasFreeSpot()) {
     this->AddEventToHandle(Event(EventType::kStartGame));
-    qInfo().nospace() << "[ROOM ID: " << id_ << "] Started Game";
+    qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
 }
 
@@ -55,7 +53,7 @@ void RoomController::RemoveClient(ClientId client_id) {
   model_.DeletePlayer(player_id);
   this->AddEventToSend(Event(EventType::kPlayerDisconnected, player_id));
   player_ids_.erase(client_id);
-  qInfo().nospace() << "[ROOM ID: " << id_
+  qInfo().noquote().nospace() << "[ROOM ID: " << id_
                     << "] Removed Player ID: " << player_id;
 }
 
@@ -137,4 +135,8 @@ void RoomController::SharePlayersInRoomIdsEvent(const Event& event) {
 void RoomController::StartGameEvent(const Event& event) {
   this->AddEventToSend(Event(EventType::kStartGame));
   room_state_ = RoomState::kInProgress;
+}
+
+QString RoomController::GetControllerName() const {
+  return "ROOM ID: " + QString::number(id_);
 }
