@@ -8,6 +8,6 @@
 int main(int argc, char* argv[]) {
   QCoreApplication a(argc, argv);
   auto server_controller = std::make_unique<ServerController>();
-  qInfo() << "[SERVER] Server started";
+  qInfo().noquote().nospace() << "[SERVER] Server started";
   return QCoreApplication::exec();
 }

@@ -4,12 +4,10 @@
 #include <QObject>
 #include <QPoint>
 
-#include "Animation/animation.h"
 #include "constants.h"
 
 class GameObject {
  public:
-  GameObject() = default;
   explicit GameObject(GameObjectId id);
 
   virtual void OnTick() = 0;
@@ -19,8 +17,7 @@ class GameObject {
 
  private:
   GameObjectId id_ = Constants::kNullGameObjectId;
-  QPoint position_;
-  Animation animation_;
+  QPoint position_{};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_

@@ -54,7 +54,9 @@ QByteArray Event::ToByteArray() const {
 
 QDebug operator<<(QDebug debug, const Event& event) {
   const bool oldSetting = debug.autoInsertSpaces();
-  debug.nospace() << "Event(Type: " << static_cast<int>(event.type_);
+  debug.nospace() << "Event(Type: "
+      << QString(QMetaEnum::fromType<EventType>()
+          .valueToKey(static_cast<uint32_t>(event.type_)));
   for (auto arg : event.args_) {
     debug.nospace() << ", " << arg;
   }

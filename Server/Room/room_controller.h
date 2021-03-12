@@ -1,6 +1,7 @@
 #ifndef SERVER_ROOM_ROOM_CONTROLLER_H_
 #define SERVER_ROOM_ROOM_CONTROLLER_H_
 
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -16,17 +17,16 @@ enum class RoomState {
   // MUST always stay in alphabet order
 
   kFinished,
-  kInProgress,
+  kGameInProgress,
   kWaitingForClients,
 };
 
 class RoomController : public BaseController {
-  Q_OBJECT
-
  public:
-  explicit RoomController(RoomId id,
-                          int max_clients = Constants::kDefaultMaxClients);
+  explicit RoomController(RoomId id, RoomSettings room_settings);
   ~RoomController() override = default;
+
+  QString GetControllerName() const override;
 
   void SendEvent(const Event& event) override;
   void OnTick() override;
@@ -47,9 +47,7 @@ class RoomController : public BaseController {
 
   GameObjectId GetNextUnusedPlayerId() const;
 
-  Q_SIGNALS:
-  void SendEventToServer(const Event& event,
-                         std::vector<ClientId> receivers);
+  std::vector<Event> ClaimEventsForServer();
 
  private:
   RoomId id_;
@@ -57,6 +55,8 @@ class RoomController : public BaseController {
   RoomSettings room_settings_;
   RoomState room_state_ = RoomState::kWaitingForClients;
   std::unordered_map<ClientId, GameObjectId> player_ids_;
+
+  std::vector<Event> events_for_server_;
 
   void AddNewPlayerEvent(const Event& event) override;
   void PressedTestButtonEvent(const Event& event) override;

@@ -17,15 +17,13 @@ class ServerController : public BaseController {
   ServerController();
   ~ServerController() override;
 
+  QString GetControllerName() const override;
+
   void SendEvent(const Event& event) override;
   void OnTick() override;
 
-  void NewRoomCreated(RoomId room_id);
-
   public Q_SLOTS:
   void OnByteArrayReceived(const QByteArray& message);
-  void OnEventFromRoomReceived(const Event& event,
-                               std::vector<ClientId> receivers);
   void OnNewClient();
   void OnSocketDisconnected();
 
@@ -34,10 +32,16 @@ class ServerController : public BaseController {
   void SendToClient(int client_id, const Event& event);
   void SendToRoom(int room_id, const Event& event);
 
+  void ProcessEventsFromRooms();
+  void ProcessEventsFromRoom(const std::shared_ptr<RoomController>& room_ptr);
+
   QWebSocketServer web_socket_server_;
-  ServerModel model_;
+  ServerModel server_model_;
 
   void ClientDisconnectedEvent(const Event& event) override;
+  void SetClientsPlayerIdEvent(const Event& event) override;
+  void SendEventToClientEvent(const Event& event) override;
+  void SendEventToRoomEvent(const Event& event) override;
 };
 
 #endif  // SERVER_SERVER_CONTROLLER_H_

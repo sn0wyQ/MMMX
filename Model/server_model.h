@@ -11,7 +11,7 @@
 #include <QWebSocket>
 #include <QWebSocketServer>
 
-#include "Event/event_type.h"
+#include "Event/event.h"
 #include "Server/Room/room_controller.h"
 #include "constants.h"
 
@@ -23,22 +23,11 @@ class ServerModel {
 
     std::shared_ptr<QWebSocket> socket;
     // TODO(Everyone): make Client send nickname after connection to server
-    PlayerNickname nickname;
+    QString nickname;
     RoomId room_id = Constants::kNullRoomId;
   };
 
-  ServerModel() = default;
-  ~ServerModel() = default;
-
-  template<typename... Args>
-  RoomId AddNewRoom(Args... args) {
-    RoomId room_id = (rooms_.empty() ? 1 : rooms_.rbegin()->first + 1);
-    auto room = new RoomController(room_id, args...);
-    rooms_.emplace(room_id, std::shared_ptr<RoomController>(room));
-    qInfo().nospace() << "[SERVER] Created new RoomController (ID: "
-                      << room_id << ")";
-    return room_id;
-  }
+  RoomId AddNewRoom();
 
   std::shared_ptr<ConnectedClient>
     GetClientByClientId(ClientId client_id) const;
@@ -63,6 +52,8 @@ class ServerModel {
   void SetClientIdToWebSocket(const std::shared_ptr<QWebSocket>& web_socket,
                               ClientId client_id);
   void AddClientToRoom(RoomId room_id, ClientId client_id);
+
+  void RemoveClient(ClientId client_id);
 
  private:
   std::map<ClientId, std::shared_ptr<ConnectedClient>> connected_clients_;

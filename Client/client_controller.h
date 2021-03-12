@@ -26,12 +26,13 @@ class ClientController : public BaseController {
   explicit ClientController(const QUrl& url = Constants::kServerUrl);
   ~ClientController() override = default;
 
+  QString GetControllerName() const override;
+
   void SendEvent(const Event& event) override;
   void OnTick() override;
 
   GameDataModel* GetModel();
 
-  void SetGameState(GameState game_state);
   bool IsInProgress() const;
 
   void SetView(std::shared_ptr<AbstractClientView> view);

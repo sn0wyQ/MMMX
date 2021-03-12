@@ -24,7 +24,7 @@ std::shared_ptr<RoomController>
 std::shared_ptr<RoomController>
     ServerModel::GetRoomByClientId(ClientId client_id) const {
   if (client_id == Constants::kNullClientId) {
-    // TODO(Everyone): throw some error and maybe even try to catch it
+    throw std::runtime_error("[MODEL] Invalid client ID");
   }
   RoomId room_id = connected_clients_.at(client_id)->room_id;
   return rooms_.at(room_id);
@@ -52,7 +52,7 @@ void ServerModel::DeleteRoom(RoomId room_id) {
   if (room_to_delete != rooms_.end()) {
     rooms_.erase(room_to_delete);
   }
-  qInfo() << "[MODEL] Removed Room ID:" << room_id;
+  qInfo().noquote().nospace() << "[MODEL] Removed Room ID:" << room_id;
 }
 
 bool ServerModel::IsRoomsQueueEmpty() const {
@@ -81,4 +81,21 @@ void ServerModel::SetClientIdToWebSocket(
 void ServerModel::AddClientToRoom(
     RoomId room_id, ClientId client_id) {
   rooms_.at(room_id)->AddClient(client_id);
+}
+
+void ServerModel::RemoveClient(ClientId client_id) {
+  if (connected_clients_.find(client_id) == connected_clients_.end()) {
+    throw std::runtime_error("[MODEL] Invalid client ID");
+  }
+  client_ids_.erase(connected_clients_[client_id]->socket.get());
+  connected_clients_.erase(client_id);
+}
+
+RoomId ServerModel::AddNewRoom() {
+  RoomId room_id = (rooms_.empty() ? 1 : rooms_.rbegin()->first + 1);
+  auto room = new RoomController(room_id, RoomSettings());
+  rooms_.emplace(room_id, std::shared_ptr<RoomController>(room));
+  qInfo().noquote().nospace() << "[SERVER] Created new RoomController (ID: "
+                              << room_id << ")";
+  return room_id;
 }

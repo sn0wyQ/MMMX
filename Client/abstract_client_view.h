@@ -7,7 +7,6 @@ class AbstractClientView : public QMainWindow {
   Q_OBJECT
 
  public:
-  AbstractClientView() = default;
   ~AbstractClientView() override = default;
 
   virtual void Update() = 0;

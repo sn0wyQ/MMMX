@@ -1,7 +1,7 @@
 #include "client_view.h"
 
 ClientView::ClientView(
-    std::shared_ptr<ClientController> controller, QWidget* parent)
+    std::shared_ptr<ClientController> controller)
     : AbstractClientView(), controller_(std::move(controller)) {
   resize(310, 70);
   setMinimumSize(310, 70);
@@ -53,7 +53,7 @@ void ClientView::Update() {
   }
 
   this->update();
-  qInfo() << "[VIEW] Updated";
+  qInfo().noquote().nospace() << "[VIEW] Updated";
 }
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {
