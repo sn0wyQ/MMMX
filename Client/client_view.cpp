@@ -32,11 +32,13 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
-  is_direction_by_keys_[key_to_direction_[key_event->nativeVirtualKey()]] = true;
+  is_direction_by_keys_[key_to_direction_[key_event->nativeVirtualKey()]]
+    = true;
 }
 
 void ClientView::keyReleaseEvent(QKeyEvent* key_event) {
-  is_direction_by_keys_[key_to_direction_[key_event->nativeVirtualKey()]] = false;
+  is_direction_by_keys_[key_to_direction_[key_event->nativeVirtualKey()]]
+    = false;
 }
 
 void ClientView::ApplyDirection() {
@@ -53,10 +55,12 @@ void ClientView::ApplyDirection() {
   bool is_left_pressed
       = is_direction_by_keys_[Direction::kLeft];
   if ((is_up_pressed ^ is_down_pressed) == 1) {
-    is_direction_applied_[is_up_pressed ? Direction::kUp : Direction::kDown] = true;
+    is_direction_applied_[is_up_pressed ? Direction::kUp : Direction::kDown]
+      = true;
   }
   if ((is_right_pressed ^ is_left_pressed) == 1) {
-    is_direction_applied_[is_right_pressed ? Direction::kRight : Direction::kLeft] = true;
+    is_direction_applied_[is_right_pressed ?
+      Direction::kRight : Direction::kLeft] = true;
   }
 
   int mask = is_direction_applied_[Direction::kUp] * 8
