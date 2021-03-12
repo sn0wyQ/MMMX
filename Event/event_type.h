@@ -23,17 +23,8 @@ class EventTypeWrapper : public QObject {
     // No arguments
     kEndGame,
 
-    // [0] - counter_owner_player_id,
-    // [1] - delta,
-    // [2] - result
-    kChangedTestCounter,
-
     // [0] - player_id
     kPlayerDisconnected,
-
-    // [0] - sender_player_id,
-    // [1] - random_test_int
-    kPressedTestButton,
 
     // [0] - client_id,
     // [1] - event_type,
@@ -51,11 +42,32 @@ class EventTypeWrapper : public QObject {
 
     // [0] - client_id,
     // [1] - number_of_players,
-    // [2+] - player_ids
-    kSharePlayersInRoomIds,
+    // [2+] - player_info [player_id, x, y]
+    kSharePlayersInRoomInfo,
 
     // No arguments
     kStartGame,
+
+    // ------------------- GAME EVENTS -------------------
+
+    // [0] - counter_owner_player_id,
+    // [1] - delta,
+    // [2] - result
+    kChangedTestCounter,
+
+    // [0] - sender_player_id,
+    // [1] - random_test_int
+    kPressedTestButton,
+
+    // [0] - sender_player_id
+    // [1] - mask 0000 means direction
+    // up/right/down/left direction true/false
+    kSendDirectionInfo,
+
+    // [0] - sender_player_id
+    // [1] - x
+    // [2] - y
+    kUpdatedPlayerPosition,
 
     SIZE
   };

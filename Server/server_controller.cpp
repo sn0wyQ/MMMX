@@ -76,7 +76,7 @@ void ServerController::ProcessEventsFromRoom(
       case EventType::kSetClientsPlayerId:
         receivers.push_back(event.GetArg(0));
         break;
-      case EventType::kSharePlayersInRoomIds:
+      case EventType::kSharePlayersInRoomInfo:
         receivers.push_back(event.GetArg(0));
         break;
       default:
@@ -108,8 +108,8 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
 
   this->AddEventToHandle(Event(EventType::kSendEventToRoom, args));
 
-  qInfo().noquote() << "[SERVER] Received" << event
-           << "from Client ID:" << client_id;
+  // qInfo().noquote() << "[SERVER] Received" << event
+  //          << "from Client ID:" << client_id;
 }
 
 void ServerController::OnNewClient() {

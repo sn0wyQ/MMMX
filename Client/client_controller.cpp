@@ -27,7 +27,7 @@ void ClientController::OnConnected() {
           &QWebSocket::binaryMessageReceived,
           this,
           &ClientController::OnByteArrayReceived);
-
+  view_->Update();
   // TODO(Everyone): Send nickname to server after connection
   qInfo().noquote() << "[CLIENT] Connected to" << url_;
 }
@@ -46,6 +46,7 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
 
 void ClientController::AddNewPlayerEvent(const Event& event) {
   model_.AddPlayer(event.GetArg(1));
+  view_->Update();
 }
 
 void ClientController::EndGameEvent(const Event& event) {
@@ -58,10 +59,13 @@ void ClientController::SetClientsPlayerIdEvent(const Event& event) {
   qInfo().noquote() << "[CLIENT] Set player_id to" << event.GetArg(1);
 }
 
-void ClientController::SharePlayersInRoomIdsEvent(const Event& event) {
-  for (int i = 2; i < event.GetArg(1) + 2; i++) {
-    model_.AddPlayer(event.GetArg(i));
+void ClientController::SharePlayersInRoomInfoEvent(const Event& event) {
+  for (int i = 2; i < event.GetArg(1) + 2; i += 3) {
+    model_.AddPlayer(event.GetArg(i),
+                     event.GetArg(i + 1),
+                     event.GetArg(i + 2));
   }
+  view_->Update();
 }
 
 void ClientController::StartGameEvent(const Event& event) {
@@ -103,4 +107,15 @@ void ClientController::ChangedTestCounterEvent(const Event& event) {
 void ClientController::PressedTestButtonEvent(const Event& event) {
   this->AddEventToSend(Event(EventType::kPressedTestButton,
                              event.GetArgs()));
+}
+
+void ClientController::SendDirectionInfoEvent(const Event& event) {
+  this->AddEventToSend(event);
+}
+
+void ClientController::UpdatedPlayerPositionEvent(const Event& event) {
+  auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
+  player_ptr->SetX(event.GetArg(1));
+  player_ptr->SetY(event.GetArg(2));
+  view_->Update();
 }

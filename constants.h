@@ -43,6 +43,10 @@ constexpr RoomId kNullRoomId = -1;
 // Client
 const QString kWindowTitle = "MMMX | Version " + kVersionString;
 
+constexpr int DefaultX = 100;
+constexpr int DefaultY = 100;
+
+
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

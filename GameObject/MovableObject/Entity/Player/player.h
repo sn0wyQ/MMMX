@@ -9,6 +9,7 @@
 class Player : public Entity {
  public:
   explicit Player(GameObjectId player_id);
+  Player(GameObjectId player_id, int x, int y);
 
   void OnTick() override {};
 
@@ -18,6 +19,8 @@ class Player : public Entity {
 
   int GetTestCounterLastDeltaValue() const;
   void SetTestCounterLastDeltaValue(int value);
+
+  void ApplyDirection(uint32_t mask);
 
  private:
   int test_counter_ = 0;

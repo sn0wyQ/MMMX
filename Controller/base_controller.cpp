@@ -8,14 +8,10 @@ BaseController::BaseController() {
    std::bind(&BaseController::ClientDisconnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kEndGame,
    std::bind(&BaseController::EndGameEvent, this, _1));
-  SetFunctionForEventType(EventType::kChangedTestCounter,
-   std::bind(&BaseController::ChangedTestCounterEvent, this, _1));
-  SetFunctionForEventType(EventType::kPressedTestButton,
-   std::bind(&BaseController::PressedTestButtonEvent, this, _1));
   SetFunctionForEventType(EventType::kSetClientsPlayerId,
    std::bind(&BaseController::SetClientsPlayerIdEvent, this, _1));
-  SetFunctionForEventType(EventType::kSharePlayersInRoomIds,
-   std::bind(&BaseController::SharePlayersInRoomIdsEvent, this, _1));
+  SetFunctionForEventType(EventType::kSharePlayersInRoomInfo,
+   std::bind(&BaseController::SharePlayersInRoomInfoEvent, this, _1));
   SetFunctionForEventType(EventType::kStartGame,
    std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kPlayerDisconnected,
@@ -24,6 +20,14 @@ BaseController::BaseController() {
    std::bind(&BaseController::SendEventToClientEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
    std::bind(&BaseController::SendEventToRoomEvent, this, _1));
+  SetFunctionForEventType(EventType::kChangedTestCounter,
+   std::bind(&BaseController::ChangedTestCounterEvent, this, _1));
+  SetFunctionForEventType(EventType::kPressedTestButton,
+   std::bind(&BaseController::PressedTestButtonEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendDirectionInfo,
+   std::bind(&BaseController::SendDirectionInfoEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdatedPlayerPosition,
+   std::bind(&BaseController::UpdatedPlayerPositionEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }
@@ -69,12 +73,12 @@ void BaseController::AddEventToSend(const Event& event) {
 }
 
 void BaseController::HandleEvent(const Event& event) {
-  qInfo().noquote().nospace() << "[" << GetControllerName() << "] Handling "
-    << event;
+  // qInfo().noquote().nospace() << "[" << GetControllerName() << "] Handling "
+  //   << event;
   function_for_event_[static_cast<uint32_t>(event.GetType())](event);
 }
 
 void BaseController::LogEvent(const Event& event) const {
-  qInfo().noquote().nospace() << "[" << GetControllerName() << "] Sending "
-                              << event;
+  // qInfo().noquote().nospace() << "[" << GetControllerName() << "] Sending "
+  //                             << event;
 }

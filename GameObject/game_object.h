@@ -15,9 +15,16 @@ class GameObject {
   GameObjectId GetId();
   void SetId(GameObjectId id);
 
+  QPoint GetPosition() const;
+  void SetPosition(QPoint point);
+  int GetX() const;
+  void SetX(int x);
+  int GetY() const;
+  void SetY(int y);
+
  private:
   GameObjectId id_ = Constants::kNullGameObjectId;
-  QPoint position_{};
+  QPoint position_{0, 0};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_

@@ -58,7 +58,7 @@ class BaseController : public QObject {
   virtual void EndGameEvent(const Event& event) {}
   virtual void PlayerDisconnectedEvent(const Event& event) {}
   virtual void SetClientsPlayerIdEvent(const Event& event) {}
-  virtual void SharePlayersInRoomIdsEvent(const Event& event) {}
+  virtual void SharePlayersInRoomInfoEvent(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
@@ -67,6 +67,8 @@ class BaseController : public QObject {
 
   virtual void ChangedTestCounterEvent(const Event& event) {}
   virtual void PressedTestButtonEvent(const Event& event) {}
+  virtual void SendDirectionInfoEvent(const Event& event) {}
+  virtual void UpdatedPlayerPositionEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

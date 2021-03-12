@@ -59,12 +59,13 @@ class RoomController : public BaseController {
   std::vector<Event> events_for_server_;
 
   void AddNewPlayerEvent(const Event& event) override;
-  void SharePlayersInRoomIdsEvent(const Event& event) override;
+  void SharePlayersInRoomInfoEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
   void PressedTestButtonEvent(const Event& event) override;
+  void SendDirectionInfoEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

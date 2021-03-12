@@ -14,11 +14,12 @@ void RoomController::OnTick() {}
 
 void RoomController::AddClient(ClientId client_id) {
   std::vector<int> event_args{client_id, model_.GetPlayersCount()};
-  std::vector<int> all_player_ids = GetAllPlayerIds();
-  event_args.insert(event_args.end(),
-                    all_player_ids.begin(),
-                    all_player_ids.end());
-  this->AddEventToHandle(Event(EventType::kSharePlayersInRoomIds,
+  for (const auto& player : model_.GetPlayers()) {
+    event_args.push_back(player->GetId());
+    event_args.push_back(player->GetX());
+    event_args.push_back(player->GetY());
+  }
+  this->AddEventToHandle(Event(EventType::kSharePlayersInRoomInfo,
                                event_args));
 
   GameObjectId player_id = this->GetNextUnusedPlayerId();
@@ -108,7 +109,7 @@ void RoomController::AddNewPlayerEvent(const Event& event) {
 }
 
 
-void RoomController::SharePlayersInRoomIdsEvent(const Event& event) {
+void RoomController::SharePlayersInRoomInfoEvent(const Event& event) {
   this->AddEventToSend(event);
 }
 void RoomController::StartGameEvent(const Event& event) {
@@ -133,4 +134,13 @@ void RoomController::PressedTestButtonEvent(const Event& event) {
                              senders_player_ptr->GetId(),
                              event.GetArg(1),
                              senders_player_ptr->GetTestCounterValue()));
+}
+
+void RoomController::SendDirectionInfoEvent(const Event& event) {
+  auto senders_player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
+  senders_player_ptr->ApplyDirection(event.GetArg(1));
+  this->AddEventToSend(Event(EventType::kUpdatedPlayerPosition,
+                       event.GetArg(0),
+                       senders_player_ptr->GetX(),
+                       senders_player_ptr->GetY()));
 }
