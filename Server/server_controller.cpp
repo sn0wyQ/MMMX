@@ -60,6 +60,42 @@ void ServerController::OnTick() {
   ProcessEventsFromRooms();
 }
 
+void ServerController::ProcessEventsFromRooms() {
+  auto rooms = server_model_.GetRooms();
+  for (const auto& room : rooms) {
+    ProcessEventsFromRoom(room.second);
+  }
+}
+
+void ServerController::ProcessEventsFromRoom(
+    const std::shared_ptr<RoomController>& room_ptr) {
+  std::vector<Event> events_from_room = room_ptr->ClaimEventsForServer();
+  for (const auto& event : events_from_room) {
+    std::vector<ClientId> receivers;
+    switch (event.GetType()) {
+      case EventType::kSetClientsPlayerId:
+        receivers.push_back(event.GetArg(0));
+        break;
+      case EventType::kSharePlayersInRoomIds:
+        receivers.push_back(event.GetArg(0));
+        break;
+      default:
+        break;
+    }
+    if (receivers.empty()) {
+      receivers = room_ptr->GetAllClientsIds();
+    }
+    std::vector<int> args = {Constants::kNullClientId,
+                             static_cast<int>(event.GetType())};
+    std::vector<int> old_args = event.GetArgs();
+    args.insert(args.end(), old_args.begin(), old_args.end());
+    for (auto client_id : receivers) {
+      args.at(0) = client_id;
+      this->AddEventToHandle(Event(EventType::kSendEventToClient, args));
+    }
+  }
+}
+
 void ServerController::OnByteArrayReceived(const QByteArray& message) {
   auto client_socket_ptr = qobject_cast<QWebSocket*>(sender());
   auto client_id = server_model_.GetClientIdByWebSocket(client_socket_ptr);
@@ -166,40 +202,4 @@ void ServerController::SendEventToRoomEvent(const Event& event) {
 
 QString ServerController::GetControllerName() const {
   return "SERVER";
-}
-
-void ServerController::ProcessEventsFromRooms() {
-  auto rooms = server_model_.GetRooms();
-  for (const auto& room : rooms) {
-    ProcessEventsFromRoom(room.second);
-  }
-}
-
-void ServerController::ProcessEventsFromRoom(
-    const std::shared_ptr<RoomController>& room_ptr) {
-  std::vector<Event> events_from_room = room_ptr->ClaimEventsForServer();
-  for (const auto& event : events_from_room) {
-    std::vector<ClientId> receivers;
-    switch (event.GetType()) {
-      case EventType::kSetClientsPlayerId:
-        receivers.push_back(event.GetArg(0));
-        break;
-      case EventType::kSharePlayersInRoomIds:
-        receivers.push_back(event.GetArg(0));
-        break;
-      default:
-        break;
-    }
-    if (receivers.empty()) {
-      receivers = room_ptr->GetAllClientsIds();
-    }
-    std::vector<int> args = {Constants::kNullClientId,
-                             static_cast<int>(event.GetType())};
-    std::vector<int> old_args = event.GetArgs();
-    args.insert(args.end(), old_args.begin(), old_args.end());
-    for (auto client_id : receivers) {
-      args.at(0) = client_id;
-      this->AddEventToHandle(Event(EventType::kSendEventToClient, args));
-    }
-  }
 }

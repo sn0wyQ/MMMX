@@ -25,10 +25,12 @@ BaseController::BaseController() {
   SetFunctionForEventType(EventType::kSendEventToRoom,
    std::bind(&BaseController::SendEventToRoomEvent, this, _1));
 
-  connect(&ticker_,
-          &QTimer::timeout,
-          this,
-          &BaseController::Tick);
+  connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
+}
+
+void BaseController::SetFunctionForEventType(
+    EventType event_type, const std::function<void(const Event&)>& func) {
+  function_for_event_[static_cast<uint32_t>(event_type)] = func;
 }
 
 void BaseController::Tick() {
@@ -72,12 +74,7 @@ void BaseController::HandleEvent(const Event& event) {
   function_for_event_[static_cast<uint32_t>(event.GetType())](event);
 }
 
-void BaseController::SetFunctionForEventType(
-    EventType event_type, const std::function<void(const Event&)>& func) {
-  function_for_event_[static_cast<uint32_t>(event_type)] = func;
-}
-
-void BaseController::LogEvent(const Event& event) {
+void BaseController::LogEvent(const Event& event) const {
   qInfo().noquote().nospace() << "[" << GetControllerName() << "] Sending "
                               << event;
 }

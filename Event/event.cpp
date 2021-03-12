@@ -7,11 +7,9 @@ Event::Event(const Event& event) {
 
 Event::Event(const QByteArray& message) {
   QDataStream data_stream(message);
-
   int type_in_int;
   data_stream >> type_in_int;
   type_ = static_cast<EventType>(type_in_int);
-
   while (!data_stream.atEnd()) {
     int next_int;
     data_stream >> next_int;

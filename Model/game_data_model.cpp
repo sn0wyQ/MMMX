@@ -24,7 +24,6 @@ std::shared_ptr<Player> GameDataModel::GetTestEnemyPlayer() const {
       return player.second;
     }
   }
-
   throw std::runtime_error("[MODEL] No enemies found...");
 }
 

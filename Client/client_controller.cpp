@@ -48,20 +48,9 @@ void ClientController::AddNewPlayerEvent(const Event& event) {
   model_.AddPlayer(event.GetArg(1));
 }
 
-void ClientController::ChangedTestCounterEvent(const Event& event) {
-  auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
-  player_ptr->SetTestCounterLastDeltaValue(event.GetArg(1));
-  player_ptr->SetTestCounterValue(event.GetArg(2));
-  view_->Update();
-}
-
 void ClientController::EndGameEvent(const Event& event) {
   game_state_ = GameState::kFinished;
   view_->Update();
-}
-
-void ClientController::PressedTestButtonEvent(const Event& event) {
-  this->AddEventToSend(Event(EventType::kPressedTestButton, event.GetArgs()));
 }
 
 void ClientController::SetClientsPlayerIdEvent(const Event& event) {
@@ -100,4 +89,18 @@ void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
 
 QString ClientController::GetControllerName() const {
   return "CLIENT";
+}
+
+// ------------------- GAME EVENTS -------------------
+
+void ClientController::ChangedTestCounterEvent(const Event& event) {
+  auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
+  player_ptr->SetTestCounterLastDeltaValue(event.GetArg(1));
+  player_ptr->SetTestCounterValue(event.GetArg(2));
+  view_->Update();
+}
+
+void ClientController::PressedTestButtonEvent(const Event& event) {
+  this->AddEventToSend(Event(EventType::kPressedTestButton,
+                             event.GetArgs()));
 }

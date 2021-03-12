@@ -107,19 +107,10 @@ void RoomController::AddNewPlayerEvent(const Event& event) {
                              event.GetArgs()));
 }
 
-void RoomController::PressedTestButtonEvent(const Event& event) {
-  auto senders_player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
-  senders_player_ptr->ChangeTestCounter(event.GetArg(1));
-  this->AddEventToSend(Event(EventType::kChangedTestCounter,
-                             senders_player_ptr->GetId(),
-                             event.GetArg(1),
-                             senders_player_ptr->GetTestCounterValue()));
-}
 
 void RoomController::SharePlayersInRoomIdsEvent(const Event& event) {
   this->AddEventToSend(event);
 }
-
 void RoomController::StartGameEvent(const Event& event) {
   this->AddEventToSend(Event(EventType::kStartGame));
   room_state_ = RoomState::kGameInProgress;
@@ -131,4 +122,15 @@ QString RoomController::GetControllerName() const {
 
 std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
+}
+
+// ------------------- GAME EVENTS -------------------
+
+void RoomController::PressedTestButtonEvent(const Event& event) {
+  auto senders_player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
+  senders_player_ptr->ChangeTestCounter(event.GetArg(1));
+  this->AddEventToSend(Event(EventType::kChangedTestCounter,
+                             senders_player_ptr->GetId(),
+                             event.GetArg(1),
+                             senders_player_ptr->GetTestCounterValue()));
 }
