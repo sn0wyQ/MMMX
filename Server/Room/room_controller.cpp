@@ -43,7 +43,8 @@ void RoomController::RemoveClient(ClientId client_id) {
   model_.DeletePlayer(player_id);
   this->AddEventToSend(Event(EventType::kPlayerDisconnected, player_id));
   player_ids_.erase(client_id);
-  room_state_ = RoomState::kWaitingForClients;
+  room_state_ = (model_.GetPlayersCount()
+      ? RoomState::kWaitingForClients : RoomState::kFinished);
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
                     << "] Removed Player ID: " << player_id;
 }
