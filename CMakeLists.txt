@@ -37,6 +37,8 @@ set(SOURCES
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
+        Event/event_type.h
+        defines.h
         )
 
 # If necessary, add resources files
