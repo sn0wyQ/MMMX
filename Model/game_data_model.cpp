@@ -18,15 +18,6 @@ std::shared_ptr<Player> GameDataModel::GetOwnersPlayer() const {
   return players_.at(owners_player_id_);
 }
 
-std::shared_ptr<Player> GameDataModel::GetTestEnemyPlayer() const {
-  for (const auto& player : players_) {
-    if (player.second->GetId() != owners_player_id_) {
-      return player.second;
-    }
-  }
-  throw std::runtime_error("[MODEL] No enemies found...");
-}
-
 int GameDataModel::GetPlayersCount() const {
   return players_.size();
 }

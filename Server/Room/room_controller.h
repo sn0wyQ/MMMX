@@ -64,7 +64,6 @@ class RoomController : public BaseController {
 
   // ------------------- GAME EVENTS -------------------
 
-  void PressedTestButtonEvent(const Event& event) override;
   void SendDirectionInfoEvent(const Event& event) override;
 };
 

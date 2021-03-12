@@ -60,7 +60,8 @@ void ClientController::SetClientsPlayerIdEvent(const Event& event) {
 }
 
 void ClientController::SharePlayersInRoomInfoEvent(const Event& event) {
-  for (int i = 2; i < event.GetArg(1) + 2; i += 3) {
+  for (int i = 2; i < event.GetArg(1) * 3 + 2; i += 3) {
+    qInfo() << event.GetArg(i) << event.GetArg(i + 1) << event.GetArg(i + 2);
     model_.AddPlayer(event.GetArg(i),
                      event.GetArg(i + 1),
                      event.GetArg(i + 2));
@@ -96,18 +97,6 @@ QString ClientController::GetControllerName() const {
 }
 
 // ------------------- GAME EVENTS -------------------
-
-void ClientController::ChangedTestCounterEvent(const Event& event) {
-  auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
-  player_ptr->SetTestCounterLastDeltaValue(event.GetArg(1));
-  player_ptr->SetTestCounterValue(event.GetArg(2));
-  view_->Update();
-}
-
-void ClientController::PressedTestButtonEvent(const Event& event) {
-  this->AddEventToSend(Event(EventType::kPressedTestButton,
-                             event.GetArgs()));
-}
 
 void ClientController::SendDirectionInfoEvent(const Event& event) {
   this->AddEventToSend(event);

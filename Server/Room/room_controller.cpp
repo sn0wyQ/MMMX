@@ -127,15 +127,6 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
 
 // ------------------- GAME EVENTS -------------------
 
-void RoomController::PressedTestButtonEvent(const Event& event) {
-  auto senders_player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
-  senders_player_ptr->ChangeTestCounter(event.GetArg(1));
-  this->AddEventToSend(Event(EventType::kChangedTestCounter,
-                             senders_player_ptr->GetId(),
-                             event.GetArg(1),
-                             senders_player_ptr->GetTestCounterValue()));
-}
-
 void RoomController::SendDirectionInfoEvent(const Event& event) {
   auto senders_player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
   senders_player_ptr->ApplyDirection(event.GetArg(1));

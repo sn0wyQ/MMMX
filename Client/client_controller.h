@@ -60,8 +60,6 @@ class ClientController : public BaseController {
 
   // ------------------- GAME EVENTS -------------------
 
-  void ChangedTestCounterEvent(const Event& event) override;
-  void PressedTestButtonEvent(const Event& event) override;
   void SendDirectionInfoEvent(const Event& event) override;
   void UpdatedPlayerPositionEvent(const Event& event) override;
 };

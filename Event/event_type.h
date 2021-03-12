@@ -50,15 +50,6 @@ class EventTypeWrapper : public QObject {
 
     // ------------------- GAME EVENTS -------------------
 
-    // [0] - counter_owner_player_id,
-    // [1] - delta,
-    // [2] - result
-    kChangedTestCounter,
-
-    // [0] - sender_player_id,
-    // [1] - random_test_int
-    kPressedTestButton,
-
     // [0] - sender_player_id
     // [1] - mask 0000 means direction
     // up/right/down/left direction true/false

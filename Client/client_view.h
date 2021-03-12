@@ -34,7 +34,6 @@ class ClientView : public AbstractClientView {
   void Update() override;
 
   public Q_SLOTS:
-  void OnTestButtonPressed();
   void ApplyDirection();
 
  private:
@@ -54,9 +53,6 @@ class ClientView : public AbstractClientView {
   std::unordered_map<Direction, bool> is_direction_applied_{false};
 
   QTimer* timer_for_keys_;
-  QPushButton* test_button_;
-  QLabel* my_counter_label_;
-  QLabel* enemy_counter_label_;
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_

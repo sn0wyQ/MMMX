@@ -33,7 +33,7 @@ constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 
 // Room
-constexpr int kDefaultMaxClients = 2;
+constexpr int kDefaultMaxClients = 4;
 
 // Null Values
 constexpr ClientId kNullClientId = -1;

@@ -20,10 +20,7 @@ BaseController::BaseController() {
    std::bind(&BaseController::SendEventToClientEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
    std::bind(&BaseController::SendEventToRoomEvent, this, _1));
-  SetFunctionForEventType(EventType::kChangedTestCounter,
-   std::bind(&BaseController::ChangedTestCounterEvent, this, _1));
-  SetFunctionForEventType(EventType::kPressedTestButton,
-   std::bind(&BaseController::PressedTestButtonEvent, this, _1));
+
   SetFunctionForEventType(EventType::kSendDirectionInfo,
    std::bind(&BaseController::SendDirectionInfoEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdatedPlayerPosition,
