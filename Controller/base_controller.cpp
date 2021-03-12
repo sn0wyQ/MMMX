@@ -1,7 +1,5 @@
 #include "base_controller.h"
 
-#include <utility>
-
 BaseController::BaseController() {
   using std::placeholders::_1;
   function_for_event_ = {
@@ -31,6 +29,7 @@ BaseController::BaseController() {
       {EventType::kSetClientsPlayerId,
        std::bind(&BaseController::AddEventToSend, this, _1)},
   };
+
   connect(&ticker_,
           &QTimer::timeout,
           this,
