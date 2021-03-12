@@ -21,7 +21,7 @@ ServerController::~ServerController() {
 }
 
 void ServerController::SendEvent(const Event& event) {
-  BaseController::SendEvent(event);
+  BaseController::LogEvent(event);
   switch (event.GetType()) {
     case EventType::kSendEventToClient: {
       this->SendToClient(
@@ -72,7 +72,7 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
 
   this->AddEventToHandle(Event(EventType::kSendEventToRoom, args));
 
-  qInfo().noquote().nospace() << "[SERVER] Received" << event
+  qInfo().noquote() << "[SERVER] Received" << event
            << "from Client ID:" << client_id;
 }
 
@@ -126,7 +126,7 @@ void ServerController::OnNewClient() {
 
 void ServerController::OnSocketDisconnected() {
   auto web_socket = qobject_cast<QWebSocket*>(sender());
-  qInfo().noquote().nospace() << "[SERVER] Socket disconnected:" << web_socket;
+  qInfo().noquote() << "[SERVER] Socket disconnected:" << web_socket;
   if (web_socket) {
     ClientId client_id = server_model_.GetClientIdByWebSocket(web_socket);
     this->AddEventToHandle(Event(EventType::kClientDisconnected,

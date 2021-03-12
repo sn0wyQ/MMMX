@@ -77,7 +77,7 @@ void BaseController::SetFunctionForEventType(
   function_for_event_[static_cast<uint32_t>(event_type)] = func;
 }
 
-void BaseController::SendEvent(const Event& event) {
+void BaseController::LogEvent(const Event& event) {
   qInfo().noquote().nospace() << "[" << GetControllerName() << "] Sending "
-    << event;
+                              << event;
 }

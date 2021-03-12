@@ -26,7 +26,8 @@ class BaseController : public QObject {
   void Tick();
   virtual void OnTick() = 0;
   void HandleEvent(const Event& event);
-  virtual void SendEvent(const Event& event);
+  virtual void SendEvent(const Event& event) = 0;
+  void LogEvent(const Event& event);
 
   void AddEventToHandle(const Event& event);
   // MUST be called ONLY from HandleEvent(...)

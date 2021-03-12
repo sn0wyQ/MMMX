@@ -38,7 +38,7 @@ void GameDataModel::AddPlayer(GameObjectId player_id) {
   }
   players_.emplace(std::make_pair(player_id,
                                   std::make_unique<Player>(player_id)));
-  qInfo().noquote().nospace() << "[MODEL] Added new Player ID:" << player_id;
+  qInfo().noquote() << "[MODEL] Added new Player ID:" << player_id;
 }
 
 bool GameDataModel::IsPlayerIdTaken(GameObjectId player_id) const {

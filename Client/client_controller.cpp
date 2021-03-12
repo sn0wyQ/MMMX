@@ -1,7 +1,7 @@
 #include "client_controller.h"
 
 ClientController::ClientController(const QUrl& url) : url_(url) {
-  qInfo().noquote().nospace() << "[CLIENT] Connecting to" << url.host();
+  qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
   connect(&web_socket_,
           &QWebSocket::connected,
           this,
@@ -29,11 +29,11 @@ void ClientController::OnConnected() {
           &ClientController::OnByteArrayReceived);
 
   // TODO(Everyone): Send nickname to server after connection
-  qInfo().noquote().nospace() << "[CLIENT] Connected to" << url_;
+  qInfo().noquote() << "[CLIENT] Connected to" << url_;
 }
 
 void ClientController::OnDisconnected() {
-  qInfo().noquote().nospace() << "[CLIENT] Disconnected from" << url_;
+  qInfo().noquote() << "[CLIENT] Disconnected from" << url_;
 }
 
 void ClientController::ReceiveEvent(const Event& controls_event) {
@@ -66,7 +66,7 @@ void ClientController::PressedTestButtonEvent(const Event& event) {
 
 void ClientController::SetClientsPlayerIdEvent(const Event& event) {
   model_.SetOwnersPlayerId(event.GetArg(1));
-  qInfo().noquote().nospace() << "[CLIENT] Set player_id to" << event.GetArg(1);
+  qInfo().noquote() << "[CLIENT] Set player_id to" << event.GetArg(1);
 }
 
 void ClientController::SharePlayersInRoomIdsEvent(const Event& event) {
@@ -82,7 +82,7 @@ void ClientController::StartGameEvent(const Event& event) {
 }
 
 void ClientController::SendEvent(const Event& event) {
-  BaseController::SendEvent(event);
+  BaseController::LogEvent(event);
   web_socket_.sendBinaryMessage(event.ToByteArray());
 }
 

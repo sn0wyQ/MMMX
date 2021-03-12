@@ -6,7 +6,7 @@ RoomController::RoomController(RoomId id, RoomSettings room_settings)
 }
 
 void RoomController::SendEvent(const Event& event) {
-  BaseController::SendEvent(event);
+  BaseController::LogEvent(event);
   events_for_server_.push_back(event);
 }
 
