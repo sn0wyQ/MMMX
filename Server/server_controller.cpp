@@ -39,7 +39,8 @@ void ServerController::SendEvent(const Event& event) {
       break;
     }
 
-    case EventType::kSetClientsPlayerId: {
+    case EventType::kSetClientsPlayerId:
+    case EventType::kUpdateSvar: {
       this->SendToClient(event.GetArg(0), event);
       break;
     }
@@ -77,6 +78,9 @@ void ServerController::ProcessEventsFromRoom(
         receivers.push_back(event.GetArg(0));
         break;
       case EventType::kSharePlayersInRoomInfo:
+        receivers.push_back(event.GetArg(0));
+        break;
+      case EventType::kUpdateSvar:
         receivers.push_back(event.GetArg(0));
         break;
       default:

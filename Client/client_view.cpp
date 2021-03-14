@@ -12,9 +12,8 @@ ClientView::ClientView(
 
   connect(timer_for_keys_, &QTimer::timeout, this,
           &ClientView::ApplyDirection);
-  timer_for_keys_->start(5);
+  timer_for_keys_->start(Constants::kTimeToUpdateKeys);
 }
-
 
 void ClientView::Update() {
   this->update();
@@ -29,23 +28,33 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
   for (const auto& player : players) {
     painter.drawEllipse(player->GetPosition(), 50, 50);
   }
+  painter.drawText(0, 50, "svar : "
+  + QString::number(controller_->GetSvar()));
+  painter.drawText(0, 70, "ping : "
+  + QString::number(controller_->GetQPing()));
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
-  is_direction_by_keys_[key_to_direction_[key_event->nativeVirtualKey()]]
-    = true;
+  int native_key = key_event->nativeVirtualKey();
+  if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
+    is_direction_by_keys_[key_to_direction_[native_key]]
+        = true;
+  }
+  if (key_event->nativeVirtualKey() == Qt::Key_Alt) {
+    ResetDirection();
+  }
 }
 
 void ClientView::keyReleaseEvent(QKeyEvent* key_event) {
-  is_direction_by_keys_[key_to_direction_[key_event->nativeVirtualKey()]]
-    = false;
+  int native_key = key_event->nativeVirtualKey();
+  if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
+    is_direction_by_keys_[key_to_direction_[native_key]]
+        = false;
+  }
 }
 
 void ClientView::ApplyDirection() {
-  is_direction_applied_[Direction::kUp]
-  = is_direction_applied_[Direction::kRight]
-      = is_direction_applied_[Direction::kDown]
-          = is_direction_applied_[Direction::kLeft] = false;
+  ResetDirection();
   bool is_up_pressed
     = is_direction_by_keys_[Direction::kUp];
   bool is_right_pressed
@@ -77,4 +86,11 @@ void ClientView::ApplyDirection() {
   // << is_direction_applied_[Direction::kRight]
   // << is_direction_applied_[Direction::kDown]
   // << is_direction_applied_[Direction::kLeft];
+}
+
+void ClientView::ResetDirection() {
+  is_direction_applied_[Direction::kUp]
+      = is_direction_applied_[Direction::kRight]
+      = is_direction_applied_[Direction::kDown]
+      = is_direction_applied_[Direction::kLeft] = false;
 }

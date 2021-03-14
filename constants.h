@@ -17,7 +17,9 @@ namespace Constants {
 constexpr int kMajorVersion = 0;
 constexpr int kMinorVersion = 0;
 constexpr int kBuildNumber = 1;
-const QString kVersionString = "0.0.1";
+const QString kVersionString = QString::number(kMajorVersion)
+    + "." + QString::number(kMinorVersion)
+    + "." + QString::number(kBuildNumber);
 
 // Server
 const QString kServerName = "MMMX Server";
@@ -43,9 +45,10 @@ constexpr RoomId kNullRoomId = -1;
 // Client
 const QString kWindowTitle = "MMMX | Version " + kVersionString;
 
-constexpr int DefaultX = 100;
-constexpr int DefaultY = 100;
-
+constexpr int kDefaultX = 100;
+constexpr int kDefaultY = 100;
+constexpr int kTimeToUpdatePing = 1000;
+constexpr int kTimeToUpdateKeys = 5;
 
 }  // namespace Constants
 

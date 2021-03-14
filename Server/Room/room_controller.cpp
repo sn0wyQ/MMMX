@@ -121,8 +121,22 @@ QString RoomController::GetControllerName() const {
   return "ROOM ID: " + QString::number(id_);
 }
 
+ClientId RoomController::PlayerIdToClientId(GameObjectId player_id) const {
+  for (auto [client_id, player_id_in] : player_ids_) {
+    if (player_id == player_id_in) {
+      return client_id;
+    }
+  }
+  throw std::runtime_error("[ROOM] No such player");
+}
+
 std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
+}
+
+void RoomController::UpdateSvarEvent(const Event& event) {
+  this->AddEventToSend(Event(event.GetType(),
+                             PlayerIdToClientId(event.GetArg(0))));
 }
 
 // ------------------- GAME EVENTS -------------------

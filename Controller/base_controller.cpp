@@ -20,6 +20,8 @@ BaseController::BaseController() {
    std::bind(&BaseController::SendEventToClientEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
    std::bind(&BaseController::SendEventToRoomEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdateSvar,
+   std::bind(&BaseController::UpdateSvarEvent, this, _1));
 
   SetFunctionForEventType(EventType::kSendDirectionInfo,
    std::bind(&BaseController::SendDirectionInfoEvent, this, _1));

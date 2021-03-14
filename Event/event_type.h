@@ -48,6 +48,9 @@ class EventTypeWrapper : public QObject {
     // No arguments
     kStartGame,
 
+    // [0] - sender_PLAYER_id / receiver_CLIENT_id
+    kUpdateSvar,
+
     // ------------------- GAME EVENTS -------------------
 
     // [0] - sender_player_id
@@ -55,7 +58,7 @@ class EventTypeWrapper : public QObject {
     // up/right/down/left direction true/false
     kSendDirectionInfo,
 
-    // [0] - sender_player_id
+    // [0] - player_id
     // [1] - x
     // [2] - y
     kUpdatedPlayerPosition,

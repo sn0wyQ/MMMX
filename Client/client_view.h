@@ -33,6 +33,7 @@ class ClientView : public AbstractClientView {
   ~ClientView() override = default;
 
   void Update() override;
+  void ResetDirection();
 
   public Q_SLOTS:
   void ApplyDirection();

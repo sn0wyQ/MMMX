@@ -15,8 +15,8 @@
 class GameDataModel {
  public:
   void AddPlayer(GameObjectId player_id,
-                 int x = Constants::DefaultX,
-                 int y = Constants::DefaultY);
+                 int x = Constants::kDefaultX,
+                 int y = Constants::kDefaultY);
   void DeletePlayer(GameObjectId player_id);
 
   std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
