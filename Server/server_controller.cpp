@@ -176,8 +176,12 @@ void ServerController::OnSocketDisconnected() {
 
 void ServerController::SendToClient(int client_id,
                                     const Event& event) {
-  auto client_ptr = server_model_.GetClientByClientId(client_id);
-  client_ptr->socket->sendBinaryMessage(event.ToByteArray());
+  try {
+    auto client_ptr = server_model_.GetClientByClientId(client_id);
+    client_ptr->socket->sendBinaryMessage(event.ToByteArray());
+  } catch (std::exception& e) {
+    qInfo() << "[SERVER] Caught exception" << e.what();
+  }
 }
 
 void ServerController::SendToRoom(int room_id,
