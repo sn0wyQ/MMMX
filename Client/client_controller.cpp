@@ -62,7 +62,7 @@ void ClientController::EndGameEvent(const Event& event) {
 }
 
 void ClientController::SetClientsPlayerIdEvent(const Event& event) {
-  model_.SetOwnersPlayerId(event.GetArg<GameObjectId>(1));
+  model_.SetLocalPlayerId(event.GetArg<GameObjectId>(1));
   qInfo().noquote() << "[CLIENT] Set player_id to"
                     << event.GetArg<GameObjectId>(1);
 }
@@ -112,7 +112,7 @@ int ClientController::GetServerVar() const {
 
 void ClientController::UpdateServerVar() {
   this->AddEventToSend(Event(EventType::kUpdateServerVar,
-                             model_.GetOwnersPlayerId()));
+                             model_.GetLocalPlayerId()));
   timer_elapsed_server_var_.restart();
   web_socket_.ping();
 }
@@ -163,7 +163,14 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
+  // Under construction
 
+  // if (model_.IsLocalPlayerSet()) {
+  //   this->AddEventToHandle(
+  //       Event(EventType::kSendViewAngle,
+  //             Math::DirectionAngle(model_.GetLocalPlayer()->GetPosition(),
+  //                                  mouse_event->pos())));
+  // }
 }
 
 void ClientController::ApplyDirection() {
@@ -190,7 +197,7 @@ void ClientController::ApplyDirection() {
 
   if (mask != 0) {
     this->AddEventToHandle(Event(EventType::kSendDirectionInfo,
-                                 GetModel()->GetOwnersPlayerId(),
+                                 GetModel()->GetLocalPlayerId(),
                                  mask));
   }
 }

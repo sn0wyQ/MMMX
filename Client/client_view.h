@@ -4,7 +4,6 @@
 #include <memory>
 #include <utility>
 #include <vector>
-#include <unordered_map>
 
 #include <QLabel>
 #include <QMainWindow>
@@ -13,9 +12,8 @@
 
 #include "Client/abstract_client_view.h"
 #include "Client/client_controller.h"
-#include "Converter/converter.h"
 #include "Event/event.h"
-#include "Painter/painter.h"
+#include "GUI/GameLabel/game_label.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
@@ -25,7 +23,6 @@ class ClientView : public AbstractClientView {
   ~ClientView() override = default;
 
   void Update() override;
-  void ResetDirection();
 
  private:
   void keyPressEvent(QKeyEvent* key_event) override;
@@ -35,7 +32,10 @@ class ClientView : public AbstractClientView {
   void resizeEvent(QResizeEvent* resize_event) override;
 
   std::shared_ptr<ClientController> controller_;
-  std::shared_ptr<Converter> converter_;
+  GameDataModel* model_;
+
+  GameLabel* game_label_;
+  QLabel* info_label_;
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_

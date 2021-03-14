@@ -40,16 +40,16 @@ void Player::Draw(Painter* painter) {
 void Player::ApplyDirection(uint32_t mask) {
   QPointF pos = GetPosition();
   if ((mask >> 3u) & 1u) {
-    pos.setY(pos.y() - 1);
+    pos.ry() -= 0.05f;
   }
   if ((mask >> 2u) & 1u) {
-    pos.setX(pos.x() + 1);
+    pos.rx() += 0.05f;
   }
   if ((mask >> 1u) & 1u) {
-    pos.setY(pos.y() + 1);
+    pos.ry() += 0.05f;
   }
   if ((mask >> 0u) & 1u) {
-    pos.setX(pos.x() - 1);
+    pos.rx() -= 0.05f;
   }
   SetPosition(pos);
 }

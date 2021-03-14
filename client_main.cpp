@@ -50,10 +50,11 @@ void ClientMessageHandler(QtMsgType type,
 #endif
 
   QFile out_file("client.log");
-  out_file.open(QIODevice::WriteOnly | QIODevice::Append);
-  QTextStream text_stream(&out_file);
-  text_stream << QTime::currentTime().toString("[hh:mm:ss.zzz] - ")
-              << txt << Qt::endl;
+  if (out_file.open(QIODevice::WriteOnly | QIODevice::Append)) {
+    QTextStream text_stream(&out_file);
+    text_stream << QTime::currentTime().toString("[hh:mm:ss.zzz] - ")
+                << txt << Qt::endl;
+  }
 }
 
 int main(int argc, char* argv[]) {

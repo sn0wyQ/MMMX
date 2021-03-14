@@ -10,16 +10,16 @@ std::shared_ptr<Player>
   throw std::runtime_error("[MODEL] Trying to get invalid player...");
 }
 
-bool GameDataModel::IsOwnersPlayerSet() const {
-  return owners_player_id_ != Constants::kNullGameObjectId;
+bool GameDataModel::IsLocalPlayerSet() const {
+  return local_player_id_ != Constants::kNullGameObjectId;
 }
 
-std::shared_ptr<Player> GameDataModel::GetOwnersPlayer() const {
-  if (owners_player_id_ == Constants::kNullGameObjectId) {
+std::shared_ptr<Player> GameDataModel::GetLocalPlayer() const {
+  if (local_player_id_ == Constants::kNullGameObjectId) {
     throw std::runtime_error("[MODEL] Owner's player_id isn't set...");
   }
 
-  return players_.at(owners_player_id_);
+  return players_.at(local_player_id_);
 }
 
 int GameDataModel::GetPlayersCount() const {
@@ -45,13 +45,13 @@ bool GameDataModel::IsPlayerIdTaken(GameObjectId player_id) const {
   return players_.find(player_id) != players_.end();
 }
 
-GameObjectId GameDataModel::GetOwnersPlayerId() const {
-  return owners_player_id_;
+GameObjectId GameDataModel::GetLocalPlayerId() const {
+  return local_player_id_;
 }
 
-void GameDataModel::SetOwnersPlayerId(GameObjectId player_id) {
-  owners_player_id_ = player_id;
-  GetOwnersPlayer()->SetIsLocalPlayer(true);
+void GameDataModel::SetLocalPlayerId(GameObjectId player_id) {
+  local_player_id_ = player_id;
+  GetLocalPlayer()->SetIsLocalPlayer(true);
 }
 
 void GameDataModel::DeletePlayer(GameObjectId player_id) {

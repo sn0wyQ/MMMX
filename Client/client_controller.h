@@ -2,6 +2,7 @@
 #define CLIENT_CLIENT_CONTROLLER_H_
 
 #include <memory>
+#include <unordered_map>
 #include <utility>
 
 #include <QByteArray>
@@ -13,8 +14,8 @@
 
 #include "Client/abstract_client_view.h"
 #include "Controller/base_controller.h"
+#include "Math/math.h"
 #include "Model/game_data_model.h"
-
 
 enum class Direction {
   kUp,
