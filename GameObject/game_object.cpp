@@ -2,7 +2,7 @@
 
 GameObject::GameObject(GameObjectId id) : id_(id) {}
 
-GameObjectId GameObject::GetId() {
+GameObjectId GameObject::GetId() const {
   return id_;
 }
 
@@ -10,26 +10,26 @@ void GameObject::SetId(GameObjectId id) {
   id_ = id;
 }
 
-QPoint GameObject::GetPosition() const {
+QPointF GameObject::GetPosition() const {
   return position_;
 }
 
-void GameObject::SetPosition(QPoint point) {
+void GameObject::SetPosition(QPointF point) {
   position_ = point;
 }
 
-void GameObject::SetX(int x) {
+void GameObject::SetX(float x) {
   position_.setX(x);
 }
 
-void GameObject::SetY(int y) {
+void GameObject::SetY(float y) {
   position_.setY(y);
 }
 
-int GameObject::GetX() const {
+float GameObject::GetX() const {
   return position_.x();
 }
 
-int GameObject::GetY() const {
+float GameObject::GetY() const {
   return position_.y();
 }

@@ -10,6 +10,10 @@ std::shared_ptr<Player>
   throw std::runtime_error("[MODEL] Trying to get invalid player...");
 }
 
+bool GameDataModel::IsOwnersPlayerSet() const {
+  return owners_player_id_ != Constants::kNullGameObjectId;
+}
+
 std::shared_ptr<Player> GameDataModel::GetOwnersPlayer() const {
   if (owners_player_id_ == Constants::kNullGameObjectId) {
     throw std::runtime_error("[MODEL] Owner's player_id isn't set...");
@@ -22,12 +26,18 @@ int GameDataModel::GetPlayersCount() const {
   return players_.size();
 }
 
-void GameDataModel::AddPlayer(GameObjectId player_id, int x, int y) {
+void GameDataModel::AddPlayer(GameObjectId player_id,
+                              int x,
+                              int y,
+                              float view_angle) {
   if (players_.find(player_id) != players_.end()) {
     throw std::runtime_error("[MODEL] This player_id already exists");
   }
   players_.emplace(std::make_pair(player_id,
-                                  std::make_unique<Player>(player_id, x, y)));
+                                  std::make_unique<Player>(player_id,
+                                                           x,
+                                                           y,
+                                                           view_angle)));
   qInfo().noquote() << "[MODEL] Added new Player ID:" << player_id;
 }
 
@@ -41,6 +51,7 @@ GameObjectId GameDataModel::GetOwnersPlayerId() const {
 
 void GameDataModel::SetOwnersPlayerId(GameObjectId player_id) {
   owners_player_id_ = player_id;
+  GetOwnersPlayer()->SetIsLocalPlayer(true);
 }
 
 void GameDataModel::DeletePlayer(GameObjectId player_id) {

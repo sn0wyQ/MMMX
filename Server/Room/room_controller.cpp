@@ -13,11 +13,11 @@ void RoomController::SendEvent(const Event& event) {
 void RoomController::OnTick() {}
 
 void RoomController::AddClient(ClientId client_id) {
-  std::vector<int> event_args{client_id, model_.GetPlayersCount()};
+  std::vector<QVariant> event_args{client_id, model_.GetPlayersCount()};
   for (const auto& player : model_.GetPlayers()) {
-    event_args.push_back(player->GetId());
-    event_args.push_back(player->GetX());
-    event_args.push_back(player->GetY());
+    event_args.emplace_back(player->GetId());
+    event_args.emplace_back(player->GetX());
+    event_args.emplace_back(player->GetY());
   }
   this->AddEventToHandle(Event(EventType::kSharePlayersInRoomInfo,
                                event_args));
@@ -128,10 +128,11 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendDirectionInfoEvent(const Event& event) {
-  auto senders_player_ptr = model_.GetPlayerByPlayerId(event.GetArg(0));
-  senders_player_ptr->ApplyDirection(event.GetArg(1));
+  auto senders_player_ptr =
+      model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
+  senders_player_ptr->ApplyDirection(event.GetArg<uint32_t>(1));
   this->AddEventToSend(Event(EventType::kUpdatedPlayerPosition,
-                       event.GetArg(0),
+                       event.GetArg<GameObjectId>(0),
                        senders_player_ptr->GetX(),
                        senders_player_ptr->GetY()));
 }

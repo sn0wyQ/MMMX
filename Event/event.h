@@ -1,32 +1,40 @@
 #ifndef EVENT_EVENT_H_
 #define EVENT_EVENT_H_
 
+#include <cmath>
 #include <utility>
 #include <vector>
 
 #include <QByteArray>
 #include <QDataStream>
 #include <QDebug>
-#include <QObject>
 #include <QMetaEnum>
+#include <QObject>
+#include <QVariant>
 
 #include "Event/event_type.h"
 
 class Event {
  public:
   Event(const Event& event);
-  explicit Event(const QByteArray& message);
   template<typename... Args>
-  explicit Event(EventType event_type, Args... args)
-    : type_(event_type), args_({args...}) {}
+  explicit Event(EventType event_type, const Args&... args)
+    : type_(event_type) {
+    args_ = { args... };
+  };
+  explicit Event(const QByteArray& message);
 
   EventType GetType() const;
-  int GetArg(int index) const;
-  std::vector<int> GetArgs() const;
+  QVariant GetArg(int index) const;
+  template<typename T>
+  T GetArg(int index) const {
+    return args_.at(index).value<T>();
+  }
+  std::vector<QVariant> GetArgs() const;
   // Gets sub-vector of |args_| elements in range [first_index, max_index]
-  std::vector<int> GetArgsSubVector(int first_index) const;
+  std::vector<QVariant> GetArgsSubVector(int first_index) const;
   // Gets sub-vector of |args_| elements in range [first_index, last_index)
-  std::vector<int> GetArgsSubVector(int first_index, int last_index) const;
+  std::vector<QVariant> GetArgsSubVector(int first_index, int last_index) const;
 
   QByteArray ToByteArray() const;
 
@@ -34,7 +42,7 @@ class Event {
 
  private:
   EventType type_;
-  std::vector<int> args_;
+  std::vector<QVariant> args_;
 };
 
 #endif  // EVENT_EVENT_H_

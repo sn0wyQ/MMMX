@@ -27,6 +27,8 @@ set(SOURCES
         Client/client_controller.cpp
         Client/client_view.cpp
         Controller/base_controller.cpp
+        Converter/converter.cpp
+        Event/event_type.h
         Event/event.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
@@ -34,10 +36,10 @@ set(SOURCES
         GameObject/game_object.cpp
         Model/game_data_model.cpp
         Model/server_model.cpp
+        Painter/painter.cpp
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
-        Event/event_type.h
         defines.h
         )
 

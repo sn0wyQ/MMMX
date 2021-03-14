@@ -15,11 +15,13 @@
 class GameDataModel {
  public:
   void AddPlayer(GameObjectId player_id,
-                 int x = Constants::DefaultX,
-                 int y = Constants::DefaultY);
+                 int x = Constants::kDefaultPlayerX,
+                 int y = Constants::kDefaultPlayerY,
+                 float view_angle = Constants::kDefaultPlayerViewAngle);
   void DeletePlayer(GameObjectId player_id);
 
   std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
+  bool IsOwnersPlayerSet() const;
   std::shared_ptr<Player> GetOwnersPlayer() const;
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
   int GetPlayersCount() const;

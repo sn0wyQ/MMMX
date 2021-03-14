@@ -21,6 +21,8 @@ BaseController::BaseController() {
   SetFunctionForEventType(EventType::kSendEventToRoom,
    std::bind(&BaseController::SendEventToRoomEvent, this, _1));
 
+  // ------------------- GAME EVENTS -------------------
+
   SetFunctionForEventType(EventType::kSendDirectionInfo,
    std::bind(&BaseController::SendDirectionInfoEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdatedPlayerPosition,
@@ -70,12 +72,12 @@ void BaseController::AddEventToSend(const Event& event) {
 }
 
 void BaseController::HandleEvent(const Event& event) {
-  // qInfo().noquote().nospace() << "[" << GetControllerName() << "] Handling "
-  //   << event;
+  qDebug().noquote().nospace() << "[" << GetControllerName()
+                               << "] Handling " << event;
   function_for_event_[static_cast<uint32_t>(event.GetType())](event);
 }
 
 void BaseController::LogEvent(const Event& event) const {
-  // qInfo().noquote().nospace() << "[" << GetControllerName() << "] Sending "
-  //                             << event;
+  qDebug().noquote().nospace() << "[" << GetControllerName()
+                               << "] Sending " << event;
 }

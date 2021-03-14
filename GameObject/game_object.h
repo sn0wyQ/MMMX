@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QPoint>
 
+#include "Painter/painter.h"
 #include "constants.h"
 
 class GameObject {
@@ -11,20 +12,21 @@ class GameObject {
   explicit GameObject(GameObjectId id);
 
   virtual void OnTick() = 0;
+  virtual void Draw(Painter* painter) = 0;
 
-  GameObjectId GetId();
+  GameObjectId GetId() const;
   void SetId(GameObjectId id);
 
-  QPoint GetPosition() const;
-  void SetPosition(QPoint point);
-  int GetX() const;
-  void SetX(int x);
-  int GetY() const;
-  void SetY(int y);
+  QPointF GetPosition() const;
+  void SetPosition(QPointF point);
+  float GetX() const;
+  void SetX(float x);
+  float GetY() const;
+  void SetY(float y);
 
  private:
   GameObjectId id_ = Constants::kNullGameObjectId;
-  QPoint position_{0, 0};
+  QPointF position_{0.f, 0.f};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_
