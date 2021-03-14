@@ -45,6 +45,7 @@ constexpr RoomId kNullRoomId = -1;
 // Client
 const QString kWindowTitle = "MMMX | Version " + kVersionString;
 constexpr int kTimeToUpdatePing = 1000;
+constexpr int kTimeToUpdateServerVar = 1000;
 constexpr int kTimeToUpdateKeys = 5;
 
 // Graphics

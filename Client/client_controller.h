@@ -73,8 +73,8 @@ class ClientController : public BaseController {
   std::shared_ptr<AbstractClientView> view_;
   int server_var_{0};
   int ping_{0};
-  QTimer timer_for_ping_;
-  QElapsedTimer timer_elapsed_ping_;
+  QTimer timer_for_server_var_;
+  QElapsedTimer timer_elapsed_server_var_;
 
   void AddNewPlayerEvent(const Event& event) override;
   void EndGameEvent(const Event& event) override;
