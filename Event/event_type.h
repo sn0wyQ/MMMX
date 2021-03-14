@@ -61,9 +61,12 @@ enum class EventType {
   kSendViewAngle,
 
   // [0] - <int> sender_player_id,
-  // [1] - <float> x_pos,
-  // [2] - <float> y_pos
-  kUpdatedPlayerPosition,
+  // [1] - <float> x,
+  // [2] - <float> y
+  kUpdatePlayerPosition,
+
+  // [0] - <int> sender_PLAYER_id / receiver_CLIENT_id
+  kUpdateServerVar,
 
   SIZE
 };

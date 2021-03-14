@@ -27,8 +27,8 @@ int GameDataModel::GetPlayersCount() const {
 }
 
 void GameDataModel::AddPlayer(GameObjectId player_id,
-                              int x,
-                              int y,
+                              float x,
+                              float y,
                               float view_angle) {
   if (players_.find(player_id) != players_.end()) {
     throw std::runtime_error("[MODEL] This player_id already exists");

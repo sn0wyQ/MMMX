@@ -15,8 +15,8 @@
 class GameDataModel {
  public:
   void AddPlayer(GameObjectId player_id,
-                 int x = Constants::kDefaultPlayerX,
-                 int y = Constants::kDefaultPlayerY,
+                 float x = Constants::kDefaultPlayerX,
+                 float y = Constants::kDefaultPlayerY,
                  float view_angle = Constants::kDefaultPlayerViewAngle);
   void DeletePlayer(GameObjectId player_id);
 

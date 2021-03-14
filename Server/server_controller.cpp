@@ -39,7 +39,8 @@ void ServerController::SendEvent(const Event& event) {
       break;
     }
 
-    case EventType::kSetClientsPlayerId: {
+    case EventType::kSetClientsPlayerId:
+    case EventType::kUpdateServerVar: {
       this->SendToClient(event.GetArg<ClientId>(0), event);
       break;
     }
@@ -74,11 +75,11 @@ void ServerController::ProcessEventsFromRoom(
     std::vector<ClientId> receivers;
     switch (event.GetType()) {
       case EventType::kSetClientsPlayerId:
-        receivers.push_back(event.GetArg<ClientId>(0));
-        break;
       case EventType::kSharePlayersInRoomInfo:
+      case EventType::kUpdateServerVar:
         receivers.push_back(event.GetArg<ClientId>(0));
         break;
+
       default:
         break;
     }

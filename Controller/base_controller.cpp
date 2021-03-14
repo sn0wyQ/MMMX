@@ -20,12 +20,14 @@ BaseController::BaseController() {
    std::bind(&BaseController::SendEventToClientEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
    std::bind(&BaseController::SendEventToRoomEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdateServerVar,
+   std::bind(&BaseController::UpdateServerVarEvent, this, _1));
 
   // ------------------- GAME EVENTS -------------------
 
   SetFunctionForEventType(EventType::kSendDirectionInfo,
    std::bind(&BaseController::SendDirectionInfoEvent, this, _1));
-  SetFunctionForEventType(EventType::kUpdatedPlayerPosition,
+  SetFunctionForEventType(EventType::kUpdatePlayerPosition,
    std::bind(&BaseController::UpdatedPlayerPositionEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);

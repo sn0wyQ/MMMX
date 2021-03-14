@@ -8,7 +8,6 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   setMouseTracking(true);
 
   converter_ = std::make_shared<Converter>(this);
-
   controller_->SetView(std::shared_ptr<ClientView>(this));
 }
 
@@ -21,9 +20,11 @@ void ClientView::Update() {
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
   controller_->KeyPressEvent(key_event);
 }
+
 void ClientView::keyReleaseEvent(QKeyEvent* key_event) {
   controller_->KeyReleaseEvent(key_event);
 }
+
 void ClientView::mouseMoveEvent(QMouseEvent* mouse_event) {
   controller_->MouseMoveEvent(mouse_event);
 }
@@ -39,6 +40,11 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
   for (const auto& player : players) {
     player->Draw(&painter);
   }
+
+  painter.drawText(0, 50, "Server Var: "
+      + QString::number(controller_->GetServerVar()));
+  painter.drawText(0, 70, "Ping: "
+      + QString::number(controller_->GetPing()));
 }
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {

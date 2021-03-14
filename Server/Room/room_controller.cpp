@@ -121,8 +121,23 @@ QString RoomController::GetControllerName() const {
   return "ROOM ID: " + QString::number(id_);
 }
 
+ClientId RoomController::PlayerIdToClientId(GameObjectId player_id) const {
+  for (auto [client_id, player_id_in] : player_ids_) {
+    if (player_id == player_id_in) {
+      return client_id;
+    }
+  }
+  throw std::runtime_error("[ROOM] No such player");
+}
+
 std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
+}
+
+void RoomController::UpdateServerVarEvent(const Event& event) {
+  this->AddEventToSend(Event(event.GetType(),
+                             PlayerIdToClientId(
+                                 event.GetArg<GameObjectId>(0))));
 }
 
 // ------------------- GAME EVENTS -------------------
@@ -131,7 +146,7 @@ void RoomController::SendDirectionInfoEvent(const Event& event) {
   auto senders_player_ptr =
       model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
   senders_player_ptr->ApplyDirection(event.GetArg<uint32_t>(1));
-  this->AddEventToSend(Event(EventType::kUpdatedPlayerPosition,
+  this->AddEventToSend(Event(EventType::kUpdatePlayerPosition,
                        event.GetArg<GameObjectId>(0),
                        senders_player_ptr->GetX(),
                        senders_player_ptr->GetY()));

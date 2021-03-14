@@ -43,6 +43,8 @@ class ClientController : public BaseController {
   void OnTick() override;
 
   GameDataModel* GetModel();
+  int GetServerVar() const;
+  int GetPing() const;
 
   bool IsGameInProgress() const;
 
@@ -50,6 +52,7 @@ class ClientController : public BaseController {
 
   // -------------------- CONTROLS --------------------
   void ApplyDirection();
+  void ResetDirection();
 
   void KeyPressEvent(QKeyEvent* key_event);
   void KeyReleaseEvent(QKeyEvent* key_event);
@@ -59,6 +62,8 @@ class ClientController : public BaseController {
   void OnConnected();
   void OnDisconnected();
   void OnByteArrayReceived(const QByteArray& message);
+  void UpdateServerVar();
+  void UpdatePing(int elapsed_time);
 
  private:
   GameState game_state_ = GameState::kNotStarted;
@@ -66,6 +71,10 @@ class ClientController : public BaseController {
   QWebSocket web_socket_;
   GameDataModel model_;
   std::shared_ptr<AbstractClientView> view_;
+  int server_var_{0};
+  int ping_{0};
+  QTimer timer_for_ping_;
+  QElapsedTimer timer_elapsed_ping_;
 
   void AddNewPlayerEvent(const Event& event) override;
   void EndGameEvent(const Event& event) override;
@@ -73,6 +82,7 @@ class ClientController : public BaseController {
   void SetClientsPlayerIdEvent(const Event& event) override;
   void SharePlayersInRoomInfoEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
+  void UpdateServerVarEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 

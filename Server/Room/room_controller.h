@@ -44,6 +44,7 @@ class RoomController : public BaseController {
   RoomId GetId() const;
 
   GameObjectId ClientIdToPlayerId(ClientId client_id) const;
+  ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
   GameObjectId GetNextUnusedPlayerId() const;
 
@@ -61,6 +62,7 @@ class RoomController : public BaseController {
   void AddNewPlayerEvent(const Event& event) override;
   void SharePlayersInRoomInfoEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
+  void UpdateServerVarEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 

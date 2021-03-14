@@ -25,6 +25,7 @@ class ClientView : public AbstractClientView {
   ~ClientView() override = default;
 
   void Update() override;
+  void ResetDirection();
 
  private:
   void keyPressEvent(QKeyEvent* key_event) override;
