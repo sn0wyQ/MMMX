@@ -2,9 +2,9 @@
 
 ClientController::ClientController(const QUrl& url) : url_(url) {
   qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
-  connect(&web_socket_, &QWebSocket::connected,this,
+  connect(&web_socket_, &QWebSocket::connected, this,
           &ClientController::OnConnected);
-  connect(&web_socket_, &QWebSocket::disconnected,this,
+  connect(&web_socket_, &QWebSocket::disconnected, this,
           &ClientController::OnDisconnected);
   web_socket_.open(url);
   this->StartTicking();
@@ -63,7 +63,6 @@ void ClientController::SetClientsPlayerIdEvent(const Event& event) {
 
 void ClientController::SharePlayersInRoomInfoEvent(const Event& event) {
   for (int i = 2; i < event.GetArg(1) * 3 + 2; i += 3) {
-    qInfo() << event.GetArg(i) << event.GetArg(i + 1) << event.GetArg(i + 2);
     model_.AddPlayer(event.GetArg(i),
                      event.GetArg(i + 1),
                      event.GetArg(i + 2));
