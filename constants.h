@@ -47,7 +47,7 @@ const QString kWindowTitle = "MMMX | Version " + kVersionString;
 
 constexpr int kDefaultX = 100;
 constexpr int kDefaultY = 100;
-constexpr int kTimeToUpdatePing = 1000;
+constexpr int kTimeToUpdateSvar = 1000;
 constexpr int kTimeToUpdateKeys = 5;
 
 }  // namespace Constants

@@ -46,7 +46,7 @@ class ClientController : public BaseController {
   void OnDisconnected();
   void OnByteArrayReceived(const QByteArray& message);
   void UpdateSvar();
-  void UpdateQPing(int elapsed_time);
+  void UpdatePing(int elapsed_time);
 
  private:
   GameState game_state_ = GameState::kNotStarted;
@@ -56,8 +56,8 @@ class ClientController : public BaseController {
   std::shared_ptr<AbstractClientView> view_;
   int svar_{0};
   int qping_{0};
-  QTimer timer_for_ping_;
-  QElapsedTimer timer_elapsed_ping_;
+  QTimer timer_for_svar_;
+  QElapsedTimer timer_elapsed_svar_;
 
   void AddNewPlayerEvent(const Event& event) override;
   void EndGameEvent(const Event& event) override;

@@ -48,6 +48,7 @@ void GameDataModel::DeletePlayer(GameObjectId player_id) {
   if (player_to_delete != players_.end()) {
     players_.erase(player_to_delete);
   }
+  qInfo().noquote() << "[MODEL] Removed Player ID:" << player_id;
 }
 
 std::vector<std::shared_ptr<Player>> GameDataModel::GetPlayers() const {

@@ -8,12 +8,6 @@ ClientController::ClientController(const QUrl& url) : url_(url) {
           &ClientController::OnDisconnected);
   web_socket_.open(url);
   this->StartTicking();
-  connect(&timer_for_ping_, &QTimer::timeout, this,
-          &ClientController::UpdateSvar);
-  timer_for_ping_.start(Constants::kTimeToUpdatePing);
-  timer_elapsed_ping_.start();
-  connect(&web_socket_, &QWebSocket::pong, this,
-          &ClientController::UpdateQPing);
 }
 
 GameDataModel* ClientController::GetModel() {
@@ -29,6 +23,12 @@ void ClientController::OnConnected() {
           &QWebSocket::binaryMessageReceived,
           this,
           &ClientController::OnByteArrayReceived);
+  connect(&timer_for_svar_, &QTimer::timeout, this,
+          &ClientController::UpdateSvar);
+  timer_for_svar_.start(Constants::kTimeToUpdateSvar);
+  timer_elapsed_svar_.start();
+  connect(&web_socket_, &QWebSocket::pong, this,
+          &ClientController::UpdatePing);
   view_->Update();
   // TODO(Everyone): Send nickname to server after connection
   qInfo().noquote() << "[CLIENT] Connected to" << url_;
@@ -104,19 +104,19 @@ int ClientController::GetSvar() const {
 void ClientController::UpdateSvar() {
   this->AddEventToSend(Event(EventType::kUpdateSvar,
                              model_.GetOwnersPlayerId()));
-  timer_elapsed_ping_.restart();
+  timer_elapsed_svar_.restart();
   web_socket_.ping();
 }
 
 void ClientController::UpdateSvarEvent(const Event& event) {
-  svar_ = static_cast<int>(timer_elapsed_ping_.elapsed()) / 2;
+  svar_ = static_cast<int>(timer_elapsed_svar_.elapsed()) / 2;
 }
 
 int ClientController::GetQPing() const {
   return qping_;
 }
 
-void ClientController::UpdateQPing(int elapsed_time) {
+void ClientController::UpdatePing(int elapsed_time) {
   qping_ = elapsed_time;
 }
 
