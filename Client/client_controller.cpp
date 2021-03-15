@@ -67,7 +67,7 @@ void ClientController::SetClientsPlayerIdEvent(const Event& event) {
                     << event.GetArg<GameObjectId>(1);
 }
 
-void ClientController::SharePlayersInRoomInfoEvent(const Event& event) {
+void ClientController::CreateAllPlayersDataEvent(const Event& event) {
   for (int i = 2; i < event.GetArg<int>(1) * 4 + 2; i += 4) {
     model_.AddPlayer(event.GetArg<GameObjectId>(i),
                      event.GetArg<float>(i + 1),

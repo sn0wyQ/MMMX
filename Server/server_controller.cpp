@@ -45,8 +45,9 @@ void ServerController::SendEvent(const Event& event) {
       break;
     }
 
-    // We only want to send Events either to Client or Room
+    // If we're here something most likely went wrong
     default:
+        qWarning() << "[SERVER] Impossible to send event " << event;
       break;
   }
 }
@@ -75,7 +76,7 @@ void ServerController::ProcessEventsFromRoom(
     std::vector<ClientId> receivers;
     switch (event.GetType()) {
       case EventType::kSetClientsPlayerId:
-      case EventType::kSharePlayersInRoomInfo:
+      case EventType::kCreateAllPlayersData:
       case EventType::kUpdateServerVar:
         receivers.push_back(event.GetArg<ClientId>(0));
         break;

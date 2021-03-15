@@ -20,7 +20,7 @@ void RoomController::AddClient(ClientId client_id) {
     event_args.emplace_back(player->GetY());
     event_args.emplace_back(player->GetViewAngle());
   }
-  this->AddEventToHandle(Event(EventType::kSharePlayersInRoomInfo,
+  this->AddEventToHandle(Event(EventType::kCreateAllPlayersData,
                                event_args));
 
   GameObjectId player_id = this->GetNextUnusedPlayerId();
@@ -110,7 +110,7 @@ void RoomController::AddNewPlayerEvent(const Event& event) {
 }
 
 
-void RoomController::SharePlayersInRoomInfoEvent(const Event& event) {
+void RoomController::CreateAllPlayersDataEvent(const Event& event) {
   this->AddEventToSend(event);
 }
 void RoomController::StartGameEvent(const Event& event) {

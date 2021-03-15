@@ -18,6 +18,14 @@ enum class EventType {
   // [0] - <int> client_id
   kClientDisconnected,
 
+  // [0] - <int> client_id,
+  // [1] - <int> number_of_players,
+  // [2+] - player_info [<int> player_id,
+  //                     <float> x,
+  //                     <float> y,
+  //                     <float> view_angle]
+  kCreateAllPlayersData,
+
   // No arguments
   kEndGame,
 
@@ -37,14 +45,6 @@ enum class EventType {
   // [0] - <int> client_id,
   // [1] - <int> player_id
   kSetClientsPlayerId,
-
-  // [0] - <int> client_id,
-  // [1] - <int> number_of_players,
-  // [2+] - player_info [<int> player_id,
-  //                     <float> x,
-  //                     <float> y,
-  //                     <float> view_angle]
-  kSharePlayersInRoomInfo,
 
   // No arguments
   kStartGame,

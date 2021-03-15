@@ -24,6 +24,7 @@ enum class Direction {
   kRight,
   kDown,
   kLeft,
+
   SIZE
 };
 
@@ -73,7 +74,7 @@ class ClientController : public BaseController {
   void EndGameEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
   void SetClientsPlayerIdEvent(const Event& event) override;
-  void SharePlayersInRoomInfoEvent(const Event& event) override;
+  void CreateAllPlayersDataEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateServerVarEvent(const Event& event) override;
 

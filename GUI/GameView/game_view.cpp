@@ -22,5 +22,5 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
 }
 
 void GameView::resizeEvent(QResizeEvent* resize_event) {
-  converter_->UpdateCoef(static_cast<float>(resize_event->size().height()));
+  converter_->UpdateCoef();
 }

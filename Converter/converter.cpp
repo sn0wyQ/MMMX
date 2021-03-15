@@ -19,11 +19,7 @@ void Converter::UpdateGameCenter(QPointF center) {
 }
 
 void Converter::UpdateCoef() {
-  UpdateCoef(static_cast<float>(widget_->height()));
-}
-
-void Converter::UpdateCoef(float new_widget_height) {
-  coef_ = new_widget_height / Constants::kBaseViewHeight;
+  coef_ = static_cast<float>(widget_->height()) / Constants::kBaseViewHeight;
   screen_center_ = QPointF(static_cast<float>(widget_->width()) / 2.f,
                            static_cast<float>(widget_->height()) / 2.f);
 }

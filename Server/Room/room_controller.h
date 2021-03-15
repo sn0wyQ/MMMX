@@ -14,11 +14,9 @@
 #include "constants.h"
 
 enum class RoomState {
-  // MUST always stay in alphabet order
-
   kFinished,
   kGameInProgress,
-  kWaitingForClients,
+  kWaitingForClients
 };
 
 class RoomController : public BaseController {
@@ -60,7 +58,7 @@ class RoomController : public BaseController {
   std::vector<Event> events_for_server_;
 
   void AddNewPlayerEvent(const Event& event) override;
-  void SharePlayersInRoomInfoEvent(const Event& event) override;
+  void CreateAllPlayersDataEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateServerVarEvent(const Event& event) override;
 
