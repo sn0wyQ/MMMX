@@ -18,6 +18,7 @@ void RoomController::AddClient(ClientId client_id) {
     event_args.emplace_back(player->GetId());
     event_args.emplace_back(player->GetX());
     event_args.emplace_back(player->GetY());
+    event_args.emplace_back(player->GetViewAngle());
   }
   this->AddEventToHandle(Event(EventType::kSharePlayersInRoomInfo,
                                event_args));

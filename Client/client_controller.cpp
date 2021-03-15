@@ -68,13 +68,11 @@ void ClientController::SetClientsPlayerIdEvent(const Event& event) {
 }
 
 void ClientController::SharePlayersInRoomInfoEvent(const Event& event) {
-  for (int i = 2; i < event.GetArg<int>(1) * 3 + 2; i += 3) {
-    qInfo() << event.GetArg<int>(i)
-            << event.GetArg<float>(i + 1)
-            << event.GetArg<float>(i + 2);
+  for (int i = 2; i < event.GetArg<int>(1) * 4 + 2; i += 4) {
     model_.AddPlayer(event.GetArg<GameObjectId>(i),
                      event.GetArg<float>(i + 1),
-                     event.GetArg<float>(i + 2));
+                     event.GetArg<float>(i + 2),
+                     event.GetArg<float>(i + 3));
   }
   view_->Update();
 }
@@ -143,19 +141,26 @@ void ClientController::SendViewAngleEvent(const Event& event) {
 
 void ClientController::UpdatePlayerPositionEvent(const Event& event) {
   auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
+
+  if (player_ptr->IsLocalPlayer()) {
+    return;
+  }
+
   player_ptr->SetX(event.GetArg<float>(1));
   player_ptr->SetY(event.GetArg<float>(2));
+  player_ptr->SetViewAngle(event.GetArg<float>(3));
+
   converter_->UpdateGameCenter(player_ptr->GetPosition());
   view_->Update();
 }
 
 void ClientController::UpdatePlayerViewAngleEvent(const Event& event) {
-  // LocalPlayer's view angle is updated by user input
-  if (event.GetArg<GameObjectId>(0) == model_.GetLocalPlayerId()) {
+  auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
+
+  if (player_ptr->IsLocalPlayer()) {
     return;
   }
 
-  auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
   player_ptr->SetViewAngle(event.GetArg<float>(1));
   view_->Update();
 }
