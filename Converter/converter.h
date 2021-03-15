@@ -35,7 +35,6 @@ class Converter {
   QWidget* widget_;
   QPointF game_center_;
   QPointF screen_center_;
-
 };
 
 #endif  // CONVERTER_CONVERTER_H_

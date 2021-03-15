@@ -77,7 +77,7 @@ enum class EventType {
 
 Q_ENUM_NS(EventType)
 
-}  // EventTypeWrapper
+}  // namespace EventTypeWrapper
 
 using EventType = EventTypeWrapper::EventType;
 Q_DECLARE_METATYPE(EventType)

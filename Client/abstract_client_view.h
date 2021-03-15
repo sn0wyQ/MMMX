@@ -1,6 +1,8 @@
 #ifndef CLIENT_ABSTRACT_CLIENT_VIEW_H_
 #define CLIENT_ABSTRACT_CLIENT_VIEW_H_
 
+#include <memory>
+
 #include <QMainWindow>
 
 #include "Converter/converter.h"

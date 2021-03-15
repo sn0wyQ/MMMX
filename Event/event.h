@@ -21,7 +21,7 @@ class Event {
   explicit Event(EventType event_type, const Args&... args)
     : type_(event_type) {
     args_ = { args... };
-  };
+  }
   explicit Event(const QByteArray& message);
 
   EventType GetType() const;
