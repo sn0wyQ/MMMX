@@ -3,32 +3,36 @@
 BaseController::BaseController() {
   using std::placeholders::_1;
   SetFunctionForEventType(EventType::kAddNewPlayer,
-  std::bind(&BaseController::AddNewPlayerEvent, this, _1));
+    std::bind(&BaseController::AddNewPlayerEvent, this, _1));
   SetFunctionForEventType(EventType::kClientDisconnected,
-   std::bind(&BaseController::ClientDisconnectedEvent, this, _1));
+    std::bind(&BaseController::ClientDisconnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kEndGame,
-   std::bind(&BaseController::EndGameEvent, this, _1));
+    std::bind(&BaseController::EndGameEvent, this, _1));
   SetFunctionForEventType(EventType::kSetClientsPlayerId,
-   std::bind(&BaseController::SetClientsPlayerIdEvent, this, _1));
+    std::bind(&BaseController::SetClientsPlayerIdEvent, this, _1));
   SetFunctionForEventType(EventType::kSharePlayersInRoomInfo,
-   std::bind(&BaseController::SharePlayersInRoomInfoEvent, this, _1));
+    std::bind(&BaseController::SharePlayersInRoomInfoEvent, this, _1));
   SetFunctionForEventType(EventType::kStartGame,
-   std::bind(&BaseController::StartGameEvent, this, _1));
+    std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kPlayerDisconnected,
-   std::bind(&BaseController::PlayerDisconnectedEvent, this, _1));
+    std::bind(&BaseController::PlayerDisconnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToClient,
-   std::bind(&BaseController::SendEventToClientEvent, this, _1));
+    std::bind(&BaseController::SendEventToClientEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
-   std::bind(&BaseController::SendEventToRoomEvent, this, _1));
+    std::bind(&BaseController::SendEventToRoomEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateServerVar,
-   std::bind(&BaseController::UpdateServerVarEvent, this, _1));
+    std::bind(&BaseController::UpdateServerVarEvent, this, _1));
 
   // ------------------- GAME EVENTS -------------------
 
   SetFunctionForEventType(EventType::kSendDirectionInfo,
-   std::bind(&BaseController::SendDirectionInfoEvent, this, _1));
+    std::bind(&BaseController::SendDirectionInfoEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendViewAngle,
+    std::bind(&BaseController::SendViewAngleEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdatePlayerPosition,
-   std::bind(&BaseController::UpdatedPlayerPositionEvent, this, _1));
+    std::bind(&BaseController::UpdatePlayerPositionEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdatePlayerViewAngle,
+    std::bind(&BaseController::UpdatePlayerViewAngleEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

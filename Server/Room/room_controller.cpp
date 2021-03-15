@@ -151,3 +151,12 @@ void RoomController::SendDirectionInfoEvent(const Event& event) {
                        senders_player_ptr->GetX(),
                        senders_player_ptr->GetY()));
 }
+
+void RoomController::SendViewAngleEvent(const Event& event) {
+  auto senders_player_ptr =
+      model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
+  senders_player_ptr->SetViewAngle(event.GetArg<float>(1));
+  this->AddEventToSend(Event(EventType::kUpdatePlayerViewAngle,
+                             event.GetArg<GameObjectId>(0),
+                             event.GetArg<float>(1)));
+}

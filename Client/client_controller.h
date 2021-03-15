@@ -7,6 +7,7 @@
 
 #include <QByteArray>
 #include <QDebug>
+#include <QGraphicsView>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QUrl>
@@ -14,6 +15,7 @@
 
 #include "Client/abstract_client_view.h"
 #include "Controller/base_controller.h"
+#include "Converter/converter.h"
 #include "Math/math.h"
 #include "Model/game_data_model.h"
 
@@ -67,16 +69,6 @@ class ClientController : public BaseController {
   void UpdatePing(int elapsed_time);
 
  private:
-  GameState game_state_ = GameState::kNotStarted;
-  QUrl url_;
-  QWebSocket web_socket_;
-  GameDataModel model_;
-  std::shared_ptr<AbstractClientView> view_;
-  int server_var_{0};
-  int ping_{0};
-  QTimer timer_for_server_var_;
-  QElapsedTimer timer_elapsed_server_var_;
-
   void AddNewPlayerEvent(const Event& event) override;
   void EndGameEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
@@ -88,7 +80,20 @@ class ClientController : public BaseController {
   // ------------------- GAME EVENTS -------------------
 
   void SendDirectionInfoEvent(const Event& event) override;
-  void UpdatedPlayerPositionEvent(const Event& event) override;
+  void SendViewAngleEvent(const Event& event) override;
+  void UpdatePlayerPositionEvent(const Event& event) override;
+  void UpdatePlayerViewAngleEvent(const Event& event) override;
+
+  GameState game_state_ = GameState::kNotStarted;
+  QUrl url_;
+  QWebSocket web_socket_;
+  GameDataModel model_;
+  std::shared_ptr<AbstractClientView> view_;
+  int server_var_{0};
+  int ping_{0};
+  QTimer timer_for_server_var_;
+  QElapsedTimer timer_elapsed_server_var_;
+  std::shared_ptr<Converter> converter_;
 
   // TODO(Everyone): Rework
   std::unordered_map<uint32_t, Direction> key_to_direction_{

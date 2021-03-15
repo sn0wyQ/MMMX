@@ -16,6 +16,8 @@ class GameLabel : public QLabel {
  public:
   GameLabel(QWidget* parent, GameDataModel* model);
 
+  std::shared_ptr<Converter> GetConverter();
+
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 

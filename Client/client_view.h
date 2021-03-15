@@ -23,6 +23,7 @@ class ClientView : public AbstractClientView {
   ~ClientView() override = default;
 
   void Update() override;
+  std::shared_ptr<Converter> GetConverter() override;
 
  private:
   void keyPressEvent(QKeyEvent* key_event) override;

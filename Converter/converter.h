@@ -1,7 +1,7 @@
 #ifndef CONVERTER_CONVERTER_H_
 #define CONVERTER_CONVERTER_H_
 
-#include <QPoint>
+#include <QPointF>
 #include <QWidget>
 
 #include "constants.h"
@@ -10,21 +10,32 @@ class Converter {
  public:
   explicit Converter(QWidget* widget);
 
+  QPointF GetCenter() const;
   float GetCoef() const;
 
-  void Update(float new_widget_height);
+  void UpdateGameCenter(QPointF center);
+
+  void UpdateCoef();
+  void UpdateCoef(float new_widget_height);
+
+  QPointF PointFromGameToScreen(const QPointF& point);
+  QPointF PointFromScreenToGame(const QPointF& point);
 
   template<typename T>
-  T FromGameToScreen(const T& object) {
+  T ScaleFromGameToScreen(const T& object) {
     return object * coef_;
   }
   template<typename T>
-  T FromScreenToGame(const T& object) {
+  T ScaleFromScreenToGame(const T& object) {
     return object / coef_;
   }
 
  private:
   float coef_;
+  QWidget* widget_;
+  QPointF game_center_;
+  QPointF screen_center_;
+
 };
 
 #endif  // CONVERTER_CONVERTER_H_

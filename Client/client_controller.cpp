@@ -100,14 +100,23 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
   view_ = std::move(view);
+  converter_ = view_->GetConverter();
 }
 
 QString ClientController::GetControllerName() const {
   return "CLIENT";
 }
 
+int ClientController::GetPing() const {
+  return ping_;
+}
+
 int ClientController::GetServerVar() const {
   return server_var_;
+}
+
+void ClientController::UpdatePing(int elapsed_time) {
+  ping_ = elapsed_time;
 }
 
 void ClientController::UpdateServerVar() {
@@ -119,14 +128,7 @@ void ClientController::UpdateServerVar() {
 
 void ClientController::UpdateServerVarEvent(const Event& event) {
   server_var_ = static_cast<int>(timer_elapsed_server_var_.elapsed()) / 2;
-}
-
-int ClientController::GetPing() const {
-  return ping_;
-}
-
-void ClientController::UpdatePing(int elapsed_time) {
-  ping_ = elapsed_time;
+  view_->Update();
 }
 
 // ------------------- GAME EVENTS -------------------
@@ -135,10 +137,26 @@ void ClientController::SendDirectionInfoEvent(const Event& event) {
   this->AddEventToSend(event);
 }
 
-void ClientController::UpdatedPlayerPositionEvent(const Event& event) {
+void ClientController::SendViewAngleEvent(const Event& event) {
+  this->AddEventToSend(event);
+}
+
+void ClientController::UpdatePlayerPositionEvent(const Event& event) {
   auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
   player_ptr->SetX(event.GetArg<float>(1));
   player_ptr->SetY(event.GetArg<float>(2));
+  converter_->UpdateGameCenter(player_ptr->GetPosition());
+  view_->Update();
+}
+
+void ClientController::UpdatePlayerViewAngleEvent(const Event& event) {
+  // LocalPlayer's view angle is updated by user input
+  if (event.GetArg<GameObjectId>(0) == model_.GetLocalPlayerId()) {
+    return;
+  }
+
+  auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
+  player_ptr->SetViewAngle(event.GetArg<float>(1));
   view_->Update();
 }
 
@@ -163,14 +181,17 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
-  // Under construction
-
-  // if (model_.IsLocalPlayerSet()) {
-  //   this->AddEventToHandle(
-  //       Event(EventType::kSendViewAngle,
-  //             Math::DirectionAngle(model_.GetLocalPlayer()->GetPosition(),
-  //                                  mouse_event->pos())));
-  // }
+  if (model_.IsLocalPlayerSet()) {
+    auto local_player = model_.GetLocalPlayer();
+    float view_angle = Math::DirectionAngle(local_player->GetPosition(),
+                                            converter_->PointFromScreenToGame(
+                                                mouse_event->pos()));
+    local_player->SetViewAngle(view_angle);
+    view_->Update();
+    this->AddEventToHandle(Event(EventType::kSendViewAngle,
+                                 local_player->GetId(),
+                                 view_angle));
+  }
 }
 
 void ClientController::ApplyDirection() {

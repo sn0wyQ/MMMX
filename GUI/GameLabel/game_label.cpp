@@ -5,6 +5,10 @@ GameLabel::GameLabel(QWidget* parent, GameDataModel* model)
   converter_ = std::make_shared<Converter>(this);
 }
 
+std::shared_ptr<Converter> GameLabel::GetConverter() {
+  return converter_;
+}
+
 void GameLabel::paintEvent(QPaintEvent* paint_event) {
   Painter painter(this,
                   converter_,
@@ -18,5 +22,5 @@ void GameLabel::paintEvent(QPaintEvent* paint_event) {
 }
 
 void GameLabel::resizeEvent(QResizeEvent* resize_event) {
-  converter_->Update(static_cast<float>(resize_event->size().height()));
+  converter_->UpdateCoef(static_cast<float>(resize_event->size().height()));
 }

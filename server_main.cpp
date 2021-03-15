@@ -10,6 +10,12 @@
 void ServerMessageHandler(QtMsgType type,
                           const QMessageLogContext& context,
                           const QString& message) {
+#if SERVER_SHOW_ONLY_INFO_MESSAGES
+  if (type != QtInfoMsg) {
+    return;
+  }
+#endif  // SERVER_SHOW_ONLY_INFO_MESSAGES
+
   QString txt;
   switch (type) {
     case QtDebugMsg:
@@ -34,7 +40,7 @@ void ServerMessageHandler(QtMsgType type,
   }
 
   QTextStream screen_output(stdout);
-#if SERVER_SHOW_DEBUG_MESSAGES
+#if SERVER_SHOW_DEBUG_MESSAGES_ON_SCREEN
   screen_output << txt << Qt::endl;
   if (type != QtInfoMsg) {
     screen_output << QString("        At %1 (%2:%3)")
@@ -48,12 +54,14 @@ void ServerMessageHandler(QtMsgType type,
   }
 #endif
 
-  QFile out_file("server.log");
-  if (out_file.open(QIODevice::WriteOnly | QIODevice::Append)) {
-    QTextStream text_stream(&out_file);
-    text_stream << QTime::currentTime().toString("[hh:mm:ss.zzz] - ")
-                << txt << Qt::endl;
+  static QFile out_file("server.log");
+  if (!out_file.isOpen()) {
+    out_file.open(QIODevice::WriteOnly | QIODevice::Append);
   }
+
+  static QTextStream text_stream(&out_file);
+  text_stream << QTime::currentTime().toString("[hh:mm:ss.zzz] - ")
+              << txt << Qt::endl;
 }
 
 int main(int argc, char* argv[]) {

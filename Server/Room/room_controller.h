@@ -67,6 +67,7 @@ class RoomController : public BaseController {
   // ------------------- GAME EVENTS -------------------
 
   void SendDirectionInfoEvent(const Event& event) override;
+  void SendViewAngleEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

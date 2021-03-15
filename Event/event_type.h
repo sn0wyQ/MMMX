@@ -57,13 +57,17 @@ enum class EventType {
   kSendDirectionInfo,
 
   // [0] - <int> sender_player_id,
-  // [1] - <float> view_angle (Increasing counterclockwise)
+  // [1] - <float> view_angle
   kSendViewAngle,
 
   // [0] - <int> sender_player_id,
   // [1] - <float> x,
   // [2] - <float> y
   kUpdatePlayerPosition,
+
+  // [0] - <int> sender_player_id,
+  // [1] - <float> view_angle
+  kUpdatePlayerViewAngle,
 
   // [0] - <int> sender_PLAYER_id / receiver_CLIENT_id
   kUpdateServerVar,

@@ -8,23 +8,28 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   setWindowTitle(Constants::kWindowTitle);
   setMouseTracking(true);
 
-  controller_->SetView(std::shared_ptr<ClientView>(this));
-  model_ = controller_->GetModel();
-
   // Game Label
   game_label_ = new GameLabel(this, controller_->GetModel());
   game_label_->move(0, 0);
+  game_label_->setMouseTracking(true);
 
   // Info Label
   info_label_ = new QLabel(this);
   info_label_->move(10, 10);
   info_label_->setAlignment(Qt::AlignTop);
+
+  controller_->SetView(std::shared_ptr<ClientView>(this));
+  model_ = controller_->GetModel();
 }
 
 void ClientView::Update() {
   this->update();
   repaint();
   qDebug().noquote().nospace() << "[VIEW] Updated";
+}
+
+std::shared_ptr<Converter> ClientView::GetConverter() {
+  return game_label_->GetConverter();
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
@@ -44,7 +49,7 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
                       ? model_->GetLocalPlayer()
                       : std::make_shared<Player>(Constants::kNullGameObjectId);
 
-  info_label_->setText(QString(tr("Server Var: %1\nPing: %2\nX: %3,\tY: %4"))
+  info_label_->setText(QString(tr("Server Var: %1\nPing: %2\nX: %3, \t Y: %4"))
                        .arg(controller_->GetServerVar())
                        .arg(controller_->GetPing())
                        .arg(local_player->GetX())
