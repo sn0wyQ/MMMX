@@ -7,6 +7,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   setMinimumSize(310, 70);
   setWindowTitle(Constants::kWindowTitle);
   setMouseTracking(true);
+  setFocusPolicy(Qt::StrongFocus);
 
   // Game View
   game_view_ = new GameView(this, controller_->GetModel());
@@ -31,6 +32,10 @@ void ClientView::Update() {
 std::shared_ptr<Converter> ClientView::GetConverter() {
   return game_view_->GetConverter();
 }
+
+void ClientView::focusInEvent(QFocusEvent* focus_event) {}
+
+void ClientView::focusOutEvent(QFocusEvent* focus_event) {}
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
   controller_->KeyPressEvent(key_event);

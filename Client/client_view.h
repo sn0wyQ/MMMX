@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include <QFocusEvent>
 #include <QLabel>
 #include <QMainWindow>
 #include <QPushButton>
@@ -26,6 +27,8 @@ class ClientView : public AbstractClientView {
   std::shared_ptr<Converter> GetConverter() override;
 
  private:
+  void focusInEvent(QFocusEvent* focus_event) override;
+  void focusOutEvent(QFocusEvent* focus_event) override;
   void keyPressEvent(QKeyEvent* key_event) override;
   void keyReleaseEvent(QKeyEvent* key_event) override;
   void mouseMoveEvent(QMouseEvent* mouse_event) override;
