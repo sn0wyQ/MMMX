@@ -1,15 +1,15 @@
-#include "game_label.h"
+#include "game_view.h"
 
-GameLabel::GameLabel(QWidget* parent, GameDataModel* model)
-  : QLabel(parent), model_(model) {
+GameView::GameView(QWidget* parent, GameDataModel* model)
+  : QWidget(parent), model_(model) {
   converter_ = std::make_shared<Converter>(this);
 }
 
-std::shared_ptr<Converter> GameLabel::GetConverter() {
+std::shared_ptr<Converter> GameView::GetConverter() {
   return converter_;
 }
 
-void GameLabel::paintEvent(QPaintEvent* paint_event) {
+void GameView::paintEvent(QPaintEvent* paint_event) {
   Painter painter(this,
                   converter_,
                   model_->IsLocalPlayerSet()
@@ -21,6 +21,6 @@ void GameLabel::paintEvent(QPaintEvent* paint_event) {
   }
 }
 
-void GameLabel::resizeEvent(QResizeEvent* resize_event) {
+void GameView::resizeEvent(QResizeEvent* resize_event) {
   converter_->UpdateCoef(static_cast<float>(resize_event->size().height()));
 }

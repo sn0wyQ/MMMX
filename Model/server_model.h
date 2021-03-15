@@ -37,8 +37,12 @@ class ServerModel {
 
   void AddToRoomsWithFreeSpot(RoomId room_id);
 
+  bool IsRoomIdExistsInModel(RoomId room_id) const;
+
+  bool IsTopRoomInQueueExistsInModel() const;
   bool IsRoomsQueueEmpty() const;
   std::shared_ptr<RoomController> GetTopRoomInQueue() const;
+  RoomId GetTopRoomInQueueId() const;
   void PopTopRoomInQueue();
 
   ClientId GetClientIdByWebSocket(QWebSocket* web_socket) const;
@@ -59,7 +63,7 @@ class ServerModel {
   std::map<ClientId, std::shared_ptr<ConnectedClient>> connected_clients_;
   std::map<QWebSocket*, ClientId> client_ids_;
   std::map<RoomId, std::shared_ptr<RoomController>> rooms_;
-  std::queue<std::shared_ptr<RoomController>> rooms_queue_;
+  std::queue<RoomId> rooms_queue_;
 };
 
 #endif  // MODEL_SERVER_MODEL_H_

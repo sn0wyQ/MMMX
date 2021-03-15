@@ -30,7 +30,7 @@ set(SOURCES
         Converter/converter.cpp
         Event/event_type.h
         Event/event.cpp
-        GUI/GameLabel/game_label.cpp
+        GUI/GameView/game_view.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp

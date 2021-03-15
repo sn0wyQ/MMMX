@@ -142,13 +142,13 @@ void ClientController::SendViewAngleEvent(const Event& event) {
 void ClientController::UpdatePlayerPositionEvent(const Event& event) {
   auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
 
-  if (player_ptr->IsLocalPlayer()) {
-    return;
-  }
+  // TODO(Everyone): uncomment after Player's moving is reworked
+  // if (player_ptr->IsLocalPlayer()) {
+  //   return;
+  // }
 
   player_ptr->SetX(event.GetArg<float>(1));
   player_ptr->SetY(event.GetArg<float>(2));
-  player_ptr->SetViewAngle(event.GetArg<float>(3));
 
   converter_->UpdateGameCenter(player_ptr->GetPosition());
   view_->Update();

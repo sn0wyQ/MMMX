@@ -31,7 +31,7 @@ std::shared_ptr<RoomController>
 }
 
 void ServerModel::AddToRoomsWithFreeSpot(RoomId room_id) {
-  rooms_queue_.emplace(rooms_.at(room_id));
+  rooms_queue_.push(room_id);
 }
 
 ClientId ServerModel::GetClientIdByWebSocket(QWebSocket* web_socket) const {
@@ -55,11 +55,23 @@ void ServerModel::DeleteRoom(RoomId room_id) {
   qInfo().noquote() << "[MODEL] Removed Room ID:" << room_id;
 }
 
+bool ServerModel::IsRoomIdExistsInModel(RoomId room_id) const {
+  return rooms_.find(room_id) != rooms_.end();
+}
+
+bool ServerModel::IsTopRoomInQueueExistsInModel() const {
+  return IsRoomIdExistsInModel(rooms_queue_.front());
+}
+
 bool ServerModel::IsRoomsQueueEmpty() const {
   return rooms_queue_.empty();
 }
 
 std::shared_ptr<RoomController> ServerModel::GetTopRoomInQueue() const {
+  return GetRoomByRoomId(rooms_queue_.front());
+}
+
+RoomId ServerModel::GetTopRoomInQueueId() const {
   return rooms_queue_.front();
 }
 

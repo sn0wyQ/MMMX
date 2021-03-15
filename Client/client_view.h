@@ -13,7 +13,7 @@
 #include "Client/abstract_client_view.h"
 #include "Client/client_controller.h"
 #include "Event/event.h"
-#include "GUI/GameLabel/game_label.h"
+#include "GUI/GameView/game_view.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
@@ -35,7 +35,7 @@ class ClientView : public AbstractClientView {
   std::shared_ptr<ClientController> controller_;
   GameDataModel* model_;
 
-  GameLabel* game_label_;
+  GameView* game_view;
   QLabel* info_label_;
 };
 

@@ -5,17 +5,19 @@
 #include <utility>
 #include <vector>
 
-#include <QLabel>
 #include <QPaintEvent>
 #include <QResizeEvent>
+#include <QWidget>
 
 #include "Client/client_controller.h"
 #include "Converter/converter.h"
 #include "Painter/painter.h"
 
-class GameLabel : public QLabel {
+class GameView : public QWidget {
+  Q_OBJECT
+
  public:
-  GameLabel(QWidget* parent, GameDataModel* model);
+  GameView(QWidget* parent, GameDataModel* model);
 
   std::shared_ptr<Converter> GetConverter();
 
