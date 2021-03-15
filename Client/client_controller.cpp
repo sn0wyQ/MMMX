@@ -160,9 +160,6 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
-  if (key_event->nativeVirtualKey() == Qt::Key_Alt) {
-    ResetDirection();
-  }
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
@@ -185,6 +182,13 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientController::ApplyControls() {
+  if (!view_->IsFocused()) {
+    for (const auto& [key, direction] : key_to_direction_) {
+      is_direction_by_keys_[direction] = false;
+    }
+    return;
+  }
+
   ResetDirection();
 
   bool is_up_pressed = is_direction_by_keys_[Direction::kUp];
