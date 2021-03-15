@@ -1,5 +1,5 @@
-#ifndef GUI_GAMELABEL_GAME_LABEL_H_
-#define GUI_GAMELABEL_GAME_LABEL_H_
+#ifndef GUI_GAMEVIEW_GAME_LABEL_H_
+#define GUI_GAMEVIEW_GAME_LABEL_H_
 
 #include <memory>
 #include <utility>
@@ -29,4 +29,4 @@ class GameView : public QWidget {
   std::shared_ptr<Converter> converter_;
 };
 
-#endif  // GUI_GAMELABEL_GAME_LABEL_H_
+#endif  // GUI_GAMEVIEW_GAME_LABEL_H_
