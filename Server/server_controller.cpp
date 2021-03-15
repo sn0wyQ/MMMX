@@ -196,7 +196,7 @@ void ServerController::SendToRoom(int room_id,
 }
 
 void ServerController::ClientDisconnectedEvent(const Event& event) {
-  ClientId client_id = event.GetArg<ClientId>(0);
+  auto client_id = event.GetArg<ClientId>(0);
   auto room_ptr = server_model_.GetRoomByClientId(client_id);
   room_ptr->RemoveClient(client_id);
   server_model_.RemoveClient(client_id);

@@ -66,10 +66,8 @@ class BaseController : public QObject {
 
   // ------------------- GAME EVENTS -------------------
 
-  virtual void SendDirectionInfoEvent(const Event& event) {}
-  virtual void SendViewAngleEvent(const Event& event) {}
-  virtual void UpdatePlayerPositionEvent(const Event& event) {}
-  virtual void UpdatePlayerViewAngleEvent(const Event& event) {}
+  virtual void SendControlsEvent(const Event& event) {}
+  virtual void UpdatePlayerDataEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

@@ -143,21 +143,14 @@ void RoomController::UpdateServerVarEvent(const Event& event) {
 
 // ------------------- GAME EVENTS -------------------
 
-void RoomController::SendDirectionInfoEvent(const Event& event) {
+void RoomController::SendControlsEvent(const Event& event) {
   auto senders_player_ptr =
       model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
   senders_player_ptr->ApplyDirection(event.GetArg<uint32_t>(1));
-  this->AddEventToSend(Event(EventType::kUpdatePlayerPosition,
+  senders_player_ptr->SetViewAngle(event.GetArg<float>(2));
+  this->AddEventToSend(Event(EventType::kUpdatePlayerData,
                        event.GetArg<GameObjectId>(0),
                        senders_player_ptr->GetX(),
-                       senders_player_ptr->GetY()));
-}
-
-void RoomController::SendViewAngleEvent(const Event& event) {
-  auto senders_player_ptr =
-      model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
-  senders_player_ptr->SetViewAngle(event.GetArg<float>(1));
-  this->AddEventToSend(Event(EventType::kUpdatePlayerViewAngle,
-                             event.GetArg<GameObjectId>(0),
-                             event.GetArg<float>(1)));
+                       senders_player_ptr->GetY(),
+                       senders_player_ptr->GetViewAngle()));
 }

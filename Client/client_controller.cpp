@@ -9,10 +9,10 @@ ClientController::ClientController(const QUrl& url) : url_(url) {
   web_socket_.open(url);
   this->StartTicking();
 
-  timer_for_keys_ = new QTimer(this);
-  connect(timer_for_keys_, &QTimer::timeout, this,
-          &ClientController::ApplyDirection);
-  timer_for_keys_->start(Constants::kTimeToUpdateKeys);
+  timer_for_controls_ = new QTimer(this);
+  connect(timer_for_controls_, &QTimer::timeout, this,
+          &ClientController::ApplyControls);
+  timer_for_controls_->start(Constants::kTimeToUpdateControls);
 }
 
 GameDataModel* ClientController::GetModel() {
@@ -131,37 +131,25 @@ void ClientController::UpdateServerVarEvent(const Event& event) {
 
 // ------------------- GAME EVENTS -------------------
 
-void ClientController::SendDirectionInfoEvent(const Event& event) {
+void ClientController::SendControlsEvent(const Event& event) {
   this->AddEventToSend(event);
 }
 
-void ClientController::SendViewAngleEvent(const Event& event) {
-  this->AddEventToSend(event);
-}
+void ClientController::UpdatePlayerDataEvent(const Event& event) {
+  if (!model_.IsLocalPlayerSet()) {
+    return;
+  }
 
-void ClientController::UpdatePlayerPositionEvent(const Event& event) {
   auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
-
-  // TODO(Everyone): uncomment after Player's moving is reworked
-  // if (player_ptr->IsLocalPlayer()) {
-  //   return;
-  // }
 
   player_ptr->SetX(event.GetArg<float>(1));
   player_ptr->SetY(event.GetArg<float>(2));
 
-  converter_->UpdateGameCenter(player_ptr->GetPosition());
-  view_->Update();
-}
-
-void ClientController::UpdatePlayerViewAngleEvent(const Event& event) {
-  auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
-
   if (player_ptr->IsLocalPlayer()) {
+    converter_->UpdateGameCenter(player_ptr->GetPosition());
     return;
   }
 
-  player_ptr->SetViewAngle(event.GetArg<float>(1));
   view_->Update();
 }
 
@@ -193,13 +181,10 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
                                                 mouse_event->pos()));
     local_player->SetViewAngle(view_angle);
     view_->Update();
-    this->AddEventToHandle(Event(EventType::kSendViewAngle,
-                                 local_player->GetId(),
-                                 view_angle));
   }
 }
 
-void ClientController::ApplyDirection() {
+void ClientController::ApplyControls() {
   ResetDirection();
 
   bool is_up_pressed = is_direction_by_keys_[Direction::kUp];
@@ -221,11 +206,14 @@ void ClientController::ApplyDirection() {
       + is_direction_applied_[Direction::kDown] * 2
       + is_direction_applied_[Direction::kLeft];
 
-  if (mask != 0) {
-    this->AddEventToHandle(Event(EventType::kSendDirectionInfo,
-                                 GetModel()->GetLocalPlayerId(),
-                                 mask));
+  if (!model_.IsLocalPlayerSet()) {
+    return;
   }
+
+  this->AddEventToHandle(Event(EventType::kSendControls,
+                               model_.GetLocalPlayerId(),
+                               mask,
+                               model_.GetLocalPlayer()->GetViewAngle()));
 }
 
 void ClientController::ResetDirection() {

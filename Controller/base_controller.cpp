@@ -25,14 +25,10 @@ BaseController::BaseController() {
 
   // ------------------- GAME EVENTS -------------------
 
-  SetFunctionForEventType(EventType::kSendDirectionInfo,
-    std::bind(&BaseController::SendDirectionInfoEvent, this, _1));
-  SetFunctionForEventType(EventType::kSendViewAngle,
-    std::bind(&BaseController::SendViewAngleEvent, this, _1));
-  SetFunctionForEventType(EventType::kUpdatePlayerPosition,
-    std::bind(&BaseController::UpdatePlayerPositionEvent, this, _1));
-  SetFunctionForEventType(EventType::kUpdatePlayerViewAngle,
-    std::bind(&BaseController::UpdatePlayerViewAngleEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendControls,
+    std::bind(&BaseController::SendControlsEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdatePlayerData,
+    std::bind(&BaseController::UpdatePlayerDataEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

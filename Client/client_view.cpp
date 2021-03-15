@@ -25,8 +25,6 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 
 void ClientView::Update() {
   this->update();
-  repaint();
-  qDebug().noquote().nospace() << "[VIEW] Updated";
 }
 
 std::shared_ptr<Converter> ClientView::GetConverter() {
@@ -60,6 +58,8 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
                        .arg(local_player->GetX())
                        .arg(local_player->GetY()));
   info_label_->adjustSize();
+
+  qDebug().noquote().nospace() << "[VIEW] Repainted";
 }
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {

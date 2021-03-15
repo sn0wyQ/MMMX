@@ -49,28 +49,22 @@ enum class EventType {
   // No arguments
   kStartGame,
 
+  // [0] - <int> sender_PLAYER_id / receiver_CLIENT_id
+  kUpdateServerVar,
+
   // ------------------- GAME EVENTS -------------------
 
   // [0] - <int> sender_player_id,
   // [1] - <uint32> mask 0000 means direction
-  // up/right/down/left direction true/false
-  kSendDirectionInfo,
-
-  // [0] - <int> sender_player_id,
-  // [1] - <float> view_angle
-  kSendViewAngle,
+  //          up/right/down/left direction true/false
+  // [2] - <float> view_angle
+  kSendControls,
 
   // [0] - <int> sender_player_id,
   // [1] - <float> x,
-  // [2] - <float> y
-  kUpdatePlayerPosition,
-
-  // [0] - <int> sender_player_id,
-  // [1] - <float> view_angle
-  kUpdatePlayerViewAngle,
-
-  // [0] - <int> sender_PLAYER_id / receiver_CLIENT_id
-  kUpdateServerVar,
+  // [2] - <float> y,
+  // [3] - <float> view_angle
+  kUpdatePlayerData,
 
   SIZE
 };

@@ -54,7 +54,7 @@ class ClientController : public BaseController {
   void SetView(std::shared_ptr<AbstractClientView> view);
 
   // -------------------- CONTROLS --------------------
-  void ApplyDirection();
+  void ApplyControls();
   void ResetDirection();
 
   void KeyPressEvent(QKeyEvent* key_event);
@@ -79,10 +79,8 @@ class ClientController : public BaseController {
 
   // ------------------- GAME EVENTS -------------------
 
-  void SendDirectionInfoEvent(const Event& event) override;
-  void SendViewAngleEvent(const Event& event) override;
-  void UpdatePlayerPositionEvent(const Event& event) override;
-  void UpdatePlayerViewAngleEvent(const Event& event) override;
+  void SendControlsEvent(const Event& event) override;
+  void UpdatePlayerDataEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kNotStarted;
   QUrl url_;
@@ -104,7 +102,7 @@ class ClientController : public BaseController {
   };
   std::unordered_map<Direction, bool> is_direction_by_keys_{false};
   std::unordered_map<Direction, bool> is_direction_applied_{false};
-  QTimer* timer_for_keys_;
+  QTimer* timer_for_controls_;
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_
