@@ -35,7 +35,7 @@ class ClientView : public AbstractClientView {
   std::shared_ptr<ClientController> controller_;
   GameDataModel* model_;
 
-  GameView* game_view;
+  GameView* game_view_;
   QLabel* info_label_;
 };
 

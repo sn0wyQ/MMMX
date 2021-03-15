@@ -9,9 +9,9 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   setMouseTracking(true);
 
   // Game View
-  game_view = new GameView(this, controller_->GetModel());
-  game_view->move(0, 0);
-  game_view->setMouseTracking(true);
+  game_view_ = new GameView(this, controller_->GetModel());
+  game_view_->move(0, 0);
+  game_view_->setMouseTracking(true);
 
   // Info Label
   info_label_ = new QLabel(this);
@@ -29,7 +29,7 @@ void ClientView::Update() {
 }
 
 std::shared_ptr<Converter> ClientView::GetConverter() {
-  return game_view->GetConverter();
+  return game_view_->GetConverter();
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
@@ -58,5 +58,5 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 }
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
-  game_view->resize(resize_event->size());
+  game_view_->resize(resize_event->size());
 }
