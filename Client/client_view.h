@@ -34,7 +34,7 @@ class ClientView : public AbstractClientView {
   void resizeEvent(QResizeEvent* resize_event) override;
 
   std::shared_ptr<ClientController> controller_;
-  GameDataModel* model_;
+  std::shared_ptr<GameDataModel> model_;
   GameView* game_view_;
   QLabel* info_label_;
 };

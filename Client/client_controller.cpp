@@ -1,6 +1,7 @@
 #include "client_controller.h"
 
-ClientController::ClientController(const QUrl& url) : url_(url) {
+ClientController::ClientController(const QUrl& url) : url_(url),
+  model_(std::make_shared<GameDataModel>()) {
   qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
   connect(&web_socket_, &QWebSocket::connected, this,
           &ClientController::OnConnected);
@@ -15,8 +16,8 @@ ClientController::ClientController(const QUrl& url) : url_(url) {
   timer_for_controls_->start(Constants::kTimeToUpdateControls);
 }
 
-GameDataModel* ClientController::GetModel() {
-  return &model_;
+std::shared_ptr<GameDataModel> ClientController::GetModel() {
+  return model_;
 }
 
 bool ClientController::IsGameInProgress() const {
@@ -52,7 +53,7 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
 }
 
 void ClientController::AddNewPlayerEvent(const Event& event) {
-  model_.AddPlayer(event.GetArg<GameObjectId>(1));
+  model_->AddPlayer(event.GetArg<GameObjectId>(1));
   view_->Update();
 }
 
@@ -62,14 +63,14 @@ void ClientController::EndGameEvent(const Event& event) {
 }
 
 void ClientController::SetClientsPlayerIdEvent(const Event& event) {
-  model_.SetLocalPlayerId(event.GetArg<GameObjectId>(1));
+  model_->SetLocalPlayerId(event.GetArg<GameObjectId>(1));
   qInfo().noquote() << "[CLIENT] Set player_id to"
                     << event.GetArg<GameObjectId>(1);
 }
 
 void ClientController::CreateAllPlayersDataEvent(const Event& event) {
   for (int i = 2; i < event.GetArg<int>(1) * 4 + 2; i += 4) {
-    model_.AddPlayer(event.GetArg<GameObjectId>(i),
+    model_->AddPlayer(event.GetArg<GameObjectId>(i),
                      event.GetArg<float>(i + 1),
                      event.GetArg<float>(i + 2),
                      event.GetArg<float>(i + 3));
@@ -91,7 +92,7 @@ void ClientController::SendEvent(const Event& event) {
 void ClientController::OnTick() {}
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
-  model_.DeletePlayer(event.GetArg<GameObjectId>(0));
+  model_->DeletePlayer(event.GetArg<GameObjectId>(0));
   game_state_ = GameState::kNotStarted;
   view_->Update();
 }
@@ -119,7 +120,7 @@ void ClientController::UpdatePing(int elapsed_time) {
 
 void ClientController::UpdateServerVar() {
   this->AddEventToSend(Event(EventType::kUpdateServerVar,
-                             model_.GetLocalPlayerId()));
+                             model_->GetLocalPlayerId()));
   timer_elapsed_server_var_.restart();
   web_socket_.ping();
 }
@@ -136,11 +137,11 @@ void ClientController::SendControlsEvent(const Event& event) {
 }
 
 void ClientController::UpdatePlayerDataEvent(const Event& event) {
-  if (!model_.IsLocalPlayerSet()) {
+  if (!model_->IsLocalPlayerSet()) {
     return;
   }
 
-  auto player_ptr = model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
+  auto player_ptr = model_->GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
 
   player_ptr->SetX(event.GetArg<float>(1));
   player_ptr->SetY(event.GetArg<float>(2));
@@ -172,8 +173,8 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
-  if (model_.IsLocalPlayerSet()) {
-    auto local_player = model_.GetLocalPlayer();
+  if (model_->IsLocalPlayerSet()) {
+    auto local_player = model_->GetLocalPlayer();
     float view_angle = Math::DirectionAngle(local_player->GetPosition(),
                                             converter_->PointFromScreenToGame(
                                                 mouse_event->pos()));
@@ -216,14 +217,14 @@ void ClientController::ApplyControls() {
         + is_direction_applied_[Direction::kLeft];
   }
 
-  if (!model_.IsLocalPlayerSet()) {
+  if (!model_->IsLocalPlayerSet()) {
     return;
   }
 
   this->AddEventToHandle(Event(EventType::kSendControls,
-                               model_.GetLocalPlayerId(),
+                               model_->GetLocalPlayerId(),
                                direction_mask,
-                               model_.GetLocalPlayer()->GetViewAngle()));
+                               model_->GetLocalPlayer()->GetViewAngle()));
 }
 
 void ClientController::ResetDirection() {

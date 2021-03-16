@@ -17,7 +17,7 @@ class GameView : public QWidget {
   Q_OBJECT
 
  public:
-  GameView(QWidget* parent, GameDataModel* model);
+  GameView(QWidget* parent, std::shared_ptr<GameDataModel> model);
 
   std::shared_ptr<Converter> GetConverter();
 
@@ -25,7 +25,7 @@ class GameView : public QWidget {
   void resizeEvent(QResizeEvent* resize_event) override;
 
  private:
-  GameDataModel* model_;
+  std::shared_ptr<GameDataModel> model_;
   std::shared_ptr<Converter> converter_;
 };
 

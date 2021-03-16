@@ -65,7 +65,7 @@ class ClientController : public BaseController {
   void SendEvent(const Event& event) override;
   void OnTick() override;
 
-  GameDataModel* GetModel();
+  std::shared_ptr<GameDataModel> GetModel();
   int GetServerVar() const;
   int GetPing() const;
 
@@ -105,7 +105,7 @@ class ClientController : public BaseController {
   GameState game_state_ = GameState::kNotStarted;
   QUrl url_;
   QWebSocket web_socket_;
-  GameDataModel model_;
+  std::shared_ptr<GameDataModel> model_;
   std::shared_ptr<AbstractClientView> view_;
   int server_var_{0};
   int ping_{0};
