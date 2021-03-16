@@ -129,30 +129,17 @@ void ServerController::OnNewClient() {
 
   ClientId new_client_id = server_model_.GetNextUnusedClientId();
   RoomId room_id;
+  bool is_correct_room_found = false;
 
-  bool found_existing_room_with_a_free_place = false;
-  while (!found_existing_room_with_a_free_place
-      && !server_model_.IsRoomsQueueEmpty()) {
-    bool need_to_pop_room = true;
-
-    if (server_model_.IsTopRoomInQueueExistsInModel()) {
-      auto top_room = server_model_.GetTopRoomInQueue();
-      if (top_room->HasFreeSpot()
-          && top_room->IsWaitingForClients()) {
-        room_id = top_room->GetId();
-        found_existing_room_with_a_free_place = true;
-        need_to_pop_room = false;
-      }
-    }
-
-    if (need_to_pop_room) {
-      server_model_.PopTopRoomInQueue();
+  for (auto& [current_room_id, room_ptr] : server_model_.GetRooms()) {
+    if (room_ptr->HasFreeSpot() && room_ptr->IsWaitingForClients()) {
+      room_id = current_room_id;
+      is_correct_room_found = true;
+      break;
     }
   }
-
-  if (!found_existing_room_with_a_free_place) {
+  if (!is_correct_room_found) {
     room_id = server_model_.AddNewRoom();
-    server_model_.AddToRoomsWithFreeSpot(room_id);
   }
 
   auto new_client =
