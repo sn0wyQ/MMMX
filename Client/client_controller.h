@@ -19,7 +19,9 @@
 #include "Math/math.h"
 #include "Model/game_data_model.h"
 
-// TODO (everyone): make class instead of enum
+// TODO(Everyone): make class Hotkeys (with possibility to rebind keys)
+// instead of enum Controls
+
 #ifdef WIN32
 enum class Controls {
   kKeyW = 17,
