@@ -19,6 +19,23 @@
 #include "Math/math.h"
 #include "Model/game_data_model.h"
 
+// TODO (everyone): make class instead of enum
+#ifdef WIN32
+enum class Controls {
+  kKeyW = 17,
+  kKeyA = 30,
+  kKeyS = 31,
+  kKeyD = 32
+};
+#else
+enum class Controls {
+  kKeyW = 25,
+  kKeyA = 38,
+  kKeyS = 39,
+  kKeyD = 40
+};
+#endif
+
 enum class Direction {
   kUp,
   kRight,
@@ -95,11 +112,11 @@ class ClientController : public BaseController {
   std::shared_ptr<Converter> converter_;
 
   // TODO(Everyone): Rework
-  std::unordered_map<uint32_t, Direction> key_to_direction_{
-      {Qt::Key_W, Direction::kUp},
-      {Qt::Key_D, Direction::kRight},
-      {Qt::Key_S, Direction::kDown},
-      {Qt::Key_A, Direction::kLeft}
+  std::unordered_map<Controls, Direction> key_to_direction_{
+      {Controls::kKeyW, Direction::kUp},
+      {Controls::kKeyD, Direction::kRight},
+      {Controls::kKeyS, Direction::kDown},
+      {Controls::kKeyA, Direction::kLeft}
   };
   std::unordered_map<Direction, bool> is_direction_by_keys_{false};
   std::unordered_map<Direction, bool> is_direction_applied_{false};

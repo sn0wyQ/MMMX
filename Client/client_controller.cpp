@@ -158,17 +158,16 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
 // -------------------- CONTROLS --------------------
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
-  int native_key = key_event->nativeVirtualKey();
+  auto native_key = static_cast<Controls>(key_event->nativeScanCode());
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
-  int native_key = key_event->nativeVirtualKey();
+  auto native_key = static_cast<Controls>(key_event->nativeScanCode());
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
-    is_direction_by_keys_[key_to_direction_[native_key]]
-        = false;
+    is_direction_by_keys_[key_to_direction_[native_key]] = false;
   }
 }
 
