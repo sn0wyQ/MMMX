@@ -31,14 +31,6 @@ std::shared_ptr<Converter> ClientView::GetConverter() {
   return game_view_->GetConverter();
 }
 
-void ClientView::focusInEvent(QFocusEvent* focus_event) {
-  is_focused_ = true;
-}
-
-void ClientView::focusOutEvent(QFocusEvent* focus_event) {
-  is_focused_ = false;
-}
-
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
   controller_->KeyPressEvent(key_event);
 }
@@ -71,5 +63,5 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
 }
 
 bool ClientView::IsFocused() const {
-  return is_focused_;
+  return hasFocus();
 }

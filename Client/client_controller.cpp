@@ -150,6 +150,8 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
     return;
   }
 
+  player_ptr->SetViewAngle(event.GetArg<float>(3));
+
   view_->Update();
 }
 
@@ -182,33 +184,38 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientController::ApplyControls() {
+  bool read_controls = true;
+  uint32_t direction_mask = 0;
+
   if (!view_->IsFocused()) {
     for (const auto& [key, direction] : key_to_direction_) {
       is_direction_by_keys_[direction] = false;
     }
-    return;
+    read_controls = false;
   }
 
-  ResetDirection();
+  if (read_controls) {
+    ResetDirection();
 
-  bool is_up_pressed = is_direction_by_keys_[Direction::kUp];
-  bool is_right_pressed = is_direction_by_keys_[Direction::kRight];
-  bool is_down_pressed = is_direction_by_keys_[Direction::kDown];
-  bool is_left_pressed = is_direction_by_keys_[Direction::kLeft];
+    bool is_up_pressed = is_direction_by_keys_[Direction::kUp];
+    bool is_right_pressed = is_direction_by_keys_[Direction::kRight];
+    bool is_down_pressed = is_direction_by_keys_[Direction::kDown];
+    bool is_left_pressed = is_direction_by_keys_[Direction::kLeft];
 
-  if ((is_up_pressed ^ is_down_pressed) == 1) {
-    is_direction_applied_[is_up_pressed ? Direction::kUp : Direction::kDown]
-        = true;
+    if ((is_up_pressed ^ is_down_pressed) == 1) {
+      is_direction_applied_[is_up_pressed ? Direction::kUp : Direction::kDown]
+          = true;
+    }
+    if ((is_right_pressed ^ is_left_pressed) == 1) {
+      is_direction_applied_[is_right_pressed ?
+                            Direction::kRight : Direction::kLeft] = true;
+    }
+
+    direction_mask = is_direction_applied_[Direction::kUp] * 8
+        + is_direction_applied_[Direction::kRight] * 4
+        + is_direction_applied_[Direction::kDown] * 2
+        + is_direction_applied_[Direction::kLeft];
   }
-  if ((is_right_pressed ^ is_left_pressed) == 1) {
-    is_direction_applied_[is_right_pressed ?
-                          Direction::kRight : Direction::kLeft] = true;
-  }
-
-  uint32_t mask = is_direction_applied_[Direction::kUp] * 8
-      + is_direction_applied_[Direction::kRight] * 4
-      + is_direction_applied_[Direction::kDown] * 2
-      + is_direction_applied_[Direction::kLeft];
 
   if (!model_.IsLocalPlayerSet()) {
     return;
@@ -216,7 +223,7 @@ void ClientController::ApplyControls() {
 
   this->AddEventToHandle(Event(EventType::kSendControls,
                                model_.GetLocalPlayerId(),
-                               mask,
+                               direction_mask,
                                model_.GetLocalPlayer()->GetViewAngle()));
 }
 
