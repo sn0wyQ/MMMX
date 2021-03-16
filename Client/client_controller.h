@@ -22,10 +22,10 @@
 // TODO (everyone): make class instead of enum
 #ifdef WIN32
 enum class Controls {
-  kKeyW = 25,
-  kKeyA = 38,
-  kKeyS = 39,
-  kKeyD = 40
+  kKeyW = 17,
+  kKeyA = 30,
+  kKeyS = 31,
+  kKeyD = 32
 };
 #else
 enum class Controls {
