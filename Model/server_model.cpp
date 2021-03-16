@@ -9,7 +9,11 @@ ServerModel::ConnectedClient::ConnectedClient(
 
 std::shared_ptr<ServerModel::ConnectedClient> ServerModel::GetClientByClientId(
     ClientId client_id) const {
-  return connected_clients_.at(client_id);
+  auto client_iterator = connected_clients_.find(client_id);
+  if (client_iterator == connected_clients_.end()) {
+    return nullptr;
+  }
+  return client_iterator->second;
 }
 
 std::map<RoomId, std::shared_ptr<RoomController>>& ServerModel::GetRooms() {

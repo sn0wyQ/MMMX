@@ -1,3 +1,4 @@
+#include <iostream>
 #include "server_controller.h"
 
 ServerController::ServerController()
@@ -53,11 +54,15 @@ void ServerController::SendEvent(const Event& event) {
 }
 
 void ServerController::OnTick() {
+  std::vector<RoomId> rooms_to_delete;
   for (auto& room_iter : server_model_.GetRooms()) {
     if (!room_iter.second->HasPlayers()
         && !room_iter.second->IsWaitingForClients()) {
-      server_model_.DeleteRoom(room_iter.second->GetId());
+      rooms_to_delete.push_back(room_iter.second->GetId());
     }
+  }
+  for (const auto& room_id : rooms_to_delete) {
+    server_model_.DeleteRoom(room_id);
   }
   ProcessEventsFromRooms();
 }
@@ -183,11 +188,13 @@ void ServerController::OnSocketDisconnected() {
 
 void ServerController::SendToClient(int client_id,
                                     const Event& event) {
-  try {
-    auto client_ptr = server_model_.GetClientByClientId(client_id);
-    client_ptr->socket->sendBinaryMessage(event.ToByteArray());
-  } catch (std::exception& e) {
-    qInfo() << "[SERVER] Caught exception" << e.what();
+  auto client_ptr = server_model_.GetClientByClientId(client_id);
+  if (client_ptr) {
+    try {
+      client_ptr->socket->sendBinaryMessage(event.ToByteArray());
+    } catch (std::exception& e) {
+      qInfo() << "[SERVER] Caught exception" << e.what();
+    }
   }
 }
 
