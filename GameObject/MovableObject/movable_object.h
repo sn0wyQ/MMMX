@@ -8,6 +8,9 @@ class MovableObject : public GameObject {
   explicit MovableObject(GameObjectId id);
   void OnTick() override = 0;
   void Draw(Painter* painter) override = 0;
+
+ private:
+  QVector2D velocity_{};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_

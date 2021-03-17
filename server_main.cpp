@@ -10,37 +10,38 @@
 void ServerMessageHandler(QtMsgType type,
                           const QMessageLogContext& context,
                           const QString& message) {
-  if constexpr (kServerShowOnlyInfoMessages) {
+  QString txt;
+  if constexpr (Constants::kServerShowOnlyInfoMessages) {
     if (type != QtInfoMsg) {
       return;
     }
-  }
+    txt = message;
+  } else {
+    switch (type) {
+      case QtDebugMsg:
+        txt = QString("Debug: %1").arg(message);
+        break;
 
-  QString txt;
-  switch (type) {
-    case QtDebugMsg:
-      txt = QString("Debug: %1").arg(message);
-      break;
+      case QtWarningMsg:
+        txt += QString("Warning: %1").arg(message);
+        break;
 
-    case QtWarningMsg:
-      txt += QString("Warning: %1").arg(message);
-      break;
+      case QtCriticalMsg:
+        txt = QString("Critical: %1").arg(message);
+        break;
 
-    case QtCriticalMsg:
-      txt = QString("Critical: %1").arg(message);
-      break;
+      case QtFatalMsg:
+        txt = QString("Fatal: %1").arg(message);
+        break;
 
-    case QtFatalMsg:
-      txt = QString("Fatal: %1").arg(message);
-      break;
-
-    case QtInfoMsg:
-      txt = message;
-      break;
+      case QtInfoMsg:
+        txt = message;
+        break;
+    }
   }
 
   QTextStream screen_output(stdout);
-  if constexpr (kServerShowDebugMessagesOnScreen) {
+  if constexpr (Constants::kServerShowDebugMessagesOnScreen) {
     screen_output << txt << Qt::endl;
     if (type != QtInfoMsg) {
       screen_output << QString("        At %1 (%2:%3)")
@@ -49,8 +50,12 @@ void ServerMessageHandler(QtMsgType type,
           .arg(context.line) << Qt::endl;
     }
   } else {
-    if (type == QtInfoMsg) {
+    if constexpr (Constants::kServerShowOnlyInfoMessages) {
       screen_output << txt << Qt::endl;
+    } else {
+      if (type == QtInfoMsg) {
+        screen_output << txt << Qt::endl;
+      }
     }
   }
 

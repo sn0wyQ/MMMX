@@ -13,6 +13,13 @@ using RoomId = int;
 
 namespace Constants {
 
+// Build Options
+constexpr bool kRemote = false;
+constexpr bool kServerShowOnlyInfoMessages = false;
+constexpr bool kServerShowDebugMessagesOnScreen = false;
+constexpr bool kClientShowOnlyInfoMessages = false;
+constexpr bool kClientShowDebugMessagesOnScreen = false;
+
 // Version
 constexpr int kMajorVersion = 0;
 constexpr int kMinorVersion = 0;
@@ -24,7 +31,7 @@ const QString kVersionString = QString::number(kMajorVersion)
 // Server
 const QString kServerName = "MMMX Server";
 constexpr int kServerPort = 1337;
-const QString kServerIp = kOnline ? "188.120.224.70" : "localhost";
+const QString kServerIp = kRemote ? "188.120.224.70" : "localhost";
 const QUrl kServerUrl =
     QUrl(QString("ws://") + kServerIp + ":" + QString::number(kServerPort));
 constexpr int kTickrate = 64;
