@@ -15,7 +15,7 @@ class ServerController : public BaseController {
 
  public:
   ServerController();
-  ~ServerController() override;
+  ~ServerController() override = default;
 
   QString GetControllerName() const override;
 

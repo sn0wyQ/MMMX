@@ -17,10 +17,6 @@ ServerController::ServerController()
   this->StartTicking();
 }
 
-ServerController::~ServerController() {
-  web_socket_server_.close();
-}
-
 void ServerController::SendEvent(const Event& event) {
   BaseController::LogEvent(event);
   switch (event.GetType()) {
