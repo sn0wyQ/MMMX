@@ -37,18 +37,19 @@ void Player::Draw(Painter* painter) {
   painter->restore();
 }
 
+// More information about |mask| can be found in event_type.h
 void Player::ApplyDirection(uint32_t mask) {
   QPointF pos = GetPosition();
-  if ((mask >> 3u) & 1u) {
+  if (mask & (1UL << 3)) {
     pos.ry() -= 0.05f;
   }
-  if ((mask >> 2u) & 1u) {
+  if (mask & (1UL << 2)) {
     pos.rx() += 0.05f;
   }
-  if ((mask >> 1u) & 1u) {
+  if (mask & (1UL << 1)) {
     pos.ry() += 0.05f;
   }
-  if ((mask >> 0u) & 1u) {
+  if (mask & 1UL) {
     pos.rx() -= 0.05f;
   }
   SetPosition(pos);
