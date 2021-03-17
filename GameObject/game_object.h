@@ -1,7 +1,6 @@
 #ifndef GAMEOBJECT_GAME_OBJECT_H_
 #define GAMEOBJECT_GAME_OBJECT_H_
 
-#include <QObject>
 #include <QPoint>
 
 #include "Painter/painter.h"

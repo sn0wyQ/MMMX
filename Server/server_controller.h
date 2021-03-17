@@ -6,6 +6,8 @@
 #include <vector>
 
 #include <QByteArray>
+#include <QString>
+#include <QWebSocketServer>
 
 #include "Controller/base_controller.h"
 #include "Model/server_model.h"

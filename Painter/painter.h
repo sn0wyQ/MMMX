@@ -5,15 +5,16 @@
 #include <utility>
 
 #include <QPainter>
-#include <QPolygon>
+#include <QPointF>
+#include <QPolygonF>
 
 #include "Converter/converter.h"
 
 class Painter : public QPainter {
  public:
-  explicit Painter(QPaintDevice* device,
-                   std::shared_ptr<Converter> converter,
-                   const QPointF& local_centre);
+  Painter(QPaintDevice* device,
+          std::shared_ptr<Converter> converter,
+          const QPointF& local_centre);
 
   void RotateClockWise(float degree);
   void RotateCounterClockWise(float degree);

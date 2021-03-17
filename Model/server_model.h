@@ -18,8 +18,8 @@
 class ServerModel {
  public:
   struct ConnectedClient {
-    explicit ConnectedClient(const std::shared_ptr<QWebSocket>& socket_ptr,
-                             RoomId room_id = Constants::kNullRoomId);
+    ConnectedClient(const std::shared_ptr<QWebSocket>& socket_ptr,
+                    RoomId room_id = Constants::kNullRoomId);
 
     std::shared_ptr<QWebSocket> socket;
     // TODO(Everyone): make Client send nickname after connection to server

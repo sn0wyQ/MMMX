@@ -1,8 +1,6 @@
 #ifndef MATH_MATH_H_
 #define MATH_MATH_H_
 
-#include <cmath>
-
 #include <QLineF>
 #include <QPointF>
 

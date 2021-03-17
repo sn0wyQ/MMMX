@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <QDebug>
+#include <QString>
 
 #include "Controller/base_controller.h"
 #include "Model/game_data_model.h"
@@ -21,7 +22,7 @@ enum class RoomState {
 
 class RoomController : public BaseController {
  public:
-  explicit RoomController(RoomId id, RoomSettings room_settings);
+  RoomController(RoomId id, RoomSettings room_settings);
   ~RoomController() override = default;
 
   QString GetControllerName() const override;

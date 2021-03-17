@@ -20,14 +20,14 @@ void Player::Draw(Painter* painter) {
 
   painter->RotateCounterClockWise(GetViewAngle());
 
-  // Body
+  // Body [Temporary]
   painter->DrawEllipse(QPointF(), 1.f, 1.f);
 
-  // Eyes
+  // Eyes [Temporary]
   painter->DrawEllipse(QPointF(0.4f, -0.3f), 0.2f, 0.2f);
   painter->DrawEllipse(QPointF(0.4, 0.3f), 0.2f, 0.2f);
 
-  // Direction Arrow
+  // Direction Arrow [Needs improvement to look cuter]
   if (IsLocalPlayer()) {
     painter->DrawTriangle(QPointF(1.2f, -0.3f),
                           QPointF(1.2f, 0.3f),

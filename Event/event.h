@@ -17,7 +17,7 @@ class Event {
  public:
   Event(const Event& event);
   template<typename... Args>
-  explicit Event(EventType event_type, const Args&... args)
+  Event(EventType event_type, const Args&... args)
     : type_(event_type) {
     args_ = { args... };
   }

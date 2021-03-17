@@ -9,5 +9,3 @@ float Entity::GetViewAngle() const {
 void Entity::SetViewAngle(float view_angle) {
   view_angle_ = view_angle;
 }
-
-
