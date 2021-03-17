@@ -4,8 +4,6 @@
 #include <QString>
 #include <QUrl>
 
-#include "build_options.h"
-
 // code_readability++;
 using ClientId = int;
 using GameObjectId = int;

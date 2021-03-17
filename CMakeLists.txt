@@ -42,7 +42,6 @@ set(SOURCES
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
-        build_options.h
         )
 
 # If necessary, add resources files
