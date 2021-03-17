@@ -5,9 +5,12 @@
 #include <utility>
 #include <vector>
 
+#include <QKeyEvent>
 #include <QLabel>
 #include <QMainWindow>
+#include <QMouseEvent>
 #include <QPushButton>
+#include <QPaintEvent>
 #include <QPainter>
 
 #include "Client/abstract_client_view.h"

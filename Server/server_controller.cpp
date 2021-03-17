@@ -1,4 +1,3 @@
-#include <iostream>
 #include "server_controller.h"
 
 ServerController::ServerController()

@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "GameObject/MovableObject/Entity/entity.h"
-#include "constants.h"
 
 class Player : public Entity {
  public:

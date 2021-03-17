@@ -1,7 +1,7 @@
 #include "converter.h"
 
 Converter::Converter(QWidget* widget) : widget_(widget) {
-  UpdateCoef();
+  UpdateCoefficient();
   UpdateGameCenter(QPointF(Constants::kDefaultPlayerX,
                            Constants::kDefaultPlayerY));
 }
@@ -11,15 +11,15 @@ QPointF Converter::GetCenter() const {
 }
 
 float Converter::GetCoef() const {
-  return coef_;
+  return coefficient_;
 }
 
 void Converter::UpdateGameCenter(QPointF center) {
   game_center_ = center;
 }
 
-void Converter::UpdateCoef() {
-  coef_ = static_cast<float>(widget_->height()) / Constants::kBaseViewHeight;
+void Converter::UpdateCoefficient() {
+  coefficient_ = static_cast<float>(widget_->height()) / Constants::kBaseViewHeight;
   screen_center_ = QPointF(static_cast<float>(widget_->width()) / 2.f,
                            static_cast<float>(widget_->height()) / 2.f);
 }

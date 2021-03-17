@@ -68,7 +68,7 @@ QDebug operator<<(QDebug debug, const Event& event) {
 
       case QMetaType::Float: {
         float value = arg.toFloat();
-        debug.nospace() << value << (ceilf(value) == value ? ".0f" : "f");
+        debug.nospace() << value << (std::ceil(value) == value ? ".0f" : "f");
         break;
       }
 

@@ -9,7 +9,6 @@
 #include <QDataStream>
 #include <QDebug>
 #include <QMetaEnum>
-#include <QObject>
 #include <QVariant>
 
 #include "Event/event_type.h"

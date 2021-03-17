@@ -24,5 +24,5 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
 }
 
 void GameView::resizeEvent(QResizeEvent* resize_event) {
-  converter_->UpdateCoef();
+  converter_->UpdateCoefficient();
 }

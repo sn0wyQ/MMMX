@@ -15,23 +15,22 @@ class Converter {
 
   void UpdateGameCenter(QPointF center);
 
-  void UpdateCoef();
-  void UpdateCoef(float new_widget_height);
+  void UpdateCoefficient();
 
   QPointF PointFromGameToScreen(const QPointF& point);
   QPointF PointFromScreenToGame(const QPointF& point);
 
   template<typename T>
   T ScaleFromGameToScreen(const T& object) {
-    return object * coef_;
+    return object * coefficient_;
   }
   template<typename T>
   T ScaleFromScreenToGame(const T& object) {
-    return object / coef_;
+    return object / coefficient_;
   }
 
  private:
-  float coef_;
+  float coefficient_;
   QWidget* widget_;
   QPointF game_center_;
   QPointF screen_center_;

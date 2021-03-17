@@ -8,6 +8,7 @@
 
 #include <QDebug>
 #include <QElapsedTimer>
+#include <QString>
 #include <QTimer>
 
 #include "Event/event.h"
