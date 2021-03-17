@@ -50,3 +50,15 @@ compile_commands.json
 
 # QtCreator local machine specific files for imported projects
 *creator.user*
+
+#Clion
+.idea/
+
+#Cmake
+CMakeFiles/
+Build/
+.cmake/
+CMakeLists.txt.user
+
+#Server build folder
+build-on-server/
