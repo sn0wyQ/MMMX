@@ -1,8 +1,6 @@
 #ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_
 
-#include <QVector2D>
-
 #include "GameObject/MovableObject/movable_object.h"
 
 class Entity : public MovableObject {
