@@ -11,11 +11,11 @@
 void ClientMessageHandler(QtMsgType type,
                           const QMessageLogContext& context,
                           const QString& message) {
-#if CLIENT_SHOW_ONLY_INFO_MESSAGES
-  if (type != QtInfoMsg) {
-    return;
+  if constexpr (kClientShowOnlyInfoMessages) {
+    if (type != QtInfoMsg) {
+      return;
+    }
   }
-#endif  // CLIENT_SHOW_ONLY_INFO_MESSAGES
 
   QString txt;
   switch (type) {
@@ -41,19 +41,19 @@ void ClientMessageHandler(QtMsgType type,
   }
 
   QTextStream screen_output(stdout);
-#if CLIENT_SHOW_DEBUG_MESSAGES_ON_SCREEN
-  screen_output << txt << Qt::endl;
-  if (type != QtInfoMsg) {
-    screen_output << QString("        At %1 (%2:%3)")
-        .arg(context.function)
-        .arg(context.file)
-        .arg(context.line) << Qt::endl;
-  }
-#else
-  if (type == QtInfoMsg) {
+  if constexpr (kClientShowDebugMessagesOnScreen) {
     screen_output << txt << Qt::endl;
+    if (type != QtInfoMsg) {
+      screen_output << QString("        At %1 (%2:%3)")
+          .arg(context.function)
+          .arg(context.file)
+          .arg(context.line) << Qt::endl;
+    }
+  } else {
+    if (type == QtInfoMsg) {
+      screen_output << txt << Qt::endl;
+    }
   }
-#endif  // CLIENT_SHOW_DEBUG_MESSAGES
 
   static QFile out_file("client.log");
   if (!out_file.isOpen()) {

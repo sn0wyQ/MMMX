@@ -4,7 +4,7 @@
 #include <QString>
 #include <QUrl>
 
-#include "defines.h"
+#include "build_options.h"
 
 // code_readability++;
 using ClientId = int;
@@ -24,11 +24,7 @@ const QString kVersionString = QString::number(kMajorVersion)
 // Server
 const QString kServerName = "MMMX Server";
 constexpr int kServerPort = 1337;
-#if ONLINE
-const QString kServerIp = "188.120.224.70";
-#else
-const QString kServerIp = "localhost";
-#endif
+const QString kServerIp = kOnline ? "188.120.224.70" : "localhost";
 const QUrl kServerUrl =
     QUrl(QString("ws://") + kServerIp + ":" + QString::number(kServerPort));
 constexpr int kTickrate = 64;
