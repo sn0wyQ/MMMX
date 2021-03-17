@@ -148,11 +148,11 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
 
   if (player_ptr->IsLocalPlayer()) {
     converter_->UpdateGameCenter(player_ptr->GetPosition());
+    view_->Update();
     return;
   }
 
   player_ptr->SetViewAngle(event.GetArg<float>(3));
-
   view_->Update();
 }
 
