@@ -31,6 +31,10 @@ std::shared_ptr<Converter> ClientView::GetConverter() {
   return game_view_->GetConverter();
 }
 
+void ClientView::focusOutEvent(QFocusEvent* focus_event) {
+  controller_->FocusOutEvent(focus_event);
+}
+
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
   controller_->KeyPressEvent(key_event);
 }

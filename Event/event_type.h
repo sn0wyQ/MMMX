@@ -55,15 +55,17 @@ enum class EventType {
   // ------------------- GAME EVENTS -------------------
 
   // [0] - <int> sender_player_id,
-  // [1] - <uint32> mask 0000 means direction
-  //          up/right/down/left direction true/false
-  // [2] - <float> view_angle
+  // [1] - <float> x,
+  // [2] - <float> y,
+  // [3] - <QVector2D> velocity,
+  // [4] - <float> view_angle
   kSendControls,
 
   // [0] - <int> sender_player_id,
   // [1] - <float> x,
   // [2] - <float> y,
-  // [3] - <float> view_angle
+  // [3] - <QVector2D> velocity,
+  // [4] - <float> view_angle
   kUpdatePlayerData,
 
   SIZE

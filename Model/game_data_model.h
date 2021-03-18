@@ -20,12 +20,12 @@ class GameDataModel {
   void DeletePlayer(GameObjectId player_id);
 
   std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
-  bool IsLocalPlayerSet() const;
   std::shared_ptr<Player> GetLocalPlayer() const;
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
   int GetPlayersCount() const;
   bool IsPlayerIdTaken(GameObjectId player_id) const;
 
+  bool IsLocalPlayerSet() const;
   GameObjectId GetLocalPlayerId() const;
   void SetLocalPlayerId(GameObjectId player_id);
 

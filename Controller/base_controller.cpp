@@ -39,6 +39,8 @@ void BaseController::SetFunctionForEventType(
 }
 
 void BaseController::Tick() {
+  this->OnTick(last_tick_.elapsed());
+
   while (HasEventsToHandle()) {
     this->HandleEvent(events_to_handle_.front());
     events_to_handle_.pop();
@@ -49,7 +51,7 @@ void BaseController::Tick() {
     events_to_send_.pop();
   }
 
-  this->OnTick();
+  last_tick_.restart();
 }
 
 bool BaseController::HasEventsToSend() const {

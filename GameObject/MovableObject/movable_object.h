@@ -8,8 +8,12 @@
 class MovableObject : public GameObject {
  public:
   explicit MovableObject(GameObjectId id);
-  void OnTick() override = 0;
+  void OnTick(int time_from_previous_tick) override = 0;
   void Draw(Painter* painter) override = 0;
+
+
+  QVector2D GetVelocity() const;
+  void SetVelocity(const QVector2D& velocity);
 
  private:
   QVector2D velocity_{};

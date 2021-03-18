@@ -6,8 +6,10 @@
 class Entity : public MovableObject {
  public:
   explicit Entity(GameObjectId id);
-  void OnTick() override = 0;
+  void OnTick(int time_from_previous_tick) override = 0;
   void Draw(Painter* painter) override = 0;
+
+  float GetCurrentSpeed() const;
 
   float GetViewAngle() const;
   void SetViewAngle(float view_angle);

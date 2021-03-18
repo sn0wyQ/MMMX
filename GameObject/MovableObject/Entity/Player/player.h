@@ -3,6 +3,8 @@
 
 #include <vector>
 
+#include <QVector2D>
+
 #include "GameObject/MovableObject/Entity/entity.h"
 
 class Player : public Entity {
@@ -13,13 +15,14 @@ class Player : public Entity {
          float y,
          float view_angle);
 
-  void OnTick() override {};
+  void OnTick(int time_from_previous_tick) override;
   void Draw(Painter* painter) override;
 
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
 
-  void ApplyDirection(uint32_t mask);
+  void ApplyVelocity(int time_from_previous_tick);
+  void UpdateVelocity(uint32_t mask);
 
  private:
   bool is_local_player_ = false;
