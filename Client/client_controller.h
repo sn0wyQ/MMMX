@@ -63,7 +63,7 @@ class ClientController : public BaseController {
   QString GetControllerName() const override;
 
   void SendEvent(const Event& event) override;
-  void OnTick() override;
+  void OnTick(int time_from_previous_tick) override;
 
   std::shared_ptr<GameDataModel> GetModel();
   int GetServerVar() const;
@@ -74,9 +74,11 @@ class ClientController : public BaseController {
   void SetView(std::shared_ptr<AbstractClientView> view);
 
   // -------------------- CONTROLS --------------------
-  void ApplyControls();
+
+  void ApplyDirection();
   void ResetDirection();
 
+  void FocusOutEvent(QFocusEvent* focus_event);
   void KeyPressEvent(QKeyEvent* key_event);
   void KeyReleaseEvent(QKeyEvent* key_event);
   void MouseMoveEvent(QMouseEvent* mouse_event);
@@ -122,7 +124,6 @@ class ClientController : public BaseController {
   };
   std::unordered_map<Direction, bool> is_direction_by_keys_{false};
   std::unordered_map<Direction, bool> is_direction_applied_{false};
-  QTimer* timer_for_controls_;
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

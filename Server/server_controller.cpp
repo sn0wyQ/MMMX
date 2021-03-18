@@ -43,12 +43,12 @@ void ServerController::SendEvent(const Event& event) {
 
     // If we're here something most likely went wrong
     default:
-        qWarning() << "[SERVER] Impossible to send event " << event;
+        qWarning() << "[SERVER] Impossible to send event" << event;
       break;
   }
 }
 
-void ServerController::OnTick() {
+void ServerController::OnTick(int time_from_previous_tick) {
   std::vector<RoomId> rooms_to_delete;
   for (auto& room_iter : server_model_.GetRooms()) {
     if (!room_iter.second->HasPlayers()

@@ -9,11 +9,6 @@ ClientController::ClientController(const QUrl& url) : url_(url),
           &ClientController::OnDisconnected);
   web_socket_.open(url);
   this->StartTicking();
-
-  timer_for_controls_ = new QTimer(this);
-  connect(timer_for_controls_, &QTimer::timeout, this,
-          &ClientController::ApplyControls);
-  timer_for_controls_->start(Constants::kTimeToUpdateControls);
 }
 
 std::shared_ptr<GameDataModel> ClientController::GetModel() {
@@ -89,7 +84,27 @@ void ClientController::SendEvent(const Event& event) {
   web_socket_.sendBinaryMessage(event.ToByteArray());
 }
 
-void ClientController::OnTick() {}
+void ClientController::OnTick(int time_from_previous_tick) {
+  std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
+  for (const auto& player : players) {
+    player->OnTick(time_from_previous_tick);
+  }
+
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+
+  auto local_player = model_->GetLocalPlayer();
+
+  converter_->UpdateGameCenter(local_player->GetPosition());
+
+  this->AddEventToHandle(Event(EventType::kSendControls,
+                               local_player->GetId(),
+                               local_player->GetX(),
+                               local_player->GetY(),
+                               local_player->GetVelocity(),
+                               local_player->GetViewAngle()));
+}
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_->DeletePlayer(event.GetArg<GameObjectId>(0));
@@ -143,26 +158,37 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
 
   auto player_ptr = model_->GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
 
-  player_ptr->SetX(event.GetArg<float>(1));
-  player_ptr->SetY(event.GetArg<float>(2));
-
   if (player_ptr->IsLocalPlayer()) {
-    converter_->UpdateGameCenter(player_ptr->GetPosition());
-    view_->Update();
     return;
   }
 
-  player_ptr->SetViewAngle(event.GetArg<float>(3));
+  player_ptr->SetX(event.GetArg<float>(1));
+  player_ptr->SetY(event.GetArg<float>(2));
+  player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
+  player_ptr->SetViewAngle(event.GetArg<float>(4));
+
   view_->Update();
 }
 
 // -------------------- CONTROLS --------------------
+
+void ClientController::FocusOutEvent(QFocusEvent* focus_event) {
+  for (const auto& [key, direction] : key_to_direction_) {
+    is_direction_by_keys_[direction] = false;
+  }
+
+  if (model_->IsLocalPlayerSet()) {
+    model_->GetLocalPlayer()->SetVelocity({0, 0});
+  }
+}
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
+
+  ApplyDirection();
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
@@ -170,6 +196,8 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = false;
   }
+
+  ApplyDirection();
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
@@ -183,48 +211,34 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   }
 }
 
-void ClientController::ApplyControls() {
-  bool read_controls = true;
-  uint32_t direction_mask = 0;
-
-  if (!view_->IsFocused()) {
-    for (const auto& [key, direction] : key_to_direction_) {
-      is_direction_by_keys_[direction] = false;
-    }
-    read_controls = false;
-  }
-
-  if (read_controls) {
-    ResetDirection();
-
-    bool is_up_pressed = is_direction_by_keys_[Direction::kUp];
-    bool is_right_pressed = is_direction_by_keys_[Direction::kRight];
-    bool is_down_pressed = is_direction_by_keys_[Direction::kDown];
-    bool is_left_pressed = is_direction_by_keys_[Direction::kLeft];
-
-    if ((is_up_pressed ^ is_down_pressed) == 1) {
-      is_direction_applied_[is_up_pressed ? Direction::kUp : Direction::kDown]
-          = true;
-    }
-    if ((is_right_pressed ^ is_left_pressed) == 1) {
-      is_direction_applied_[is_right_pressed ?
-                            Direction::kRight : Direction::kLeft] = true;
-    }
-
-    direction_mask = is_direction_applied_[Direction::kUp] * 8
-        + is_direction_applied_[Direction::kRight] * 4
-        + is_direction_applied_[Direction::kDown] * 2
-        + is_direction_applied_[Direction::kLeft];
-  }
-
+void ClientController::ApplyDirection() {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
 
-  this->AddEventToHandle(Event(EventType::kSendControls,
-                               model_->GetLocalPlayerId(),
-                               direction_mask,
-                               model_->GetLocalPlayer()->GetViewAngle()));
+  ResetDirection();
+
+  bool is_up_pressed = is_direction_by_keys_[Direction::kUp];
+  bool is_right_pressed = is_direction_by_keys_[Direction::kRight];
+  bool is_down_pressed = is_direction_by_keys_[Direction::kDown];
+  bool is_left_pressed = is_direction_by_keys_[Direction::kLeft];
+
+  if ((is_up_pressed ^ is_down_pressed) == 1) {
+    is_direction_applied_[is_up_pressed ? Direction::kUp : Direction::kDown]
+        = true;
+  }
+  if ((is_right_pressed ^ is_left_pressed) == 1) {
+    is_direction_applied_[is_right_pressed ?
+                          Direction::kRight : Direction::kLeft] = true;
+  }
+
+  uint32_t direction_mask = is_direction_applied_[Direction::kUp] * 8
+      + is_direction_applied_[Direction::kRight] * 4
+      + is_direction_applied_[Direction::kDown] * 2
+      + is_direction_applied_[Direction::kLeft];
+
+  model_->GetLocalPlayer()->UpdateVelocity(direction_mask);
+  view_->Update();
 }
 
 void ClientController::ResetDirection() {
