@@ -4,6 +4,7 @@
 #include <memory>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include <QByteArray>
 #include <QDebug>
