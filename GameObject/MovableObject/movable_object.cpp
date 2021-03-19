@@ -18,5 +18,5 @@ void MovableObject::ApplyVelocity(int time_from_previous_tick) {
 
 float MovableObject::GetCurrentSpeed() const {
   // Temporary code
-  return Constants::kDefaultPlayerSpeed;
+  return Constants::kDefaultMovableObjectSpeed;
 }

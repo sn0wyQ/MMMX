@@ -52,11 +52,13 @@ constexpr int kTimeToUpdateServerVar = 1000;
 constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
 
+// MovableObject
+constexpr float kDefaultMovableObjectSpeed = 0.01f;
+
 // Player
 constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerViewAngle = 0.f;
-constexpr float kDefaultPlayerSpeed = 0.01f;
 
 }  // namespace Constants
 
