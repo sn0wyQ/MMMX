@@ -17,9 +17,10 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                   model_->IsLocalPlayerSet()
                   ? model_->GetLocalPlayer()->GetPosition()
                   : QPointF(0, 0));
-  std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
-  for (const auto& player : players) {
-    player->Draw(&painter);
+  std::vector<std::shared_ptr<GameObject>> game_objects
+    = model_->GetAllGameObjects();
+  for (const auto& game_object : game_objects) {
+    game_object->Draw(&painter);
   }
 }
 

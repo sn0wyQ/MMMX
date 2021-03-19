@@ -3,13 +3,15 @@
 
 #include <QPointF>
 
-#include "GameObject/Rigidbody/rigidbody.h"
+#include "GameObject/RigidBody/rigid_body.h"
 #include "Painter/painter.h"
 
-class RigidbodyCircle : public Rigidbody {
+class RigidBodyCircle : public RigidBody {
  public:
-  explicit RigidbodyCircle(float radius);
+  explicit RigidBodyCircle(float radius);
   void Draw(Painter* painter) override;
+  RigidBodyType GetRigidBodyType() const override;
+  float GetRadius() const;
 
  private:
   float radius_;

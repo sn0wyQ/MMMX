@@ -4,20 +4,23 @@
 #include <QPoint>
 
 #include "constants.h"
-#include "GameObject/Rigidbody/rigidbody.h"
-#include "GameObject/Rigidbody/rigidbody_circle.h"
-#include "GameObject/Rigidbody/rigidbody_rectangle.h"
+#include "GameObject/RigidBody/rigid_body.h"
+#include "GameObject/RigidBody/rigid_body_circle.h"
+#include "GameObject/RigidBody/rigid_body_rectangle.h"
 #include "Painter/painter.h"
+
+// enum for sending events
+enum class GameObjectType {
+  kBox = 0
+};
 
 class GameObject {
  public:
-  // GameObject(GameObjectId id, const RigidbodyCircle& rigidbody_circle);
-  // GameObject(GameObjectId id,
-  //                     const RigidbodyRectangle& rigidbody_rectangle);
-  GameObject(GameObjectId id, std::shared_ptr<Rigidbody> rigidbody);
+  GameObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body);
 
   virtual void OnTick(int time_from_previous_tick) = 0;
-  virtual void Draw(Painter* painter) = 0;
+  void Draw(Painter* painter);
+  virtual void DrawRelatively(Painter* painter) = 0;
 
   GameObjectId GetId() const;
   void SetId(GameObjectId id);
@@ -29,10 +32,12 @@ class GameObject {
   float GetY() const;
   void SetY(float y);
 
+  std::shared_ptr<RigidBody> GetRigidBody() const;
+
  private:
   GameObjectId id_ = Constants::kNullGameObjectId;
   QPointF position_{0.f, 0.f};
-  std::shared_ptr<Rigidbody> rigidbody_;
+  std::shared_ptr<RigidBody> rigid_body_;
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_

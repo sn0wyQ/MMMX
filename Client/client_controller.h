@@ -104,6 +104,7 @@ class ClientController : public BaseController {
 
   void SendControlsEvent(const Event& event) override;
   void UpdatePlayerDataEvent(const Event& event) override;
+  void GameObjectAppearedEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kNotStarted;
   QUrl url_;

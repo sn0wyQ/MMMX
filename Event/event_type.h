@@ -68,6 +68,11 @@ enum class EventType {
   // [4] - <float> view_angle
   kUpdatePlayerData,
 
+  // [0] - <int> game_object_id
+  // [1] - <int> game_object_type [game_object.h]
+  // [2+] - game_object_args
+  kGameObjectAppeared,
+
   SIZE
 };
 

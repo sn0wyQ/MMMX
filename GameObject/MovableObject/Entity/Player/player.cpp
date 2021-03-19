@@ -1,8 +1,7 @@
 #include "player.h"
 
 Player::Player(GameObjectId player_id)
-  : Entity(player_id,
-  std::make_shared<RigidbodyCircle>(1.f)) {}
+  : Entity(player_id, std::make_shared<RigidBodyCircle>(1.f)) {}
 
 Player::Player(GameObjectId player_id,
                float x,
@@ -18,13 +17,7 @@ void Player::OnTick(int time_from_previous_tick) {
   ApplyVelocity(time_from_previous_tick);
 }
 
-void Player::Draw(Painter* painter) {
-  painter->save();
-
-  // Set center to Player's position
-  painter->Translate(GetPosition());
-
-
+void Player::DrawRelatively(Painter* painter) {
   painter->RotateCounterClockWise(GetViewAngle());
 
   // Body [Temporary]
@@ -40,10 +33,6 @@ void Player::Draw(Painter* painter) {
                           QPointF(1.2f, 0.3f),
                           QPointF(1.7f, 0.f));
   }
-
-  GameObject::Draw(painter);
-
-  painter->restore();
 }
 
 // More information about |mask| can be found in event_type.h

@@ -16,7 +16,7 @@ class Player : public Entity {
          float view_angle);
 
   void OnTick(int time_from_previous_tick) override;
-  void Draw(Painter* painter) override;
+  void DrawRelatively(Painter* painter) override;
 
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);

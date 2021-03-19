@@ -18,13 +18,21 @@ class GameDataModel {
                  float x = Constants::kDefaultPlayerX,
                  float y = Constants::kDefaultPlayerY,
                  float view_angle = Constants::kDefaultPlayerViewAngle);
+  GameObjectId AddPlayer(float x = Constants::kDefaultPlayerX,
+                 float y = Constants::kDefaultPlayerY,
+                 float view_angle = Constants::kDefaultPlayerViewAngle);
   void DeletePlayer(GameObjectId player_id);
 
   std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
   std::shared_ptr<Player> GetLocalPlayer() const;
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
+  std::vector<std::shared_ptr<GameObject>> GetAllGameObjects() const;
   int GetPlayersCount() const;
-  bool IsPlayerIdTaken(GameObjectId player_id) const;
+  bool IsGameObjectIdTaken(GameObjectId game_object_id) const;
+  GameObjectId GetNextUnusedGameObjectId() const;
+
+  GameObjectId AddBox(std::shared_ptr<Box> box);
+  void AddBox(GameObjectId game_object_id, std::shared_ptr<Box> box);
 
   bool IsLocalPlayerSet() const;
   GameObjectId GetLocalPlayerId() const;
@@ -34,6 +42,7 @@ class GameDataModel {
   // Used only in ClientController
   GameObjectId local_player_id_ = Constants::kNullGameObjectId;
 
+  // TODO(Everyone): need to store all objects in one container
   std::map<GameObjectId, std::shared_ptr<Player>> players_;
   std::map<GameObjectId, std::shared_ptr<Box>> boxes_;
 };

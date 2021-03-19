@@ -1,8 +1,8 @@
 #include "movable_object.h"
 
 MovableObject::MovableObject(GameObjectId id,
-                             std::shared_ptr<Rigidbody> rigidbody)
-    : GameObject(id, std::move(rigidbody)) {}
+                             std::shared_ptr<RigidBody> rigid_body)
+    : GameObject(id, std::move(rigid_body)) {}
 
 QVector2D MovableObject::GetVelocity() const {
   return velocity_;

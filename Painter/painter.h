@@ -23,6 +23,7 @@ class Painter : public QPainter {
 
   void DrawEllipse(const QPointF& center, float rx, float ry);
   void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
+  void DrawRect(float x, float y, float dx, float dy);
 
  private:
   std::shared_ptr<Converter> converter_;

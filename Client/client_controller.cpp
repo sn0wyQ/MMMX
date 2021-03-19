@@ -104,6 +104,8 @@ void ClientController::OnTick(int time_from_previous_tick) {
                                local_player->GetY(),
                                local_player->GetVelocity(),
                                local_player->GetViewAngle()));
+
+  view_->Update();
 }
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
@@ -168,6 +170,20 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
   player_ptr->SetViewAngle(event.GetArg<float>(4));
 
   view_->Update();
+}
+
+void ClientController::GameObjectAppearedEvent(const Event& event) {
+  auto game_object_id = event.GetArg<GameObjectId>(0);
+  auto game_object_type
+      = static_cast<GameObjectType>(event.GetArg<int>(1));
+  switch (game_object_type) {
+    case GameObjectType::kBox:
+      model_->AddBox(game_object_id,
+                     std::make_shared<Box>(
+                         event.GetArg<int>(2),
+                         event.GetArg<int>(3)));
+      break;
+  }
 }
 
 // -------------------- CONTROLS --------------------

@@ -28,9 +28,8 @@ void RoomController::AddClient(ClientId client_id) {
   this->AddEventToHandle(Event(EventType::kCreateAllPlayersData,
                                event_args));
 
-  GameObjectId player_id = this->GetNextUnusedPlayerId();
-  player_ids_.emplace(std::make_pair(client_id, player_id));
-  model_.AddPlayer(player_id);
+  GameObjectId player_id = model_.AddPlayer();
+  player_ids_[client_id] = player_id;
   this->AddEventToHandle(Event(EventType::kAddNewPlayer,
                                client_id, player_id));
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
@@ -39,6 +38,7 @@ void RoomController::AddClient(ClientId client_id) {
     this->AddEventToHandle(Event(EventType::kStartGame));
     qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
+  this->AddBox();
 }
 
 void RoomController::RemoveClient(ClientId client_id) {
@@ -100,14 +100,6 @@ GameObjectId RoomController::ClientIdToPlayerId(ClientId client_id) const {
   return iter->second;
 }
 
-GameObjectId RoomController::GetNextUnusedPlayerId() const {
-  GameObjectId player_id = 1;
-  while (model_.IsPlayerIdTaken(player_id)) {
-    player_id++;
-  }
-  return player_id;
-}
-
 void RoomController::AddNewPlayerEvent(const Event& event) {
   this->AddEventToSend(event);
   this->AddEventToSend(Event(EventType::kSetClientsPlayerId,
@@ -159,10 +151,35 @@ void RoomController::SendControlsEvent(const Event& event) {
   senders_player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
   senders_player_ptr->SetViewAngle(event.GetArg<float>(4));
 
+  for (const auto& item : model_.GetAllGameObjects()) {
+    if (senders_player_ptr->GetId() == item->GetId()) {
+      continue;
+    }
+    QPointF offset = QPointF(item->GetX() - senders_player_ptr->GetX(),
+                                 item->GetY() - senders_player_ptr->GetY());
+          // - senders_player_ptr->GetVelocity();
+    if (IntersectChecker::IsIntersectBodies(senders_player_ptr->GetRigidBody(),
+                                      item->GetRigidBody(), offset)) {
+      qInfo() << item->GetId() << " " << senders_player_ptr->GetId() << "intersect";
+    } else {
+      // qInfo() << item->GetId() << " " << senders_player_ptr->GetId() << "doesn't";
+    }
+  }
   this->AddEventToSend(Event(EventType::kUpdatePlayerData,
                        event.GetArg<GameObjectId>(0),
                        senders_player_ptr->GetX(),
                        senders_player_ptr->GetY(),
                        senders_player_ptr->GetVelocity(),
                        senders_player_ptr->GetViewAngle()));
+}
+
+void RoomController::AddBox() {
+  int width = 20;
+  int height = 10;
+  GameObjectId game_object_id
+    = model_.AddBox(std::make_shared<Box>(width, height));
+  this->AddEventToSend(
+      Event(EventType::kGameObjectAppeared, game_object_id,
+            static_cast<int>(GameObjectType::kBox),
+            width, height));
 }

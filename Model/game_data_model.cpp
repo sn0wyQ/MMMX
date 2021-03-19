@@ -1,5 +1,7 @@
 #include "game_data_model.h"
 
+#include <utility>
+
 std::shared_ptr<Player>
     GameDataModel::GetPlayerByPlayerId(GameObjectId player_id) const {
   auto iter = players_.find(player_id);
@@ -33,16 +35,16 @@ void GameDataModel::AddPlayer(GameObjectId player_id,
   if (players_.find(player_id) != players_.end()) {
     throw std::runtime_error("[MODEL] This player_id already exists");
   }
-  players_.emplace(std::make_pair(player_id,
-                                  std::make_unique<Player>(player_id,
-                                                           x,
-                                                           y,
-                                                           view_angle)));
+  players_.emplace(std::make_pair(
+      player_id, std::make_unique<Player>(player_id, x, y, view_angle)));
+
   qInfo().noquote() << "[MODEL] Added new Player ID:" << player_id;
 }
 
-bool GameDataModel::IsPlayerIdTaken(GameObjectId player_id) const {
-  return players_.find(player_id) != players_.end();
+GameObjectId GameDataModel::AddPlayer(float x, float y, float view_angle) {
+  GameObjectId player_id = this->GetNextUnusedGameObjectId();
+  AddPlayer(player_id, x, y, view_angle);
+  return player_id;
 }
 
 GameObjectId GameDataModel::GetLocalPlayerId() const {
@@ -69,3 +71,39 @@ std::vector<std::shared_ptr<Player>> GameDataModel::GetPlayers() const {
   }
   return result;
 }
+
+std::vector<std::shared_ptr<GameObject>> GameDataModel::GetAllGameObjects() const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& player : players_) {
+    result.push_back(player.second);
+  }
+  for (const auto& player : boxes_) {
+    result.push_back(player.second);
+  }
+  return result;
+}
+
+bool GameDataModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
+  return players_.find(game_object_id) != players_.end()
+    && boxes_.find(game_object_id) != boxes_.end();
+}
+
+GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
+  GameObjectId game_object_id = 1;
+  while (IsGameObjectIdTaken(game_object_id)) {
+    game_object_id++;
+  }
+  return game_object_id;
+}
+
+GameObjectId GameDataModel::AddBox(std::shared_ptr<Box> box) {
+  GameObjectId game_object_id = this->GetNextUnusedGameObjectId();
+  AddBox(game_object_id, std::move(box));
+  return game_object_id;
+}
+
+void GameDataModel::AddBox(GameObjectId game_object_id,
+                           std::shared_ptr<Box> box) {
+  boxes_[game_object_id] = std::move(box);
+}
+

@@ -55,7 +55,7 @@ constexpr int kTimeToUpdateServerVar = 1000;
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
-constexpr bool kShowRigidbody = true;
+constexpr bool kShowRigidBody = true;
 
 // MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;

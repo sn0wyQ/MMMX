@@ -29,6 +29,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendControlsEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdatePlayerData,
     std::bind(&BaseController::UpdatePlayerDataEvent, this, _1));
+  SetFunctionForEventType(EventType::kGameObjectAppeared,
+         std::bind(&BaseController::GameObjectAppearedEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

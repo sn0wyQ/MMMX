@@ -2,16 +2,8 @@
 
 #include <utility>
 
-//     rigidbody_(std::make_shared<RigidbodyRectangle>(rigidbody_rectangle)) {}
-
-// GameObject::GameObject(GameObjectId id, const RigidbodyCircle& rigidbody_circle)
-//   : id_(id), rigidbody_(std::make_shared<RigidbodyCircle>(rigidbody_circle)) {}
-//
-// GameObject::GameObject(GameObjectId id,
-//                        const RigidbodyRectangle& rigidbody_rectangle)
-//     : id_(id),
-GameObject::GameObject(GameObjectId id, std::shared_ptr<Rigidbody> rigidbody)
-  : id_(id), rigidbody_(std::move(rigidbody)) {}
+GameObject::GameObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body)
+  : id_(id), rigid_body_(std::move(rigid_body)) {}
 
 GameObjectId GameObject::GetId() const {
   return id_;
@@ -32,9 +24,11 @@ void GameObject::SetPosition(QPointF point) {
 void GameObject::SetX(float x) {
   position_.setX(x);
 }
+
 void GameObject::SetY(float y) {
   position_.setY(y);
 }
+
 float GameObject::GetX() const {
   return position_.x();
 }
@@ -44,7 +38,15 @@ float GameObject::GetY() const {
 }
 
 void GameObject::Draw(Painter* painter) {
-  if (Constants::kShowRigidbody) {
-    rigidbody_->Draw(painter);
+  painter->save();
+  painter->Translate(GetPosition());
+  this->DrawRelatively(painter);
+  if (Constants::kShowRigidBody) {
+    rigid_body_->Draw(painter);
   }
+  painter->restore();
+}
+
+std::shared_ptr<RigidBody> GameObject::GetRigidBody() const {
+  return rigid_body_;
 }

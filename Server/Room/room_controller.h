@@ -11,6 +11,8 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
+#include "GameObject/RigidBody/intersect_checker.h"
+#include "GameObject/box.h"
 #include "Model/game_data_model.h"
 #include "Server/Room/room_settings.h"
 #include "constants.h"
@@ -46,9 +48,9 @@ class RoomController : public BaseController {
   GameObjectId ClientIdToPlayerId(ClientId client_id) const;
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
-  GameObjectId GetNextUnusedPlayerId() const;
-
   std::vector<Event> ClaimEventsForServer();
+
+  void AddBox();
 
  private:
   RoomId id_;
