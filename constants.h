@@ -35,6 +35,10 @@ const QUrl kServerUrl =
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 
+// Map
+constexpr int kMapWidth = 50;
+constexpr int kMapHeight = 50;
+
 // Room
 constexpr int kDefaultMaxClients = 4;
 
@@ -51,6 +55,7 @@ constexpr int kTimeToUpdateServerVar = 1000;
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
+constexpr bool kShowRigidbody = true;
 
 // MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;

@@ -1,6 +1,8 @@
 #include "player.h"
 
-Player::Player(GameObjectId player_id) : Entity(player_id) {}
+Player::Player(GameObjectId player_id)
+  : Entity(player_id,
+  std::make_shared<RigidbodyCircle>(1.f)) {}
 
 Player::Player(GameObjectId player_id,
                float x,
@@ -22,6 +24,7 @@ void Player::Draw(Painter* painter) {
   // Set center to Player's position
   painter->Translate(GetPosition());
 
+
   painter->RotateCounterClockWise(GetViewAngle());
 
   // Body [Temporary]
@@ -37,6 +40,8 @@ void Player::Draw(Painter* painter) {
                           QPointF(1.2f, 0.3f),
                           QPointF(1.7f, 0.f));
   }
+
+  GameObject::Draw(painter);
 
   painter->restore();
 }

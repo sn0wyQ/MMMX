@@ -9,6 +9,7 @@
 #include <QDebug>
 
 #include "GameObject/MovableObject/Entity/Player/player.h"
+#include "GameObject/box.h"
 #include "constants.h"
 
 class GameDataModel {
@@ -34,6 +35,7 @@ class GameDataModel {
   GameObjectId local_player_id_ = Constants::kNullGameObjectId;
 
   std::map<GameObjectId, std::shared_ptr<Player>> players_;
+  std::map<GameObjectId, std::shared_ptr<Box>> boxes_;
 };
 
 #endif  // MODEL_GAME_DATA_MODEL_H_

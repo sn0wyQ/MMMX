@@ -68,6 +68,10 @@ set(SOURCES
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
         GameObject/game_object.cpp
+        GameObject/Rigidbody/rigidbody.cpp
+        GameObject/Rigidbody/rigidbody_rectangle.cpp
+        GameObject/Rigidbody/rigidbody_circle.cpp
+        GameObject/box.cpp
         Math/math.cpp
         Model/game_data_model.cpp
         Model/server_model.cpp

@@ -5,10 +5,9 @@
 
 class Entity : public MovableObject {
  public:
-  explicit Entity(GameObjectId id);
+  Entity(GameObjectId id, std::shared_ptr<Rigidbody> rigidbody);
 
   void OnTick(int time_from_previous_tick) override = 0;
-  void Draw(Painter* painter) override = 0;
 
   float GetViewAngle() const;
   void SetViewAngle(float view_angle);

@@ -3,12 +3,18 @@
 
 #include <QPoint>
 
-#include "Painter/painter.h"
 #include "constants.h"
+#include "GameObject/Rigidbody/rigidbody.h"
+#include "GameObject/Rigidbody/rigidbody_circle.h"
+#include "GameObject/Rigidbody/rigidbody_rectangle.h"
+#include "Painter/painter.h"
 
 class GameObject {
  public:
-  explicit GameObject(GameObjectId id);
+  // GameObject(GameObjectId id, const RigidbodyCircle& rigidbody_circle);
+  // GameObject(GameObjectId id,
+  //                     const RigidbodyRectangle& rigidbody_rectangle);
+  GameObject(GameObjectId id, std::shared_ptr<Rigidbody> rigidbody);
 
   virtual void OnTick(int time_from_previous_tick) = 0;
   virtual void Draw(Painter* painter) = 0;
@@ -26,6 +32,7 @@ class GameObject {
  private:
   GameObjectId id_ = Constants::kNullGameObjectId;
   QPointF position_{0.f, 0.f};
+  std::shared_ptr<Rigidbody> rigidbody_;
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_
