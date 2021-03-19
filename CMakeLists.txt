@@ -3,6 +3,10 @@ project(MMMX-Client)
 project(MMMX-Server)
 
 set(CMAKE_CXX_STANDARD 20)
+add_compile_options(
+        "$<$<CONFIG:RELEASE>:-O3>"
+        "$<$<CONFIG:DEBUG>:-O1>"
+)
 
 set(CMAKE_AUTOMOC ON) # Enable Qt MOC compiler
 set(CMAKE_AUTORCC ON) # Enable Qt resources compiler
@@ -19,29 +23,29 @@ set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Widgets Qt5::Multimedia Qt5::WebSocke
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall -O3")
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-Wall")
 
 # ThreadSanitizer
 set(TSAN_FLAGS
-        "-fsanitize=thread -O1"
+        "-fsanitize=thread"
         CACHE STRING "Flags used by the C++ compiler during ThreadSanitizer builds."
         FORCE)
 
 # AddressSanitize
 set(ASAN_FLAGS
-        "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer -O1"
+        "-fsanitize=address -fno-optimize-sibling-calls -fsanitize-address-use-after-scope -fno-omit-frame-pointer"
         CACHE STRING "Flags used by the C++ compiler during AddressSanitizer builds."
         FORCE)
 
 # LeakSanitizer
 set(LSAN_FLAGS
-        "-fsanitize=leak -fno-omit-frame-pointer -O1"
+        "-fsanitize=leak -fno-omit-frame-pointer"
         CACHE STRING "Flags used by the C++ compiler during LeakSanitizer builds."
         FORCE)
 
 # MemorySanitizer
 set(MSAN_FLAGS
-        "-fsanitize=memory -fno-optimize-sibling-calls -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer -O2"
+        "-fsanitize=memory -fno-optimize-sibling-calls -fsanitize-memory-track-origins=2 -fno-omit-frame-pointer"
         CACHE STRING "Flags used by the C++ compiler during MemorySanitizer builds."
         FORCE)
 
