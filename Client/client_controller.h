@@ -66,9 +66,9 @@ class ClientController : public BaseController {
   void SendEvent(const Event& event) override;
   void OnTick(int time_from_previous_tick) override;
 
-  void OnTickGameFinished(int) {};
+  void OnTickGameFinished(int) {}
   void OnTickGameInProgress(int time_from_previous_tick);
-  void OnTickGameNotStarted(int) {};
+  void OnTickGameNotStarted(int) {}
 
   void TickPlayers(int time_from_previous_tick);
 
