@@ -20,8 +20,6 @@ class MovableObject : public GameObject {
 
  private:
   QVector2D velocity_{};
-  float acceleration_ = 0.f;
-  float max_speed_ = 0.f;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_

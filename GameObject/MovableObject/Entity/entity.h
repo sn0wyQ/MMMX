@@ -14,9 +14,6 @@ class Entity : public MovableObject {
   void SetViewAngle(float view_angle);
 
  private:
-  float current_hp_ = 0.f;
-  float base_max_hp_ = 0.f;
-
   // 0 is direction from left to right
   // Increasing counterclockwise
   // Measured in degrees
