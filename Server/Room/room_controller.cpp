@@ -39,6 +39,7 @@ void RoomController::AddClient(ClientId client_id) {
     this->AddEventToHandle(Event(EventType::kStartGame));
     qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
+  this->AddEventToHandle(Event(EventType::kUpdatePlayersFOV, client_id, 10));
 }
 
 void RoomController::RemoveClient(ClientId client_id) {
@@ -165,4 +166,8 @@ void RoomController::SendControlsEvent(const Event& event) {
                        senders_player_ptr->GetY(),
                        senders_player_ptr->GetVelocity(),
                        senders_player_ptr->GetViewAngle()));
+}
+
+void RoomController::UpdatePlayersFOVEvent(const Event& event) {
+  this->AddEventToSend(event);
 }

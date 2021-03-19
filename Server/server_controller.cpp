@@ -78,6 +78,7 @@ void ServerController::ProcessEventsFromRoom(
       case EventType::kSetClientsPlayerId:
       case EventType::kCreateAllPlayersData:
       case EventType::kUpdateServerVar:
+      case EventType::kUpdatePlayersFOV:
         receivers.push_back(event.GetArg<ClientId>(0));
         break;
 
@@ -174,6 +175,9 @@ void ServerController::SendToClient(int client_id,
   if (client_ptr) {
     try {
       client_ptr->socket->sendBinaryMessage(event.ToByteArray());
+      if (event.GetType() == EventType::kUpdatePlayersFOV) {
+        qInfo() << "!";
+      }
     } catch (std::exception& e) {
       qInfo() << "[SERVER] Caught exception" << e.what();
     }

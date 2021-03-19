@@ -1,3 +1,4 @@
+#include <iostream>
 #include "client_controller.h"
 
 ClientController::ClientController(const QUrl& url) : url_(url),
@@ -239,6 +240,13 @@ void ClientController::ApplyDirection() {
 
   model_->GetLocalPlayer()->UpdateVelocity(direction_mask);
   view_->Update();
+}
+
+void ClientController::UpdatePlayersFOVEvent(const Event& event) {
+  // std::cout << event.GetArg<uint32_t>(0) << '\n';
+  // std::cout << event.GetArgs().size() << '\n';
+  std::cout << "!!!!";
+  std::cout.flush();
 }
 
 void ClientController::ResetDirection() {

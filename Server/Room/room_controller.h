@@ -67,6 +67,7 @@ class RoomController : public BaseController {
   // ------------------- GAME EVENTS -------------------
 
   void SendControlsEvent(const Event& event) override;
+  void UpdatePlayersFOVEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

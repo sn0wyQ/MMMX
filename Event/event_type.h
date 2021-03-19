@@ -68,6 +68,10 @@ enum class EventType {
   // [4] - <float> view_angle
   kUpdatePlayerData,
 
+  // [0] - <int> player_id
+  // [1] - <uint32_t> new player's POV
+  kUpdatePlayersFOV,
+
   SIZE
 };
 
