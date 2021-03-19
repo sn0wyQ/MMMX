@@ -10,16 +10,12 @@ class Entity : public MovableObject {
   void OnTick(int time_from_previous_tick) override = 0;
   void Draw(Painter* painter) override = 0;
 
-  float GetCurrentSpeed() const;
-
   float GetViewAngle() const;
   void SetViewAngle(float view_angle);
 
  private:
   float current_hp_ = 0.f;
   float base_max_hp_ = 0.f;
-  float acceleration_ = 0.f;
-  float max_speed_ = 0.f;
 
   // 0 is direction from left to right
   // Increasing counterclockwise

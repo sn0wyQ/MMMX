@@ -66,12 +66,6 @@ void Player::UpdateVelocity(uint32_t mask) {
   SetVelocity(velocity.normalized());
 }
 
-void Player::ApplyVelocity(int time_from_previous_tick) {
-  QPointF pos = GetPosition();
-  pos += GetVelocity().toPointF() * GetCurrentSpeed() * time_from_previous_tick;
-  SetPosition(pos);
-}
-
 bool Player::IsLocalPlayer() const {
   return is_local_player_;
 }

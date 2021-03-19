@@ -21,7 +21,6 @@ class Player : public Entity {
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
 
-  void ApplyVelocity(int time_from_previous_tick);
   void UpdateVelocity(uint32_t mask);
 
  private:

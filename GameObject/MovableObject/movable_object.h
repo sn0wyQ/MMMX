@@ -14,9 +14,14 @@ class MovableObject : public GameObject {
 
   QVector2D GetVelocity() const;
   void SetVelocity(const QVector2D& velocity);
+  void ApplyVelocity(int time_from_previous_tick);
+
+  float GetCurrentSpeed() const;
 
  private:
   QVector2D velocity_{};
+  float acceleration_ = 0.f;
+  float max_speed_ = 0.f;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_
