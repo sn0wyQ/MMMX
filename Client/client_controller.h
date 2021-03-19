@@ -49,9 +49,9 @@ enum class Direction {
 };
 
 enum class GameState {
-  kFinished,
+  kGameFinished,
   kGameInProgress,
-  kNotStarted
+  kGameNotStarted
 };
 
 class ClientController : public BaseController {
@@ -66,6 +66,12 @@ class ClientController : public BaseController {
   void SendEvent(const Event& event) override;
   void OnTick(int time_from_previous_tick) override;
 
+  void OnTickGameFinished(int) {};
+  void OnTickGameInProgress(int time_from_previous_tick);
+  void OnTickGameNotStarted(int) {};
+
+  void TickPlayers(int time_from_previous_tick);
+
   std::shared_ptr<GameDataModel> GetModel();
   int GetServerVar() const;
   int GetPing() const;
@@ -73,6 +79,8 @@ class ClientController : public BaseController {
   bool IsGameInProgress() const;
 
   void SetView(std::shared_ptr<AbstractClientView> view);
+
+  void UpdateLocalPlayer(int time_from_previous_tick);
 
   // -------------------- CONTROLS --------------------
 
@@ -105,7 +113,7 @@ class ClientController : public BaseController {
   void SendControlsEvent(const Event& event) override;
   void UpdatePlayerDataEvent(const Event& event) override;
 
-  GameState game_state_ = GameState::kNotStarted;
+  GameState game_state_ = GameState::kGameInProgress;
   QUrl url_;
   QWebSocket web_socket_;
   std::shared_ptr<GameDataModel> model_;
