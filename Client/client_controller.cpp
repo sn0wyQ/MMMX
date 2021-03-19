@@ -27,7 +27,7 @@ void ClientController::OnConnected() {
 
   connect(&timer_for_server_var_, &QTimer::timeout, this,
           &ClientController::UpdateVarsAndPing);
-  timer_for_server_var_.start(Constants::kTimeToUpdateServerVar);
+  timer_for_server_var_.start(Constants::kTimeToUpdateVarsAndPing);
   connect(&web_socket_, &QWebSocket::pong, this,
           &ClientController::SetPing);
 
