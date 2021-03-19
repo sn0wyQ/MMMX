@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include <QFocusEvent>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QMainWindow>
@@ -30,6 +31,7 @@ class ClientView : public AbstractClientView {
   bool IsFocused() const override;
 
  private:
+  void focusOutEvent(QFocusEvent* focus_event) override;
   void keyPressEvent(QKeyEvent* key_event) override;
   void keyReleaseEvent(QKeyEvent* key_event) override;
   void mouseMoveEvent(QMouseEvent* mouse_event) override;

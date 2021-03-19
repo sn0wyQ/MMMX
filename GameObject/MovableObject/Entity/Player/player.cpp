@@ -12,6 +12,10 @@ Player::Player(GameObjectId player_id,
   SetViewAngle(view_angle);
 }
 
+void Player::OnTick(int time_from_previous_tick) {
+  ApplyVelocity(time_from_previous_tick);
+}
+
 void Player::Draw(Painter* painter) {
   painter->save();
 
@@ -38,21 +42,28 @@ void Player::Draw(Painter* painter) {
 }
 
 // More information about |mask| can be found in event_type.h
-void Player::ApplyDirection(uint32_t mask) {
-  QPointF pos = GetPosition();
+void Player::UpdateVelocity(uint32_t mask) {
+  // Normalizing of (0, 0) vector works bad
+  if (mask == 0b0000) {
+    SetVelocity({0.f, 0.f});
+    return;
+  }
+
+  QVector2D velocity{0.f, 0.f};
   if (mask & (1UL << 3)) {
-    pos.ry() -= 0.05f;
+    velocity.setY(-1.f);
   }
   if (mask & (1UL << 2)) {
-    pos.rx() += 0.05f;
+    velocity.setX(1.f);
   }
   if (mask & (1UL << 1)) {
-    pos.ry() += 0.05f;
+    velocity.setY(1.f);
   }
   if (mask & 1UL) {
-    pos.rx() -= 0.05f;
+    velocity.setX(-1.f);
   }
-  SetPosition(pos);
+
+  SetVelocity(velocity.normalized());
 }
 
 bool Player::IsLocalPlayer() const {

@@ -1,6 +1,7 @@
 #ifndef SERVER_ROOM_ROOM_CONTROLLER_H_
 #define SERVER_ROOM_ROOM_CONTROLLER_H_
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -28,7 +29,7 @@ class RoomController : public BaseController {
   QString GetControllerName() const override;
 
   void SendEvent(const Event& event) override;
-  void OnTick() override;
+  void OnTick(int time_from_previous_tick) override;
 
   void AddClient(ClientId client_id);
   void RemoveClient(ClientId client_id);

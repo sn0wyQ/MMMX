@@ -10,7 +10,12 @@ void RoomController::SendEvent(const Event& event) {
   events_for_server_.push_back(event);
 }
 
-void RoomController::OnTick() {}
+void RoomController::OnTick(int time_from_previous_tick) {
+  std::vector<std::shared_ptr<Player>> players = model_.GetPlayers();
+  for (const auto& player : players) {
+    player->OnTick(time_from_previous_tick);
+  }
+}
 
 void RoomController::AddClient(ClientId client_id) {
   std::vector<QVariant> event_args{client_id, model_.GetPlayersCount()};
@@ -109,10 +114,10 @@ void RoomController::AddNewPlayerEvent(const Event& event) {
                              event.GetArgs()));
 }
 
-
 void RoomController::CreateAllPlayersDataEvent(const Event& event) {
   this->AddEventToSend(event);
 }
+
 void RoomController::StartGameEvent(const Event& event) {
   this->AddEventToSend(Event(EventType::kStartGame));
   room_state_ = RoomState::kGameInProgress;
@@ -146,11 +151,18 @@ void RoomController::UpdateServerVarEvent(const Event& event) {
 void RoomController::SendControlsEvent(const Event& event) {
   auto senders_player_ptr =
       model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
-  senders_player_ptr->ApplyDirection(event.GetArg<uint32_t>(1));
-  senders_player_ptr->SetViewAngle(event.GetArg<float>(2));
+
+  // TODO(Everyone): add anti-cheat mechanism to check
+  //  if it was possible for player to travel this distance so fast
+  senders_player_ptr->SetX(event.GetArg<float>(1));
+  senders_player_ptr->SetY(event.GetArg<float>(2));
+  senders_player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
+  senders_player_ptr->SetViewAngle(event.GetArg<float>(4));
+
   this->AddEventToSend(Event(EventType::kUpdatePlayerData,
                        event.GetArg<GameObjectId>(0),
                        senders_player_ptr->GetX(),
                        senders_player_ptr->GetY(),
+                       senders_player_ptr->GetVelocity(),
                        senders_player_ptr->GetViewAngle()));
 }
