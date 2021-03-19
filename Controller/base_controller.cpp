@@ -20,8 +20,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendEventToClientEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
     std::bind(&BaseController::SendEventToRoomEvent, this, _1));
-  SetFunctionForEventType(EventType::kUpdateServerVar,
-    std::bind(&BaseController::UpdateServerVarEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdateVars,
+    std::bind(&BaseController::UpdateVarsEvent, this, _1));
 
   // ------------------- GAME EVENTS -------------------
 
@@ -39,6 +39,7 @@ void BaseController::SetFunctionForEventType(
 }
 
 void BaseController::Tick() {
+  var_timer_.restart();
   this->OnTick(last_tick_.elapsed());
 
   while (HasEventsToHandle()) {
@@ -52,6 +53,7 @@ void BaseController::Tick() {
     this->SendEvent(events_to_send_.front());
     events_to_send_.pop();
   }
+  var_ = var_timer_.elapsed();
 }
 
 bool BaseController::HasEventsToSend() const {
@@ -65,6 +67,11 @@ bool BaseController::HasEventsToHandle() const {
 void BaseController::StartTicking() {
   ticker_.start(Constants::kTimeToTick);
   last_tick_.start();
+  var_timer_.start();
+}
+
+int BaseController::GetVar() const {
+  return var_;
 }
 
 void BaseController::AddEventToHandle(const Event& event) {

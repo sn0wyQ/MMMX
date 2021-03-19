@@ -62,7 +62,7 @@ class RoomController : public BaseController {
   void AddNewPlayerEvent(const Event& event) override;
   void CreateAllPlayersDataEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
-  void UpdateServerVarEvent(const Event& event) override;
+  void UpdateVarsEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
