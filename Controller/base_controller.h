@@ -42,6 +42,8 @@ class BaseController : public QObject {
 
   void StartTicking();
 
+  int GetVar() const;
+
  protected:
   BaseController();
 
@@ -51,6 +53,9 @@ class BaseController : public QObject {
  private:
   QTimer ticker_;
   QElapsedTimer last_tick_;
+
+  int var_;
+
   std::queue<Event> events_to_handle_;
   std::queue<Event> events_to_send_;
 
@@ -66,7 +71,7 @@ class BaseController : public QObject {
   virtual void StartGameEvent(const Event& event) {}
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
-  virtual void UpdateServerVarEvent(const Event& event) {}
+  virtual void UpdateVarsEvent(const Event& event) {}
 
   // ------------------- GAME EVENTS -------------------
 

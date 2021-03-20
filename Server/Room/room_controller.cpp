@@ -144,7 +144,7 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
 }
 
-void RoomController::UpdateServerVarEvent(const Event& event) {
+void RoomController::UpdateVarsEvent(const Event& event) {
   this->AddEventToSend(Event(event.GetType(),
                              PlayerIdToClientId(
                                  event.GetArg<GameObjectId>(0))));

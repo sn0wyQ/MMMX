@@ -26,11 +26,10 @@ void ClientController::OnConnected() {
           &ClientController::OnByteArrayReceived);
 
   connect(&timer_for_server_var_, &QTimer::timeout, this,
-          &ClientController::UpdateServerVar);
-  timer_for_server_var_.start(Constants::kTimeToUpdateServerVar);
-  timer_elapsed_server_var_.start();
+          &ClientController::UpdateVarsAndPing);
+  timer_for_server_var_.start(Constants::kTimeToUpdateVarsAndPing);
   connect(&web_socket_, &QWebSocket::pong, this,
-          &ClientController::UpdatePing);
+          &ClientController::SetPing);
 
   view_->Update();
 
@@ -152,19 +151,27 @@ int ClientController::GetServerVar() const {
   return server_var_;
 }
 
-void ClientController::UpdatePing(int elapsed_time) {
+int ClientController::GetRoomVar() const {
+  return room_var_;
+}
+
+int ClientController::GetClientVar() const {
+  return client_var_;
+}
+
+void ClientController::SetPing(int elapsed_time) {
   ping_ = elapsed_time;
 }
 
-void ClientController::UpdateServerVar() {
-  this->AddEventToSend(Event(EventType::kUpdateServerVar,
-                             model_->GetLocalPlayerId()));
-  timer_elapsed_server_var_.restart();
+void ClientController::UpdateVarsAndPing() {
+  this->AddEventToSend(Event(EventType::kSendGetVarsEvent));
   web_socket_.ping();
 }
 
-void ClientController::UpdateServerVarEvent(const Event& event) {
-  server_var_ = static_cast<int>(timer_elapsed_server_var_.elapsed()) / 2;
+void ClientController::UpdateVarsEvent(const Event& event) {
+  server_var_ = event.GetArg<int>(0);
+  room_var_ = event.GetArg<int>(1);
+  client_var_ = this->GetVar();
   view_->Update();
 }
 

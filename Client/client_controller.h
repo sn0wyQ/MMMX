@@ -20,8 +20,8 @@
 #include "Math/math.h"
 #include "Model/game_data_model.h"
 
-// TODO(Everyone): make class Hotkeys (with possibility to rebind keys)
-// instead of enum Controls
+// TODO(Everyone): make class Hotkeys instead of enum Controls
+// (with possibility to rebind keys)
 
 #ifdef WIN32
 enum class Controls {
@@ -74,6 +74,8 @@ class ClientController : public BaseController {
 
   std::shared_ptr<GameDataModel> GetModel();
   int GetServerVar() const;
+  int GetRoomVar() const;
+  int GetClientVar() const;
   int GetPing() const;
 
   bool IsGameInProgress() const;
@@ -96,8 +98,8 @@ class ClientController : public BaseController {
   void OnConnected();
   void OnDisconnected();
   void OnByteArrayReceived(const QByteArray& message);
-  void UpdateServerVar();
-  void UpdatePing(int elapsed_time);
+  void UpdateVarsAndPing();
+  void SetPing(int elapsed_time);
 
  private:
   void AddNewPlayerEvent(const Event& event) override;
@@ -106,7 +108,7 @@ class ClientController : public BaseController {
   void SetClientsPlayerIdEvent(const Event& event) override;
   void CreateAllPlayersDataEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
-  void UpdateServerVarEvent(const Event& event) override;
+  void UpdateVarsEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
@@ -119,9 +121,10 @@ class ClientController : public BaseController {
   std::shared_ptr<GameDataModel> model_;
   std::shared_ptr<AbstractClientView> view_;
   int server_var_{0};
+  int room_var_{0};
+  int client_var_{0};
   int ping_{0};
   QTimer timer_for_server_var_;
-  QElapsedTimer timer_elapsed_server_var_;
   std::shared_ptr<Converter> converter_;
 
   // TODO(Everyone): Rework
