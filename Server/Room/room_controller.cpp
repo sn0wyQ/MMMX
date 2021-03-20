@@ -149,6 +149,9 @@ void RoomController::UpdateServerVarEvent(const Event& event) {
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
+  if (!model_.IsPlayerIdTaken(event.GetArg<GameObjectId>(0))) {
+    return;
+  }
   auto senders_player_ptr =
       model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
 
