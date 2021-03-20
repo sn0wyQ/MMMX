@@ -13,10 +13,10 @@ class MovableObject : public GameObject {
 
   QVector2D GetVelocity() const;
   void SetVelocity(const QVector2D& velocity);
+  QVector2D GetAppliedDeltaPosition(int time_from_previous_tick);
   void ApplyVelocity(int time_from_previous_tick);
 
   float GetCurrentSpeed() const;
-
  private:
   QVector2D velocity_{};
 };

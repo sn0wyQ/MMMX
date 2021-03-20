@@ -11,7 +11,6 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
-#include "GameObject/RigidBody/intersect_checker.h"
 #include "GameObject/box.h"
 #include "Model/game_data_model.h"
 #include "Server/Room/room_settings.h"

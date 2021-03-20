@@ -85,6 +85,24 @@ void ClientController::SendEvent(const Event& event) {
 }
 
 void ClientController::OnTick(int time_from_previous_tick) {
+  if (model_->IsLocalPlayerSet()) {
+    auto local_player = model_->GetLocalPlayer();
+    for (const auto& item : model_->GetAllGameObjects()) {
+      if (local_player->GetId() == item->GetId()) {
+        continue;
+      }
+      QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
+                               item->GetY() - local_player->GetY())
+        - local_player->GetAppliedDeltaPosition(time_from_previous_tick);
+      if (IntersectChecker::IsIntersectBodies(local_player->GetRigidBody(),
+                                              item->GetRigidBody(), offset)) {
+        qInfo() << item->GetId() << " " << local_player->GetId()
+                << "intersect";
+        local_player->SetVelocity({0.f, 0.f});
+      }
+    }
+  }
+
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
     player->OnTick(time_from_previous_tick);

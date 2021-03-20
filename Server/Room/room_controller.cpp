@@ -151,20 +151,6 @@ void RoomController::SendControlsEvent(const Event& event) {
   senders_player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
   senders_player_ptr->SetViewAngle(event.GetArg<float>(4));
 
-  for (const auto& item : model_.GetAllGameObjects()) {
-    if (senders_player_ptr->GetId() == item->GetId()) {
-      continue;
-    }
-    QPointF offset = QPointF(item->GetX() - senders_player_ptr->GetX(),
-                                 item->GetY() - senders_player_ptr->GetY());
-          // - senders_player_ptr->GetVelocity();
-    if (IntersectChecker::IsIntersectBodies(senders_player_ptr->GetRigidBody(),
-                                      item->GetRigidBody(), offset)) {
-      qInfo() << item->GetId() << " " << senders_player_ptr->GetId() << "intersect";
-    } else {
-      // qInfo() << item->GetId() << " " << senders_player_ptr->GetId() << "doesn't";
-    }
-  }
   this->AddEventToSend(Event(EventType::kUpdatePlayerData,
                        event.GetArg<GameObjectId>(0),
                        senders_player_ptr->GetX(),

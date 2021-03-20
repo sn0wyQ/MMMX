@@ -1,9 +1,12 @@
 #include "game_object.h"
 
-#include <utility>
-
 GameObject::GameObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body)
   : id_(id), rigid_body_(std::move(rigid_body)) {}
+
+GameObject::GameObject(GameObjectId id,
+                       QPointF position,
+                       std::shared_ptr<RigidBody> rigid_body)
+  : id_(id), position_(position), rigid_body_(std::move(rigid_body)) {}
 
 GameObjectId GameObject::GetId() const {
   return id_;

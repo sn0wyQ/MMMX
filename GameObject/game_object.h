@@ -1,6 +1,8 @@
 #ifndef GAMEOBJECT_GAME_OBJECT_H_
 #define GAMEOBJECT_GAME_OBJECT_H_
 
+#include <utility>
+
 #include <QPoint>
 
 #include "constants.h"
@@ -17,6 +19,8 @@ enum class GameObjectType {
 class GameObject {
  public:
   GameObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body);
+  GameObject(GameObjectId id, QPointF position,
+             std::shared_ptr<RigidBody> rigid_body);
 
   virtual void OnTick(int time_from_previous_tick) = 0;
   void Draw(Painter* painter);

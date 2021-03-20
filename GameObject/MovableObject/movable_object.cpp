@@ -12,9 +12,14 @@ void MovableObject::SetVelocity(const QVector2D& velocity) {
   velocity_ = velocity;
 }
 
+QVector2D MovableObject::GetAppliedDeltaPosition(int time_from_previous_tick) {
+  return GetVelocity() * GetCurrentSpeed()
+    * static_cast<float>(time_from_previous_tick);
+}
+
 void MovableObject::ApplyVelocity(int time_from_previous_tick) {
   QPointF pos = GetPosition();
-  pos += GetVelocity().toPointF() * GetCurrentSpeed() * time_from_previous_tick;
+  pos += GetAppliedDeltaPosition(time_from_previous_tick).toPointF();
   SetPosition(pos);
 }
 

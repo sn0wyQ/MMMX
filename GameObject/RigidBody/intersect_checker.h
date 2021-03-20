@@ -13,25 +13,25 @@ namespace IntersectChecker {
 
   bool IsIntersectBodies(const std::shared_ptr<RigidBody>& first,
                    const std::shared_ptr<RigidBody>& second,
-                   QPointF offset);
+                   QVector2D offset);
 
   bool IsPointInSegment(QPointF first, QPointF second, QPointF point);
 
   bool IsIntersect(const std::shared_ptr<RigidBodyCircle>& circle,
                    const std::shared_ptr<RigidBodyRectangle>& rectangle,
-                   QPointF offset);
+                   QVector2D offset);
 
   bool IsIntersect(const std::shared_ptr<RigidBodyRectangle>& rectangle,
                    const std::shared_ptr<RigidBodyCircle>& circle,
-                   QPointF offset);
+                   QVector2D offset);
 
   bool IsIntersect(const std::shared_ptr<RigidBodyCircle>& circle1,
                    const std::shared_ptr<RigidBodyCircle>& circle2,
-                   QPointF offset);
+                   QVector2D offset);
 
   bool IsIntersect(const std::shared_ptr<RigidBodyRectangle>& rectangle1,
                    const std::shared_ptr<RigidBodyRectangle>& rectangle2,
-                   QPointF offset);
+                   QVector2D offset);
 };
 
 #endif  // GAMEOBJECT_RIGIDBODY_INTERSECT_CHECKER_H_
