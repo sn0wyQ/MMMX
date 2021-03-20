@@ -54,7 +54,6 @@ class BaseController : public QObject {
   QTimer ticker_;
   QElapsedTimer last_tick_;
 
-  QElapsedTimer var_timer_;
   int var_;
 
   std::queue<Event> events_to_handle_;

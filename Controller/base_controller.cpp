@@ -39,7 +39,9 @@ void BaseController::SetFunctionForEventType(
 }
 
 void BaseController::Tick() {
-  var_timer_.restart();
+  QElapsedTimer var_timer;
+  var_timer.start();
+
   this->OnTick(last_tick_.elapsed());
 
   while (HasEventsToHandle()) {
@@ -53,7 +55,8 @@ void BaseController::Tick() {
     this->SendEvent(events_to_send_.front());
     events_to_send_.pop();
   }
-  var_ = var_timer_.elapsed();
+
+  var_ = var_timer.elapsed();
 }
 
 bool BaseController::HasEventsToSend() const {
