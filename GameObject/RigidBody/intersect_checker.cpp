@@ -1,10 +1,9 @@
 #include "intersect_checker.h"
 
-bool IntersectChecker::IsIntersect(
+std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     const std::shared_ptr<RigidBodyCircle>& circle,
     const std::shared_ptr<RigidBodyRectangle>& rectangle,
     QVector2D offset) {
-  // qInfo() << offset.x() << " " << offset.y() << "\n";
   float r = circle->GetRadius();
   std::vector<QPointF> points;
   points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
@@ -15,6 +14,7 @@ bool IntersectChecker::IsIntersect(
                            offset.y() + rectangle->GetHeight() / 2.);
   points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
                            offset.y() + rectangle->GetHeight() / 2.);
+  std::vector<QPointF> result;
   for (int i = 0; i < 4; i++) {
     QPointF first = points[i];
     QPointF second = points[(i + 1) % 4];
@@ -27,70 +27,67 @@ bool IntersectChecker::IsIntersect(
     float formula = c * c - r * r * (a * a + b * b);
     if (std::abs(formula) < kEps) {
       if (IsPointInSegment(first, second, QPointF(x0, y0))) {
-        return true;
+        result.emplace_back(x0, y0);
       }
     } else if (formula <= kEps) {
       float d = r * r - c * c / (a * a + b * b);
       float mult = std::sqrt(d / (a * a + b * b));
-      if (IsPointInSegment(
-          first, second,
-          QPointF(x0 + b * mult, y0 - a * mult))) {
-        return true;
-      }
-      if (IsPointInSegment(
-          first, second,
-          QPointF(x0 - b * mult, y0 + a * mult))) {
-        return true;
+      QPointF first_intersect(x0 + b * mult, y0 - a * mult);
+      QPointF second_intersect(x0 - b * mult, y0 + a * mult);
+      if (IsPointInSegment(first, second, first_intersect)) {
+        result.push_back(first_intersect);
+      } else if (IsPointInSegment(first, second, second_intersect)) {
+        result.push_back(second_intersect);
       }
     }
   }
-  return false;
+  return result;
 }
 
-bool IntersectChecker::IsIntersect(const std::shared_ptr<RigidBodyRectangle>& rectangle,
+std::vector<QPointF> IntersectChecker::GetIntersectPoints(const std::shared_ptr<RigidBodyRectangle>& rectangle,
                                    const std::shared_ptr<RigidBodyCircle>& circle,
                                    QVector2D offset) {
-  return IsIntersect(circle, rectangle, -offset);
+  return GetIntersectPoints(circle, rectangle, -offset);
 }
 
-bool IntersectChecker::IsIntersectBodies(
+std::vector<QPointF> IntersectChecker::GetIntersectPointsBodies(
     const std::shared_ptr<RigidBody>& first,
     const std::shared_ptr<RigidBody>& second,
     QVector2D offset) {
   if (first->GetRigidBodyType() == RigidBodyType::kCircle
       && second->GetRigidBodyType() == RigidBodyType::kCircle) {
-    return IsIntersect(std::dynamic_pointer_cast<RigidBodyCircle>(first),
+    return GetIntersectPoints(std::dynamic_pointer_cast<RigidBodyCircle>(first),
                        std::dynamic_pointer_cast<RigidBodyCircle>(second),
                        offset);
   } else if (first->GetRigidBodyType() == RigidBodyType::kRectangle
       && second->GetRigidBodyType() == RigidBodyType::kCircle) {
-    return IsIntersect(std::dynamic_pointer_cast<RigidBodyRectangle>(first),
+    return GetIntersectPoints(std::dynamic_pointer_cast<RigidBodyRectangle>(first),
                        std::dynamic_pointer_cast<RigidBodyCircle>(second),
                        offset);
   } else if (first->GetRigidBodyType() == RigidBodyType::kCircle
       && second->GetRigidBodyType() == RigidBodyType::kRectangle) {
-    return IsIntersect(std::dynamic_pointer_cast<RigidBodyCircle>(first),
+    return GetIntersectPoints(std::dynamic_pointer_cast<RigidBodyCircle>(first),
                        std::dynamic_pointer_cast<RigidBodyRectangle>(second),
                        offset);
   } else if (first->GetRigidBodyType() == RigidBodyType::kRectangle
       && second->GetRigidBodyType() == RigidBodyType::kRectangle) {
-    return IsIntersect(std::dynamic_pointer_cast<RigidBodyRectangle>(first),
+    return GetIntersectPoints(std::dynamic_pointer_cast<RigidBodyRectangle>(first),
                        std::dynamic_pointer_cast<RigidBodyRectangle>(second),
                        offset);
   }
-  return false;
+  return {};
 }
 
-bool IntersectChecker::IsIntersect(const std::shared_ptr<RigidBodyCircle>& circle1,
+std::vector<QPointF> IntersectChecker::GetIntersectPoints(const std::shared_ptr<RigidBodyCircle>& circle1,
                                    const std::shared_ptr<RigidBodyCircle>& circle2,
                                    QVector2D offset) {
-  return false;
+  return {};
 }
 
-bool IntersectChecker::IsIntersect(const std::shared_ptr<RigidBodyRectangle>& rectangle1,
+std::vector<QPointF> IntersectChecker::GetIntersectPoints(const std::shared_ptr<RigidBodyRectangle>& rectangle1,
                                    const std::shared_ptr<RigidBodyRectangle>& rectangle2,
                                    QVector2D offset) {
-  return false;
+  return {};
 }
 
 bool IntersectChecker::IsPointInSegment(QPointF first,
@@ -100,7 +97,6 @@ bool IntersectChecker::IsPointInSegment(QPointF first,
   float max_x = std::max(first.x(), second.x());
   float min_y = std::min(first.y(), second.y());
   float max_y = std::max(first.y(), second.y());
-  // qInfo() << "mn" << min_x << max_x << min_y << max_y;
   if (min_x - kEps <= point.x() && point.x() <= max_x + kEps
     && min_y - kEps <= point.y() && point.y() <= max_y + kEps) {
     return true;
@@ -148,13 +144,13 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
   float r = 1;
   while (r - l > kEps) {
     float m = (l + r) / 2;
-    if (IsIntersect(circle, rectangle, offset - delta_intersect * m)) {
+    if (!GetIntersectPoints(circle, rectangle,
+                            offset - delta_intersect * m).empty()) {
       r = m - kEps;
     } else {
       l = m;
     }
   }
-  qInfo() << l;
   return -delta_intersect * l;
 }
 

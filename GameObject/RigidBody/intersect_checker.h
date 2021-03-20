@@ -1,7 +1,8 @@
 #ifndef GAMEOBJECT_RIGIDBODY_INTERSECT_CHECKER_H_
 #define GAMEOBJECT_RIGIDBODY_INTERSECT_CHECKER_H_
 
-#include <math.h>
+#include <cmath>
+#include <vector>
 
 #include <QDebug>
 
@@ -11,25 +12,25 @@
 namespace IntersectChecker {
   const float kEps = 1e-7;
 
-  bool IsIntersectBodies(const std::shared_ptr<RigidBody>& first,
-                   const std::shared_ptr<RigidBody>& second,
-                   QVector2D offset);
+  std::vector<QPointF> GetIntersectPointsBodies(const std::shared_ptr<RigidBody>& first,
+                                const std::shared_ptr<RigidBody>& second,
+                                QVector2D offset);
 
   bool IsPointInSegment(QPointF first, QPointF second, QPointF point);
 
-  bool IsIntersect(const std::shared_ptr<RigidBodyCircle>& circle,
+  std::vector<QPointF> GetIntersectPoints(const std::shared_ptr<RigidBodyCircle>& circle,
                    const std::shared_ptr<RigidBodyRectangle>& rectangle,
                    QVector2D offset);
 
-  bool IsIntersect(const std::shared_ptr<RigidBodyRectangle>& rectangle,
+  std::vector<QPointF> GetIntersectPoints(const std::shared_ptr<RigidBodyRectangle>& rectangle,
                    const std::shared_ptr<RigidBodyCircle>& circle,
                    QVector2D offset);
 
-  bool IsIntersect(const std::shared_ptr<RigidBodyCircle>& circle1,
+  std::vector<QPointF> GetIntersectPoints(const std::shared_ptr<RigidBodyCircle>& circle1,
                    const std::shared_ptr<RigidBodyCircle>& circle2,
                    QVector2D offset);
 
-  bool IsIntersect(const std::shared_ptr<RigidBodyRectangle>& rectangle1,
+  std::vector<QPointF> GetIntersectPoints(const std::shared_ptr<RigidBodyRectangle>& rectangle1,
                    const std::shared_ptr<RigidBodyRectangle>& rectangle2,
                    QVector2D offset);
 
