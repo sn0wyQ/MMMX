@@ -5,8 +5,8 @@
 
 #include <QVector2D>
 
-#include "GameObject/MovableObject/Entity/entity.h"
 #include "constants.h"
+#include "GameObject/MovableObject/Entity/entity.h"
 
 class Player : public Entity {
  public:

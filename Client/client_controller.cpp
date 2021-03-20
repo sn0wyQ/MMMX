@@ -1,4 +1,3 @@
-#include <iostream>
 #include "client_controller.h"
 
 ClientController::ClientController(const QUrl& url) : url_(url),

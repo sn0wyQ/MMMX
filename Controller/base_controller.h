@@ -67,12 +67,12 @@ class BaseController : public QObject {
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
   virtual void UpdateServerVarEvent(const Event& event) {}
-  virtual void UpdatePlayersFOVEvent(const Event& event) {}
 
   // ------------------- GAME EVENTS -------------------
 
   virtual void SendControlsEvent(const Event& event) {}
   virtual void UpdatePlayerDataEvent(const Event& event) {}
+  virtual void UpdatePlayersFOVEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

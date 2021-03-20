@@ -99,6 +99,7 @@ class ClientController : public BaseController {
   void CreateAllPlayersDataEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateServerVarEvent(const Event& event) override;
+
   // ------------------- GAME EVENTS -------------------
 
   void SendControlsEvent(const Event& event) override;
