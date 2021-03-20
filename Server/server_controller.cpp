@@ -116,7 +116,7 @@ Event ServerController::CheckForFOV(const Event& event,
                              event.GetArg<float>(2));
 
   if (QLineF(receiver->GetPosition(), senders_pos).length() >
-      receiver->FOVRadius()) {
+      receiver->GetFOVRadius()) {
     auto args = event.GetArgs();
     args[1] = Constants::kDefaultPlayerX;
     args[2] = Constants::kDefaultPlayerY;

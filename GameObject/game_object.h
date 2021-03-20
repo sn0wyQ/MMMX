@@ -12,6 +12,7 @@ class GameObject {
 
   virtual void OnTick(int time_from_previous_tick) = 0;
   virtual void Draw(Painter* painter) = 0;
+  virtual bool IsFilteredByFOV() const = 0;
 
   GameObjectId GetId() const;
   void SetId(GameObjectId id);

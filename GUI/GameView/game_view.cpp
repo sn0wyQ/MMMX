@@ -17,9 +17,18 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                   model_->IsLocalPlayerSet()
                   ? model_->GetLocalPlayer()->GetPosition()
                   : QPointF(0, 0));
+
+  // Temporary FOV show
+  if (model_->IsLocalPlayerSet()) {
+    const auto& local_player = model_->GetLocalPlayer();
+    painter.DrawEllipse(local_player->GetPosition(),
+                        local_player->GetFOVRadius(),
+                        local_player->GetFOVRadius());
+  }
+
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
-    if (player->IsInFOV()) {
+    if (!player->IsFilteredByFOV() || player->IsInFOV()) {
       player->Draw(&painter);
     }
   }

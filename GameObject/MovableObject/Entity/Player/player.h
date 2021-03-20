@@ -18,11 +18,12 @@ class Player : public Entity {
 
   void OnTick(int time_from_previous_tick) override;
   void Draw(Painter* painter) override;
+  bool IsFilteredByFOV() const override;
 
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
 
-  uint32_t FOVRadius() const;
+  uint32_t GetFOVRadius() const;
   void SetFOVRadius(uint32_t new_fov);
 
   void UpdateVelocity(uint32_t mask);

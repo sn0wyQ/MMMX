@@ -41,6 +41,10 @@ void Player::Draw(Painter* painter) {
   painter->restore();
 }
 
+bool Player::IsFilteredByFOV() const {
+  return true;
+}
+
 // More information about |mask| can be found in event_type.h
 void Player::UpdateVelocity(uint32_t mask) {
   // Normalizing of (0, 0) vector works bad
@@ -74,7 +78,7 @@ void Player::SetIsLocalPlayer(bool is_local_player) {
   is_local_player_ = is_local_player;
 }
 
-uint32_t Player::FOVRadius() const {
+uint32_t Player::GetFOVRadius() const {
   return fov_radius_;
 }
 
