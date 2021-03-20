@@ -37,8 +37,9 @@ class ServerController : public BaseController {
   void ProcessEventsFromRooms();
   void ProcessEventsFromRoom(const std::shared_ptr<RoomController>& room_ptr);
 
-  Event CheckForFOV(const Event& event, ClientId receiver_client_id,
-                   const std::shared_ptr<RoomController>& room_ptr) const;
+  static Event CheckForFOV(const Event& event,
+                           ClientId receiver_client_id,
+                           const std::shared_ptr<RoomController>& room_ptr);
 
   QWebSocketServer web_socket_server_;
   ServerModel server_model_;

@@ -107,21 +107,25 @@ void ServerController::ProcessEventsFromRoom(
 
 Event ServerController::CheckForFOV(const Event& event,
                                    ClientId receiver_client_id,
-                                   const std::shared_ptr<RoomController>& room_ptr) const {
+                                   const std::shared_ptr<RoomController>&
+                                       room_ptr) {
   auto receiver = room_ptr->GetPlayerByPlayerID(
       room_ptr->ClientIdToPlayerId(receiver_client_id));
 
-  auto receivers_pos = receiver->GetPosition();
-  auto data_pos = QPointF(event.GetArg<float>(1),
-      event.GetArg<float>(2));
-  QLineF line(receivers_pos, data_pos);
-  if (line.length() > receiver->FOVRadius()) {
+  auto senders_pos = QPointF(event.GetArg<float>(1),
+                             event.GetArg<float>(2));
+
+  if (QLineF(receiver->GetPosition(), senders_pos).length() >
+      receiver->FOVRadius()) {
     auto args = event.GetArgs();
-    // args[1] = Constants::kDefaultPlayerX;
-    // args[2] = Constants::kDefaultPlayerY;
+    args[1] = Constants::kDefaultPlayerX;
+    args[2] = Constants::kDefaultPlayerY;
+    args[3] = QVector2D(0, 0);
+    args[4] = Constants::kDefaultPlayerViewAngle;
     args[5] = false;
     return Event(event.GetType(), args);
   }
+
   return event;
 }
 
