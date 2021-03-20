@@ -14,6 +14,6 @@ bool Entity::IsInFOV() const {
   return is_in_FOV_;
 }
 
-void Entity::SetIsInFOV(bool is_in_players_FOV_) {
-  is_in_FOV_ = is_in_players_FOV_;
+void Entity::SetIsInFOV(bool is_in_FOV) {
+  is_in_FOV_ = is_in_FOV;
 }

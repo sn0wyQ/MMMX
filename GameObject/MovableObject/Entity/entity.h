@@ -14,7 +14,7 @@ class Entity : public MovableObject {
   void SetViewAngle(float view_angle);
 
   bool IsInFOV() const;
-  void SetIsInFOV(bool is_in_players_FOV_);
+  void SetIsInFOV(bool is_in_FOV);
 
  private:
   // 0 is direction from left to right
