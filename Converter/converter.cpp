@@ -10,7 +10,7 @@ QPointF Converter::GetCenter() const {
   return game_center_;
 }
 
-float Converter::GetCoef() const {
+float Converter::GetCoefficient() const {
   return coefficient_;
 }
 

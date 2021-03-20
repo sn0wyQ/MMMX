@@ -10,6 +10,22 @@ Painter::Painter(QPaintDevice* device,
                 - converter_->ScaleFromGameToScreen(local_centre));
 }
 
+void Painter::SetClipCircle(float x,
+                            float y,
+                            float r,
+                            Qt::ClipOperation clip_operation) {
+  converter_->ScaleFromGameToScreen(&x);
+  converter_->ScaleFromGameToScreen(&y);
+  converter_->ScaleFromGameToScreen(&r);
+
+  QRegion region(static_cast<int>(x),
+                 static_cast<int>(y),
+                 static_cast<int>(r),
+                 static_cast<int>(r),
+                 QRegion::Ellipse);
+  setClipRegion(region, clip_operation);
+}
+
 void Painter::RotateClockWise(float degree) {
   rotate(degree);
 }
