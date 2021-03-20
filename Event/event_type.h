@@ -70,7 +70,7 @@ enum class EventType {
   kUpdatePlayerData,
 
   // [0] - <int> player_id,
-  // [1] - <uint32_t> new player's POV
+  // [1] - <uint32_t> new player's FOV
   kUpdatePlayersFOV,
 
   SIZE
