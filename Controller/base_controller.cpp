@@ -70,7 +70,6 @@ bool BaseController::HasEventsToHandle() const {
 void BaseController::StartTicking() {
   ticker_.start(Constants::kTimeToTick);
   last_tick_.start();
-  var_timer_.start();
 }
 
 int BaseController::GetVar() const {
