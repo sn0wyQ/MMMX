@@ -46,7 +46,8 @@ class RoomController : public BaseController {
   GameObjectId ClientIdToPlayerId(ClientId client_id) const;
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
-  std::shared_ptr<Player> GetPlayerByPlayerID(GameObjectId player_id) const;
+  bool IsPlayerInFOV(GameObjectId sender_player_id,
+                     ClientId receiver_client_id);
 
   GameObjectId GetNextUnusedPlayerId() const;
 

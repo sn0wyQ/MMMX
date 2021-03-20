@@ -149,6 +149,16 @@ void RoomController::UpdateServerVarEvent(const Event& event) {
                                  event.GetArg<GameObjectId>(0))));
 }
 
+bool RoomController::IsPlayerInFOV(GameObjectId sender_player_id,
+                                   ClientId receiver_client_id) {
+  auto receiver = model_.GetPlayerByPlayerId(
+      ClientIdToPlayerId(receiver_client_id));
+  auto sender = model_.GetPlayerByPlayerId(sender_player_id);
+
+  return QLineF(receiver->GetPosition(), sender->GetPosition()).length() <
+      receiver->GetFOVRadius();
+}
+
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
@@ -176,11 +186,6 @@ void RoomController::UpdatePlayersFOVEvent(const Event& event) {
   model_.GetPlayerByPlayerId(player_id)->SetFOVRadius(
       event.GetArg<uint32_t>(1));
   this->AddEventToSend(event);
-}
-
-std::shared_ptr<Player> RoomController::GetPlayerByPlayerID(
-    GameObjectId player_id) const {
-  return model_.GetPlayerByPlayerId(player_id);
 }
 
 void RoomController::PlayerLeftFOVEvent(const Event& event) {

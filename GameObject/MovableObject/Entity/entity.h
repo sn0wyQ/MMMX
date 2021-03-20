@@ -21,7 +21,7 @@ class Entity : public MovableObject {
   // Increasing counterclockwise
   // Measured in degrees
   float view_angle_ = 0.f;
-  bool is_in_players_FOV{true};
+  bool is_in_FOV_{true};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_

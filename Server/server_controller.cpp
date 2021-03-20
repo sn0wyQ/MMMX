@@ -92,7 +92,7 @@ void ServerController::ProcessEventsFromRoom(
       auto event_to_send = event;
       auto sender_player_id = event.GetArg<GameObjectId>(0);
       if (event.GetType() == EventType::kUpdatePlayerData &&
-          !IsPlayerInFOV(sender_player_id, client_id, room_ptr)) {
+          !room_ptr->IsPlayerInFOV(sender_player_id, client_id)) {
         event_to_send = Event(EventType::kPlayerLeftFOV, sender_player_id);
       }
 
@@ -105,18 +105,6 @@ void ServerController::ProcessEventsFromRoom(
       this->AddEventToHandle(Event(EventType::kSendEventToClient, args));
     }
   }
-}
-
-bool ServerController::IsPlayerInFOV(GameObjectId sender_player_id,
-                                     ClientId receiver_client_id,
-                                     const std::shared_ptr<RoomController>&
-                                       room_ptr) {
-  auto receiver = room_ptr->GetPlayerByPlayerID(
-      room_ptr->ClientIdToPlayerId(receiver_client_id));
-  auto sender = room_ptr->GetPlayerByPlayerID(sender_player_id);
-
-  return QLineF(receiver->GetPosition(), sender->GetPosition()).length() <
-      receiver->GetFOVRadius();
 }
 
 void ServerController::OnByteArrayReceived(const QByteArray& message) {
@@ -195,9 +183,6 @@ void ServerController::SendToClient(int client_id,
   if (client_ptr) {
     try {
       client_ptr->socket->sendBinaryMessage(event.ToByteArray());
-      if (event.GetType() == EventType::kUpdatePlayersFOV) {
-        qInfo() << "!";
-      }
     } catch (std::exception& e) {
       qInfo() << "[SERVER] Caught exception" << e.what();
     }
