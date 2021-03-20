@@ -5,7 +5,7 @@ bool IntersectChecker::IsIntersect(
     const std::shared_ptr<RigidBodyRectangle>& rectangle,
     QVector2D offset) {
   // qInfo() << offset.x() << " " << offset.y() << "\n";
-  double r = circle->GetRadius();
+  float r = circle->GetRadius();
   std::vector<QPointF> points;
   points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
                            offset.y() - rectangle->GetHeight() / 2.);
@@ -18,28 +18,28 @@ bool IntersectChecker::IsIntersect(
   for (int i = 0; i < 4; i++) {
     QPointF first = points[i];
     QPointF second = points[(i + 1) % 4];
-    double a = second.y() - first.y();
-    double b = first.x() - second.x();
-    double c = first.y() * second.x() - first.x() * second.y();
+    float a = second.y() - first.y();
+    float b = first.x() - second.x();
+    float c = first.y() * second.x() - first.x() * second.y();
 
-    double x0 = -a * c / (a * a + b * b), y0 = -b * c / (a * a + b * b);
-    if (c * c > r * r * (a * a + b * b) + kEps) {
-    } else if (abs(c * c - r * r * (a * a + b * b)) < kEps) {
+    float x0 = -a * c / (a * a + b * b);
+    float y0 = -b * c / (a * a + b * b);
+    float formula = c * c - r * r * (a * a + b * b);
+    if (std::abs(formula) < kEps) {
       if (IsPointInSegment(first, second, QPointF(x0, y0))) {
         return true;
       }
-    } else {
-      double d = r * r - c * c / (a * a + b * b);
-      double mult = std::sqrt(d / (a * a + b * b));
-      double ax, ay, bx, by;
-      ax = x0 + b * mult;
-      bx = x0 - b * mult;
-      ay = y0 - a * mult;
-      by = y0 + a * mult;
-      if (IsPointInSegment(first, second, QPointF(ax, ay))) {
+    } else if (formula <= kEps) {
+      float d = r * r - c * c / (a * a + b * b);
+      float mult = std::sqrt(d / (a * a + b * b));
+      if (IsPointInSegment(
+          first, second,
+          QPointF(x0 + b * mult, y0 - a * mult))) {
         return true;
       }
-      if (IsPointInSegment(first, second, QPointF(bx, by))) {
+      if (IsPointInSegment(
+          first, second,
+          QPointF(x0 - b * mult, y0 + a * mult))) {
         return true;
       }
     }
@@ -96,14 +96,86 @@ bool IntersectChecker::IsIntersect(const std::shared_ptr<RigidBodyRectangle>& re
 bool IntersectChecker::IsPointInSegment(QPointF first,
                                         QPointF second,
                                         QPointF point) {
-  double min_x = std::min(first.x(), second.x());
-  double max_x = std::max(first.x(), second.x());
-  double min_y = std::min(first.y(), second.y());
-  double max_y = std::max(first.y(), second.y());
+  float min_x = std::min(first.x(), second.x());
+  float max_x = std::max(first.x(), second.x());
+  float min_y = std::min(first.y(), second.y());
+  float max_y = std::max(first.y(), second.y());
   // qInfo() << "mn" << min_x << max_x << min_y << max_y;
   if (min_x - kEps <= point.x() && point.x() <= max_x + kEps
     && min_y - kEps <= point.y() && point.y() <= max_y + kEps) {
     return true;
   }
   return false;
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
+    const std::shared_ptr<RigidBody>& first,
+    const std::shared_ptr<RigidBody>& second,
+    QVector2D offset, QVector2D delta_intersect) {
+  if (first->GetRigidBodyType() == RigidBodyType::kCircle
+      && second->GetRigidBodyType() == RigidBodyType::kCircle) {
+    return -CalculateDistanceToObjectNotToIntersect(
+        std::dynamic_pointer_cast<RigidBodyCircle>(first),
+        std::dynamic_pointer_cast<RigidBodyCircle>(second),
+                       offset, delta_intersect);
+  } else if (first->GetRigidBodyType() == RigidBodyType::kRectangle
+      && second->GetRigidBodyType() == RigidBodyType::kCircle) {
+    return -CalculateDistanceToObjectNotToIntersect(
+        std::dynamic_pointer_cast<RigidBodyRectangle>(first),
+        std::dynamic_pointer_cast<RigidBodyCircle>(second),
+                       offset, delta_intersect);
+  } else if (first->GetRigidBodyType() == RigidBodyType::kCircle
+      && second->GetRigidBodyType() == RigidBodyType::kRectangle) {
+    return -CalculateDistanceToObjectNotToIntersect(
+        std::dynamic_pointer_cast<RigidBodyCircle>(first),
+        std::dynamic_pointer_cast<RigidBodyRectangle>(second),
+                       offset, delta_intersect);
+  } else if (first->GetRigidBodyType() == RigidBodyType::kRectangle
+      && second->GetRigidBodyType() == RigidBodyType::kRectangle) {
+    return -CalculateDistanceToObjectNotToIntersect(
+        std::dynamic_pointer_cast<RigidBodyRectangle>(first),
+        std::dynamic_pointer_cast<RigidBodyRectangle>(second),
+                       offset, delta_intersect);
+  }
+  return QVector2D();
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
+    const std::shared_ptr<RigidBodyCircle>& circle,
+    const std::shared_ptr<RigidBodyRectangle>& rectangle,
+    QVector2D offset, QVector2D delta_intersect) {
+  float l = 0;
+  float r = 1;
+  while (r - l > kEps) {
+    float m = (l + r) / 2;
+    if (IsIntersect(circle, rectangle, offset - delta_intersect * m)) {
+      r = m - kEps;
+    } else {
+      l = m;
+    }
+  }
+  qInfo() << l;
+  return -delta_intersect * l;
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
+    const std::shared_ptr<RigidBodyRectangle>& rectangle,
+    const std::shared_ptr<RigidBodyCircle>& circle,
+    QVector2D offset, QVector2D delta_intersect) {
+  return CalculateDistanceToObjectNotToIntersect(circle, rectangle,
+                                                 -offset, -delta_intersect);
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
+    const std::shared_ptr<RigidBodyCircle>& circle1,
+    const std::shared_ptr<RigidBodyCircle>& circle2,
+    QVector2D offset, QVector2D delta_intersect) {
+  return QVector2D();
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
+    const std::shared_ptr<RigidBodyRectangle>& rectangle1,
+    const std::shared_ptr<RigidBodyRectangle>& rectangle2,
+    QVector2D offset, QVector2D delta_intersect) {
+  return QVector2D();
 }
