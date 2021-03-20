@@ -166,9 +166,20 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
   player_ptr->SetY(event.GetArg<float>(2));
   player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
   player_ptr->SetViewAngle(event.GetArg<float>(4));
-  player_ptr->SetIsInFOV(event.GetArg<bool>(5));
+  player_ptr->SetIsInFOV(true);
 
   view_->Update();
+}
+
+void ClientController::UpdatePlayersFOVEvent(const Event& event) {
+  model_->GetLocalPlayer()->SetFOVRadius(event.GetArg<uint32_t>(1));
+  qInfo() << "[CLIENT] Set player FOV to" <<
+          model_->GetLocalPlayer()->GetFOVRadius();
+}
+
+void ClientController::PlayerLeftFOVEvent(const Event& event) {
+  model_->GetPlayerByPlayerId(
+      event.GetArg<GameObjectId>(0))->SetIsInFOV(false);
 }
 
 // -------------------- CONTROLS --------------------
@@ -240,12 +251,6 @@ void ClientController::ApplyDirection() {
 
   model_->GetLocalPlayer()->UpdateVelocity(direction_mask);
   view_->Update();
-}
-
-void ClientController::UpdatePlayersFOVEvent(const Event& event) {
-  model_->GetLocalPlayer()->SetFOVRadius(event.GetArg<uint32_t>(1));
-  qInfo() << "[CLIENT] Set player FOV to" <<
-                                      model_->GetLocalPlayer()->GetFOVRadius();
 }
 
 void ClientController::ResetDirection() {

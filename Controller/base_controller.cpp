@@ -31,6 +31,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::UpdatePlayerDataEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdatePlayersFOV,
     std::bind(&BaseController::UpdatePlayersFOVEvent, this, _1));
+  SetFunctionForEventType(EventType::kPlayerLeftFOV,
+    std::bind(&BaseController::PlayerLeftFOVEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

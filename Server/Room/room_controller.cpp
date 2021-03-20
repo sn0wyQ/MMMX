@@ -167,16 +167,22 @@ void RoomController::SendControlsEvent(const Event& event) {
                        senders_player_ptr->GetX(),
                        senders_player_ptr->GetY(),
                        senders_player_ptr->GetVelocity(),
-                       senders_player_ptr->GetViewAngle(),
-                       true));  // is_in_players_FOV is true by default
+                       senders_player_ptr->GetViewAngle()));
 }
 
 void RoomController::UpdatePlayersFOVEvent(const Event& event) {
-  model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
+  GameObjectId player_id = this->ClientIdToPlayerId(
+      event.GetArg<ClientId>(0));
+  model_.GetPlayerByPlayerId(player_id)->SetFOVRadius(
+      event.GetArg<uint32_t>(1));
   this->AddEventToSend(event);
 }
 
 std::shared_ptr<Player> RoomController::GetPlayerByPlayerID(
     GameObjectId player_id) const {
   return model_.GetPlayerByPlayerId(player_id);
+}
+
+void RoomController::PlayerLeftFOVEvent(const Event& event) {
+  this->AddEventToSend(event);
 }

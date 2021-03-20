@@ -11,16 +11,16 @@ enum class EventType {
   // After adding an event, add a function with the same name
   // to the BaseController private functions
 
-  // [0] - <int> client_id,
-  // [1] - <int> player_id
+  // [0] - <ClientId> client_id,
+  // [1] - <GameObjectId> player_id
   kAddNewPlayer,
 
-  // [0] - <int> client_id
+  // [0] - <ClientId> client_id
   kClientDisconnected,
 
-  // [0] - <int> client_id,
+  // [0] - <ClientId> client_id,
   // [1] - <int> number_of_players,
-  // [2+] - player_info [<int> player_id,
+  // [2+] - player_info [<GameObjectId> player_id,
   //                     <float> x,
   //                     <float> y,
   //                     <float> view_angle]
@@ -29,21 +29,21 @@ enum class EventType {
   // No arguments
   kEndGame,
 
-  // [0] - <int> player_id
+  // [0] - <GameObjectId> player_id
   kPlayerDisconnected,
 
-  // [0] - <int> client_id,
+  // [0] - <ClientId> client_id,
   // [1] - <int> event_type,
   // [2+] - event_args
   kSendEventToClient,
 
-  // [0] - <int> room_id,
+  // [0] - <RoomId> room_id,
   // [1] - <int> event_type,
   // [2+] - event_args
   kSendEventToRoom,
 
-  // [0] - <int> client_id,
-  // [1] - <int> player_id
+  // [0] - <ClientId> client_id,
+  // [1] - <GameObjectId> player_id
   kSetClientsPlayerId,
 
   // No arguments
@@ -54,24 +54,26 @@ enum class EventType {
 
   // ------------------- GAME EVENTS -------------------
 
-  // [0] - <int> sender_player_id,
+  // [0] - <GameObjectId> sender_player_id,
   // [1] - <float> x,
   // [2] - <float> y,
   // [3] - <QVector2D> velocity,
   // [4] - <float> view_angle
   kSendControls,
 
-  // [0] - <int> sender_player_id,
+  // [0] - <GameObjectId> sender_player_id,
   // [1] - <float> x,
   // [2] - <float> y,
   // [3] - <QVector2D> velocity,
-  // [4] - <float> view_angle,
-  // [5] - <bool> is_in_players_FOV
+  // [4] - <float> view_angle
   kUpdatePlayerData,
 
-  // [0] - <int> player_id,
+  // [0] - <ClientId> receiver_client_id,
   // [1] - <uint32_t> new player's FOV
   kUpdatePlayersFOV,
+
+  // [0] - <GameObjectId> sender_player_id
+  kPlayerLeftFOV,
 
   SIZE
 };
