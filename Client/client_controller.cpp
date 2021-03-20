@@ -246,7 +246,7 @@ void ClientController::ApplyDirection() {
 void ClientController::UpdatePlayersFOVEvent(const Event& event) {
   model_->GetLocalPlayer()->SetFOVRadius(event.GetArg<uint32_t>(1));
   qInfo() << "[CLIENT] Set player FOV to" <<
-                                          model_->GetLocalPlayer()->GetFOVRadius();
+                                      model_->GetLocalPlayer()->GetFOVRadius();
 }
 
 void ClientController::ResetDirection() {
