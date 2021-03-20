@@ -88,15 +88,41 @@ void ServerController::ProcessEventsFromRoom(
     if (receivers.empty()) {
       receivers = room_ptr->GetAllClientsIds();
     }
-    std::vector<QVariant> args = {Constants::kNullClientId,
-                                  static_cast<int>(event.GetType())};
-    std::vector<QVariant> old_args = event.GetArgs();
-    args.insert(args.end(), old_args.begin(), old_args.end());
     for (auto client_id : receivers) {
+      auto event_to_send = event;
+      if (event_to_send.GetType() == EventType::kUpdatePlayerData) {
+        event_to_send = CheckForFOV(event_to_send, client_id, room_ptr);
+      }
+
+      std::vector<QVariant> args = {Constants::kNullClientId,
+                                    static_cast<int>(event_to_send.GetType())};
+      std::vector<QVariant> old_args = event_to_send.GetArgs();
+      args.insert(args.end(), old_args.begin(), old_args.end());
+
       args.at(0) = client_id;
       this->AddEventToHandle(Event(EventType::kSendEventToClient, args));
     }
   }
+}
+
+Event ServerController::CheckForFOV(const Event& event,
+                                   ClientId receiver_client_id,
+                                   const std::shared_ptr<RoomController>& room_ptr) const {
+  auto receiver = room_ptr->GetPlayerByPlayerID(
+      room_ptr->ClientIdToPlayerId(receiver_client_id));
+
+  auto receivers_pos = receiver->GetPosition();
+  auto data_pos = QPointF(event.GetArg<float>(1),
+      event.GetArg<float>(2));
+  QLineF line(receivers_pos, data_pos);
+  if (line.length() > receiver->FOVRadius()) {
+    auto args = event.GetArgs();
+    // args[1] = Constants::kDefaultPlayerX;
+    // args[2] = Constants::kDefaultPlayerY;
+    args[5] = false;
+    return Event(event.GetType(), args);
+  }
+  return event;
 }
 
 void ServerController::OnByteArrayReceived(const QByteArray& message) {

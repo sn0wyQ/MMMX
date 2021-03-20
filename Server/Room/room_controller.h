@@ -46,6 +46,8 @@ class RoomController : public BaseController {
   GameObjectId ClientIdToPlayerId(ClientId client_id) const;
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
+  std::shared_ptr<Player> GetPlayerByPlayerID(GameObjectId player_id) const;
+
   GameObjectId GetNextUnusedPlayerId() const;
 
   std::vector<Event> ClaimEventsForServer();

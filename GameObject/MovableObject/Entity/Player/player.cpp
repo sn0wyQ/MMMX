@@ -73,3 +73,11 @@ bool Player::IsLocalPlayer() const {
 void Player::SetIsLocalPlayer(bool is_local_player) {
   is_local_player_ = is_local_player;
 }
+
+uint32_t Player::FOVRadius() const {
+  return fov_radius_;
+}
+
+void Player::SetFOVRadius(uint32_t new_fov) {
+  fov_radius_ = new_fov;
+}

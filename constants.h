@@ -56,6 +56,7 @@ constexpr float kBaseViewHeight = 25.f;
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
+constexpr uint32_t kDefaultPlayersFOV = 15;
 constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerViewAngle = 0.f;

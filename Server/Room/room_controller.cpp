@@ -39,7 +39,9 @@ void RoomController::AddClient(ClientId client_id) {
     this->AddEventToHandle(Event(EventType::kStartGame));
     qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
-  this->AddEventToHandle(Event(EventType::kUpdatePlayersFOV, client_id, 10));
+  this->AddEventToHandle(Event(EventType::kUpdatePlayersFOV,
+                               client_id,
+                               Constants::kDefaultPlayersFOV));
 }
 
 void RoomController::RemoveClient(ClientId client_id) {
@@ -165,9 +167,16 @@ void RoomController::SendControlsEvent(const Event& event) {
                        senders_player_ptr->GetX(),
                        senders_player_ptr->GetY(),
                        senders_player_ptr->GetVelocity(),
-                       senders_player_ptr->GetViewAngle()));
+                       senders_player_ptr->GetViewAngle(),
+                       true));  // is_in_players_FOV is true by default
 }
 
 void RoomController::UpdatePlayersFOVEvent(const Event& event) {
+  model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
   this->AddEventToSend(event);
+}
+
+std::shared_ptr<Player> RoomController::GetPlayerByPlayerID(
+    GameObjectId player_id) const {
+  return model_.GetPlayerByPlayerId(player_id);
 }

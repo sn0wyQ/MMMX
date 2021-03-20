@@ -19,7 +19,9 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                   : QPointF(0, 0));
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
-    player->Draw(&painter);
+    if (player->IsInFOV()) {
+      player->Draw(&painter);
+    }
   }
 }
 

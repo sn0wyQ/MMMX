@@ -66,6 +66,7 @@ enum class EventType {
   // [2] - <float> y,
   // [3] - <QVector2D> velocity,
   // [4] - <float> view_angle
+  // [5] - <bool> is_in_players_FOV
   kUpdatePlayerData,
 
   // [0] - <int> player_id
