@@ -19,13 +19,13 @@ class GameDataModel {
                  float view_angle = Constants::kDefaultPlayerViewAngle);
   void DeletePlayer(GameObjectId player_id);
 
-  std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
-  std::shared_ptr<Player> GetLocalPlayer() const;
-  std::vector<std::shared_ptr<Player>> GetPlayers() const;
   int GetPlayersCount() const;
+  std::vector<std::shared_ptr<Player>> GetPlayers() const;
+  std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
   bool IsPlayerIdTaken(GameObjectId player_id) const;
 
   bool IsLocalPlayerSet() const;
+  std::shared_ptr<Player> GetLocalPlayer() const;
   GameObjectId GetLocalPlayerId() const;
   void SetLocalPlayerId(GameObjectId player_id);
 

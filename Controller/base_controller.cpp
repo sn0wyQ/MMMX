@@ -42,14 +42,12 @@ void BaseController::Tick() {
   QElapsedTimer var_timer;
   var_timer.start();
 
-  this->OnTick(last_tick_.elapsed());
+  this->OnTick(last_tick_.restart());
 
   while (HasEventsToHandle()) {
     this->HandleEvent(events_to_handle_.front());
     events_to_handle_.pop();
   }
-
-  last_tick_.restart();
 
   while (HasEventsToSend()) {
     this->SendEvent(events_to_send_.front());

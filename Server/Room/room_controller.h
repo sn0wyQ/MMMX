@@ -16,7 +16,7 @@
 #include "constants.h"
 
 enum class RoomState {
-  kFinished,
+  kGameFinished,
   kGameInProgress,
   kWaitingForClients
 };
@@ -30,6 +30,8 @@ class RoomController : public BaseController {
 
   void SendEvent(const Event& event) override;
   void OnTick(int time_from_previous_tick) override;
+
+  void TickPlayers(int time_from_previous_tick);
 
   void AddClient(ClientId client_id);
   void RemoveClient(ClientId client_id);
