@@ -15,17 +15,25 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                   model_->IsLocalPlayerSet()
                   ? model_->GetLocalPlayer()->GetPosition()
                   : QPointF(0, 0));
+  // ----------------- CONSTANT OBJECTS -----------------
+
+  // Nothing here right now :(
+
+  // --------------- NON-CONSTANT OBJECTS ---------------
+
+  // If LocalPlayer isn't set we don't want to draw anything non-constant
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
 
   // Temporary FOV show
-  if (model_->IsLocalPlayerSet()) {
-    const auto& local_player = model_->GetLocalPlayer();
-    painter.DrawEllipse(local_player->GetPosition(),
-                        local_player->GetFovRadius(),
+  const auto& local_player = model_->GetLocalPlayer();
+  painter.DrawEllipse(local_player->GetPosition(),
+                      local_player->GetFovRadius(),
+                      local_player->GetFovRadius());
+  painter.SetClipCircle(local_player->GetX(),
+                        local_player->GetY(),
                         local_player->GetFovRadius());
-    painter.SetClipCircle(local_player->GetX(),
-                          local_player->GetY(),
-                          local_player->GetFovRadius());
-  }
 
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
