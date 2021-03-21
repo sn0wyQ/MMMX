@@ -1,3 +1,4 @@
+#include <constants.h>
 #include "event.h"
 
 Event::Event(const Event& event) {
@@ -30,6 +31,14 @@ void Event::PushBackArgsFromEvent(const Event& other) {
   for (auto& arg : args) {
     args_.push_back(arg);
   }
+}
+
+Event Event::CreateSendToClientEvent(const Event& other) {
+  auto event = Event(EventType::kSendEventToClient,
+                     Constants::kNullClientId,
+                     static_cast<int>(other.GetType()));
+  event.PushBackArgsFromEvent(other);
+  return event;
 }
 
 std::vector<QVariant> Event::GetArgs() const {

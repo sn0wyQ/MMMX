@@ -78,11 +78,7 @@ void ServerController::ProcessEventsFromRoom(
                     event.GetArgsSubVector(2));
     }
 
-    auto old_event = event;
-    event = Event(EventType::kSendEventToClient,
-                  Constants::kNullClientId,
-                  static_cast<int>(event.GetType()));
-    event.PushBackArgsFromEvent(old_event);
+    event = Event::CreateSendToClientEvent(event);
 
     for (auto client_id : receivers) {
       event.SetArg(0, client_id);

@@ -33,6 +33,7 @@ class Event {
   void SetArg(int index, const T& value) {
     args_.at(index).setValue<T>(value);
   }
+  static Event CreateSendToClientEvent(const Event& event);
   // Pushes back arguments (not type) into this event |args_|
   void PushBackArgsFromEvent(const Event& other);
   std::vector<QVariant> GetArgs() const;
