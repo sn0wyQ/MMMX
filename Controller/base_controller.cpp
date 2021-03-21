@@ -6,20 +6,22 @@ BaseController::BaseController() {
     std::bind(&BaseController::AddNewPlayerEvent, this, _1));
   SetFunctionForEventType(EventType::kClientDisconnected,
     std::bind(&BaseController::ClientDisconnectedEvent, this, _1));
-  SetFunctionForEventType(EventType::kEndGame,
-    std::bind(&BaseController::EndGameEvent, this, _1));
-  SetFunctionForEventType(EventType::kSetClientsPlayerId,
-    std::bind(&BaseController::SetClientsPlayerIdEvent, this, _1));
   SetFunctionForEventType(EventType::kCreateAllPlayersData,
     std::bind(&BaseController::CreateAllPlayersDataEvent, this, _1));
-  SetFunctionForEventType(EventType::kStartGame,
-    std::bind(&BaseController::StartGameEvent, this, _1));
+  SetFunctionForEventType(EventType::kEndGame,
+    std::bind(&BaseController::EndGameEvent, this, _1));
   SetFunctionForEventType(EventType::kPlayerDisconnected,
     std::bind(&BaseController::PlayerDisconnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToClient,
     std::bind(&BaseController::SendEventToClientEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendEventToClientsList,
+    std::bind(&BaseController::SendEventToClientsListEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
     std::bind(&BaseController::SendEventToRoomEvent, this, _1));
+  SetFunctionForEventType(EventType::kSetClientsPlayerId,
+    std::bind(&BaseController::SetClientsPlayerIdEvent, this, _1));
+  SetFunctionForEventType(EventType::kStartGame,
+    std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateVars,
     std::bind(&BaseController::UpdateVarsEvent, this, _1));
 

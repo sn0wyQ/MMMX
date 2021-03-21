@@ -37,6 +37,11 @@ enum class EventType {
   // [2+] - event_args
   kSendEventToClient,
 
+  // [0] - <QList<QVariant>> client_ids,
+  // [1] - <EventType> event to send type
+  // [2+] - <...> event to send args
+  kSendEventToClientsList,
+
   // [0] - <RoomId> room_id,
   // [1] - <int> event_type,
   // [2+] - event_args
@@ -58,7 +63,7 @@ enum class EventType {
 
   // ------------------- GAME EVENTS -------------------
 
-  // [0] - <GameObjectId> sender_player_id
+  // [0] - <GameObjectId> player's that left somebody's FOV player_id
   kPlayerLeftFov,
 
   // [0] - <GameObjectId> sender_player_id,

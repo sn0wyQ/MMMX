@@ -71,7 +71,7 @@ void ServerController::ProcessEventsFromRooms() {
 void ServerController::ProcessEventsFromRoom(
     const std::shared_ptr<RoomController>& room_ptr) {
   std::vector<Event> events_from_room = room_ptr->ClaimEventsForServer();
-  for (const auto& event : events_from_room) {
+  for (auto event : events_from_room) {
     std::vector<ClientId> receivers;
     switch (event.GetType()) {
       case EventType::kSetClientsPlayerId:
@@ -80,6 +80,16 @@ void ServerController::ProcessEventsFromRoom(
         receivers.push_back(event.GetArg<ClientId>(0));
         break;
 
+      case EventType::kSendEventToClientsList: {
+        auto clients_vector = event.GetArg<QList<QVariant>>(0);
+        for (auto& qvariant_client_id : clients_vector) {
+          receivers.push_back(qvariant_client_id.toInt());
+        }
+        event = Event(event.GetArg<EventType>(1),
+                      event.GetArgsSubVector(2));
+        break;
+      }
+
       default:
         break;
     }
@@ -87,24 +97,15 @@ void ServerController::ProcessEventsFromRoom(
       receivers = room_ptr->GetAllClientsIds();
     }
 
-    std::vector<QVariant> args = {Constants::kNullClientId,
-                                  static_cast<int>(event.GetType())};
-    std::vector<QVariant> old_args = event.GetArgs();
-    args.insert(args.end(), old_args.begin(), old_args.end());
+    auto old_event = event;
+    event = Event(EventType::kSendEventToClient,
+                  Constants::kNullClientId,
+                  static_cast<int>(event.GetType()));
+    event.PushBackArgsFromEvent(old_event);
 
     for (auto client_id : receivers) {
-      args.at(0) = client_id;
-      auto event_to_send = Event(EventType::kSendEventToClient, args);
-      if (event.GetType() == EventType::kUpdatePlayerData &&
-          !room_ptr->IsPlayerInFOV(event.GetArg<GameObjectId>(0), client_id)) {
-        event_to_send =
-            Event(EventType::kSendEventToClient,
-                  client_id,
-                  static_cast<int>(EventType::kPlayerLeftFov),
-                  event.GetArg<GameObjectId>(0));
-      }
-
-      this->AddEventToHandle(event_to_send);
+      event.SetArg(0, client_id);
+      this->AddEventToHandle(event);
     }
   }
 }

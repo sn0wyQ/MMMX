@@ -49,7 +49,7 @@ class RoomController : public BaseController {
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
   bool IsPlayerInFOV(GameObjectId sender_player_id,
-                     ClientId receiver_client_id);
+                     GameObjectId receiver_player_id);
 
   GameObjectId GetNextUnusedPlayerId() const;
 
@@ -66,6 +66,7 @@ class RoomController : public BaseController {
 
   void AddNewPlayerEvent(const Event& event) override;
   void CreateAllPlayersDataEvent(const Event& event) override;
+  void SendEventToClientsListEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateVarsEvent(const Event& event) override;
 

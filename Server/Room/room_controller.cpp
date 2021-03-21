@@ -153,10 +153,13 @@ void RoomController::UpdateVarsEvent(const Event& event) {
                                  event.GetArg<GameObjectId>(0))));
 }
 
+void RoomController::SendEventToClientsListEvent(const Event& event) {
+  this->AddEventToSend(event);
+}
+
 bool RoomController::IsPlayerInFOV(GameObjectId sender_player_id,
-                                   ClientId receiver_client_id) {
-  auto receiver = model_.GetPlayerByPlayerId(
-      ClientIdToPlayerId(receiver_client_id));
+                                   GameObjectId receiver_player_id) {
+  auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
   auto sender = model_.GetPlayerByPlayerId(sender_player_id);
 
   return QLineF(receiver->GetPosition(), sender->GetPosition()).length() <
@@ -169,22 +172,45 @@ void RoomController::SendControlsEvent(const Event& event) {
   if (!model_.IsPlayerIdTaken(event.GetArg<GameObjectId>(0))) {
     return;
   }
-  auto senders_player_ptr =
-      model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
+  auto sender_player_id = event.GetArg<GameObjectId>(0);
+  auto sender_player_ptr = model_.GetPlayerByPlayerId(sender_player_id);
 
   // TODO(Everyone): add anti-cheat mechanism to check
   //  if it was possible for player to travel this distance so fast
-  senders_player_ptr->SetX(event.GetArg<float>(1));
-  senders_player_ptr->SetY(event.GetArg<float>(2));
-  senders_player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
-  senders_player_ptr->SetViewAngle(event.GetArg<float>(4));
+  sender_player_ptr->SetX(event.GetArg<float>(1));
+  sender_player_ptr->SetY(event.GetArg<float>(2));
+  sender_player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
+  sender_player_ptr->SetViewAngle(event.GetArg<float>(4));
 
-  this->AddEventToSend(Event(EventType::kUpdatePlayerData,
-                       event.GetArg<GameObjectId>(0),
-                       senders_player_ptr->GetX(),
-                       senders_player_ptr->GetY(),
-                       senders_player_ptr->GetVelocity(),
-                       senders_player_ptr->GetViewAngle()));
+  QList<QVariant> data_receivers;  // client_ids here
+  QList<QVariant> left_fov_event_receivers;  // and here
+
+  for (auto& [receiver_client_id,
+              receiver_player_id] : this->player_ids_) {
+    auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
+    if (this->IsPlayerInFOV(sender_player_id, receiver_player_id)) {
+      data_receivers.push_back(receiver_client_id);
+    } else {
+      left_fov_event_receivers.push_back(receiver_client_id);
+    }
+  }
+
+  if (!data_receivers.empty()) {
+    this->AddEventToSend(Event(EventType::kSendEventToClientsList,
+                               data_receivers,
+                               static_cast<int>(EventType::kUpdatePlayerData),
+                               sender_player_id,
+                               sender_player_ptr->GetX(),
+                               sender_player_ptr->GetY(),
+                               sender_player_ptr->GetVelocity(),
+                               sender_player_ptr->GetViewAngle()));
+  }
+  if (!left_fov_event_receivers.empty()) {
+    this->AddEventToSend(Event(EventType::kSendEventToClientsList,
+                               left_fov_event_receivers,
+                               static_cast<int>(EventType::kPlayerLeftFov),
+                               sender_player_id));
+  }
 }
 
 void RoomController::UpdatePlayersFovEvent(const Event& event) {

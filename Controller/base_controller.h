@@ -64,13 +64,14 @@ class BaseController : public QObject {
 
   virtual void AddNewPlayerEvent(const Event& event) {}
   virtual void ClientDisconnectedEvent(const Event& event) {}
+  virtual void CreateAllPlayersDataEvent(const Event& event) {}
   virtual void EndGameEvent(const Event& event) {}
   virtual void PlayerDisconnectedEvent(const Event& event) {}
-  virtual void SetClientsPlayerIdEvent(const Event& event) {}
-  virtual void CreateAllPlayersDataEvent(const Event& event) {}
-  virtual void StartGameEvent(const Event& event) {}
   virtual void SendEventToClientEvent(const Event& event) {}
+  virtual void SendEventToClientsListEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
+  virtual void SetClientsPlayerIdEvent(const Event& event) {}
+  virtual void StartGameEvent(const Event& event) {}
   virtual void UpdateVarsEvent(const Event& event) {}
 
   // ------------------- GAME EVENTS -------------------

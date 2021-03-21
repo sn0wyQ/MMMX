@@ -25,6 +25,13 @@ QVariant Event::GetArg(int index) const {
   return args_.at(index);
 }
 
+void Event::PushBackArgsFromEvent(const Event& other) {
+  auto args = other.GetArgs();
+  for (auto& arg : args) {
+    args_.push_back(arg);
+  }
+}
+
 std::vector<QVariant> Event::GetArgs() const {
   return args_;
 }
