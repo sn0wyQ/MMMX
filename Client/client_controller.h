@@ -112,10 +112,10 @@ class ClientController : public BaseController {
 
   // ------------------- GAME EVENTS -------------------
 
+  void PlayerLeftFovEvent(const Event& event) override;
   void SendControlsEvent(const Event& event) override;
   void UpdatePlayerDataEvent(const Event& event) override;
-  void UpdatePlayersFOVEvent(const Event& event) override;
-  void PlayerLeftFOVEvent(const Event& event) override;
+  void UpdatePlayersFovEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameInProgress;
   QUrl url_;

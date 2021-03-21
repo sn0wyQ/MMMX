@@ -5,8 +5,8 @@
 
 #include <QVector2D>
 
-#include "constants.h"
 #include "GameObject/MovableObject/Entity/entity.h"
+#include "constants.h"
 
 class Player : public Entity {
  public:
@@ -24,12 +24,12 @@ class Player : public Entity {
   void SetIsLocalPlayer(bool is_local_player);
 
   uint32_t GetFOVRadius() const;
-  void SetFOVRadius(uint32_t new_fov);
+  void SetFovRadius(float fov_radius);
 
   void UpdateVelocity(uint32_t mask);
 
  private:
-  uint32_t fov_radius_{Constants::kDefaultPlayersFOV};
+  float fov_radius_{Constants::kDefaultPlayersFov};
   bool is_local_player_ = false;
 };
 

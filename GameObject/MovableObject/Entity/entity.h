@@ -14,14 +14,14 @@ class Entity : public MovableObject {
   void SetViewAngle(float view_angle);
 
   bool IsInFOV() const;
-  void SetIsInFOV(bool is_in_FOV);
+  void SetIsInFov(bool is_in_fov);
 
  private:
   // 0 is direction from left to right
   // Increasing counterclockwise
   // Measured in degrees
   float view_angle_ = 0.f;
-  bool is_in_FOV_{true};
+  bool is_in_fov_{true};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_

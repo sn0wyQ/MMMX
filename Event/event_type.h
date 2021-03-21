@@ -59,7 +59,7 @@ enum class EventType {
   // ------------------- GAME EVENTS -------------------
 
   // [0] - <GameObjectId> sender_player_id
-  kPlayerLeftFOV,
+  kPlayerLeftFov,
 
   // [0] - <GameObjectId> sender_player_id,
   // [1] - <float> x,
@@ -76,8 +76,8 @@ enum class EventType {
   kUpdatePlayerData,
 
   // [0] - <ClientId> receiver_client_id,
-  // [1] - <uint32_t> new player's FOV
-  kUpdatePlayersFOV,
+  // [1] - <float> new player's FOV, FOV should ALWAYS be > 0
+  kUpdatePlayersFov,
 
   SIZE
 };

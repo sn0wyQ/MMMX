@@ -85,6 +85,6 @@ uint32_t Player::GetFOVRadius() const {
   return fov_radius_;
 }
 
-void Player::SetFOVRadius(uint32_t new_fov) {
-  fov_radius_ = new_fov;
+void Player::SetFovRadius(float fov_radius) {
+  fov_radius_ = fov_radius;
 }

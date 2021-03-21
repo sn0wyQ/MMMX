@@ -76,7 +76,7 @@ void ServerController::ProcessEventsFromRoom(
     switch (event.GetType()) {
       case EventType::kSetClientsPlayerId:
       case EventType::kCreateAllPlayersData:
-      case EventType::kUpdatePlayersFOV:
+      case EventType::kUpdatePlayersFov:
         receivers.push_back(event.GetArg<ClientId>(0));
         break;
 
@@ -86,21 +86,25 @@ void ServerController::ProcessEventsFromRoom(
     if (receivers.empty()) {
       receivers = room_ptr->GetAllClientsIds();
     }
+
+    std::vector<QVariant> args = {Constants::kNullClientId,
+                                  static_cast<int>(event.GetType())};
+    std::vector<QVariant> old_args = event.GetArgs();
+    args.insert(args.end(), old_args.begin(), old_args.end());
+
     for (auto client_id : receivers) {
-      auto event_to_send = event;
-      auto sender_player_id = event.GetArg<GameObjectId>(0);
+      args.at(0) = client_id;
+      auto event_to_send = Event(EventType::kSendEventToClient, args);
       if (event.GetType() == EventType::kUpdatePlayerData &&
-          !room_ptr->IsPlayerInFOV(sender_player_id, client_id)) {
-        event_to_send = Event(EventType::kPlayerLeftFOV, sender_player_id);
+          !room_ptr->IsPlayerInFOV(event.GetArg<GameObjectId>(0), client_id)) {
+        event_to_send =
+            Event(EventType::kSendEventToClient,
+                  client_id,
+                  static_cast<int>(EventType::kPlayerLeftFov),
+                  event.GetArg<GameObjectId>(0));
       }
 
-      std::vector<QVariant> args = {Constants::kNullClientId,
-                                    static_cast<int>(event_to_send.GetType())};
-      std::vector<QVariant> old_args = event_to_send.GetArgs();
-      args.insert(args.end(), old_args.begin(), old_args.end());
-
-      args.at(0) = client_id;
-      this->AddEventToHandle(Event(EventType::kSendEventToClient, args));
+      this->AddEventToHandle(event_to_send);
     }
   }
 }

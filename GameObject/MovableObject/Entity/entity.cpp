@@ -11,9 +11,9 @@ void Entity::SetViewAngle(float view_angle) {
 }
 
 bool Entity::IsInFOV() const {
-  return is_in_FOV_;
+  return is_in_fov_;
 }
 
-void Entity::SetIsInFOV(bool is_in_FOV) {
-  is_in_FOV_ = is_in_FOV;
+void Entity::SetIsInFov(bool is_in_fov) {
+  is_in_fov_ = is_in_fov;
 }

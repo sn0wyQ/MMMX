@@ -196,20 +196,20 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
   player_ptr->SetY(event.GetArg<float>(2));
   player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
   player_ptr->SetViewAngle(event.GetArg<float>(4));
-  player_ptr->SetIsInFOV(true);
+  player_ptr->SetIsInFov(true);
 
   view_->Update();
 }
 
-void ClientController::UpdatePlayersFOVEvent(const Event& event) {
-  model_->GetLocalPlayer()->SetFOVRadius(event.GetArg<uint32_t>(1));
-  qInfo() << "[CLIENT] Set player FOV to" <<
+void ClientController::UpdatePlayersFovEvent(const Event& event) {
+  model_->GetLocalPlayer()->SetFovRadius(event.GetArg<float>(1));
+  qDebug() << "[CLIENT] Set player FOV to" <<
           model_->GetLocalPlayer()->GetFOVRadius();
 }
 
-void ClientController::PlayerLeftFOVEvent(const Event& event) {
+void ClientController::PlayerLeftFovEvent(const Event& event) {
   model_->GetPlayerByPlayerId(
-      event.GetArg<GameObjectId>(0))->SetIsInFOV(false);
+      event.GetArg<GameObjectId>(0))->SetIsInFov(false);
 }
 
 // -------------------- CONTROLS --------------------

@@ -43,9 +43,9 @@ void RoomController::AddClient(ClientId client_id) {
     this->AddEventToHandle(Event(EventType::kStartGame));
     qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
-  this->AddEventToHandle(Event(EventType::kUpdatePlayersFOV,
+  this->AddEventToHandle(Event(EventType::kUpdatePlayersFov,
                                client_id,
-                               Constants::kDefaultPlayersFOV));
+                               Constants::kDefaultPlayersFov));
 }
 
 void RoomController::RemoveClient(ClientId client_id) {
@@ -160,7 +160,7 @@ bool RoomController::IsPlayerInFOV(GameObjectId sender_player_id,
   auto sender = model_.GetPlayerByPlayerId(sender_player_id);
 
   return QLineF(receiver->GetPosition(), sender->GetPosition()).length() <
-      receiver->GetFOVRadius();
+      receiver->GetFOVRadius() + Constants::kPlayerRadius;
 }
 
 // ------------------- GAME EVENTS -------------------
@@ -187,14 +187,14 @@ void RoomController::SendControlsEvent(const Event& event) {
                        senders_player_ptr->GetViewAngle()));
 }
 
-void RoomController::UpdatePlayersFOVEvent(const Event& event) {
+void RoomController::UpdatePlayersFovEvent(const Event& event) {
   GameObjectId player_id = this->ClientIdToPlayerId(
       event.GetArg<ClientId>(0));
-  model_.GetPlayerByPlayerId(player_id)->SetFOVRadius(
-      event.GetArg<uint32_t>(1));
+  model_.GetPlayerByPlayerId(player_id)->SetFovRadius(
+      event.GetArg<float>(1));
   this->AddEventToSend(event);
 }
 
-void RoomController::PlayerLeftFOVEvent(const Event& event) {
+void RoomController::PlayerLeftFovEvent(const Event& event) {
   this->AddEventToSend(event);
 }
