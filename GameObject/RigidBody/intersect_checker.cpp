@@ -36,7 +36,8 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
       QPointF second_intersect(x0 - b * mult, y0 + a * mult);
       if (IsPointInSegment(first, second, first_intersect)) {
         result.push_back(first_intersect);
-      } else if (IsPointInSegment(first, second, second_intersect)) {
+      }
+      if (IsPointInSegment(first, second, second_intersect)) {
         result.push_back(second_intersect);
       }
     }
@@ -174,4 +175,9 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
     const std::shared_ptr<RigidBodyRectangle>& rectangle2,
     QVector2D offset, QVector2D delta_intersect) {
   return QVector2D();
+}
+
+bool IntersectChecker::IsSimilarVectors(QVector2D first, QVector2D second) {
+  qInfo() << first << second;
+  return QVector2D::dotProduct(first, second) > 1 - kCosEps;
 }

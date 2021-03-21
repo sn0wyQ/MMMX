@@ -93,6 +93,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
     QVector2D key_force = local_player->GetVelocity();
     local_player->SetVelocity(buffer);
     if (!local_player->GetVelocity().isNull()) {
+      bool is_velocity_edited = false;
       std::vector<QVector2D> tangents;
       for (const auto& item : model_->GetAllGameObjects()) {
         if (local_player->GetId() == item->GetId()) {
@@ -118,6 +119,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
           QVector2D velocity_to_set
               = local_player->GetVelocityByDeltaPosition(delta_to_set,
                                                          time_from_previous_tick);
+          is_velocity_edited = true;
           local_player->SetVelocity(velocity_to_set);
         }
       }
@@ -135,9 +137,6 @@ void ClientController::OnTick(int time_from_previous_tick) {
           for (const auto& point : intersect_points_now) {
             QVector2D tangent_vector(-point.y(), point.x());
             tangent_vector.normalize();
-            if (QVector2D::dotProduct(key_force, tangent_vector) < 0) {
-              tangent_vector *= -1;
-            }
             tangents.push_back(tangent_vector);
           }
         }
@@ -145,28 +144,30 @@ void ClientController::OnTick(int time_from_previous_tick) {
       if (!tangents.empty()) {
         bool full_stop = false;
         QVector2D common_tangent_vector = *tangents.begin();
-        common_tangent_vector.normalize();
         for (const auto& tangent_vector : tangents) {
-          if (tangent_vector.x() * common_tangent_vector.y()
-            == tangent_vector.y() * common_tangent_vector.x()) {
+          if (IntersectChecker::IsSimilarVectors(common_tangent_vector,
+                                                 tangent_vector)) {
+            common_tangent_vector += tangent_vector;
+            common_tangent_vector.normalize();
             continue;
           }
           full_stop = true;
           break;
         }
         if (full_stop) {
+          is_velocity_edited = true;
           local_player->SetVelocity({0.f, 0.f});
         } else {
           float length_result = QVector2D::dotProduct(common_tangent_vector,
                                                       key_force);
+          is_velocity_edited = true;
           local_player->SetVelocity(common_tangent_vector * length_result);
         }
       }
-      // if (!is_velocity_edited) {
-      //   qInfo() << "gay";
-      //   ApplyDirection();
-      // }
       qInfo() << local_player->GetVelocity();
+      if (!is_velocity_edited) {
+        ApplyDirection();
+      }
     }
   }
 

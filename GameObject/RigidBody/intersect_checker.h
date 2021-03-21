@@ -10,7 +10,8 @@
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
 
 namespace IntersectChecker {
-  const float kEps = 1e-7;
+  const float kEps = 1e-7f;
+  const float kCosEps = 0.1f;
 
   std::vector<QPointF> GetIntersectPointsBodies(const std::shared_ptr<RigidBody>& first,
                                 const std::shared_ptr<RigidBody>& second,
@@ -61,6 +62,8 @@ namespace IntersectChecker {
       const std::shared_ptr<RigidBodyRectangle>& rectangle1,
       const std::shared_ptr<RigidBodyRectangle>& rectangle2,
       QVector2D offset, QVector2D delta_intersect);
+
+  bool IsSimilarVectors(QVector2D first, QVector2D second);
 };
 
 #endif  // GAMEOBJECT_RIGIDBODY_INTERSECT_CHECKER_H_
