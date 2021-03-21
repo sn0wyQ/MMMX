@@ -11,7 +11,7 @@
 
 namespace IntersectChecker {
   const float kEps = 1e-7f;
-  const float kCosEps = 0.1f;
+  const float kCosEps = 0.2f;
 
   std::vector<QPointF> GetIntersectPointsBodies(const std::shared_ptr<RigidBody>& first,
                                 const std::shared_ptr<RigidBody>& second,
