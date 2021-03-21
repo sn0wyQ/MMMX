@@ -70,31 +70,12 @@ void ServerController::ProcessEventsFromRooms() {
 
 void ServerController::ProcessEventsFromRoom(
     const std::shared_ptr<RoomController>& room_ptr) {
-  std::vector<Event> events_from_room = room_ptr->ClaimEventsForServer();
-  for (auto event : events_from_room) {
-    std::vector<ClientId> receivers;
-    switch (event.GetType()) {
-      case EventType::kSetClientsPlayerId:
-      case EventType::kCreateAllPlayersData:
-      case EventType::kUpdatePlayersFov:
-        receivers.push_back(event.GetArg<ClientId>(0));
-        break;
+  for (auto event : room_ptr->ClaimEventsForServer()) {
+    auto receivers = GetReceiversForEvent(event, room_ptr);
 
-      case EventType::kSendEventToClientsList: {
-        auto clients_vector = event.GetArg<QList<QVariant>>(0);
-        for (auto& qvariant_client_id : clients_vector) {
-          receivers.push_back(qvariant_client_id.toInt());
-        }
-        event = Event(event.GetArg<EventType>(1),
-                      event.GetArgsSubVector(2));
-        break;
-      }
-
-      default:
-        break;
-    }
-    if (receivers.empty()) {
-      receivers = room_ptr->GetAllClientsIds();
+    if (event.GetType() == EventType::kSendEventToClientsList) {
+      event = Event(event.GetArg<EventType>(1),
+                    event.GetArgsSubVector(2));
     }
 
     auto old_event = event;
@@ -108,6 +89,34 @@ void ServerController::ProcessEventsFromRoom(
       this->AddEventToHandle(event);
     }
   }
+}
+
+std::vector<ClientId> ServerController::GetReceiversForEvent(
+    const Event& event,
+    const std::shared_ptr<RoomController>& room_ptr) {
+  std::vector<ClientId> receivers;
+  switch (event.GetType()) {
+    case EventType::kSetClientsPlayerId:
+    case EventType::kCreateAllPlayersData:
+    case EventType::kUpdatePlayersFov:
+      receivers.push_back(event.GetArg<ClientId>(0));
+      break;
+
+    case EventType::kSendEventToClientsList: {
+      auto clients_vector = event.GetArg<QList<QVariant>>(0);
+      for (auto& q_variant_client_id : clients_vector) {
+        receivers.push_back(q_variant_client_id.toInt());
+      }
+      break;
+    }
+
+    default:
+      break;
+  }
+  if (receivers.empty()) {
+    receivers = room_ptr->GetAllClientsIds();
+  }
+  return receivers;
 }
 
 void ServerController::OnByteArrayReceived(const QByteArray& message) {

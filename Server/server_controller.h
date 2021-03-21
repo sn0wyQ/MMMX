@@ -37,6 +37,10 @@ class ServerController : public BaseController {
   void ProcessEventsFromRooms();
   void ProcessEventsFromRoom(const std::shared_ptr<RoomController>& room_ptr);
 
+  static std::vector<ClientId> GetReceiversForEvent(
+      const Event& event,
+      const std::shared_ptr<RoomController>& room_ptr);
+
   QWebSocketServer web_socket_server_;
   ServerModel server_model_;
 
