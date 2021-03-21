@@ -1,5 +1,5 @@
 #include "painter.h"
-#include <QDebug>
+
 Painter::Painter(QPaintDevice* device,
                  std::shared_ptr<Converter> converter,
                  const QPointF& local_centre)
