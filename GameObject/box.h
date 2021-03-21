@@ -8,14 +8,14 @@
 
 class Box : public GameObject {
  public:
-  Box(float x, float y, int width, int height);
+  Box(float x, float y, float width, float height);
 
   void OnTick(int) override;
   void DrawRelatively(Painter* painter) override;
 
  private:
-  int width_;
-  int height_;
+  float width_;
+  float height_;
 };
 
 #endif  // GAMEOBJECT_BOX_H_
