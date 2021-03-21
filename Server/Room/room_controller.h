@@ -49,7 +49,7 @@ class RoomController : public BaseController {
 
   std::vector<Event> ClaimEventsForServer();
 
-  void AddBox();
+  void AddBox(float x, float y);
 
  private:
   RoomId id_;

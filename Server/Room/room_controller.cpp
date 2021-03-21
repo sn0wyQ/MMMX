@@ -38,7 +38,8 @@ void RoomController::AddClient(ClientId client_id) {
     this->AddEventToHandle(Event(EventType::kStartGame));
     qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
-  this->AddBox();
+  this->AddBox(-5.f, -15.f);
+  this->AddBox(12.f, -10.f);
 }
 
 void RoomController::RemoveClient(ClientId client_id) {
@@ -159,13 +160,13 @@ void RoomController::SendControlsEvent(const Event& event) {
                        senders_player_ptr->GetViewAngle()));
 }
 
-void RoomController::AddBox() {
+void RoomController::AddBox(float x, float y) {
   int width = 20;
   int height = 10;
   GameObjectId game_object_id
-    = model_.AddBox(std::make_shared<Box>(width, height));
+    = model_.AddBox(std::make_shared<Box>(x, y, width, height));
   this->AddEventToSend(
       Event(EventType::kGameObjectAppeared, game_object_id,
             static_cast<int>(GameObjectType::kBox),
-            width, height));
+            x, y, width, height));
 }

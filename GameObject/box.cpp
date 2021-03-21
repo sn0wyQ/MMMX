@@ -1,7 +1,7 @@
 #include "box.h"
 
-Box::Box(int width, int height)
-  : GameObject(Constants::kNullGameObjectId, QPointF(-5.f, -5.f),
+Box::Box(float x, float y, int width, int height)
+  : GameObject(Constants::kNullGameObjectId, QPointF(x, y),
                std::make_shared<RigidBodyRectangle>(width, height)),
   width_(width), height_(height) {
 }

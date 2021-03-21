@@ -8,7 +8,7 @@
 
 class Box : public GameObject {
  public:
-  Box(int width, int height);
+  Box(float x, float y, int width, int height);
 
   void OnTick(int) override;
   void DrawRelatively(Painter* painter) override;
