@@ -42,6 +42,9 @@ enum class EventType {
   // [2+] - event_args
   kSendEventToRoom,
 
+  // No arguments
+  kSendGetVarsEvent,
+
   // [0] - <ClientId> client_id,
   // [1] - <GameObjectId> player_id
   kSetClientsPlayerId,
@@ -49,8 +52,9 @@ enum class EventType {
   // No arguments
   kStartGame,
 
-  // [0] - <int> sender_PLAYER_id / receiver_CLIENT_id
-  kUpdateServerVar,
+  // [0] - <int> server_var,
+  // [1] - <int> room_var
+  kUpdateVars,
 
   // ------------------- GAME EVENTS -------------------
 

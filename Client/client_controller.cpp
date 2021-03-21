@@ -26,11 +26,10 @@ void ClientController::OnConnected() {
           &ClientController::OnByteArrayReceived);
 
   connect(&timer_for_server_var_, &QTimer::timeout, this,
-          &ClientController::UpdateServerVar);
-  timer_for_server_var_.start(Constants::kTimeToUpdateServerVar);
-  timer_elapsed_server_var_.start();
+          &ClientController::UpdateVarsAndPing);
+  timer_for_server_var_.start(Constants::kTimeToUpdateVarsAndPing);
   connect(&web_socket_, &QWebSocket::pong, this,
-          &ClientController::UpdatePing);
+          &ClientController::SetPing);
 
   view_->Update();
 
@@ -53,7 +52,7 @@ void ClientController::AddNewPlayerEvent(const Event& event) {
 }
 
 void ClientController::EndGameEvent(const Event& event) {
-  game_state_ = GameState::kFinished;
+  game_state_ = GameState::kGameFinished;
   view_->Update();
 }
 
@@ -85,11 +84,34 @@ void ClientController::SendEvent(const Event& event) {
 }
 
 void ClientController::OnTick(int time_from_previous_tick) {
+  switch (game_state_) {
+    case GameState::kGameFinished:
+      this->OnTickGameFinished(time_from_previous_tick);
+      break;
+
+    case GameState::kGameInProgress:
+      this->OnTickGameInProgress(time_from_previous_tick);
+      break;
+
+    case GameState::kGameNotStarted:
+      this->OnTickGameNotStarted(time_from_previous_tick);
+      break;
+  }
+}
+
+void ClientController::OnTickGameInProgress(int time_from_previous_tick) {
+  this->TickPlayers(time_from_previous_tick);
+  this->UpdateLocalPlayer(time_from_previous_tick);
+}
+
+void ClientController::TickPlayers(int time_from_previous_tick) {
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
     player->OnTick(time_from_previous_tick);
   }
+}
 
+void ClientController::UpdateLocalPlayer(int time_from_previous_tick) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
@@ -108,7 +130,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_->DeletePlayer(event.GetArg<GameObjectId>(0));
-  game_state_ = GameState::kNotStarted;
+  game_state_ = GameState::kGameNotStarted;
   view_->Update();
 }
 
@@ -129,19 +151,27 @@ int ClientController::GetServerVar() const {
   return server_var_;
 }
 
-void ClientController::UpdatePing(int elapsed_time) {
+int ClientController::GetRoomVar() const {
+  return room_var_;
+}
+
+int ClientController::GetClientVar() const {
+  return client_var_;
+}
+
+void ClientController::SetPing(int elapsed_time) {
   ping_ = elapsed_time;
 }
 
-void ClientController::UpdateServerVar() {
-  this->AddEventToSend(Event(EventType::kUpdateServerVar,
-                             model_->GetLocalPlayerId()));
-  timer_elapsed_server_var_.restart();
+void ClientController::UpdateVarsAndPing() {
+  this->AddEventToSend(Event(EventType::kSendGetVarsEvent));
   web_socket_.ping();
 }
 
-void ClientController::UpdateServerVarEvent(const Event& event) {
-  server_var_ = static_cast<int>(timer_elapsed_server_var_.elapsed()) / 2;
+void ClientController::UpdateVarsEvent(const Event& event) {
+  server_var_ = event.GetArg<int>(0);
+  room_var_ = event.GetArg<int>(1);
+  client_var_ = this->GetVar();
   view_->Update();
 }
 
@@ -200,7 +230,7 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
 
-  ApplyDirection();
+  this->ApplyDirection();
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
@@ -209,7 +239,7 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
     is_direction_by_keys_[key_to_direction_[native_key]] = false;
   }
 
-  ApplyDirection();
+  this->ApplyDirection();
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
@@ -244,10 +274,10 @@ void ClientController::ApplyDirection() {
                           Direction::kRight : Direction::kLeft] = true;
   }
 
-  uint32_t direction_mask = is_direction_applied_[Direction::kUp] * 8
-      + is_direction_applied_[Direction::kRight] * 4
-      + is_direction_applied_[Direction::kDown] * 2
-      + is_direction_applied_[Direction::kLeft];
+  uint32_t direction_mask = is_direction_applied_[Direction::kUp] * 0b1000
+      + is_direction_applied_[Direction::kRight] * 0b0100
+      + is_direction_applied_[Direction::kDown] * 0b0010
+      + is_direction_applied_[Direction::kLeft] * 0b0001;
 
   model_->GetLocalPlayer()->UpdateVelocity(direction_mask);
   view_->Update();

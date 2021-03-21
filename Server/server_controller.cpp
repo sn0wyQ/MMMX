@@ -35,8 +35,7 @@ void ServerController::SendEvent(const Event& event) {
       break;
     }
 
-    case EventType::kSetClientsPlayerId:
-    case EventType::kUpdateServerVar: {
+    case EventType::kSetClientsPlayerId: {
       this->SendToClient(event.GetArg<ClientId>(0), event);
       break;
     }
@@ -77,7 +76,6 @@ void ServerController::ProcessEventsFromRoom(
     switch (event.GetType()) {
       case EventType::kSetClientsPlayerId:
       case EventType::kCreateAllPlayersData:
-      case EventType::kUpdateServerVar:
       case EventType::kUpdatePlayersFOV:
         receivers.push_back(event.GetArg<ClientId>(0));
         break;
@@ -112,6 +110,19 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
   auto client_id = server_model_.GetClientIdByWebSocket(client_socket_ptr);
   Event event(message);
 
+  qDebug().noquote() << "[SERVER] Received" << event
+                     << "from Client ID:" << client_id;
+
+  if (event.GetType() == EventType::kSendGetVarsEvent) {
+    this->AddEventToHandle(Event(EventType::kSendEventToClient,
+                                 client_id,
+                                 static_cast<int>(EventType::kUpdateVars),
+                                 this->GetVar(),
+                                 server_model_.GetRoomByClientId(client_id)
+                                  ->GetVar()));
+    return;
+  }
+
   std::vector<QVariant>
       args{server_model_.GetRoomByClientId(client_id)->GetId(),
            static_cast<int>(event.GetType())};
@@ -119,9 +130,6 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
   args.insert(args.end(), old_args.begin(), old_args.end());
 
   this->AddEventToHandle(Event(EventType::kSendEventToRoom, args));
-
-  qDebug().noquote() << "[SERVER] Received" << event
-                     << "from Client ID:" << client_id;
 }
 
 void ServerController::OnNewClient() {

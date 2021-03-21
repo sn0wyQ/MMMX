@@ -45,7 +45,10 @@ bool Player::IsFilteredByFOV() const {
   return true;
 }
 
-// More information about |mask| can be found in event_type.h
+// 0th mask bit - IsNeedToGoLeft
+// 1st mask bit - IsNeedToGoDown
+// 2nd mask bit - IsNeedToGoRight
+// 3rd mask bit - IsNeedToGoUp
 void Player::UpdateVelocity(uint32_t mask) {
   // Normalizing of (0, 0) vector works bad
   if (mask == 0b0000) {
@@ -54,16 +57,16 @@ void Player::UpdateVelocity(uint32_t mask) {
   }
 
   QVector2D velocity{0.f, 0.f};
-  if (mask & (1UL << 3)) {
+  if (mask & 0b1000) {
     velocity.setY(-1.f);
   }
-  if (mask & (1UL << 2)) {
+  if (mask & 0b0100) {
     velocity.setX(1.f);
   }
-  if (mask & (1UL << 1)) {
+  if (mask & 0b0010) {
     velocity.setY(1.f);
   }
-  if (mask & 1UL) {
+  if (mask & 0b0001) {
     velocity.setX(-1.f);
   }
 

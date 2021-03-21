@@ -20,8 +20,8 @@
 #include "Math/math.h"
 #include "Model/game_data_model.h"
 
-// TODO(Everyone): make class Hotkeys (with possibility to rebind keys)
-// instead of enum Controls
+// TODO(Everyone): make class Hotkeys instead of enum Controls
+// (with possibility to rebind keys)
 
 #ifdef WIN32
 enum class Controls {
@@ -49,9 +49,9 @@ enum class Direction {
 };
 
 enum class GameState {
-  kFinished,
+  kGameFinished,
   kGameInProgress,
-  kNotStarted
+  kGameNotStarted
 };
 
 class ClientController : public BaseController {
@@ -66,13 +66,23 @@ class ClientController : public BaseController {
   void SendEvent(const Event& event) override;
   void OnTick(int time_from_previous_tick) override;
 
+  void OnTickGameFinished(int) {}
+  void OnTickGameInProgress(int time_from_previous_tick);
+  void OnTickGameNotStarted(int) {}
+
+  void TickPlayers(int time_from_previous_tick);
+
   std::shared_ptr<GameDataModel> GetModel();
   int GetServerVar() const;
+  int GetRoomVar() const;
+  int GetClientVar() const;
   int GetPing() const;
 
   bool IsGameInProgress() const;
 
   void SetView(std::shared_ptr<AbstractClientView> view);
+
+  void UpdateLocalPlayer(int time_from_previous_tick);
 
   // -------------------- CONTROLS --------------------
 
@@ -88,8 +98,8 @@ class ClientController : public BaseController {
   void OnConnected();
   void OnDisconnected();
   void OnByteArrayReceived(const QByteArray& message);
-  void UpdateServerVar();
-  void UpdatePing(int elapsed_time);
+  void UpdateVarsAndPing();
+  void SetPing(int elapsed_time);
 
  private:
   void AddNewPlayerEvent(const Event& event) override;
@@ -98,7 +108,7 @@ class ClientController : public BaseController {
   void SetClientsPlayerIdEvent(const Event& event) override;
   void CreateAllPlayersDataEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
-  void UpdateServerVarEvent(const Event& event) override;
+  void UpdateVarsEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
@@ -107,15 +117,16 @@ class ClientController : public BaseController {
   void UpdatePlayersFOVEvent(const Event& event) override;
   void PlayerLeftFOVEvent(const Event& event) override;
 
-  GameState game_state_ = GameState::kNotStarted;
+  GameState game_state_ = GameState::kGameInProgress;
   QUrl url_;
   QWebSocket web_socket_;
   std::shared_ptr<GameDataModel> model_;
   std::shared_ptr<AbstractClientView> view_;
   int server_var_{0};
+  int room_var_{0};
+  int client_var_{0};
   int ping_{0};
   QTimer timer_for_server_var_;
-  QElapsedTimer timer_elapsed_server_var_;
   std::shared_ptr<Converter> converter_;
 
   // TODO(Everyone): Rework

@@ -52,8 +52,14 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
                       ? model_->GetLocalPlayer()
                       : std::make_shared<Player>(Constants::kNullGameObjectId);
 
-  info_label_->setText(QString(tr("Server Var: %1\nPing: %2\nX: %3,  \tY: %4"))
+  info_label_->setText(QString(tr("Server Var: %1\n"
+                                  "Room Var: %2\n"
+                                  "Client Var: %3\n"
+                                  "Ping: %4\n"
+                                  "X: %5, \tY: %6"))
                        .arg(controller_->GetServerVar())
+                       .arg(controller_->GetRoomVar())
+                       .arg(controller_->GetClientVar())
                        .arg(controller_->GetPing())
                        .arg(local_player->GetX())
                        .arg(local_player->GetY()));

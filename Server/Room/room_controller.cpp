@@ -11,6 +11,10 @@ void RoomController::SendEvent(const Event& event) {
 }
 
 void RoomController::OnTick(int time_from_previous_tick) {
+  this->TickPlayers(time_from_previous_tick);
+}
+
+void RoomController::TickPlayers(int time_from_previous_tick) {
   std::vector<std::shared_ptr<Player>> players = model_.GetPlayers();
   for (const auto& player : players) {
     player->OnTick(time_from_previous_tick);
@@ -54,7 +58,7 @@ void RoomController::RemoveClient(ClientId client_id) {
   this->AddEventToSend(Event(EventType::kPlayerDisconnected, player_id));
   player_ids_.erase(client_id);
   room_state_ = (model_.GetPlayersCount()
-      ? RoomState::kWaitingForClients : RoomState::kFinished);
+      ? RoomState::kWaitingForClients : RoomState::kGameFinished);
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
                     << "] Removed Player ID: " << player_id;
 }
@@ -143,7 +147,7 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
 }
 
-void RoomController::UpdateServerVarEvent(const Event& event) {
+void RoomController::UpdateVarsEvent(const Event& event) {
   this->AddEventToSend(Event(event.GetType(),
                              PlayerIdToClientId(
                                  event.GetArg<GameObjectId>(0))));
@@ -162,6 +166,9 @@ bool RoomController::IsPlayerInFOV(GameObjectId sender_player_id,
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
+  if (!model_.IsPlayerIdTaken(event.GetArg<GameObjectId>(0))) {
+    return;
+  }
   auto senders_player_ptr =
       model_.GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
 
