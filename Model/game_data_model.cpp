@@ -72,6 +72,14 @@ std::vector<std::shared_ptr<Player>> GameDataModel::GetPlayers() const {
   return result;
 }
 
+std::vector<std::shared_ptr<Box>> GameDataModel::GetBoxes() const {
+  std::vector<std::shared_ptr<Box>> result;
+  for (const auto& box : boxes_) {
+    result.push_back(box.second);
+  }
+  return result;
+}
+
 std::vector<std::shared_ptr<GameObject>> GameDataModel::GetAllGameObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;
   for (const auto& player : players_) {
@@ -106,4 +114,3 @@ void GameDataModel::AddBox(GameObjectId game_object_id,
                            std::shared_ptr<Box> box) {
   boxes_[game_object_id] = std::move(box);
 }
-
