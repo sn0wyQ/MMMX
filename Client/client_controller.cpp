@@ -97,6 +97,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
       this->OnTickGameNotStarted(time_from_previous_tick);
       break;
   }
+  view_->Update();
 }
 
 void ClientController::OnTickGameInProgress(int time_from_previous_tick) {
