@@ -7,6 +7,7 @@
 #include <QPainter>
 #include <QPointF>
 #include <QPolygonF>
+#include <QRegion>
 
 #include "Converter/converter.h"
 
@@ -15,6 +16,11 @@ class Painter : public QPainter {
   Painter(QPaintDevice* device,
           std::shared_ptr<Converter> converter,
           const QPointF& local_centre);
+
+  void SetClipCircle(float x,
+                     float y,
+                     float r,
+                     Qt::ClipOperation clip_operation = Qt::IntersectClip);
 
   void RotateClockWise(float degree);
   void RotateCounterClockWise(float degree);
