@@ -77,15 +77,15 @@ std::vector<std::shared_ptr<GameObject>> GameDataModel::GetAllGameObjects() cons
   for (const auto& player : players_) {
     result.push_back(player.second);
   }
-  for (const auto& player : boxes_) {
-    result.push_back(player.second);
+  for (const auto& box : boxes_) {
+    result.push_back(box.second);
   }
   return result;
 }
 
 bool GameDataModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return players_.find(game_object_id) != players_.end()
-    && boxes_.find(game_object_id) != boxes_.end();
+    || boxes_.find(game_object_id) != boxes_.end();
 }
 
 GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {

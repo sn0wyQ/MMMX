@@ -282,12 +282,13 @@ void ClientController::GameObjectAppearedEvent(const Event& event) {
     case GameObjectType::kBox:
       model_->AddBox(game_object_id,
                      std::make_shared<Box>(
-                         event.GetArg<int>(2),
-                         event.GetArg<int>(3),
-                         event.GetArg<int>(4),
-                         event.GetArg<int>(5)));
+                         event.GetArg<float>(2),
+                         event.GetArg<float>(3),
+                         event.GetArg<float>(4),
+                         event.GetArg<float>(5)));
       break;
   }
+  view_->Update();
 }
 
 // -------------------- CONTROLS --------------------
