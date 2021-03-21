@@ -50,13 +50,13 @@ constexpr int kTimeToUpdateVarsAndPing = 1000;
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
-constexpr float kPlayerRadius = 1;
+constexpr float kPlayerRadius = 1.f;
 
 // MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
-constexpr float kDefaultPlayersFov = 10.5;
+constexpr float kDefaultPlayersFov = 10.5f;
 constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerViewAngle = 0.f;
