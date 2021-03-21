@@ -23,7 +23,7 @@ class Player : public Entity {
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
 
-  uint32_t GetFOVRadius() const;
+  float GetFovRadius() const;
   void SetFovRadius(float fov_radius);
 
   void UpdateVelocity(uint32_t mask);

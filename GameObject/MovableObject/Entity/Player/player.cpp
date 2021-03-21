@@ -81,7 +81,7 @@ void Player::SetIsLocalPlayer(bool is_local_player) {
   is_local_player_ = is_local_player;
 }
 
-uint32_t Player::GetFOVRadius() const {
+float Player::GetFovRadius() const {
   return fov_radius_;
 }
 

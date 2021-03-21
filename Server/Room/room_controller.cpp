@@ -160,7 +160,7 @@ bool RoomController::IsPlayerInFOV(GameObjectId sender_player_id,
   auto sender = model_.GetPlayerByPlayerId(sender_player_id);
 
   return QLineF(receiver->GetPosition(), sender->GetPosition()).length() <
-      receiver->GetFOVRadius() + Constants::kPlayerRadius;
+      receiver->GetFovRadius() + Constants::kPlayerRadius;
 }
 
 // ------------------- GAME EVENTS -------------------

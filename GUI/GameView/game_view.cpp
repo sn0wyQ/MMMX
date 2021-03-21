@@ -20,8 +20,11 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
   if (model_->IsLocalPlayerSet()) {
     const auto& local_player = model_->GetLocalPlayer();
     painter.DrawEllipse(local_player->GetPosition(),
-                        local_player->GetFOVRadius(),
-                        local_player->GetFOVRadius());
+                        local_player->GetFovRadius(),
+                        local_player->GetFovRadius());
+    painter.SetClipCircle(local_player->GetX(),
+                          local_player->GetY(),
+                          local_player->GetFovRadius());
   }
 
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
