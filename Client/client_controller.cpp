@@ -137,6 +137,9 @@ void ClientController::OnTick(int time_from_previous_tick) {
           for (const auto& point : intersect_points_now) {
             QVector2D tangent_vector(-point.y(), point.x());
             tangent_vector.normalize();
+            if (QVector2D::dotProduct(key_force, tangent_vector) < 0) {
+              tangent_vector *= -1;
+            }
             tangents.push_back(tangent_vector);
           }
         }
