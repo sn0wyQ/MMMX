@@ -137,17 +137,24 @@ void ClientController::OnTick(int time_from_previous_tick) {
           for (const auto& point : intersect_points_now) {
             QVector2D tangent_vector(-point.y(), point.x());
             tangent_vector.normalize();
-            if (QVector2D::dotProduct(key_force, tangent_vector) < 0) {
-              tangent_vector *= -1;
-            }
             tangents.push_back(tangent_vector);
           }
         }
       }
       if (!tangents.empty()) {
         bool full_stop = false;
-        QVector2D common_tangent_vector = *tangents.begin();
+        QVector2D common_tangent_vector;
+        bool has_common = false;
         for (const auto& tangent_vector : tangents) {
+          float cos = QVector2D::dotProduct(
+              key_force, QVector2D(tangent_vector.y(), -tangent_vector.x()));
+          if (cos <= 0) {
+            continue;
+          }
+          if (!has_common) {
+            has_common = true;
+            common_tangent_vector = tangent_vector;
+          }
           if (IntersectChecker::IsSimilarVectors(common_tangent_vector,
                                                  tangent_vector)) {
             common_tangent_vector += tangent_vector;
@@ -161,8 +168,14 @@ void ClientController::OnTick(int time_from_previous_tick) {
           is_velocity_edited = true;
           local_player->SetVelocity({0.f, 0.f});
         } else {
-          float length_result = QVector2D::dotProduct(common_tangent_vector,
-                                                      key_force);
+          float length_result;
+          if (has_common) {
+            length_result = QVector2D::dotProduct(common_tangent_vector,
+                                                  key_force);
+          } else {
+            length_result = 1.f;
+            common_tangent_vector = key_force;
+          }
           is_velocity_edited = true;
           local_player->SetVelocity(common_tangent_vector * length_result);
         }
