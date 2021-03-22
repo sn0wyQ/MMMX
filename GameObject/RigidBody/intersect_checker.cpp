@@ -21,9 +21,6 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     float a = second.y() - first.y();
     float b = first.x() - second.x();
     float c = first.y() * second.x() - first.x() * second.y();
-    if (a == 0 && b == 0) {
-      continue;
-    }
     float x0 = -a * c / (a * a + b * b);
     float y0 = -b * c / (a * a + b * b);
     float formula = c * c - r * r * (a * a + b * b);

@@ -14,6 +14,9 @@ void MovableObject::SetVelocity(const QVector2D& velocity) {
 
 QVector2D MovableObject::GetVelocityByDeltaPosition(
     QVector2D position, int time_from_previous_tick) const {
+  if (time_from_previous_tick == 0) {
+    return QVector2D(0.f, 0.f);
+  }
   return position / GetCurrentSpeed()
   / static_cast<float>(time_from_previous_tick);
 }

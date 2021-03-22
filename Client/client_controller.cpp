@@ -116,9 +116,8 @@ void ClientController::OnTick(int time_from_previous_tick) {
                   QVector2D(item->GetX() - local_player->GetX(),
                             item->GetY() - local_player->GetY()),
                   local_player->GetAppliedDeltaPosition(time_from_previous_tick));
-          QVector2D velocity_to_set
-              = local_player->GetVelocityByDeltaPosition(delta_to_set,
-                                                         time_from_previous_tick);
+          QVector2D velocity_to_set = local_player->GetVelocityByDeltaPosition(
+                  delta_to_set, time_from_previous_tick);
           is_velocity_edited = true;
           local_player->SetVelocity(velocity_to_set);
         }
