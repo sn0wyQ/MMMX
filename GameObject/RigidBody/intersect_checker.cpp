@@ -23,8 +23,28 @@ std::vector<QPointF> IntersectChecker::GetIntersectPointsBodies(
 std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     const std::shared_ptr<RigidBodyCircle>& circle1,
     const std::shared_ptr<RigidBodyCircle>& circle2,
-    QVector2D offset, float rotation) {
-  return {};
+    QVector2D offset, float) {
+  float r1 = circle1->GetRadius();
+  float r2 = circle2->GetRadius();
+  float a = -2 * offset.x();
+  float b = -2 * offset.y();
+  float c = offset.x() * offset.x() + offset.y() * offset.y() + r1 * r1 - r2 * r2;
+
+  float x0 = -a * c / (a * a + b * b);
+  float y0 = -b * c / (a * a + b * b);
+  float formula = c * c - r1 * r1 * (a * a + b * b);
+  std::vector<QPointF> result;
+  if (std::abs(formula) < kEps) {
+    result.emplace_back(x0, y0);
+  } else if (formula <= kEps) {
+    float d = r1 * r1 - c * c / (a * a + b * b);
+    float mult = std::sqrt(d / (a * a + b * b));
+    QPointF first_intersect(x0 + b * mult, y0 - a * mult);
+    QPointF second_intersect(x0 - b * mult, y0 + a * mult);
+    result.push_back(first_intersect);
+    result.push_back(second_intersect);
+  }
+  return result;
 }
 
 std::vector<QPointF> IntersectChecker::GetIntersectPoints(
@@ -105,38 +125,11 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
     const std::shared_ptr<RigidBody>& first,
     const std::shared_ptr<RigidBody>& second,
     QVector2D offset, float rotation, QVector2D delta_intersect) {
-  if (first->GetRigidBodyType() == RigidBodyType::kCircle
-      && second->GetRigidBodyType() == RigidBodyType::kCircle) {
-    return -CalculateDistanceToObjectNotToIntersect(
-        std::dynamic_pointer_cast<RigidBodyCircle>(first),
-        std::dynamic_pointer_cast<RigidBodyCircle>(second),
-                       offset, rotation, delta_intersect);
-  } else if (first->GetRigidBodyType() == RigidBodyType::kCircle
-      && second->GetRigidBodyType() == RigidBodyType::kRectangle) {
-    return -CalculateDistanceToObjectNotToIntersect(
-        std::dynamic_pointer_cast<RigidBodyCircle>(first),
-        std::dynamic_pointer_cast<RigidBodyRectangle>(second),
-                       offset, rotation, delta_intersect);
-  }
-  return QVector2D();
-}
-
-QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
-    const std::shared_ptr<RigidBodyCircle>& circle1,
-    const std::shared_ptr<RigidBodyCircle>& circle2,
-    QVector2D offset, float rotation, QVector2D delta_intersect) {
-  return QVector2D();
-}
-
-QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
-    const std::shared_ptr<RigidBodyCircle>& circle,
-    const std::shared_ptr<RigidBodyRectangle>& rectangle,
-    QVector2D offset, float rotation, QVector2D delta_intersect) {
   float l = 0;
   float r = 1;
   while (r - l > kEps) {
     float m = (l + r) / 2;
-    if (!GetIntersectPoints(circle, rectangle,
+    if (!GetIntersectPointsBodies(first, second,
                             offset - delta_intersect * m, rotation).empty()) {
       r = m - kEps;
     } else {
@@ -151,39 +144,11 @@ QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(
     const std::shared_ptr<RigidBody>& second,
     QVector2D offset, float rotation,
     QVector2D delta_intersect) {
-  if (first->GetRigidBodyType() == RigidBodyType::kCircle
-      && second->GetRigidBodyType() == RigidBodyType::kCircle) {
-    return -CalculateDistanceToObjectMayIntersect(
-        std::dynamic_pointer_cast<RigidBodyCircle>(first),
-        std::dynamic_pointer_cast<RigidBodyCircle>(second),
-        offset, rotation, delta_intersect);
-  } else if (first->GetRigidBodyType() == RigidBodyType::kCircle
-      && second->GetRigidBodyType() == RigidBodyType::kRectangle) {
-    return -CalculateDistanceToObjectMayIntersect(
-        std::dynamic_pointer_cast<RigidBodyCircle>(first),
-        std::dynamic_pointer_cast<RigidBodyRectangle>(second),
-        offset, rotation, delta_intersect);
-  }
-  return QVector2D();
-}
-
-QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersect(
-    const std::shared_ptr<RigidBodyCircle>& circle1,
-    const std::shared_ptr<RigidBodyCircle>& circle2,
-    QVector2D offset, float rotation, QVector2D delta_intersect) {
-  return QVector2D();
-}
-
-QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersect(
-    const std::shared_ptr<RigidBodyCircle>& circle,
-    const std::shared_ptr<RigidBodyRectangle>& rectangle,
-    QVector2D offset, float rotation, QVector2D delta_intersect) {
-
   float l = 0;
   float r = 1;
   while (r - l > kEps) {
     float m = (l + r) / 2;
-    if (GetIntersectPoints(circle, rectangle,
+    if (GetIntersectPointsBodies(first, second,
                            offset - delta_intersect * m, rotation).size() < 2u) {
       l = m + kEps;
     } else {
