@@ -18,6 +18,8 @@ void Player::OnTick(int time_from_previous_tick) {
 }
 
 void Player::DrawRelatively(Painter* painter) {
+  painter->Translate(GetPosition());
+
   painter->RotateCounterClockWise(GetViewAngle());
 
   // Body [Temporary]

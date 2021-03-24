@@ -42,7 +42,7 @@ float GameObject::GetY() const {
 
 void GameObject::Draw(Painter* painter) {
   painter->save();
-  painter->Translate(GetPosition());
+  //painter->Translate(GetPosition());
   this->DrawRelatively(painter);
   if (Constants::kShowRigidBody) {
     rigid_body_->Draw(painter);

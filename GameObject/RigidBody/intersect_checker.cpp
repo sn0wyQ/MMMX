@@ -1,5 +1,7 @@
 #include "intersect_checker.h"
 
+#include <cmath>
+
 std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     const std::shared_ptr<RigidBodyCircle>& circle,
     const std::shared_ptr<RigidBodyRectangle>& rectangle,
@@ -14,6 +16,24 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
                            offset.y() + rectangle->GetHeight() / 2.);
   points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
                            offset.y() + rectangle->GetHeight() / 2.);
+  QPointF to_be_center = (points[0] + points[2]) / 2.f;
+  float alpha_rad = 0.8;
+  for (auto& point : points) {
+    float x = point.x();
+    float y = point.y();
+    qInfo() << "before" << point;
+    point.setX(x - to_be_center.x());
+    point.setY(y - to_be_center.y());
+    x = point.x();
+    y = point.y();
+    point.setX(x * std::cos(alpha_rad) + y * std::sin(alpha_rad));
+    point.setY(-x * std::sin(alpha_rad) + y * std::cos(alpha_rad));
+    x = point.x();
+    y = point.y();
+    point.setX(x + to_be_center.x());
+    point.setY(y + to_be_center.y());
+    qInfo() << "after" << point;
+  }
   std::vector<QPointF> result;
   for (int i = 0; i < 4; i++) {
     QPointF first = points[i];
@@ -40,6 +60,10 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
         result.push_back(second_intersect);
       }
     }
+  }
+  qInfo() << "result : ";
+  for (const auto& point : result) {
+    qInfo() << point;
   }
   return result;
 }
