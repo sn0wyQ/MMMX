@@ -288,6 +288,5 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
 }
 
 bool IntersectChecker::IsSimilarVectors(QVector2D first, QVector2D second) {
-  qInfo() << first << second;
   return QVector2D::dotProduct(first, second) > 1 - kCosEps;
 }

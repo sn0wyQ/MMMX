@@ -108,8 +108,8 @@ void ClientController::OnTick(int time_from_previous_tick) {
               - local_player->GetAppliedDeltaPosition(time_from_previous_tick));
 
         if (!intersect_points_in_future.empty()) {
-          qInfo() << item->GetId() << " " << local_player->GetId()
-                  << "intersect";
+          // qInfo() << item->GetId() << " " << local_player->GetId()
+          //         << "intersect";
           QVector2D delta_to_set
               = IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
                   local_player->GetRigidBody(), item->GetRigidBody(),
@@ -213,7 +213,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
           }
         }
       }
-      qInfo() << local_player->GetVelocity();
+      // qInfo() << local_player->GetVelocity();
       if (!is_velocity_edited) {
         ApplyDirection();
       }
