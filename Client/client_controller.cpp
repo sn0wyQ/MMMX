@@ -179,6 +179,40 @@ void ClientController::OnTick(int time_from_previous_tick) {
           local_player->SetVelocity(common_tangent_vector * length_result);
         }
       }
+      for (const auto& item : model_->GetAllGameObjects()) {
+        if (local_player->GetId() == item->GetId()) {
+          continue;
+        }
+        QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
+                                     item->GetY() - local_player->GetY());
+        std::vector<QPointF> intersect_points_in_future
+            = IntersectChecker::GetIntersectPointsBodies(
+                local_player->GetRigidBody(), item->GetRigidBody(),
+                offset
+                    - local_player->GetAppliedDeltaPosition(time_from_previous_tick));
+
+        if (!intersect_points_in_future.empty()) {
+          std::vector<QPointF> intersect_points_now
+              = IntersectChecker::GetIntersectPointsBodies(
+                  local_player->GetRigidBody(), item->GetRigidBody(),
+                  offset);
+          if (intersect_points_now.size() != intersect_points_in_future.size()) {
+            QVector2D delta_to_set
+                = IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(
+                    local_player->GetRigidBody(), item->GetRigidBody(),
+                    QVector2D(item->GetX() - local_player->GetX(),
+                              item->GetY() - local_player->GetY()),
+                    local_player->GetAppliedDeltaPosition(
+                        time_from_previous_tick),
+                    2);
+            QVector2D
+                velocity_to_set = local_player->GetVelocityByDeltaPosition(
+                delta_to_set, time_from_previous_tick);
+            is_velocity_edited = true;
+            local_player->SetVelocity(velocity_to_set);
+          }
+        }
+      }
       qInfo() << local_player->GetVelocity();
       if (!is_velocity_edited) {
         ApplyDirection();

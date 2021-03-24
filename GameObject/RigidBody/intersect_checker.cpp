@@ -154,6 +154,99 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
   return -delta_intersect * l;
 }
 
+QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(const std::shared_ptr<
+    RigidBody>& first,
+                                                                        const std::shared_ptr<
+                                                                            RigidBody>& second,
+                                                                        QVector2D offset,
+                                                                        QVector2D delta_intersect,
+                                                                        int64_t intersect_count) {
+  if (first->GetRigidBodyType() == RigidBodyType::kCircle
+      && second->GetRigidBodyType() == RigidBodyType::kCircle) {
+    return -CalculateDistanceToObjectMayIntersect(
+        std::dynamic_pointer_cast<RigidBodyCircle>(first),
+        std::dynamic_pointer_cast<RigidBodyCircle>(second),
+        offset, delta_intersect,
+        intersect_count);
+  } else if (first->GetRigidBodyType() == RigidBodyType::kRectangle
+      && second->GetRigidBodyType() == RigidBodyType::kCircle) {
+    return -CalculateDistanceToObjectMayIntersect(
+        std::dynamic_pointer_cast<RigidBodyRectangle>(first),
+        std::dynamic_pointer_cast<RigidBodyCircle>(second),
+        offset, delta_intersect,
+        intersect_count);
+  } else if (first->GetRigidBodyType() == RigidBodyType::kCircle
+      && second->GetRigidBodyType() == RigidBodyType::kRectangle) {
+    return -CalculateDistanceToObjectMayIntersect(
+        std::dynamic_pointer_cast<RigidBodyCircle>(first),
+        std::dynamic_pointer_cast<RigidBodyRectangle>(second),
+        offset, delta_intersect,
+        intersect_count);
+  } else if (first->GetRigidBodyType() == RigidBodyType::kRectangle
+      && second->GetRigidBodyType() == RigidBodyType::kRectangle) {
+    return -CalculateDistanceToObjectMayIntersect(
+        std::dynamic_pointer_cast<RigidBodyRectangle>(first),
+        std::dynamic_pointer_cast<RigidBodyRectangle>(second),
+        offset, delta_intersect,
+        intersect_count);
+  }
+  return QVector2D();
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersect(const std::shared_ptr<
+    RigidBodyCircle>& circle,
+                                                                  const std::shared_ptr<
+                                                                      RigidBodyRectangle>& rectangle,
+                                                                  QVector2D offset,
+                                                                  QVector2D delta_intersect,
+                                                                  int64_t intersect_count) {
+
+  float l = 0;
+  float r = 1;
+  while (r - l > kEps) {
+    float m = (l + r) / 2;
+    if (GetIntersectPoints(circle, rectangle,
+                            offset - delta_intersect * m).size() < intersect_count) {
+      l = m + kEps;
+    } else {
+      r = m;
+    }
+  }
+  return -delta_intersect * l;
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersect(const std::shared_ptr<
+    RigidBodyRectangle>& rectangle,
+                                                                  const std::shared_ptr<
+                                                                      RigidBodyCircle>& circle,
+                                                                  QVector2D offset,
+                                                                  QVector2D delta_intersect,
+                                                                  int64_t intersect_count) {
+  return CalculateDistanceToObjectMayIntersect(circle, rectangle,
+                                                 -offset, -delta_intersect,
+                                                 intersect_count);
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersect(const std::shared_ptr<
+    RigidBodyCircle>& circle1,
+                                                                  const std::shared_ptr<
+                                                                      RigidBodyCircle>& circle2,
+                                                                  QVector2D offset,
+                                                                  QVector2D delta_intersect,
+                                                                  int64_t intersect_count) {
+  return QVector2D();
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersect(const std::shared_ptr<
+    RigidBodyRectangle>& rectangle1,
+                                                                  const std::shared_ptr<
+                                                                      RigidBodyRectangle>& rectangle2,
+                                                                  QVector2D offset,
+                                                                  QVector2D delta_intersect,
+                                                                  int64_t intersect_count) {
+  return QVector2D();
+}
+
 QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersect(
     const std::shared_ptr<RigidBodyRectangle>& rectangle,
     const std::shared_ptr<RigidBodyCircle>& circle,
