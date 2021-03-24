@@ -32,8 +32,9 @@ class GameDataModel {
   bool IsGameObjectIdTaken(GameObjectId game_object_id) const;
   GameObjectId GetNextUnusedGameObjectId() const;
 
-  GameObjectId AddBox(std::shared_ptr<Box> box);
-  void AddBox(GameObjectId game_object_id, std::shared_ptr<Box> box);
+  void AddBox(GameObjectId game_object_id,
+                      float x, float y, float width, float height);
+  GameObjectId AddBox(float x, float y, float width, float height);
 
   bool IsLocalPlayerSet() const;
   GameObjectId GetLocalPlayerId() const;

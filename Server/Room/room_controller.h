@@ -50,6 +50,7 @@ class RoomController : public BaseController {
   std::vector<Event> ClaimEventsForServer();
 
   void AddBox(float x, float y);
+  void ShareObjectsOnMap(GameObjectId player_id);
 
  private:
   RoomId id_;

@@ -8,10 +8,14 @@
 
 class Box : public GameObject {
  public:
-  Box(float x, float y, float width, float height);
+  Box(GameObjectId game_object_id,
+      float x, float y, float width, float height);
 
   void OnTick(int) override;
   void DrawRelatively(Painter* painter) override;
+
+  float GetWidth() const;
+  float GetHeight() const;
 
  private:
   float width_;

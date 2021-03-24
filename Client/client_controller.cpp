@@ -308,17 +308,19 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
 }
 
 void ClientController::GameObjectAppearedEvent(const Event& event) {
-  auto game_object_id = event.GetArg<GameObjectId>(0);
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto game_object_id = event.GetArg<GameObjectId>(1);
   auto game_object_type
-      = static_cast<GameObjectType>(event.GetArg<int>(1));
+      = static_cast<GameObjectType>(event.GetArg<int>(2));
   switch (game_object_type) {
     case GameObjectType::kBox:
       model_->AddBox(game_object_id,
-                     std::make_shared<Box>(
-                         event.GetArg<float>(2),
                          event.GetArg<float>(3),
                          event.GetArg<float>(4),
-                         event.GetArg<float>(5)));
+                         event.GetArg<float>(5),
+                         event.GetArg<float>(6));
       break;
   }
   view_->Update();

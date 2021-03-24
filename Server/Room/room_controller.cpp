@@ -3,6 +3,8 @@
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), room_settings_(room_settings) {
   this->StartTicking();
+  this->AddBox(-5.f, -15.f);
+  this->AddBox(12.f, -10.f);
 }
 
 void RoomController::SendEvent(const Event& event) {
@@ -38,8 +40,6 @@ void RoomController::AddClient(ClientId client_id) {
     this->AddEventToHandle(Event(EventType::kStartGame));
     qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
-  this->AddBox(-5.f, -15.f);
-  this->AddBox(12.f, -10.f);
 }
 
 void RoomController::RemoveClient(ClientId client_id) {
@@ -105,6 +105,7 @@ void RoomController::AddNewPlayerEvent(const Event& event) {
   this->AddEventToSend(event);
   this->AddEventToSend(Event(EventType::kSetClientsPlayerId,
                              event.GetArgs()));
+  ShareObjectsOnMap(event.GetArg<GameObjectId>(1));
 }
 
 void RoomController::CreateAllPlayersDataEvent(const Event& event) {
@@ -161,12 +162,17 @@ void RoomController::SendControlsEvent(const Event& event) {
 }
 
 void RoomController::AddBox(float x, float y) {
-  int width = 20;
-  int height = 10;
-  GameObjectId game_object_id
-    = model_.AddBox(std::make_shared<Box>(x, y, width, height));
-  this->AddEventToSend(
-      Event(EventType::kGameObjectAppeared, game_object_id,
-            static_cast<int>(GameObjectType::kBox),
-            x, y, width, height));
+  float width = 20;
+  float height = 10;
+  model_.AddBox(x, y, width, height);
+}
+
+void RoomController::ShareObjectsOnMap(GameObjectId player_id) {
+  for (const auto& box : model_.GetBoxes()) {
+    qInfo() << box->GetId();
+    this->AddEventToSend(
+        Event(EventType::kGameObjectAppeared, player_id, box->GetId(),
+              static_cast<int>(GameObjectType::kBox),
+              box->GetX(), box->GetY(), box->GetWidth(), box->GetHeight()));
+  }
 }

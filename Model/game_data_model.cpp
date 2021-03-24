@@ -47,6 +47,30 @@ GameObjectId GameDataModel::AddPlayer(float x, float y, float view_angle) {
   return player_id;
 }
 
+void GameDataModel::AddBox(GameObjectId game_object_id,
+                                   float x,
+                                   float y,
+                                   float width,
+                                   float height) {
+  if (boxes_.find(game_object_id) != boxes_.end()) {
+    throw std::runtime_error("[MODEL] This game_object_id already exists");
+  }
+  boxes_.emplace(std::make_pair(
+      game_object_id,
+      std::make_unique<Box>(game_object_id, x, y, width, height)));
+
+  qInfo().noquote() << "[MODEL] Added new Box:" << game_object_id;
+}
+
+GameObjectId GameDataModel::AddBox(float x,
+                                   float y,
+                                   float width,
+                                   float height) {
+  GameObjectId game_object_id = this->GetNextUnusedGameObjectId();
+  AddBox(game_object_id, x, y, width, height);
+  return game_object_id;
+}
+
 GameObjectId GameDataModel::GetLocalPlayerId() const {
   return local_player_id_;
 }
@@ -95,22 +119,10 @@ bool GameDataModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return players_.find(game_object_id) != players_.end()
     || boxes_.find(game_object_id) != boxes_.end();
 }
-
 GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
   GameObjectId game_object_id = 1;
   while (IsGameObjectIdTaken(game_object_id)) {
     game_object_id++;
   }
   return game_object_id;
-}
-
-GameObjectId GameDataModel::AddBox(std::shared_ptr<Box> box) {
-  GameObjectId game_object_id = this->GetNextUnusedGameObjectId();
-  AddBox(game_object_id, std::move(box));
-  return game_object_id;
-}
-
-void GameDataModel::AddBox(GameObjectId game_object_id,
-                           std::shared_ptr<Box> box) {
-  boxes_[game_object_id] = std::move(box);
 }
