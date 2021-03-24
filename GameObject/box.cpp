@@ -14,7 +14,7 @@ Box::Box(GameObjectId game_object_id,
 void Box::DrawRelatively(Painter* painter) {
   painter->setBrush(Qt::BrushStyle::CrossPattern);
   painter->Translate(GetPosition());
-  painter->rotate(-0.8 * 180.f / 3.14f);
+  painter->rotate(-1 * 180.f / 3.14f);
   painter->DrawRect(-width_ / 2, -height_ / 2, width_, height_);
 }
 

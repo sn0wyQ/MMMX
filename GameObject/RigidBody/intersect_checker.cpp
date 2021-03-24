@@ -17,11 +17,10 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
   points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
                            offset.y() + rectangle->GetHeight() / 2.);
   QPointF to_be_center = (points[0] + points[2]) / 2.f;
-  float alpha_rad = 0.8;
+  float alpha_rad = 1;
   for (auto& point : points) {
     float x = point.x();
     float y = point.y();
-    qInfo() << "before" << point;
     point.setX(x - to_be_center.x());
     point.setY(y - to_be_center.y());
     x = point.x();
@@ -32,7 +31,6 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     y = point.y();
     point.setX(x + to_be_center.x());
     point.setY(y + to_be_center.y());
-    qInfo() << "after" << point;
   }
   std::vector<QPointF> result;
   for (int i = 0; i < 4; i++) {
@@ -60,10 +58,6 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
         result.push_back(second_intersect);
       }
     }
-  }
-  qInfo() << "result : ";
-  for (const auto& point : result) {
-    qInfo() << point;
   }
   return result;
 }
