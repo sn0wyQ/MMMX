@@ -21,6 +21,10 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
   for (const auto& box : boxes) {
     box->Draw(&painter);
   }
+  std::vector<std::shared_ptr<Tree>> trees = model_->GetTrees();
+  for (const auto& tree : trees) {
+    tree->Draw(&painter);
+  }
 
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {

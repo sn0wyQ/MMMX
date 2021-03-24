@@ -102,7 +102,6 @@ void ClientController::OnTick(int time_from_previous_tick) {
         QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
                                      item->GetY() - local_player->GetY());
         float rotation = item->GetRotation();
-
         std::vector<QPointF> intersect_points_now
             = IntersectChecker::GetIntersectPointsBodies(
                 local_player->GetRigidBody(), item->GetRigidBody(),
@@ -142,7 +141,6 @@ void ClientController::OnTick(int time_from_previous_tick) {
                   local_player->GetRigidBody(), item->GetRigidBody(),
                   offset, rotation);
           for (const auto& point : intersect_points_now) {
-            QVector2D point_vector(point.x(), point.y());
             QVector2D tangent_vector(-point.y(), point.x());
             tangent_vector.normalize();
             tangents.push_back(tangent_vector);
@@ -334,6 +332,12 @@ void ClientController::GameObjectAppearedEvent(const Event& event) {
                          event.GetArg<float>(5),
                          event.GetArg<float>(6),
                           event.GetArg<float>(7));
+      break;
+    case GameObjectType::kTree:
+      model_->AddTree(game_object_id,
+                     event.GetArg<float>(3),
+                     event.GetArg<float>(4),
+                     event.GetArg<float>(5));
       break;
   }
   view_->Update();

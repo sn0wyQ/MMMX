@@ -73,7 +73,6 @@ void ServerController::ProcessEventsFromRoom(
     const std::shared_ptr<RoomController>& room_ptr) {
   std::vector<Event> events_from_room = room_ptr->ClaimEventsForServer();
   for (const auto& event : events_from_room) {
-    qInfo() << event;
     std::vector<ClientId> receivers;
     switch (event.GetType()) {
       case EventType::kSetClientsPlayerId:

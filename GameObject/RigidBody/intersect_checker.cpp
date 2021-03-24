@@ -61,21 +61,20 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
                            offset.y() + rectangle->GetHeight() / 2.);
   points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
                            offset.y() + rectangle->GetHeight() / 2.);
-  QPointF to_be_center = (points[0] + points[2]) / 2.f;
   float rotation_rad = rotation / 180.f * static_cast<float>(M_PI);
   for (auto& point : points) {
     float x = point.x();
     float y = point.y();
-    point.setX(x - to_be_center.x());
-    point.setY(y - to_be_center.y());
+    point.setX(x - offset.x());
+    point.setY(y - offset.y());
     x = point.x();
     y = point.y();
     point.setX(x * std::cos(rotation_rad) + y * std::sin(rotation_rad));
     point.setY(-x * std::sin(rotation_rad) + y * std::cos(rotation_rad));
     x = point.x();
     y = point.y();
-    point.setX(x + to_be_center.x());
-    point.setY(y + to_be_center.y());
+    point.setX(x + offset.x());
+    point.setY(y + offset.y());
   }
   std::vector<QPointF> result;
   for (int i = 0; i < 4; i++) {

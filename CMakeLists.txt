@@ -73,6 +73,7 @@ set(SOURCES
         GameObject/RigidBody/rigid_body_circle.cpp
         GameObject/RigidBody/intersect_checker.cpp
         GameObject/box.cpp
+        GameObject/tree.cpp
         Math/math.cpp
         Model/game_data_model.cpp
         Model/server_model.cpp

@@ -10,6 +10,7 @@
 
 #include "GameObject/MovableObject/Entity/Player/player.h"
 #include "GameObject/box.h"
+#include "GameObject/tree.h"
 #include "constants.h"
 
 class GameDataModel {
@@ -28,6 +29,7 @@ class GameDataModel {
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
   std::vector<std::shared_ptr<GameObject>> GetAllGameObjects() const;
   std::vector<std::shared_ptr<Box>> GetBoxes() const;
+  std::vector<std::shared_ptr<Tree>> GetTrees() const;
   int GetPlayersCount() const;
   bool IsGameObjectIdTaken(GameObjectId game_object_id) const;
   GameObjectId GetNextUnusedGameObjectId() const;
@@ -37,6 +39,9 @@ class GameDataModel {
                       float width, float height);
   GameObjectId AddBox(float x, float y, float rotation,
                       float width, float height);
+
+  void AddTree(GameObjectId game_object_id, float x, float y, float radius);
+  GameObjectId AddTree(float x, float y, float radius);
 
   bool IsLocalPlayerSet() const;
   GameObjectId GetLocalPlayerId() const;
@@ -49,6 +54,7 @@ class GameDataModel {
   // TODO(Everyone): need to store all objects in one container
   std::map<GameObjectId, std::shared_ptr<Player>> players_;
   std::map<GameObjectId, std::shared_ptr<Box>> boxes_;
+  std::map<GameObjectId, std::shared_ptr<Tree>> trees_;
 };
 
 #endif  // MODEL_GAME_DATA_MODEL_H_

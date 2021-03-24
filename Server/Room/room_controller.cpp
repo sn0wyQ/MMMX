@@ -9,6 +9,10 @@ RoomController::RoomController(RoomId id, RoomSettings room_settings)
   this->AddBox(-10.f, -10.f, 30.f);
   this->AddBox(25.f, 0.f, 0.f);
   this->AddBox(30.f, 5.f, 0.f);
+  this->AddTree(9.f, 7.f, 2.f);
+  this->AddTree(13.f, 6.f, 2.5f);
+  this->AddTree(10.f, 8.5f, 3.f);
+  this->AddTree(10.f, 15.f, 1.f);
 }
 
 void RoomController::SendEvent(const Event& event) {
@@ -150,6 +154,10 @@ void RoomController::AddBox(float x, float y, float rotation) {
   model_.AddBox(x, y, rotation, width, height);
 }
 
+void RoomController::AddTree(float x, float y, float radius) {
+  model_.AddTree(x, y, radius);
+}
+
 void RoomController::ShareObjectsOnMap(GameObjectId player_id) {
   for (const auto& box : model_.GetBoxes()) {
     this->AddEventToSend(
@@ -157,6 +165,12 @@ void RoomController::ShareObjectsOnMap(GameObjectId player_id) {
               static_cast<int>(GameObjectType::kBox),
               box->GetX(), box->GetY(), box->GetRotation(),
               box->GetWidth(), box->GetHeight()));
+  }
+  for (const auto& tree : model_.GetTrees()) {
+    this->AddEventToSend(
+        Event(EventType::kGameObjectAppeared, player_id, tree->GetId(),
+              static_cast<int>(GameObjectType::kTree),
+              tree->GetX(), tree->GetY(), tree->GetRadius()));
   }
 }
 

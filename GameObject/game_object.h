@@ -13,7 +13,8 @@
 
 // enum for sending events
 enum class GameObjectType {
-  kBox = 0
+  kBox,
+  kTree
 };
 
 class GameObject {

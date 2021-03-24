@@ -73,6 +73,26 @@ GameObjectId GameDataModel::AddBox(float x,
   return game_object_id;
 }
 
+void GameDataModel::AddTree(GameObjectId game_object_id,
+                            float x,
+                            float y,
+                            float radius) {
+  if (trees_.find(game_object_id) != trees_.end()) {
+    throw std::runtime_error("[MODEL] This game_object_id already exists");
+  }
+  trees_.emplace(std::make_pair(
+      game_object_id,
+      std::make_unique<Tree>(game_object_id, x, y, radius)));
+
+  qInfo().noquote() << "[MODEL] Added new Tree:" << game_object_id;
+}
+
+GameObjectId GameDataModel::AddTree(float x, float y, float radius) {
+  GameObjectId game_object_id = this->GetNextUnusedGameObjectId();
+  AddTree(game_object_id, x, y, radius);
+  return game_object_id;
+}
+
 GameObjectId GameDataModel::GetLocalPlayerId() const {
   return local_player_id_;
 }
@@ -106,6 +126,14 @@ std::vector<std::shared_ptr<Box>> GameDataModel::GetBoxes() const {
   return result;
 }
 
+std::vector<std::shared_ptr<Tree>> GameDataModel::GetTrees() const {
+  std::vector<std::shared_ptr<Tree>> result;
+  for (const auto& tree : trees_) {
+    result.push_back(tree.second);
+  }
+  return result;
+}
+
 std::vector<std::shared_ptr<GameObject>> GameDataModel::GetAllGameObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;
   for (const auto& player : players_) {
@@ -114,12 +142,15 @@ std::vector<std::shared_ptr<GameObject>> GameDataModel::GetAllGameObjects() cons
   for (const auto& box : boxes_) {
     result.push_back(box.second);
   }
+  for (const auto& tree : trees_) {
+    result.push_back(tree.second);
+  }
   return result;
 }
-
 bool GameDataModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return players_.find(game_object_id) != players_.end()
-    || boxes_.find(game_object_id) != boxes_.end();
+    || boxes_.find(game_object_id) != boxes_.end()
+    || trees_.find(game_object_id) != trees_.end();
 }
 
 GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
