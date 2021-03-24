@@ -9,7 +9,7 @@
 class Box : public GameObject {
  public:
   Box(GameObjectId game_object_id,
-      float x, float y, float width, float height);
+      float x, float y, float rotation, float width, float height);
 
   void OnTick(int) override;
   void DrawRelatively(Painter* painter) override;

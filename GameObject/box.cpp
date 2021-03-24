@@ -3,18 +3,18 @@
 Box::Box(GameObjectId game_object_id,
          float x,
          float y,
+         float rotation,
          float width,
          float height)
          : GameObject(
              game_object_id,
              QPointF(x, y),
+             rotation,
              std::make_shared<RigidBodyRectangle>(width, height)),
              width_(width), height_(height) {}
 
 void Box::DrawRelatively(Painter* painter) {
   painter->setBrush(Qt::BrushStyle::CrossPattern);
-  painter->Translate(GetPosition());
-  painter->rotate(-1 * 180.f / 3.14f);
   painter->DrawRect(-width_ / 2, -height_ / 2, width_, height_);
 }
 

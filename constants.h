@@ -63,7 +63,7 @@ constexpr float kDefaultMovableObjectSpeed = 0.01f;
 // Player
 constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
-constexpr float kDefaultPlayerViewAngle = 0.f;
+constexpr float kDefaultPlayerRotation = 0.f;
 
 }  // namespace Constants
 

@@ -17,10 +17,10 @@ class GameDataModel {
   void AddPlayer(GameObjectId player_id,
                  float x = Constants::kDefaultPlayerX,
                  float y = Constants::kDefaultPlayerY,
-                 float view_angle = Constants::kDefaultPlayerViewAngle);
+                 float rotation = Constants::kDefaultPlayerRotation);
   GameObjectId AddPlayer(float x = Constants::kDefaultPlayerX,
                  float y = Constants::kDefaultPlayerY,
-                 float view_angle = Constants::kDefaultPlayerViewAngle);
+                 float rotation = Constants::kDefaultPlayerRotation);
   void DeletePlayer(GameObjectId player_id);
 
   std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
@@ -33,8 +33,10 @@ class GameDataModel {
   GameObjectId GetNextUnusedGameObjectId() const;
 
   void AddBox(GameObjectId game_object_id,
-                      float x, float y, float width, float height);
-  GameObjectId AddBox(float x, float y, float width, float height);
+                      float x, float y, float rotation,
+                      float width, float height);
+  GameObjectId AddBox(float x, float y, float rotation,
+                      float width, float height);
 
   bool IsLocalPlayerSet() const;
   GameObjectId GetLocalPlayerId() const;

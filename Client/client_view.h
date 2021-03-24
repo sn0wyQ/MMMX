@@ -28,7 +28,6 @@ class ClientView : public AbstractClientView {
 
   void Update() override;
   std::shared_ptr<Converter> GetConverter() override;
-  bool IsFocused() const override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;

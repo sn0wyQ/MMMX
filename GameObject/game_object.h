@@ -19,7 +19,7 @@ enum class GameObjectType {
 class GameObject {
  public:
   GameObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body);
-  GameObject(GameObjectId id, QPointF position,
+  GameObject(GameObjectId id, QPointF position, float rotation,
              std::shared_ptr<RigidBody> rigid_body);
 
   virtual void OnTick(int time_from_previous_tick) = 0;
@@ -35,12 +35,15 @@ class GameObject {
   void SetX(float x);
   float GetY() const;
   void SetY(float y);
+  float GetRotation() const;
+  void SetRotation(float rotation);
 
   std::shared_ptr<RigidBody> GetRigidBody() const;
 
  private:
   GameObjectId id_ = Constants::kNullGameObjectId;
   QPointF position_{0.f, 0.f};
+  float rotation_{0.f};
   std::shared_ptr<RigidBody> rigid_body_;
 };
 

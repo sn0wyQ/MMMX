@@ -101,11 +101,19 @@ void ClientController::OnTick(int time_from_previous_tick) {
         }
         QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
                                      item->GetY() - local_player->GetY());
+        float rotation = item->GetRotation();
+
+        std::vector<QPointF> intersect_points_now
+            = IntersectChecker::GetIntersectPointsBodies(
+                local_player->GetRigidBody(), item->GetRigidBody(),
+                offset, rotation);
+
         std::vector<QPointF> intersect_points_in_future
           = IntersectChecker::GetIntersectPointsBodies(
               local_player->GetRigidBody(), item->GetRigidBody(),
               offset
-              - local_player->GetAppliedDeltaPosition(time_from_previous_tick));
+              - local_player->GetAppliedDeltaPosition(time_from_previous_tick),
+              rotation);
 
         if (!intersect_points_in_future.empty()) {
           // qInfo() << item->GetId() << " " << local_player->GetId()
@@ -113,8 +121,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
           QVector2D delta_to_set
               = IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
                   local_player->GetRigidBody(), item->GetRigidBody(),
-                  QVector2D(item->GetX() - local_player->GetX(),
-                            item->GetY() - local_player->GetY()),
+                  offset, rotation,
                   local_player->GetAppliedDeltaPosition(time_from_previous_tick));
           QVector2D velocity_to_set = local_player->GetVelocityByDeltaPosition(
                   delta_to_set, time_from_previous_tick);
@@ -122,18 +129,20 @@ void ClientController::OnTick(int time_from_previous_tick) {
           local_player->SetVelocity(velocity_to_set);
         }
       }
-      for (const auto& item : model_->GetAllGameObjects()) {
-        if (local_player->GetId() == item->GetId()) {
-          continue;
-        }
-        QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
-                                     item->GetY() - local_player->GetY());
-        if (local_player->GetVelocity().isNull()) {
+      if (local_player->GetVelocity().isNull()) {
+        for (const auto& item : model_->GetAllGameObjects()) {
+          if (local_player->GetId() == item->GetId()) {
+            continue;
+          }
+          QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
+                                       item->GetY() - local_player->GetY());
+          float rotation = item->GetRotation();
           std::vector<QPointF> intersect_points_now
               = IntersectChecker::GetIntersectPointsBodies(
                   local_player->GetRigidBody(), item->GetRigidBody(),
-                  offset);
+                  offset, rotation);
           for (const auto& point : intersect_points_now) {
+            QVector2D point_vector(point.x(), point.y());
             QVector2D tangent_vector(-point.y(), point.x());
             tangent_vector.normalize();
             tangents.push_back(tangent_vector);
@@ -176,7 +185,9 @@ void ClientController::OnTick(int time_from_previous_tick) {
             common_tangent_vector = key_force;
           }
           is_velocity_edited = true;
-          local_player->SetVelocity(common_tangent_vector * length_result);
+          common_tangent_vector.normalize();
+          QVector2D result = common_tangent_vector * length_result;
+          local_player->SetVelocity(result);
         }
       }
       for (const auto& item : model_->GetAllGameObjects()) {
@@ -185,35 +196,36 @@ void ClientController::OnTick(int time_from_previous_tick) {
         }
         QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
                                      item->GetY() - local_player->GetY());
+        float rotation = item->GetRotation();
         std::vector<QPointF> intersect_points_in_future
             = IntersectChecker::GetIntersectPointsBodies(
                 local_player->GetRigidBody(), item->GetRigidBody(),
                 offset
-                    - local_player->GetAppliedDeltaPosition(time_from_previous_tick));
+                - local_player->GetAppliedDeltaPosition(
+                    time_from_previous_tick),
+                rotation);
 
         if (!intersect_points_in_future.empty()) {
           std::vector<QPointF> intersect_points_now
               = IntersectChecker::GetIntersectPointsBodies(
                   local_player->GetRigidBody(), item->GetRigidBody(),
-                  offset);
+                  offset, rotation);
           if (intersect_points_now.size() != intersect_points_in_future.size()) {
             QVector2D delta_to_set
                 = IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(
                     local_player->GetRigidBody(), item->GetRigidBody(),
-                    QVector2D(item->GetX() - local_player->GetX(),
-                              item->GetY() - local_player->GetY()),
+                    offset, rotation,
                     local_player->GetAppliedDeltaPosition(
-                        time_from_previous_tick),
-                    2);
-            QVector2D
-                velocity_to_set = local_player->GetVelocityByDeltaPosition(
+                        time_from_previous_tick));
+            QVector2D velocity_to_set
+              = local_player->GetVelocityByDeltaPosition(
                 delta_to_set, time_from_previous_tick);
             is_velocity_edited = true;
             local_player->SetVelocity(velocity_to_set);
           }
         }
       }
-      // qInfo() << local_player->GetVelocity();
+      // qInfo() << "final" << local_player->GetVelocity();
       if (!is_velocity_edited) {
         ApplyDirection();
       }
@@ -238,7 +250,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
                                local_player->GetX(),
                                local_player->GetY(),
                                local_player->GetVelocity(),
-                               local_player->GetViewAngle()));
+                               local_player->GetRotation()));
 
   view_->Update();
 }
@@ -302,7 +314,7 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
   player_ptr->SetX(event.GetArg<float>(1));
   player_ptr->SetY(event.GetArg<float>(2));
   player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
-  player_ptr->SetViewAngle(event.GetArg<float>(4));
+  player_ptr->SetRotation(event.GetArg<float>(4));
 
   view_->Update();
 }
@@ -320,7 +332,8 @@ void ClientController::GameObjectAppearedEvent(const Event& event) {
                          event.GetArg<float>(3),
                          event.GetArg<float>(4),
                          event.GetArg<float>(5),
-                         event.GetArg<float>(6));
+                         event.GetArg<float>(6),
+                          event.GetArg<float>(7));
       break;
   }
   view_->Update();
@@ -359,10 +372,10 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
-    float view_angle = Math::DirectionAngle(local_player->GetPosition(),
+    float rotation = Math::DirectionAngle(local_player->GetPosition(),
                                             converter_->PointFromScreenToGame(
                                                 mouse_event->pos()));
-    local_player->SetViewAngle(view_angle);
+    local_player->SetRotation(rotation);
     view_->Update();
   }
 }

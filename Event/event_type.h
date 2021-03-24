@@ -23,7 +23,7 @@ enum class EventType {
   // [2+] - player_info [<int> player_id,
   //                     <float> x,
   //                     <float> y,
-  //                     <float> view_angle]
+  //                     <float> rotation]
   kCreateAllPlayersData,
 
   // No arguments
@@ -58,14 +58,14 @@ enum class EventType {
   // [1] - <float> x,
   // [2] - <float> y,
   // [3] - <QVector2D> velocity,
-  // [4] - <float> view_angle
+  // [4] - <float> rotation
   kSendControls,
 
   // [0] - <int> sender_player_id,
   // [1] - <float> x,
   // [2] - <float> y,
   // [3] - <QVector2D> velocity,
-  // [4] - <float> view_angle
+  // [4] - <float> rotation
   kUpdatePlayerData,
 
   // [0] - <int> receiver_client_id

@@ -3,8 +3,12 @@
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), room_settings_(room_settings) {
   this->StartTicking();
-  this->AddBox(-5.f, -15.f);
-  this->AddBox(12.f, -10.f);
+  this->AddBox(-5.f, -15.f, 45.f);
+  this->AddBox(12.f, -10.f, 120.f);
+  this->AddBox(15.f, -11.f, 120.f);
+  this->AddBox(-10.f, -10.f, 30.f);
+  this->AddBox(25.f, 0.f, 0.f);
+  this->AddBox(30.f, 5.f, 0.f);
 }
 
 void RoomController::SendEvent(const Event& event) {
@@ -25,7 +29,7 @@ void RoomController::AddClient(ClientId client_id) {
     event_args.emplace_back(player->GetId());
     event_args.emplace_back(player->GetX());
     event_args.emplace_back(player->GetY());
-    event_args.emplace_back(player->GetViewAngle());
+    event_args.emplace_back(player->GetRotation());
   }
   this->AddEventToHandle(Event(EventType::kCreateAllPlayersData,
                                event_args));
@@ -140,6 +144,22 @@ void RoomController::UpdateServerVarEvent(const Event& event) {
                                  event.GetArg<GameObjectId>(0))));
 }
 
+void RoomController::AddBox(float x, float y, float rotation) {
+  float width = 20;
+  float height = 10;
+  model_.AddBox(x, y, rotation, width, height);
+}
+
+void RoomController::ShareObjectsOnMap(GameObjectId player_id) {
+  for (const auto& box : model_.GetBoxes()) {
+    this->AddEventToSend(
+        Event(EventType::kGameObjectAppeared, player_id, box->GetId(),
+              static_cast<int>(GameObjectType::kBox),
+              box->GetX(), box->GetY(), box->GetRotation(),
+              box->GetWidth(), box->GetHeight()));
+  }
+}
+
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
@@ -151,28 +171,12 @@ void RoomController::SendControlsEvent(const Event& event) {
   senders_player_ptr->SetX(event.GetArg<float>(1));
   senders_player_ptr->SetY(event.GetArg<float>(2));
   senders_player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
-  senders_player_ptr->SetViewAngle(event.GetArg<float>(4));
+  senders_player_ptr->SetRotation(event.GetArg<float>(4));
 
   this->AddEventToSend(Event(EventType::kUpdatePlayerData,
                        event.GetArg<GameObjectId>(0),
                        senders_player_ptr->GetX(),
                        senders_player_ptr->GetY(),
                        senders_player_ptr->GetVelocity(),
-                       senders_player_ptr->GetViewAngle()));
-}
-
-void RoomController::AddBox(float x, float y) {
-  float width = 20;
-  float height = 10;
-  model_.AddBox(x, y, width, height);
-}
-
-void RoomController::ShareObjectsOnMap(GameObjectId player_id) {
-  for (const auto& box : model_.GetBoxes()) {
-    qInfo() << box->GetId();
-    this->AddEventToSend(
-        Event(EventType::kGameObjectAppeared, player_id, box->GetId(),
-              static_cast<int>(GameObjectType::kBox),
-              box->GetX(), box->GetY(), box->GetWidth(), box->GetHeight()));
-  }
+                       senders_player_ptr->GetRotation()));
 }

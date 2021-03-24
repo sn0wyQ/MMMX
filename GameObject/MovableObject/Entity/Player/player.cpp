@@ -6,11 +6,11 @@ Player::Player(GameObjectId player_id)
 Player::Player(GameObjectId player_id,
                float x,
                float y,
-               float view_angle)
+               float rotation)
     : Player(player_id) {
   SetX(x);
   SetY(y);
-  SetViewAngle(view_angle);
+  SetRotation(rotation);
 }
 
 void Player::OnTick(int time_from_previous_tick) {
@@ -18,10 +18,6 @@ void Player::OnTick(int time_from_previous_tick) {
 }
 
 void Player::DrawRelatively(Painter* painter) {
-  painter->Translate(GetPosition());
-
-  painter->RotateCounterClockWise(GetViewAngle());
-
   // Body [Temporary]
   painter->DrawEllipse(QPointF(), 1.f, 1.f);
 

@@ -13,7 +13,7 @@ class Player : public Entity {
   Player(GameObjectId player_id,
          float x,
          float y,
-         float view_angle);
+         float rotation);
 
   void OnTick(int time_from_previous_tick) override;
   void DrawRelatively(Painter* painter) override;

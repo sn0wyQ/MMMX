@@ -31,25 +31,26 @@ int GameDataModel::GetPlayersCount() const {
 void GameDataModel::AddPlayer(GameObjectId player_id,
                               float x,
                               float y,
-                              float view_angle) {
+                              float rotation) {
   if (players_.find(player_id) != players_.end()) {
     throw std::runtime_error("[MODEL] This player_id already exists");
   }
   players_.emplace(std::make_pair(
-      player_id, std::make_unique<Player>(player_id, x, y, view_angle)));
+      player_id, std::make_unique<Player>(player_id, x, y, rotation)));
 
   qInfo().noquote() << "[MODEL] Added new Player ID:" << player_id;
 }
 
-GameObjectId GameDataModel::AddPlayer(float x, float y, float view_angle) {
+GameObjectId GameDataModel::AddPlayer(float x, float y, float rotation) {
   GameObjectId player_id = this->GetNextUnusedGameObjectId();
-  AddPlayer(player_id, x, y, view_angle);
+  AddPlayer(player_id, x, y, rotation);
   return player_id;
 }
 
 void GameDataModel::AddBox(GameObjectId game_object_id,
                                    float x,
                                    float y,
+                                   float rotation,
                                    float width,
                                    float height) {
   if (boxes_.find(game_object_id) != boxes_.end()) {
@@ -57,17 +58,18 @@ void GameDataModel::AddBox(GameObjectId game_object_id,
   }
   boxes_.emplace(std::make_pair(
       game_object_id,
-      std::make_unique<Box>(game_object_id, x, y, width, height)));
+      std::make_unique<Box>(game_object_id, x, y, rotation, width, height)));
 
   qInfo().noquote() << "[MODEL] Added new Box:" << game_object_id;
 }
 
 GameObjectId GameDataModel::AddBox(float x,
                                    float y,
+                                   float rotation,
                                    float width,
                                    float height) {
   GameObjectId game_object_id = this->GetNextUnusedGameObjectId();
-  AddBox(game_object_id, x, y, width, height);
+  AddBox(game_object_id, x, y, rotation, width, height);
   return game_object_id;
 }
 
@@ -119,6 +121,7 @@ bool GameDataModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return players_.find(game_object_id) != players_.end()
     || boxes_.find(game_object_id) != boxes_.end();
 }
+
 GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
   GameObjectId game_object_id = 1;
   while (IsGameObjectIdTaken(game_object_id)) {

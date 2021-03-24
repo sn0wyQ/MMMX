@@ -66,7 +66,3 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
   game_view_->resize(resize_event->size());
 }
-
-bool ClientView::IsFocused() const {
-  return hasFocus();
-}

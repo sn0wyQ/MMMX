@@ -5,8 +5,10 @@ GameObject::GameObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body)
 
 GameObject::GameObject(GameObjectId id,
                        QPointF position,
+                       float rotation,
                        std::shared_ptr<RigidBody> rigid_body)
-  : id_(id), position_(position), rigid_body_(std::move(rigid_body)) {}
+  : id_(id), position_(position), rotation_(rotation),
+  rigid_body_(std::move(rigid_body)) {}
 
 GameObjectId GameObject::GetId() const {
   return id_;
@@ -42,7 +44,8 @@ float GameObject::GetY() const {
 
 void GameObject::Draw(Painter* painter) {
   painter->save();
-  //painter->Translate(GetPosition());
+  painter->Translate(GetPosition());
+  painter->RotateCounterClockWise(rotation_);
   this->DrawRelatively(painter);
   if (Constants::kShowRigidBody) {
     rigid_body_->Draw(painter);
@@ -52,4 +55,12 @@ void GameObject::Draw(Painter* painter) {
 
 std::shared_ptr<RigidBody> GameObject::GetRigidBody() const {
   return rigid_body_;
+}
+
+float GameObject::GetRotation() const {
+  return rotation_;
+}
+
+void GameObject::SetRotation(float rotation) {
+  rotation_ = rotation;
 }
