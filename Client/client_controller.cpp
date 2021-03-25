@@ -126,6 +126,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
                   delta_to_set, time_from_previous_tick);
           is_velocity_edited = true;
           local_player->SetVelocity(velocity_to_set);
+          // qInfo() << "A" << local_player->GetVelocity();
         }
       }
       if (local_player->GetVelocity().isNull()) {
@@ -186,6 +187,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
           common_tangent_vector.normalize();
           QVector2D result = common_tangent_vector * length_result;
           local_player->SetVelocity(result);
+          // qInfo() << "B" << local_player->GetVelocity();
         }
       }
       for (const auto& item : model_->GetAllGameObjects()) {
@@ -208,7 +210,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
               = IntersectChecker::GetIntersectPointsBodies(
                   local_player->GetRigidBody(), item->GetRigidBody(),
                   offset, rotation);
-          if (intersect_points_now.size() != intersect_points_in_future.size()) {
+          if (intersect_points_now.size() < intersect_points_in_future.size()) {
             QVector2D delta_to_set
                 = IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(
                     local_player->GetRigidBody(), item->GetRigidBody(),
@@ -220,6 +222,7 @@ void ClientController::OnTick(int time_from_previous_tick) {
                 delta_to_set, time_from_previous_tick);
             is_velocity_edited = true;
             local_player->SetVelocity(velocity_to_set);
+            // qInfo() << "C" << local_player->GetVelocity();
           }
         }
       }

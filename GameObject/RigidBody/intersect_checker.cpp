@@ -154,7 +154,7 @@ QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(
       r = m;
     }
   }
-  return -delta_intersect * l;
+  return delta_intersect * l;
 }
 
 bool IntersectChecker::IsSimilarVectors(QVector2D first, QVector2D second) {

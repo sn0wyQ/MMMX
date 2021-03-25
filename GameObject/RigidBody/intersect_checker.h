@@ -36,29 +36,9 @@ namespace IntersectChecker {
       const std::shared_ptr<RigidBody>& second,
       QVector2D offset, float rotation, QVector2D delta_intersect);
 
-  QVector2D CalculateDistanceToObjectNotToIntersect(
-      const std::shared_ptr<RigidBodyCircle>& circle,
-      const std::shared_ptr<RigidBodyRectangle>& rectangle,
-      QVector2D offset, float rotation, QVector2D delta_intersect);
-
-  QVector2D CalculateDistanceToObjectNotToIntersect(
-      const std::shared_ptr<RigidBodyCircle>& circle1,
-      const std::shared_ptr<RigidBodyCircle>& circle2,
-      QVector2D offset, float rotation, QVector2D delta_intersect);
-
   QVector2D CalculateDistanceToObjectMayIntersectBodies(
       const std::shared_ptr<RigidBody>& first,
       const std::shared_ptr<RigidBody>& second,
-      QVector2D offset, float rotation, QVector2D delta_intersect);
-  
-  QVector2D CalculateDistanceToObjectMayIntersect(
-      const std::shared_ptr<RigidBodyCircle>& circle,
-      const std::shared_ptr<RigidBodyRectangle>& rectangle,
-      QVector2D offset, float rotation, QVector2D delta_intersect);
-  
-  QVector2D CalculateDistanceToObjectMayIntersect(
-      const std::shared_ptr<RigidBodyCircle>& circle1,
-      const std::shared_ptr<RigidBodyCircle>& circle2,
       QVector2D offset, float rotation, QVector2D delta_intersect);
 
   bool IsSimilarVectors(QVector2D first, QVector2D second);
