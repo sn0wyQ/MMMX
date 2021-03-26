@@ -118,7 +118,6 @@ class ClientController : public BaseController {
   QElapsedTimer timer_elapsed_server_var_;
   std::shared_ptr<Converter> converter_;
 
-  // TODO(Everyone): Rework
   std::unordered_map<Controls, Direction> key_to_direction_{
       {Controls::kKeyW, Direction::kUp},
       {Controls::kKeyD, Direction::kRight},
@@ -126,7 +125,6 @@ class ClientController : public BaseController {
       {Controls::kKeyA, Direction::kLeft}
   };
   std::unordered_map<Direction, bool> is_direction_by_keys_{false};
-  std::unordered_map<Direction, bool> is_direction_applied_{false};
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

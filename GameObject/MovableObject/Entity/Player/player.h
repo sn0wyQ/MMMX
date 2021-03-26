@@ -21,8 +21,6 @@ class Player : public Entity {
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
 
-  void UpdateVelocity(uint32_t mask);
-
  private:
   bool is_local_player_ = false;
 };

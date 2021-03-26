@@ -135,7 +135,7 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
       l = m;
     }
   }
-  return -delta_intersect * l;
+  return delta_intersect * l;
 }
 
 QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(

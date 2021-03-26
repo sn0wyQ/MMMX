@@ -33,31 +33,6 @@ void Player::DrawRelatively(Painter* painter) {
   }
 }
 
-// More information about |mask| can be found in event_type.h
-void Player::UpdateVelocity(uint32_t mask) {
-  // Normalizing of (0, 0) vector works bad
-  if (mask == 0b0000) {
-    SetVelocity({0.f, 0.f});
-    return;
-  }
-
-  QVector2D velocity{0.f, 0.f};
-  if (mask & (1UL << 3)) {
-    velocity.setY(-1.f);
-  }
-  if (mask & (1UL << 2)) {
-    velocity.setX(1.f);
-  }
-  if (mask & (1UL << 1)) {
-    velocity.setY(1.f);
-  }
-  if (mask & 1UL) {
-    velocity.setX(-1.f);
-  }
-
-  SetVelocity(velocity.normalized());
-}
-
 bool Player::IsLocalPlayer() const {
   return is_local_player_;
 }

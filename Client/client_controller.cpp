@@ -220,17 +220,18 @@ void ClientController::OnTick(int time_from_previous_tick) {
             QVector2D velocity_to_set
               = local_player->GetVelocityByDeltaPosition(
                 delta_to_set, time_from_previous_tick);
+
             is_velocity_edited = true;
             local_player->SetVelocity(velocity_to_set);
             // qInfo() << "C" << local_player->GetVelocity();
           }
         }
       }
-      // qInfo() << "final" << local_player->GetVelocity();
       if (!is_velocity_edited) {
         ApplyDirection();
       }
     }
+    // qInfo() << "final" << local_player->GetVelocity();
   }
 
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
@@ -392,34 +393,28 @@ void ClientController::ApplyDirection() {
     return;
   }
 
-  ResetDirection();
-
   bool is_up_pressed = is_direction_by_keys_[Direction::kUp];
   bool is_right_pressed = is_direction_by_keys_[Direction::kRight];
   bool is_down_pressed = is_direction_by_keys_[Direction::kDown];
   bool is_left_pressed = is_direction_by_keys_[Direction::kLeft];
 
+  QVector2D velocity;
   if ((is_up_pressed ^ is_down_pressed) == 1) {
-    is_direction_applied_[is_up_pressed ? Direction::kUp : Direction::kDown]
-        = true;
+    if (is_up_pressed) {
+      velocity.setY(-1.f);
+    } else {
+      velocity.setY(1.f);
+    }
   }
   if ((is_right_pressed ^ is_left_pressed) == 1) {
-    is_direction_applied_[is_right_pressed ?
-                          Direction::kRight : Direction::kLeft] = true;
+    if (is_right_pressed) {
+      velocity.setX(1.f);
+    } else {
+      velocity.setX(-1.f);
+    }
   }
 
-  uint32_t direction_mask = is_direction_applied_[Direction::kUp] * 8
-      + is_direction_applied_[Direction::kRight] * 4
-      + is_direction_applied_[Direction::kDown] * 2
-      + is_direction_applied_[Direction::kLeft];
-
-  model_->GetLocalPlayer()->UpdateVelocity(direction_mask);
+  velocity.normalize();
+  model_->GetLocalPlayer()->SetVelocity(velocity);
   view_->Update();
-}
-
-void ClientController::ResetDirection() {
-  is_direction_applied_[Direction::kUp]
-      = is_direction_applied_[Direction::kRight]
-      = is_direction_applied_[Direction::kDown]
-      = is_direction_applied_[Direction::kLeft] = false;
 }
