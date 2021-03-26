@@ -158,7 +158,8 @@ QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(
 }
 
 bool IntersectChecker::IsSimilarVectors(QVector2D first, QVector2D second) {
-  return QVector2D::dotProduct(first, second) > 1 - kCosEps;
+  return QVector2D::dotProduct(first, second)
+    / first.length() / second.length() > 1 - kCosEps;
 }
 
 QVector2D IntersectChecker::GetRotatedVector(

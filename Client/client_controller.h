@@ -75,10 +75,11 @@ class ClientController : public BaseController {
 
   void SetView(std::shared_ptr<AbstractClientView> view);
 
+  void CollidePlayerWithGameObjects(int time_from_previous_tick);
+
   // -------------------- CONTROLS --------------------
 
-  void ApplyDirection();
-  void ResetDirection();
+  QVector2D GetKeyForce() const;
 
   void FocusOutEvent(QFocusEvent* focus_event);
   void KeyPressEvent(QKeyEvent* key_event);
@@ -124,7 +125,12 @@ class ClientController : public BaseController {
       {Controls::kKeyS, Direction::kDown},
       {Controls::kKeyA, Direction::kLeft}
   };
-  std::unordered_map<Direction, bool> is_direction_by_keys_{false};
+  std::unordered_map<Direction, bool> is_direction_by_keys_{
+      {Direction::kUp, false},
+      {Direction::kRight, false},
+      {Direction::kDown, false},
+      {Direction::kLeft, false}
+  };
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

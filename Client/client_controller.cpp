@@ -84,21 +84,64 @@ void ClientController::SendEvent(const Event& event) {
   web_socket_.sendBinaryMessage(event.ToByteArray());
 }
 
-void ClientController::OnTick(int time_from_previous_tick) {
-  // ВСЕМ ЧИТАЮЩИМ ЭТОТ КОД СОБОЛЕЗНУЮ
-  if (model_->IsLocalPlayerSet()) {
-    auto local_player = model_->GetLocalPlayer();
-    QVector2D buffer = local_player->GetVelocity();
-    ApplyDirection();
-    QVector2D key_force = local_player->GetVelocity();
-    local_player->SetVelocity(buffer);
-    if (!local_player->GetVelocity().isNull()) {
-      bool is_velocity_edited = false;
-      std::vector<QVector2D> tangents;
+void ClientController::CollidePlayerWithGameObjects(
+    int time_from_previous_tick) {
+  auto local_player = model_->GetLocalPlayer();
+  QVector2D key_force = GetKeyForce();
+
+  if (!key_force.isNull()) {
+    local_player->SetVelocity(key_force);
+
+    // Первая фаза (прижимная): если в след тик будем в объекте,
+    // то делаем такую скорость, чтобы мы в след тик были прижатыми
+    // к этому объекту
+    for (const auto& item : model_->GetAllGameObjects()) {
+      if (local_player->GetId() == item->GetId()) {
+        continue;
+      }
+
+      QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
+                                   item->GetY() - local_player->GetY());
+      float rotation = item->GetRotation();
+      std::vector<QPointF> intersect_points_now
+          = IntersectChecker::GetIntersectPointsBodies(
+              local_player->GetRigidBody(), item->GetRigidBody(),
+              offset, rotation);
+
+      std::vector<QPointF> intersect_points_in_future
+          = IntersectChecker::GetIntersectPointsBodies(
+              local_player->GetRigidBody(), item->GetRigidBody(),
+              offset
+                  - local_player->GetAppliedDeltaPosition(time_from_previous_tick),
+              rotation);
+
+      // Если мы будем в объекте в будующем...
+      if (!intersect_points_in_future.empty()) {
+
+        // То дихаем такое расстояние, чтобы не быть в нем
+        QVector2D delta_to_set
+            = IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
+                local_player->GetRigidBody(), item->GetRigidBody(),
+                offset, rotation,
+                local_player->GetAppliedDeltaPosition(time_from_previous_tick));
+        // С учетом текущей скорости и тика переводим расстояние в скорость
+        QVector2D velocity_to_set = local_player->GetVelocityByDeltaPosition(
+            delta_to_set, time_from_previous_tick);
+
+        // Обновляем скорость
+        local_player->SetVelocity(velocity_to_set);
+      }
+    }
+
+    // Вторая фаза (скользкая): Если мы оказались уже прижаты,
+    // то ищем все касательные к нашему объекту
+    std::vector<QVector2D> tangents;
+    if (local_player->GetVelocity().isNull()) {
       for (const auto& item : model_->GetAllGameObjects()) {
         if (local_player->GetId() == item->GetId()) {
           continue;
         }
+
         QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
                                      item->GetY() - local_player->GetY());
         float rotation = item->GetRotation();
@@ -107,131 +150,80 @@ void ClientController::OnTick(int time_from_previous_tick) {
                 local_player->GetRigidBody(), item->GetRigidBody(),
                 offset, rotation);
 
-        std::vector<QPointF> intersect_points_in_future
-          = IntersectChecker::GetIntersectPointsBodies(
-              local_player->GetRigidBody(), item->GetRigidBody(),
-              offset
-              - local_player->GetAppliedDeltaPosition(time_from_previous_tick),
-              rotation);
-
-        if (!intersect_points_in_future.empty()) {
-          // qInfo() << item->GetId() << " " << local_player->GetId()
-          //         << "intersect";
-          QVector2D delta_to_set
-              = IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
-                  local_player->GetRigidBody(), item->GetRigidBody(),
-                  offset, rotation,
-                  local_player->GetAppliedDeltaPosition(time_from_previous_tick));
-          QVector2D velocity_to_set = local_player->GetVelocityByDeltaPosition(
-                  delta_to_set, time_from_previous_tick);
-          is_velocity_edited = true;
-          local_player->SetVelocity(velocity_to_set);
-          // qInfo() << "A" << local_player->GetVelocity();
+        for (const auto& point : intersect_points_now) {
+          // Из вектора, задающего точку прикосновения
+          // делаем касательную
+          QVector2D tangent_vector(-point.y(), point.x());
+          tangent_vector.normalize();
+          tangents.push_back(tangent_vector);
         }
-      }
-      if (local_player->GetVelocity().isNull()) {
-        for (const auto& item : model_->GetAllGameObjects()) {
-          if (local_player->GetId() == item->GetId()) {
-            continue;
-          }
-          QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
-                                       item->GetY() - local_player->GetY());
-          float rotation = item->GetRotation();
-          std::vector<QPointF> intersect_points_now
-              = IntersectChecker::GetIntersectPointsBodies(
-                  local_player->GetRigidBody(), item->GetRigidBody(),
-                  offset, rotation);
-          for (const auto& point : intersect_points_now) {
-            QVector2D tangent_vector(-point.y(), point.x());
-            tangent_vector.normalize();
-            tangents.push_back(tangent_vector);
-          }
-        }
-      }
-      if (!tangents.empty()) {
-        bool full_stop = false;
-        QVector2D common_tangent_vector;
-        bool has_common = false;
-        for (const auto& tangent_vector : tangents) {
-          float cos = QVector2D::dotProduct(
-              key_force, QVector2D(tangent_vector.y(), -tangent_vector.x()));
-          if (cos <= 0) {
-            continue;
-          }
-          if (!has_common) {
-            has_common = true;
-            common_tangent_vector = tangent_vector;
-          }
-          if (IntersectChecker::IsSimilarVectors(common_tangent_vector,
-                                                 tangent_vector)) {
-            common_tangent_vector += tangent_vector;
-            common_tangent_vector.normalize();
-            continue;
-          }
-          full_stop = true;
-          break;
-        }
-        if (full_stop) {
-          is_velocity_edited = true;
-          local_player->SetVelocity({0.f, 0.f});
-        } else {
-          float length_result;
-          if (has_common) {
-            length_result = QVector2D::dotProduct(common_tangent_vector,
-                                                  key_force);
-          } else {
-            length_result = 1.f;
-            common_tangent_vector = key_force;
-          }
-          is_velocity_edited = true;
-          common_tangent_vector.normalize();
-          QVector2D result = common_tangent_vector * length_result;
-          local_player->SetVelocity(result);
-          // qInfo() << "B" << local_player->GetVelocity();
-        }
-      }
-      for (const auto& item : model_->GetAllGameObjects()) {
-        if (local_player->GetId() == item->GetId()) {
-          continue;
-        }
-        QVector2D offset = QVector2D(item->GetX() - local_player->GetX(),
-                                     item->GetY() - local_player->GetY());
-        float rotation = item->GetRotation();
-        std::vector<QPointF> intersect_points_in_future
-            = IntersectChecker::GetIntersectPointsBodies(
-                local_player->GetRigidBody(), item->GetRigidBody(),
-                offset
-                - local_player->GetAppliedDeltaPosition(
-                    time_from_previous_tick),
-                rotation);
-
-        if (!intersect_points_in_future.empty()) {
-          std::vector<QPointF> intersect_points_now
-              = IntersectChecker::GetIntersectPointsBodies(
-                  local_player->GetRigidBody(), item->GetRigidBody(),
-                  offset, rotation);
-          if (intersect_points_now.size() < intersect_points_in_future.size()) {
-            QVector2D delta_to_set
-                = IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(
-                    local_player->GetRigidBody(), item->GetRigidBody(),
-                    offset, rotation,
-                    local_player->GetAppliedDeltaPosition(
-                        time_from_previous_tick));
-            QVector2D velocity_to_set
-              = local_player->GetVelocityByDeltaPosition(
-                delta_to_set, time_from_previous_tick);
-
-            is_velocity_edited = true;
-            local_player->SetVelocity(velocity_to_set);
-            // qInfo() << "C" << local_player->GetVelocity();
-          }
-        }
-      }
-      if (!is_velocity_edited) {
-        ApplyDirection();
       }
     }
-    // qInfo() << "final" << local_player->GetVelocity();
+
+    // Если касательные нашлись, то пробуем скользить по ним
+    if (!tangents.empty()) {
+      bool full_stop = false;
+      QVector2D common_tangent_vector;
+      bool has_common = false;
+
+      for (const auto& tangent_vector : tangents) {
+        // cos = косинус угла между касательной и нажатием клавиш
+        // также он будет равен будущей скорости, т.к. есть зависимость
+        // чем острее угол - тем больше скалярное произведение
+        float cos = QVector2D::dotProduct(
+            key_force, QVector2D(tangent_vector.y(), -tangent_vector.x()));
+        // Это проверка на то, находится ли касательная на пути нажатия клавиш
+        if (cos <= 0) {
+          continue;
+        }
+        if (!has_common) {
+          has_common = true;
+          common_tangent_vector = tangent_vector;
+          continue;
+        }
+
+        // Если мы нашли несколько касательных, то тут два варианта
+        // - они как бы замыкают нас и довольно строго, что дальше пройти
+        // мы не сможем никак
+        // - они более-менее похожи, тогда мы можем проскальзить по двоим сразу,
+        // тогда найдем сумму, а потом ее нормализуем
+        if (IntersectChecker::IsSimilarVectors(common_tangent_vector,
+                                               tangent_vector)) {
+          common_tangent_vector += tangent_vector;
+          continue;
+        }
+        // Если касательные не похожи, то мы должны остановится
+        full_stop = true;
+        break;
+      }
+      if (full_stop) {
+        local_player->SetVelocity({0.f, 0.f});
+      } else {
+        float length_result;
+        if (has_common) {
+          common_tangent_vector.normalize();
+          // Теперь окончательно посчитаем скорость
+          length_result = QVector2D::dotProduct(common_tangent_vector,
+                                                key_force);
+        } else {
+          // Если все наши касательные нам не мешают,
+          // то мы можем просто применить движение туда,
+          // куда нажали клавиши
+          length_result = 1.f;
+          common_tangent_vector = key_force;
+        }
+        common_tangent_vector.normalize();
+
+        QVector2D result = common_tangent_vector * length_result;
+        local_player->SetVelocity(result);
+      }
+    }
+  }
+}
+
+void ClientController::OnTick(int time_from_previous_tick) {
+  if (model_->IsLocalPlayerSet()) {
+    CollidePlayerWithGameObjects(time_from_previous_tick);
   }
 
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
@@ -365,7 +357,9 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
 
-  ApplyDirection();
+  if (model_->IsLocalPlayerSet()) {
+    model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
+  }
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
@@ -374,7 +368,9 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
     is_direction_by_keys_[key_to_direction_[native_key]] = false;
   }
 
-  ApplyDirection();
+  if (model_->IsLocalPlayerSet()) {
+    model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
+  }
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
@@ -388,33 +384,28 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   }
 }
 
-void ClientController::ApplyDirection() {
-  if (!model_->IsLocalPlayerSet()) {
-    return;
-  }
+QVector2D ClientController::GetKeyForce() const {
+  bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
+  bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
+  bool is_down_pressed = is_direction_by_keys_.at(Direction::kDown);
+  bool is_left_pressed = is_direction_by_keys_.at(Direction::kLeft);
 
-  bool is_up_pressed = is_direction_by_keys_[Direction::kUp];
-  bool is_right_pressed = is_direction_by_keys_[Direction::kRight];
-  bool is_down_pressed = is_direction_by_keys_[Direction::kDown];
-  bool is_left_pressed = is_direction_by_keys_[Direction::kLeft];
-
-  QVector2D velocity;
+  QVector2D key_force;
   if ((is_up_pressed ^ is_down_pressed) == 1) {
     if (is_up_pressed) {
-      velocity.setY(-1.f);
+      key_force.setY(-1.f);
     } else {
-      velocity.setY(1.f);
+      key_force.setY(1.f);
     }
   }
   if ((is_right_pressed ^ is_left_pressed) == 1) {
     if (is_right_pressed) {
-      velocity.setX(1.f);
+      key_force.setX(1.f);
     } else {
-      velocity.setX(-1.f);
+      key_force.setX(-1.f);
     }
   }
 
-  velocity.normalize();
-  model_->GetLocalPlayer()->SetVelocity(velocity);
-  view_->Update();
+  key_force.normalize();
+  return key_force;
 }
