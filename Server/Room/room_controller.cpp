@@ -189,9 +189,13 @@ void RoomController::SendControlsEvent(const Event& event) {
               receiver_player_id] : this->player_ids_) {
     auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
     if (this->IsPlayerInFOV(sender_player_id, receiver_player_id)) {
+      is_first_in_fov_of_second_.emplace(sender_player_id, receiver_player_id);
       data_receivers.push_back(receiver_client_id);
-    } else {
+    } else if (is_first_in_fov_of_second_.contains(std::make_pair(sender_player_id,
+                                                                  receiver_player_id))) {
       left_fov_event_receivers.push_back(receiver_client_id);
+      is_first_in_fov_of_second_.erase(std::make_pair(sender_player_id,
+                                                      receiver_player_id));
     }
   }
 

@@ -2,6 +2,7 @@
 #define SERVER_ROOM_ROOM_CONTROLLER_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -61,6 +62,8 @@ class RoomController : public BaseController {
   RoomSettings room_settings_;
   RoomState room_state_ = RoomState::kWaitingForClients;
   std::unordered_map<ClientId, GameObjectId> player_ids_;
+
+  std::set<std::pair<GameObjectId, GameObjectId>> is_first_in_fov_of_second_;
 
   std::vector<Event> events_for_server_;
 
