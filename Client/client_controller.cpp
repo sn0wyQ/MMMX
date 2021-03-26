@@ -133,7 +133,9 @@ void ClientController::CollidePlayerWithGameObjects(
       }
     }
 
-    // Вторая фаза (скользкая): Если мы оказались уже прижаты,
+    // Вторая фаза (скользкая):
+    // Если наша внешняя оболочка [RigidBody::External()]
+    // оказалась уже прижата,
     // то ищем все касательные к нашему объекту
     std::vector<QVector2D> tangents;
     if (local_player->GetVelocity().isNull()) {
@@ -147,7 +149,7 @@ void ClientController::CollidePlayerWithGameObjects(
         float rotation = item->GetRotation();
         std::vector<QPointF> intersect_points_now
             = IntersectChecker::GetIntersectPointsBodies(
-                local_player->GetRigidBody(), item->GetRigidBody(),
+                local_player->GetRigidBody()->External(), item->GetRigidBody(),
                 offset, rotation);
 
         for (const auto& point : intersect_points_now) {

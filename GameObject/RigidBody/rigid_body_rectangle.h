@@ -12,6 +12,7 @@ class RigidBodyRectangle : public RigidBody {
 
   int GetWidth() const;
   int GetHeight() const;
+  std::shared_ptr<RigidBody> External() const override;
 
  private:
   float width_;

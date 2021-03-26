@@ -12,6 +12,7 @@ class RigidBodyCircle : public RigidBody {
   void Draw(Painter* painter) override;
   RigidBodyType GetRigidBodyType() const override;
   float GetRadius() const;
+  std::shared_ptr<RigidBody> External() const override;
 
  private:
   float radius_;

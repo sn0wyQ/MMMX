@@ -22,3 +22,7 @@ int RigidBodyRectangle::GetWidth() const {
 int RigidBodyRectangle::GetHeight() const {
   return height_;
 }
+
+std::shared_ptr<RigidBody> RigidBodyRectangle::External() const {
+  return std::make_shared<RigidBodyRectangle>(*this);
+}

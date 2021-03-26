@@ -161,15 +161,3 @@ bool IntersectChecker::IsSimilarVectors(QVector2D first, QVector2D second) {
   return QVector2D::dotProduct(first, second)
     / first.length() / second.length() > 1 - kCosEps;
 }
-
-QVector2D IntersectChecker::GetRotatedVector(
-    QVector2D first, QVector2D second, float alpha) {
-  float alpha_rad = alpha / 180.f * static_cast<float>(M_PI);
-  QVector3D first_3d(first.x(), first.y(), 0);
-  QVector3D second_3d(second.x(), second.y(), 0);
-  QVector3D vz = QVector3D::crossProduct(first_3d, second_3d);
-  vz.normalize();
-  QVector3D vy = QVector3D::crossProduct(vz, first_3d);
-  QVector3D v = first_3d * std::cos(alpha_rad) + vy * std::sin(alpha_rad);
-  return QVector2D(v.x(), v.y());
-}
