@@ -12,6 +12,6 @@ namespace IntersectChecker {
   // Сила трения
   // (= увеличение внешней оболочки объекта при считании касательной)
   constexpr float kFrictionForce = 0.08f;
-}
+}  // namespace IntersectChecker
 
 #endif  // GAMEOBJECT_RIGIDBODY_INTERSECT_CONSTANTS_H_

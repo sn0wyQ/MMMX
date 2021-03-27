@@ -134,7 +134,8 @@ std::vector<std::shared_ptr<Tree>> GameDataModel::GetTrees() const {
   return result;
 }
 
-std::vector<std::shared_ptr<GameObject>> GameDataModel::GetAllGameObjects() const {
+std::vector<std::shared_ptr<GameObject>>
+  GameDataModel::GetAllGameObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;
   for (const auto& player : players_) {
     result.push_back(player.second);
@@ -147,6 +148,7 @@ std::vector<std::shared_ptr<GameObject>> GameDataModel::GetAllGameObjects() cons
   }
   return result;
 }
+
 bool GameDataModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return players_.find(game_object_id) != players_.end()
     || boxes_.find(game_object_id) != boxes_.end()
@@ -161,7 +163,8 @@ GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
   return game_object_id;
 }
 
-std::vector<std::shared_ptr<MovableObject>> GameDataModel::GetAllMovableObjects() const {
+std::vector<std::shared_ptr<MovableObject>>
+  GameDataModel::GetAllMovableObjects() const {
   std::vector<std::shared_ptr<MovableObject>> result;
   for (const auto& player : players_) {
     result.push_back(player.second);

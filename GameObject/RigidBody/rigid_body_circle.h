@@ -1,10 +1,12 @@
-#ifndef GAMEOBJECT_RIGIDBODY_RIGIDBODY_CIRCLE_H_
-#define GAMEOBJECT_RIGIDBODY_RIGIDBODY_CIRCLE_H_
+#ifndef GAMEOBJECT_RIGIDBODY_RIGID_BODY_CIRCLE_H_
+#define GAMEOBJECT_RIGIDBODY_RIGID_BODY_CIRCLE_H_
+
+#include <memory>
 
 #include <QPointF>
 
 #include "GameObject/RigidBody/rigid_body_circle.h"
-#include "intersect_constants.h"
+#include "GameObject/RigidBody/intersect_constants.h"
 #include "Painter/painter.h"
 
 class RigidBodyCircle {
@@ -17,4 +19,4 @@ class RigidBodyCircle {
   float radius_;
 };
 
-#endif  // GAMEOBJECT_RIGIDBODY_RIGIDBODY_CIRCLE_H_
+#endif  // GAMEOBJECT_RIGIDBODY_RIGID_BODY_CIRCLE_H_

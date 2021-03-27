@@ -3,8 +3,9 @@
 
 #include <cmath>
 #include <vector>
+#include <memory>
+#include <algorithm>
 
-#include <QDebug>
 #include <QVector2D>
 
 #include "Math/math.h"
@@ -48,6 +49,6 @@ namespace IntersectChecker {
   }
 
   bool IsSimilarVectors(QVector2D first, QVector2D second);
-};
+}  // namespace IntersectChecker
 
 #endif  // GAMEOBJECT_RIGIDBODY_INTERSECT_CHECKER_H_

@@ -11,8 +11,7 @@ void Tree::OnTick(int) {}
 
 void Tree::DrawRelatively(Painter* painter) {
   QBrush brush(Qt::green);
-  brush.setStyle( Qt::BrushStyle::CrossPattern);
+  brush.setStyle(Qt::BrushStyle::CrossPattern);
   painter->setBrush(brush);
   painter->DrawEllipse(QPointF(), GetRadius(), GetRadius());
 }
-

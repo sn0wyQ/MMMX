@@ -2,9 +2,9 @@
 
 Box::Box(GameObjectId game_object_id, float x, float y, float rotation,
          float width, float height)
- : RectangularStaticObject(
-     game_object_id, width, height,
-     std::make_shared<RigidBodyRectangle>(width, height)) {
+         : RectangularStaticObject(
+             game_object_id, width, height,
+             std::make_shared<RigidBodyRectangle>(width, height)) {
   this->SetX(x);
   this->SetY(y);
   this->SetRotation(rotation);

@@ -1,6 +1,9 @@
 #ifndef GAMEOBJECT_RECTANGULARSTATICOBJECT_RECTANGULAR_STATIC_OBJECT_H_
 #define GAMEOBJECT_RECTANGULARSTATICOBJECT_RECTANGULAR_STATIC_OBJECT_H_
 
+#include <utility>
+#include <memory>
+
 #include "constants.h"
 #include "GameObject/game_object.h"
 #include "GameObject/RigidBody/rigid_body_rectangle.h"

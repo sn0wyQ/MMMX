@@ -1,6 +1,9 @@
 #ifndef GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_
 #define GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_
 
+#include <utility>
+#include <memory>
+
 #include <QVector2D>
 
 #include "GameObject/game_object.h"

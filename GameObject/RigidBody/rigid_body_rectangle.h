@@ -1,5 +1,5 @@
-#ifndef GAMEOBJECT_RIGIDBODY_RIGIDBODY_RECTANGLE_H_
-#define GAMEOBJECT_RIGIDBODY_RIGIDBODY_RECTANGLE_H_
+#ifndef GAMEOBJECT_RIGIDBODY_RIGID_BODY_RECTANGLE_H_
+#define GAMEOBJECT_RIGIDBODY_RIGID_BODY_RECTANGLE_H_
 
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
 #include "Painter/painter.h"
@@ -16,4 +16,4 @@ class RigidBodyRectangle {
   float height_;
 };
 
-#endif  // GAMEOBJECT_RIGIDBODY_RIGIDBODY_RECTANGLE_H_
+#endif  // GAMEOBJECT_RIGIDBODY_RIGID_BODY_RECTANGLE_H_

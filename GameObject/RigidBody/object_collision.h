@@ -1,11 +1,14 @@
 #ifndef GAMEOBJECT_RIGIDBODY_OBJECT_COLLISION_H_
 #define GAMEOBJECT_RIGIDBODY_OBJECT_COLLISION_H_
 
-#include "GameObject/RigidBody/intersect_checker.h"
-#include "GameObject/game_object.h"
+#include <memory>
+#include <vector>
+
 #include "GameObject/MovableObject/movable_object.h"
+#include "GameObject/RigidBody/intersect_checker.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
+#include "GameObject/game_object.h"
 
 namespace ObjectCollision {
 
@@ -36,7 +39,6 @@ namespace ObjectCollision {
 
       // Если мы будем в объекте в будующем...
       if (!intersect_points_in_future.empty()) {
-
         // То высчитываем расстояние, чтобы мы не пересекались с объектом
         // O(log -log_10 kEps)
         QVector2D delta_to_set

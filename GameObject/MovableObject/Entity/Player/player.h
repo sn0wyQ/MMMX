@@ -2,6 +2,7 @@
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_
 
 #include <vector>
+#include <memory>
 
 #include <QVector2D>
 

@@ -1,5 +1,5 @@
-#ifndef GAMEOBJECT_TREE_H_
-#define GAMEOBJECT_TREE_H_
+#ifndef GAMEOBJECT_ROUNDSTATICOBJECT_TREE_H_
+#define GAMEOBJECT_ROUNDSTATICOBJECT_TREE_H_
 
 #include "constants.h"
 #include "GameObject/game_object.h"
@@ -14,4 +14,4 @@ class Tree : public RoundStaticObject {
   void DrawRelatively(Painter* painter) override;
 };
 
-#endif  // GAMEOBJECT_TREE_H_
+#endif  // GAMEOBJECT_ROUNDSTATICOBJECT_TREE_H_
