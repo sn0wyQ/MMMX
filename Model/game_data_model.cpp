@@ -160,3 +160,29 @@ GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
   }
   return game_object_id;
 }
+
+std::vector<std::shared_ptr<MovableObject>> GameDataModel::GetAllMovableObjects() const {
+  std::vector<std::shared_ptr<MovableObject>> result;
+  for (const auto& player : players_) {
+    result.push_back(player.second);
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<RoundStaticObject>>
+  GameDataModel::GetAllRoundStaticObjects() const {
+  std::vector<std::shared_ptr<RoundStaticObject>> result;
+  for (const auto& tree : trees_) {
+    result.push_back(tree.second);
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<RectangularStaticObject>>
+  GameDataModel::GetAllRectangularStaticObjects() const {
+  std::vector<std::shared_ptr<RectangularStaticObject>> result;
+  for (const auto& box : boxes_) {
+    result.push_back(box.second);
+  }
+  return result;
+}

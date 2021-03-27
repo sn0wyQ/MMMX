@@ -13,6 +13,7 @@ RoomController::RoomController(RoomId id, RoomSettings room_settings)
   this->AddTree(13.f, 6.f, 2.5f);
   this->AddTree(10.f, 8.5f, 3.f);
   this->AddTree(10.f, 15.f, 1.f);
+  this->AddTree(30.f, 30.f, 1.f);
 }
 
 void RoomController::SendEvent(const Event& event) {
@@ -162,14 +163,14 @@ void RoomController::ShareObjectsOnMap(GameObjectId player_id) {
   for (const auto& box : model_.GetBoxes()) {
     this->AddEventToSend(
         Event(EventType::kGameObjectAppeared, player_id, box->GetId(),
-              static_cast<int>(GameObjectType::kBox),
+              static_cast<int>(GameObjectTypeForEvents::kBox),
               box->GetX(), box->GetY(), box->GetRotation(),
               box->GetWidth(), box->GetHeight()));
   }
   for (const auto& tree : model_.GetTrees()) {
     this->AddEventToSend(
         Event(EventType::kGameObjectAppeared, player_id, tree->GetId(),
-              static_cast<int>(GameObjectType::kTree),
+              static_cast<int>(GameObjectTypeForEvents::kTree),
               tree->GetX(), tree->GetY(), tree->GetRadius()));
   }
 }

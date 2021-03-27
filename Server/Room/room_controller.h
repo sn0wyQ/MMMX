@@ -11,7 +11,7 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
-#include "GameObject/box.h"
+#include "GameObject/RectangularStaticObject/box.h"
 #include "Model/game_data_model.h"
 #include "Server/Room/room_settings.h"
 #include "constants.h"

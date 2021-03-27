@@ -9,8 +9,8 @@
 #include <QDebug>
 
 #include "GameObject/MovableObject/Entity/Player/player.h"
-#include "GameObject/box.h"
-#include "GameObject/tree.h"
+#include "GameObject/RectangularStaticObject/box.h"
+#include "GameObject/RoundStaticObject/tree.h"
 #include "constants.h"
 
 class GameDataModel {
@@ -28,6 +28,11 @@ class GameDataModel {
   std::shared_ptr<Player> GetLocalPlayer() const;
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
   std::vector<std::shared_ptr<GameObject>> GetAllGameObjects() const;
+  std::vector<std::shared_ptr<MovableObject>> GetAllMovableObjects() const;
+  std::vector<std::shared_ptr<RoundStaticObject>>
+    GetAllRoundStaticObjects() const;
+  std::vector<std::shared_ptr<RectangularStaticObject>>
+    GetAllRectangularStaticObjects() const;
   std::vector<std::shared_ptr<Box>> GetBoxes() const;
   std::vector<std::shared_ptr<Tree>> GetTrees() const;
   int GetPlayersCount() const;

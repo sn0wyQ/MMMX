@@ -5,21 +5,15 @@
 
 #include "constants.h"
 #include "GameObject/game_object.h"
+#include "GameObject/RectangularStaticObject/rectangular_static_object.h"
 
-class Box : public GameObject {
+class Box : public RectangularStaticObject {
  public:
   Box(GameObjectId game_object_id,
       float x, float y, float rotation, float width, float height);
 
   void OnTick(int) override;
   void DrawRelatively(Painter* painter) override;
-
-  float GetWidth() const;
-  float GetHeight() const;
-
- private:
-  float width_;
-  float height_;
 };
 
 #endif  // GAMEOBJECT_BOX_H_

@@ -7,9 +7,9 @@
 
 class MovableObject : public GameObject {
  public:
-  MovableObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body);
+  MovableObject(GameObjectId id, std::shared_ptr<RigidBodyCircle> rigid_body);
 
-  void OnTick(int time_from_previous_tick) override = 0;
+  void OnTick(int time_from_previous_tick) override;
 
   QVector2D GetVelocity() const;
   void SetVelocity(const QVector2D& velocity);
@@ -19,8 +19,12 @@ class MovableObject : public GameObject {
   void ApplyVelocity(int time_from_previous_tick);
 
   float GetCurrentSpeed() const;
+
+  std::shared_ptr<RigidBodyCircle> GetRigidBody() const;
+
  private:
   QVector2D velocity_{};
+  std::shared_ptr<RigidBodyCircle> rigid_body_;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_

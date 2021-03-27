@@ -1,18 +1,16 @@
 #ifndef GAMEOBJECT_RIGIDBODY_RIGIDBODY_RECTANGLE_H_
 #define GAMEOBJECT_RIGIDBODY_RIGIDBODY_RECTANGLE_H_
 
-#include "GameObject/RigidBody/rigid_body.h"
+#include "GameObject/RigidBody/rigid_body_rectangle.h"
 #include "Painter/painter.h"
 
-class RigidBodyRectangle : public RigidBody {
+class RigidBodyRectangle {
  public:
   RigidBodyRectangle(float width, float height);
-  void Draw(Painter* painter) override;
-  RigidBodyType GetRigidBodyType() const override;
+  void Draw(Painter* painter) const;
 
-  int GetWidth() const;
-  int GetHeight() const;
-  std::shared_ptr<RigidBody> External() const override;
+  float GetWidth() const;
+  float GetHeight() const;
 
  private:
   float width_;

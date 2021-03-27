@@ -88,8 +88,18 @@ void ClientController::CollidePlayerWithGameObjects(
     int time_from_previous_tick) {
   auto local_player = model_->GetLocalPlayer();
   QVector2D key_force = GetKeyForce();
+  if (key_force.isNull()) {
+    return;
+  }
+  local_player->SetVelocity(key_force);
   ObjectCollision::DoSolidCollisionWithObjects(
-      local_player, model_->GetAllGameObjects(),
+      local_player, model_->GetAllMovableObjects(),
+      key_force, time_from_previous_tick);
+  ObjectCollision::DoSolidCollisionWithObjects(
+      local_player, model_->GetAllRectangularStaticObjects(),
+      key_force, time_from_previous_tick);
+  ObjectCollision::DoSolidCollisionWithObjects(
+      local_player, model_->GetAllRoundStaticObjects(),
       key_force, time_from_previous_tick);
 }
 
@@ -191,9 +201,9 @@ void ClientController::GameObjectAppearedEvent(const Event& event) {
   }
   auto game_object_id = event.GetArg<GameObjectId>(1);
   auto game_object_type
-      = static_cast<GameObjectType>(event.GetArg<int>(2));
+      = static_cast<GameObjectTypeForEvents>(event.GetArg<int>(2));
   switch (game_object_type) {
-    case GameObjectType::kBox:
+    case GameObjectTypeForEvents::kBox:
       model_->AddBox(game_object_id,
                          event.GetArg<float>(3),
                          event.GetArg<float>(4),
@@ -201,7 +211,7 @@ void ClientController::GameObjectAppearedEvent(const Event& event) {
                          event.GetArg<float>(6),
                           event.GetArg<float>(7));
       break;
-    case GameObjectType::kTree:
+    case GameObjectTypeForEvents::kTree:
       model_->AddTree(game_object_id,
                      event.GetArg<float>(3),
                      event.GetArg<float>(4),

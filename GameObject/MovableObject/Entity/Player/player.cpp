@@ -13,10 +13,6 @@ Player::Player(GameObjectId player_id,
   SetRotation(rotation);
 }
 
-void Player::OnTick(int time_from_previous_tick) {
-  ApplyVelocity(time_from_previous_tick);
-}
-
 void Player::DrawRelatively(Painter* painter) {
   // Body [Temporary]
   painter->DrawEllipse(QPointF(), 1.f, 1.f);

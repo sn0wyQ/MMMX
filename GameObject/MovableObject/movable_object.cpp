@@ -1,8 +1,8 @@
 #include "movable_object.h"
 
 MovableObject::MovableObject(GameObjectId id,
-                             std::shared_ptr<RigidBody> rigid_body)
-    : GameObject(id, std::move(rigid_body)) {}
+                             std::shared_ptr<RigidBodyCircle> rigid_body)
+    : GameObject(id), rigid_body_(std::move(rigid_body)) {}
 
 QVector2D MovableObject::GetVelocity() const {
   return velocity_;
@@ -36,4 +36,12 @@ void MovableObject::ApplyVelocity(int time_from_previous_tick) {
 float MovableObject::GetCurrentSpeed() const {
   // Temporary code
   return Constants::kDefaultMovableObjectSpeed;
+}
+
+std::shared_ptr<RigidBodyCircle> MovableObject::GetRigidBody() const {
+  return rigid_body_;
+}
+
+void MovableObject::OnTick(int time_from_previous_tick) {
+  ApplyVelocity(time_from_previous_tick);
 }
