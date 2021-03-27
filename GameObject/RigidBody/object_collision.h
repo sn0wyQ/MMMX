@@ -38,6 +38,7 @@ namespace ObjectCollision {
       if (!intersect_points_in_future.empty()) {
 
         // То высчитываем расстояние, чтобы мы не пересекались с объектом
+        // O(log -log_10 kEps)
         QVector2D delta_to_set
             = IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
                 main->GetRigidBody(), object->GetRigidBody(),
