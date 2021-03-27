@@ -73,8 +73,8 @@ set(SOURCES
         GameObject/RigidBody/rigid_body_rectangle.cpp
         GameObject/RigidBody/rigid_body_circle.cpp
         GameObject/RigidBody/intersect_checker.cpp
-        GameObject/RigidBody/object_collision.cpp
         GameObject/RigidBody/intersect_constants.h
+        GameObject/RigidBody/object_collision.h
         GameObject/RectangularStaticObject/box.cpp
         GameObject/RoundStaticObject/tree.cpp
         Math/math.cpp

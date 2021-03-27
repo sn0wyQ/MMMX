@@ -33,18 +33,21 @@ namespace IntersectChecker {
       const std::shared_ptr<RigidBodyCircle>& first,
       const std::shared_ptr<T>& second,
       QVector2D offset, float rotation, QVector2D delta_intersect) {
-    float l = 0;
-    float r = 1;
-    while (r - l > kEps) {
-      float m = (l + r) / 2;
-      if (!GetIntersectPoints(first, second,
-                              offset - delta_intersect * m, rotation).empty()) {
-        r = m - kEps;
-      } else {
-        l = m;
-      }
+    std::vector<QPointF> points
+      = GetIntersectPoints(first, second, offset - delta_intersect, rotation);
+    QPointF middle_point;
+    if (points.empty()) {
+      return delta_intersect;
+    } else if(points.size() == 1) {
+      middle_point = points[0];
+    } else {
+      middle_point = (points[0] + points[1]) / 2.f;
     }
-    return delta_intersect * l;
+
+    auto length = std::max(
+        0.f, static_cast<float>(middle_point.x() * middle_point.x()
+        + middle_point.y() * middle_point.y()) - first->GetRadius());
+    return delta_intersect * length;
   }
 
   bool IsSimilarVectors(QVector2D first, QVector2D second);

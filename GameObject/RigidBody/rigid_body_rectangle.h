@@ -7,7 +7,6 @@
 class RigidBodyRectangle {
  public:
   RigidBodyRectangle(float width, float height);
-  void Draw(Painter* painter) const;
 
   float GetWidth() const;
   float GetHeight() const;

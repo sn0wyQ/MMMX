@@ -10,7 +10,6 @@
 class RigidBodyCircle {
  public:
   explicit RigidBodyCircle(float radius);
-  void Draw(Painter* painter) const;
   float GetRadius() const;
   std::shared_ptr<RigidBodyCircle> External() const;
 

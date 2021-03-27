@@ -3,13 +3,6 @@
 RigidBodyCircle::RigidBodyCircle(float radius)
   : radius_(radius) {}
 
-void RigidBodyCircle::Draw(Painter* painter) const {
-  painter->save();
-  painter->setPen(Qt::red);
-  painter->DrawEllipse(QPointF(), radius_, radius_);
-  painter->restore();
-}
-
 float RigidBodyCircle::GetRadius() const {
   return radius_;
 }
