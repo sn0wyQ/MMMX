@@ -1,7 +1,5 @@
 #include "intersect_checker.h"
 
-#include <cmath>
-
 std::vector<QPointF> IntersectChecker::GetIntersectPointsBodies(
     const std::shared_ptr<RigidBody>& first,
     const std::shared_ptr<RigidBody>& second,
@@ -28,23 +26,9 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
   float r2 = circle2->GetRadius();
   float a = -2 * offset.x();
   float b = -2 * offset.y();
-  float c = offset.x() * offset.x() + offset.y() * offset.y() + r1 * r1 - r2 * r2;
-
-  float x0 = -a * c / (a * a + b * b);
-  float y0 = -b * c / (a * a + b * b);
-  float formula = c * c - r1 * r1 * (a * a + b * b);
-  std::vector<QPointF> result;
-  if (std::abs(formula) < kEps) {
-    result.emplace_back(x0, y0);
-  } else if (formula <= kEps) {
-    float d = r1 * r1 - c * c / (a * a + b * b);
-    float mult = std::sqrt(d / (a * a + b * b));
-    QPointF first_intersect(x0 + b * mult, y0 - a * mult);
-    QPointF second_intersect(x0 - b * mult, y0 + a * mult);
-    result.push_back(first_intersect);
-    result.push_back(second_intersect);
-  }
-  return result;
+  float c = offset.x() * offset.x() + offset.y() * offset.y()
+      + r1 * r1 - r2 * r2;
+  return GetLineWithCircleIntersectPoints(a, b, c, r1);
 }
 
 std::vector<QPointF> IntersectChecker::GetIntersectPoints(
@@ -61,7 +45,7 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
                            offset.y() + rectangle->GetHeight() / 2.);
   points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
                            offset.y() + rectangle->GetHeight() / 2.);
-  float rotation_rad = rotation / 180.f * static_cast<float>(M_PI);
+  float rotation_rad = Math::DegreesToRadians(rotation);
   for (auto& point : points) {
     float x = point.x();
     float y = point.y();
@@ -80,28 +64,36 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
   for (int i = 0; i < 4; i++) {
     QPointF first = points[i];
     QPointF second = points[(i + 1) % 4];
-    float a = second.y() - first.y();
-    float b = first.x() - second.x();
-    float c = first.y() * second.x() - first.x() * second.y();
-    float x0 = -a * c / (a * a + b * b);
-    float y0 = -b * c / (a * a + b * b);
-    float formula = c * c - r * r * (a * a + b * b);
-    if (std::abs(formula) < kEps) {
-      if (IsPointInSegment(first, second, QPointF(x0, y0))) {
-        result.emplace_back(x0, y0);
-      }
-    } else if (formula <= kEps) {
-      float d = r * r - c * c / (a * a + b * b);
-      float mult = std::sqrt(d / (a * a + b * b));
-      QPointF first_intersect(x0 + b * mult, y0 - a * mult);
-      QPointF second_intersect(x0 - b * mult, y0 + a * mult);
-      if (IsPointInSegment(first, second, first_intersect)) {
-        result.push_back(first_intersect);
-      }
-      if (IsPointInSegment(first, second, second_intersect)) {
-        result.push_back(second_intersect);
+    auto a = static_cast<float>(second.y() - first.y());
+    auto b = static_cast<float>(first.x() - second.x());
+    auto c
+      = static_cast<float>(first.y() * second.x() - first.x() * second.y());
+    std::vector<QPointF> points_on_line
+      = GetLineWithCircleIntersectPoints(a, b, c, r);
+    for (const auto& point : points_on_line) {
+      if (IsPointInSegment(first, second, point)) {
+        result.push_back(point);
       }
     }
+  }
+  return result;
+}
+
+std::vector<QPointF> IntersectChecker::GetLineWithCircleIntersectPoints(
+    float a, float b, float c, float r) {
+  std::vector<QPointF> result;
+  float x0 = -a * c / (a * a + b * b);
+  float y0 = -b * c / (a * a + b * b);
+  float formula = c * c - r * r * (a * a + b * b);
+  if (std::abs(formula) < kEps) {
+    result.emplace_back(x0, y0);
+  } else if (formula <= kEps) {
+    float d = r * r - c * c / (a * a + b * b);
+    float mult = std::sqrt(d / (a * a + b * b));
+    QPointF first_intersect(x0 + b * mult, y0 - a * mult);
+    result.push_back(first_intersect);
+    QPointF second_intersect(x0 - b * mult, y0 + a * mult);
+    result.push_back(second_intersect);
   }
   return result;
 }
@@ -133,25 +125,6 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
       r = m - kEps;
     } else {
       l = m;
-    }
-  }
-  return delta_intersect * l;
-}
-
-QVector2D IntersectChecker::CalculateDistanceToObjectMayIntersectBodies(
-    const std::shared_ptr<RigidBody>& first,
-    const std::shared_ptr<RigidBody>& second,
-    QVector2D offset, float rotation,
-    QVector2D delta_intersect) {
-  float l = 0;
-  float r = 1;
-  while (r - l > kEps) {
-    float m = (l + r) / 2;
-    if (GetIntersectPointsBodies(first, second,
-                           offset - delta_intersect * m, rotation).size() < 2u) {
-      l = m + kEps;
-    } else {
-      r = m;
     }
   }
   return delta_intersect * l;

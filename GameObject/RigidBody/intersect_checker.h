@@ -7,6 +7,7 @@
 #include <QDebug>
 #include <QVector3D>
 
+#include "Math/math.h"
 #include "GameObject/RigidBody/intersect_constants.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
@@ -16,8 +17,6 @@ namespace IntersectChecker {
       const std::shared_ptr<RigidBody>& first,
       const std::shared_ptr<RigidBody>& second,
       QVector2D offset, float rotation);
-
-  bool IsPointInSegment(QPointF first, QPointF second, QPointF point);
 
   std::vector<QPointF> GetIntersectPoints(
       const std::shared_ptr<RigidBodyCircle>& circle,
@@ -29,15 +28,12 @@ namespace IntersectChecker {
       const std::shared_ptr<RigidBodyCircle>& circle2,
       QVector2D offset, float rotation);
 
-  // Эта функция дихает вектор изменения позиции, чтобы за счет него изменить
-  // вектор velocity. Это позволит нам в случае столкновения соприкасать
-  // челиков сугобо к стенке, а не оставлять некоторое расстояние
-  QVector2D CalculateDistanceToObjectNotToIntersectBodies(
-      const std::shared_ptr<RigidBody>& first,
-      const std::shared_ptr<RigidBody>& second,
-      QVector2D offset, float rotation, QVector2D delta_intersect);
+  std::vector<QPointF> GetLineWithCircleIntersectPoints(
+      float a, float b, float c, float r);
 
-  QVector2D CalculateDistanceToObjectMayIntersectBodies(
+  bool IsPointInSegment(QPointF first, QPointF second, QPointF point);
+
+  QVector2D CalculateDistanceToObjectNotToIntersectBodies(
       const std::shared_ptr<RigidBody>& first,
       const std::shared_ptr<RigidBody>& second,
       QVector2D offset, float rotation, QVector2D delta_intersect);

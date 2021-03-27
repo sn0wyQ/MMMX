@@ -17,7 +17,7 @@
 #include "Client/abstract_client_view.h"
 #include "Controller/base_controller.h"
 #include "Converter/converter.h"
-#include "GameObject/RigidBody/intersect_checker.h"
+#include "GameObject/RigidBody/object_collision.h"
 #include "Math/math.h"
 #include "Model/game_data_model.h"
 
