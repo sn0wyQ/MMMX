@@ -16,7 +16,7 @@ namespace ObjectCollision {
   void DoSolidCollisionWithObjects(
       const std::shared_ptr<MovableObject>& main,
       const std::vector<std::shared_ptr<T>>& objects,
-    QVector2D force, int time_from_previous_tick) {
+    QVector2D force, int delta_time) {
 
     // Первая фаза (прижимная): если в след тик будем в объекте,
     // то делаем такую скорость, чтобы мы в след тик были прижатыми
@@ -34,7 +34,7 @@ namespace ObjectCollision {
           = IntersectChecker::GetIntersectPoints(
               main->GetRigidBody(), object->GetRigidBody(),
               offset
-                  - main->GetAppliedDeltaPosition(time_from_previous_tick),
+                  - main->GetAppliedDeltaPosition(delta_time),
               rotation);
 
       // Если мы будем в объекте в будующем...
@@ -45,10 +45,10 @@ namespace ObjectCollision {
             = IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
                 main->GetRigidBody(), object->GetRigidBody(),
                 offset, rotation,
-                main->GetAppliedDeltaPosition(time_from_previous_tick));
+                main->GetAppliedDeltaPosition(delta_time));
         // С учетом текущей скорости и тика переводим расстояние в скорость
         QVector2D velocity_to_set = main->GetVelocityByDeltaPosition(
-            delta_to_set, time_from_previous_tick);
+            delta_to_set, delta_time);
 
         // Обновляем скорость
         main->SetVelocity(velocity_to_set);

@@ -22,12 +22,12 @@ class BaseController : public QObject {
   virtual QString GetControllerName() const = 0;
 
   // Every Tick() we successively do following:
-  // 1) Call OnTick(int time_from_previous_tick)
+  // 1) Call OnTick(int delta_time)
   // 2) Call HandleEvent() for every Event from events_to_handle_
   // 3) Call SendEvent() for every Event from events_to_send_
   // 4) Call ResetTimeFromPreviousTick()
   void Tick();
-  virtual void OnTick(int time_from_previous_tick) = 0;
+  virtual void OnTick(int delta_time) = 0;
 
   void HandleEvent(const Event& event);
   virtual void SendEvent(const Event& event) = 0;

@@ -65,7 +65,7 @@ class ClientController : public BaseController {
   QString GetControllerName() const override;
 
   void SendEvent(const Event& event) override;
-  void OnTick(int time_from_previous_tick) override;
+  void OnTick(int delta_time) override;
 
   std::shared_ptr<GameDataModel> GetModel();
   int GetServerVar() const;
@@ -75,7 +75,7 @@ class ClientController : public BaseController {
 
   void SetView(std::shared_ptr<AbstractClientView> view);
 
-  void CollidePlayerWithGameObjects(int time_from_previous_tick);
+  void CollidePlayerWithGameObjects(int delta_time);
 
   // -------------------- CONTROLS --------------------
 

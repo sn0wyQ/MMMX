@@ -12,14 +12,14 @@ class MovableObject : public GameObject {
  public:
   MovableObject(GameObjectId id, std::shared_ptr<RigidBodyCircle> rigid_body);
 
-  void OnTick(int time_from_previous_tick) override;
+  void OnTick(int delta_time) override;
 
   QVector2D GetVelocity() const;
   void SetVelocity(const QVector2D& velocity);
-  QVector2D GetAppliedDeltaPosition(int time_from_previous_tick) const;
+  QVector2D GetAppliedDeltaPosition(int delta_time) const;
   QVector2D GetVelocityByDeltaPosition(QVector2D position,
-                                       int time_from_previous_tick) const;
-  void ApplyVelocity(int time_from_previous_tick);
+                                       int delta_time) const;
+  void ApplyVelocity(int delta_time);
 
   float GetCurrentSpeed() const;
 

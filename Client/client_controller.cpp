@@ -32,8 +32,6 @@ void ClientController::OnConnected() {
   connect(&web_socket_, &QWebSocket::pong, this,
           &ClientController::UpdatePing);
 
-  view_->Update();
-
   // TODO(Everyone): Send nickname to server after connection
 
   qInfo().noquote() << "[CLIENT] Connected to" << url_;
@@ -49,12 +47,10 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
 
 void ClientController::AddNewPlayerEvent(const Event& event) {
   model_->AddPlayer(event.GetArg<GameObjectId>(1));
-  view_->Update();
 }
 
 void ClientController::EndGameEvent(const Event& event) {
   game_state_ = GameState::kFinished;
-  view_->Update();
 }
 
 void ClientController::SetClientsPlayerIdEvent(const Event& event) {
@@ -70,12 +66,10 @@ void ClientController::CreateAllPlayersDataEvent(const Event& event) {
                      event.GetArg<float>(i + 2),
                      event.GetArg<float>(i + 3));
   }
-  view_->Update();
 }
 
 void ClientController::StartGameEvent(const Event& event) {
   game_state_ = GameState::kGameInProgress;
-  view_->Update();
   qInfo().noquote().nospace() << "[CLIENT] Started game";
 }
 
@@ -85,7 +79,7 @@ void ClientController::SendEvent(const Event& event) {
 }
 
 void ClientController::CollidePlayerWithGameObjects(
-    int time_from_previous_tick) {
+    int delta_time) {
   auto local_player = model_->GetLocalPlayer();
   QVector2D key_force = GetKeyForce();
   if (key_force.isNull()) {
@@ -94,39 +88,36 @@ void ClientController::CollidePlayerWithGameObjects(
   local_player->SetVelocity(key_force);
   ObjectCollision::DoSolidCollisionWithObjects(
       local_player, model_->GetAllMovableObjects(),
-      key_force, time_from_previous_tick);
+      key_force, delta_time);
   ObjectCollision::DoSolidCollisionWithObjects(
       local_player, model_->GetAllRectangularStaticObjects(),
-      key_force, time_from_previous_tick);
+      key_force, delta_time);
   ObjectCollision::DoSolidCollisionWithObjects(
       local_player, model_->GetAllRoundStaticObjects(),
-      key_force, time_from_previous_tick);
+      key_force, delta_time);
 }
 
-void ClientController::OnTick(int time_from_previous_tick) {
+void ClientController::OnTick(int delta_time) {
   if (model_->IsLocalPlayerSet()) {
-    CollidePlayerWithGameObjects(time_from_previous_tick);
+    CollidePlayerWithGameObjects(delta_time);
   }
 
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
-    player->OnTick(time_from_previous_tick);
+    player->OnTick(delta_time);
   }
 
-  if (!model_->IsLocalPlayerSet()) {
-    return;
+  if (model_->IsLocalPlayerSet()) {
+    auto local_player = model_->GetLocalPlayer();
+    converter_->UpdateGameCenter(local_player->GetPosition());
+    this->AddEventToHandle(Event(EventType::kSendControls,
+                                 local_player->GetId(),
+                                 local_player->GetX(),
+                                 local_player->GetY(),
+                                 local_player->GetVelocity(),
+                                 local_player->GetRotation()));
+
   }
-
-  auto local_player = model_->GetLocalPlayer();
-
-  converter_->UpdateGameCenter(local_player->GetPosition());
-
-  this->AddEventToHandle(Event(EventType::kSendControls,
-                               local_player->GetId(),
-                               local_player->GetX(),
-                               local_player->GetY(),
-                               local_player->GetVelocity(),
-                               local_player->GetRotation()));
 
   view_->Update();
 }
@@ -134,7 +125,6 @@ void ClientController::OnTick(int time_from_previous_tick) {
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_->DeletePlayer(event.GetArg<GameObjectId>(0));
   game_state_ = GameState::kNotStarted;
-  view_->Update();
 }
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
@@ -167,7 +157,6 @@ void ClientController::UpdateServerVar() {
 
 void ClientController::UpdateServerVarEvent(const Event& event) {
   server_var_ = static_cast<int>(timer_elapsed_server_var_.elapsed()) / 2;
-  view_->Update();
 }
 
 // ------------------- GAME EVENTS -------------------
@@ -191,8 +180,6 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
   player_ptr->SetY(event.GetArg<float>(2));
   player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
   player_ptr->SetRotation(event.GetArg<float>(4));
-
-  view_->Update();
 }
 
 void ClientController::GameObjectAppearedEvent(const Event& event) {
@@ -218,7 +205,6 @@ void ClientController::GameObjectAppearedEvent(const Event& event) {
                      event.GetArg<float>(5));
       break;
   }
-  view_->Update();
 }
 
 // -------------------- CONTROLS --------------------
@@ -262,7 +248,6 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
                                             converter_->PointFromScreenToGame(
                                                 mouse_event->pos()));
     local_player->SetRotation(rotation);
-    view_->Update();
   }
 }
 

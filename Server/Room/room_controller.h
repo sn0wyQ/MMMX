@@ -30,7 +30,7 @@ class RoomController : public BaseController {
   QString GetControllerName() const override;
 
   void SendEvent(const Event& event) override;
-  void OnTick(int time_from_previous_tick) override;
+  void OnTick(int delta_time) override;
 
   void AddClient(ClientId client_id);
   void RemoveClient(ClientId client_id);

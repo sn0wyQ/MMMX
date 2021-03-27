@@ -22,7 +22,7 @@ class ServerController : public BaseController {
   QString GetControllerName() const override;
 
   void SendEvent(const Event& event) override;
-  void OnTick(int time_from_previous_tick) override;
+  void OnTick(int delta_time) override;
 
   public Q_SLOTS:
   void OnByteArrayReceived(const QByteArray& message);

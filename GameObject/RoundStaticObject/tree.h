@@ -1,6 +1,8 @@
 #ifndef GAMEOBJECT_ROUNDSTATICOBJECT_TREE_H_
 #define GAMEOBJECT_ROUNDSTATICOBJECT_TREE_H_
 
+#include <memory>
+
 #include "constants.h"
 #include "GameObject/game_object.h"
 #include "GameObject/RoundStaticObject/round_static_object.h"

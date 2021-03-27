@@ -21,10 +21,10 @@ void RoomController::SendEvent(const Event& event) {
   events_for_server_.push_back(event);
 }
 
-void RoomController::OnTick(int time_from_previous_tick) {
+void RoomController::OnTick(int delta_time) {
   std::vector<std::shared_ptr<Player>> players = model_.GetPlayers();
   for (const auto& player : players) {
-    player->OnTick(time_from_previous_tick);
+    player->OnTick(delta_time);
   }
 }
 

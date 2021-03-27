@@ -22,7 +22,7 @@ class GameObject {
   explicit GameObject(GameObjectId id);
   GameObject(GameObjectId id, QPointF position, float rotation);
 
-  virtual void OnTick(int time_from_previous_tick) = 0;
+  virtual void OnTick(int delta_time) = 0;
   void Draw(Painter* painter);
   virtual void DrawRelatively(Painter* painter) = 0;
 
