@@ -157,7 +157,7 @@ void RoomController::SendEventToClientsListEvent(const Event& event) {
   this->AddEventToSend(event);
 }
 
-bool RoomController::IsPlayerInFOV(GameObjectId sender_player_id,
+bool RoomController::IsPlayerInFov(GameObjectId sender_player_id,
                                    GameObjectId receiver_player_id) {
   auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
   auto sender = model_.GetPlayerByPlayerId(sender_player_id);
@@ -188,14 +188,14 @@ void RoomController::SendControlsEvent(const Event& event) {
   for (auto& [receiver_client_id,
               receiver_player_id] : this->player_ids_) {
     auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
-    if (this->IsPlayerInFOV(sender_player_id, receiver_player_id)) {
-      is_first_in_fov_of_second_.emplace(sender_player_id, receiver_player_id);
+    auto sender_receiver_pair = std::make_pair(sender_player_id,
+                                               receiver_player_id);
+    if (this->IsPlayerInFov(sender_player_id, receiver_player_id)) {
+      is_first_in_fov_of_second_.insert(sender_receiver_pair);
       data_receivers.push_back(receiver_client_id);
-    } else if (is_first_in_fov_of_second_.contains(std::make_pair(sender_player_id,
-                                                                  receiver_player_id))) {
+    } else if (is_first_in_fov_of_second_.contains(sender_receiver_pair)) {
       left_fov_event_receivers.push_back(receiver_client_id);
-      is_first_in_fov_of_second_.erase(std::make_pair(sender_player_id,
-                                                      receiver_player_id));
+      is_first_in_fov_of_second_.erase(sender_receiver_pair);
     }
   }
 

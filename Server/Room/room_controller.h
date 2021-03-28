@@ -49,7 +49,7 @@ class RoomController : public BaseController {
   GameObjectId ClientIdToPlayerId(ClientId client_id) const;
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
-  bool IsPlayerInFOV(GameObjectId sender_player_id,
+  bool IsPlayerInFov(GameObjectId sender_player_id,
                      GameObjectId receiver_player_id);
 
   GameObjectId GetNextUnusedPlayerId() const;

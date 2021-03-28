@@ -41,7 +41,7 @@ void Player::Draw(Painter* painter) {
   painter->restore();
 }
 
-bool Player::IsFilteredByFOV() const {
+bool Player::IsFilteredByFov() const {
   return true;
 }
 

@@ -18,7 +18,7 @@ class Player : public Entity {
 
   void OnTick(int time_from_previous_tick) override;
   void Draw(Painter* painter) override;
-  bool IsFilteredByFOV() const override;
+  bool IsFilteredByFov() const override;
 
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
