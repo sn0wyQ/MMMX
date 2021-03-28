@@ -13,7 +13,7 @@ class Entity : public MovableObject {
   float GetViewAngle() const;
   void SetViewAngle(float view_angle);
 
-  bool IsInFOV() const;
+  bool IsInFov() const;
   void SetIsInFov(bool is_in_fov);
 
  private:
