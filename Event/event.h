@@ -35,7 +35,7 @@ class Event {
   }
   static Event CreateSendToClientEvent(const Event& event);
   // Pushes back arguments (not type) into this event |args_|
-  void PushBackArgsFromEvent(const Event& other);
+  void AddArgsFromEvent(const Event& other);
   std::vector<QVariant> GetArgs() const;
   // Gets sub-vector of |args_| elements in range [first_index, max_index]
   std::vector<QVariant> GetArgsSubVector(int first_index) const;
