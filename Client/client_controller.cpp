@@ -57,9 +57,9 @@ void ClientController::EndGameEvent(const Event& event) {
 }
 
 void ClientController::SetClientsPlayerIdEvent(const Event& event) {
-  model_->SetLocalPlayerId(event.GetArg<GameObjectId>(1));
+  model_->SetLocalPlayerId(event.GetArg<GameObjectId>(0));
   qInfo().noquote() << "[CLIENT] Set player_id to"
-                    << event.GetArg<GameObjectId>(1);
+                    << event.GetArg<GameObjectId>(0);
 }
 
 void ClientController::CreateAllPlayersDataEvent(const Event& event) {

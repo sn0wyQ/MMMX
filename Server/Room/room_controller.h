@@ -28,6 +28,12 @@ class RoomController : public BaseController {
 
   QString GetControllerName() const override;
 
+  void AddEventToSend() = delete;
+  void AddEventToSendToSingleClient(const Event& event, ClientId client_id);
+  void AddEventToSendToClientList(const Event& event,
+                                  const std::vector<ClientId>& client_ids);
+  void AddEventToSendToAllClients(const Event& event);
+
   void SendEvent(const Event& event) override;
   void OnTick(int time_from_previous_tick) override;
 
@@ -64,7 +70,6 @@ class RoomController : public BaseController {
   void AddNewPlayerEvent(const Event& event) override;
   void CreateAllPlayersDataEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
-  void UpdateVarsEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
