@@ -12,8 +12,8 @@ Player::Player(GameObjectId player_id,
   SetViewAngle(view_angle);
 }
 
-void Player::OnTick(int time_from_previous_tick) {
-  ApplyVelocity(time_from_previous_tick);
+void Player::OnTick(int delta_time) {
+  ApplyVelocity(delta_time);
 }
 
 void Player::Draw(Painter* painter) {

@@ -34,10 +34,15 @@ class RoomController : public BaseController {
                                   const std::vector<ClientId>& client_ids);
   void AddEventToSendToAllClients(const Event& event);
 
-  void SendEvent(const Event& event) override;
-  void OnTick(int time_from_previous_tick) override;
+  void AddEventToSendToSinglePlayer(const Event& event, GameObjectId player_id);
+  void AddEventToSendToPlayerList(const Event& event,
+                                  const std::vector<GameObjectId>& player_ids);
+  void AddEventToSendToAllPlayers(const Event& event);
 
-  void TickPlayers(int time_from_previous_tick);
+  void SendEvent(const Event& event) override;
+  void OnTick(int delta_time) override;
+
+  void TickPlayers(int delta_time);
 
   void AddClient(ClientId client_id);
   void RemoveClient(ClientId client_id);

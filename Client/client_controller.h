@@ -64,13 +64,13 @@ class ClientController : public BaseController {
   QString GetControllerName() const override;
 
   void SendEvent(const Event& event) override;
-  void OnTick(int time_from_previous_tick) override;
+  void OnTick(int delta_time) override;
 
   void OnTickGameFinished(int) {}
-  void OnTickGameInProgress(int time_from_previous_tick);
-  void OnTickGameNotStarted(int) {}
+  void OnTickGameInProgress(int delta_time);
+  void OnTickGameNotStarted(int delta_time);
 
-  void TickPlayers(int time_from_previous_tick);
+  void TickPlayers(int delta_time);
 
   std::shared_ptr<GameDataModel> GetModel();
   int GetServerVar() const;
@@ -82,7 +82,7 @@ class ClientController : public BaseController {
 
   void SetView(std::shared_ptr<AbstractClientView> view);
 
-  void UpdateLocalPlayer(int time_from_previous_tick);
+  void UpdateLocalPlayer(int delta_time);
 
   // -------------------- CONTROLS --------------------
 
@@ -93,6 +93,8 @@ class ClientController : public BaseController {
   void KeyPressEvent(QKeyEvent* key_event);
   void KeyReleaseEvent(QKeyEvent* key_event);
   void MouseMoveEvent(QMouseEvent* mouse_event);
+
+  // --------------------------------------------------
 
   public Q_SLOTS:
   void OnConnected();
@@ -115,7 +117,7 @@ class ClientController : public BaseController {
   void SendControlsEvent(const Event& event) override;
   void UpdatePlayerDataEvent(const Event& event) override;
 
-  GameState game_state_ = GameState::kGameInProgress;
+  GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;
   QWebSocket web_socket_;
   std::shared_ptr<GameDataModel> model_;

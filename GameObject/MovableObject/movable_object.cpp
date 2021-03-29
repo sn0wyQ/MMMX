@@ -10,9 +10,9 @@ void MovableObject::SetVelocity(const QVector2D& velocity) {
   velocity_ = velocity;
 }
 
-void MovableObject::ApplyVelocity(int time_from_previous_tick) {
+void MovableObject::ApplyVelocity(int delta_time) {
   QPointF pos = GetPosition();
-  pos += GetVelocity().toPointF() * GetCurrentSpeed() * time_from_previous_tick;
+  pos += GetVelocity().toPointF() * GetCurrentSpeed() * delta_time;
   SetPosition(pos);
 }
 

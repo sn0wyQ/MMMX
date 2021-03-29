@@ -30,19 +30,36 @@ void RoomController::AddEventToSendToAllClients(const Event& event) {
   this->AddEventToSendToClientList(event, this->GetAllClientsIds());
 }
 
+void RoomController::AddEventToSendToSinglePlayer(const Event& event,
+                                                  GameObjectId player_id) {
+  this->AddEventToSendToSingleClient(
+      event, this->PlayerIdToClientId(player_id));
+}
+
+void RoomController::AddEventToSendToPlayerList(
+    const Event& event, const std::vector<GameObjectId>& player_ids) {
+  for (GameObjectId player_id : player_ids) {
+    this->AddEventToSendToSinglePlayer(event, player_id);
+  }
+}
+
+void RoomController::AddEventToSendToAllPlayers(const Event& event) {
+  this->AddEventToSendToPlayerList(event, this->GetAllPlayerIds());
+}
+
 void RoomController::SendEvent(const Event& event) {
   this->BaseController::LogEvent(event);
   events_for_server_.push_back(event);
 }
 
-void RoomController::OnTick(int time_from_previous_tick) {
-  this->TickPlayers(time_from_previous_tick);
+void RoomController::OnTick(int delta_time) {
+  this->TickPlayers(delta_time);
 }
 
-void RoomController::TickPlayers(int time_from_previous_tick) {
+void RoomController::TickPlayers(int delta_time) {
   std::vector<std::shared_ptr<Player>> players = model_.GetPlayers();
   for (const auto& player : players) {
-    player->OnTick(time_from_previous_tick);
+    player->OnTick(delta_time);
   }
 }
 
@@ -172,7 +189,6 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
 }
 
 // ------------------- GAME EVENTS -------------------
-
 void RoomController::SendControlsEvent(const Event& event) {
   if (!model_.IsPlayerIdTaken(event.GetArg<GameObjectId>(0))) {
     return;

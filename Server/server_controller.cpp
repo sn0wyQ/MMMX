@@ -42,7 +42,7 @@ void ServerController::SendEvent(const Event& event) {
   }
 }
 
-void ServerController::OnTick(int time_from_previous_tick) {
+void ServerController::OnTick(int delta_time) {
   std::vector<RoomId> rooms_to_delete;
   for (auto& room_iter : server_model_.GetRooms()) {
     if (!room_iter.second->HasPlayers()
