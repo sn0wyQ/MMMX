@@ -7,8 +7,9 @@ float RigidBodyCircle::GetRadius() const {
   return radius_;
 }
 
-std::shared_ptr<RigidBodyCircle> RigidBodyCircle::External() const {
+std::shared_ptr<RigidBodyCircle> RigidBodyCircle::External(float friction_force)
+  const {
   auto new_circle_ptr = std::make_shared<RigidBodyCircle>(*this);
-  new_circle_ptr->radius_ += IntersectChecker::kFrictionForce;
+  new_circle_ptr->radius_ += friction_force;
   return new_circle_ptr;
 }

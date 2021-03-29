@@ -18,3 +18,7 @@ float RectangularStaticObject::GetWidth() const {
 float RectangularStaticObject::GetHeight() const {
   return height_;
 }
+
+float RectangularStaticObject::GetFrictionForce() const {
+  return IntersectChecker::kFrictionForceRectangularStaticObject;
+}

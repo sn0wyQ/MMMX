@@ -13,3 +13,7 @@ std::shared_ptr<RigidBodyCircle> RoundStaticObject::GetRigidBody() const {
 float RoundStaticObject::GetRadius() const {
   return radius_;
 }
+
+float RoundStaticObject::GetFrictionForce() const {
+  return IntersectChecker::kFrictionForceRoundStaticObject;
+}

@@ -25,6 +25,8 @@ class MovableObject : public GameObject {
 
   std::shared_ptr<RigidBodyCircle> GetRigidBody() const;
 
+  virtual float GetFrictionForce() const;
+
  private:
   QVector2D velocity_{};
   std::shared_ptr<RigidBodyCircle> rigid_body_;

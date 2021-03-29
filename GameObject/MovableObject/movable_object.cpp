@@ -45,3 +45,7 @@ std::shared_ptr<RigidBodyCircle> MovableObject::GetRigidBody() const {
 void MovableObject::OnTick(int delta_time) {
   ApplyVelocity(delta_time);
 }
+
+float MovableObject::GetFrictionForce() const {
+  return IntersectChecker::kFrictionForceMovableObject;
+}

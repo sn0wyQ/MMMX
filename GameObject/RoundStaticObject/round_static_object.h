@@ -6,6 +6,7 @@
 
 #include "constants.h"
 #include "GameObject/game_object.h"
+#include "GameObject/RigidBody/intersect_constants.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
 
 class RoundStaticObject : public GameObject {
@@ -17,6 +18,7 @@ class RoundStaticObject : public GameObject {
   std::shared_ptr<RigidBodyCircle> GetRigidBody() const;
 
   float GetRadius() const;
+  virtual float GetFrictionForce() const;
 
  private:
   float radius_;

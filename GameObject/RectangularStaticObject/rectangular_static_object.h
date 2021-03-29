@@ -19,6 +19,8 @@ class RectangularStaticObject : public GameObject {
   float GetWidth() const;
   float GetHeight() const;
 
+  virtual float GetFrictionForce() const;
+
  private:
   float width_;
   float height_;

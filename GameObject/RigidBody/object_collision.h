@@ -74,7 +74,8 @@ void FindTangents(
     float rotation = object->GetRotation();
     std::vector<QPointF> intersect_points_now
         = IntersectChecker::GetIntersectPoints(
-            main->GetRigidBody()->External(), object->GetRigidBody(),
+            main->GetRigidBody()->External(object->GetFrictionForce()),
+            object->GetRigidBody(),
             offset, rotation);
 
     for (const auto& point : intersect_points_now) {
@@ -146,7 +147,6 @@ void DoSecondPhase(
         common_tangent_vector = force;
       }
       common_tangent_vector.normalize();
-
       QVector2D result = common_tangent_vector * length_result;
       main->SetVelocity(result);
     }
