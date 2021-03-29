@@ -14,8 +14,6 @@ BaseController::BaseController() {
     std::bind(&BaseController::PlayerDisconnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToClient,
     std::bind(&BaseController::SendEventToClientEvent, this, _1));
-  SetFunctionForEventType(EventType::kSendEventToClientsList,
-    std::bind(&BaseController::SendEventToClientsListEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
     std::bind(&BaseController::SendEventToRoomEvent, this, _1));
   SetFunctionForEventType(EventType::kSetClientsPlayerId,

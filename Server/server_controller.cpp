@@ -35,11 +35,6 @@ void ServerController::SendEvent(const Event& event) {
       break;
     }
 
-    case EventType::kSetClientsPlayerId: {
-      this->SendToClient(event.GetArg<ClientId>(0), event);
-      break;
-    }
-
     // If we're here something most likely went wrong
     default:
         qWarning() << "[SERVER] Impossible to send event" << event;
@@ -47,7 +42,7 @@ void ServerController::SendEvent(const Event& event) {
   }
 }
 
-void ServerController::OnTick(int time_from_previous_tick) {
+void ServerController::OnTick(int delta_time) {
   std::vector<RoomId> rooms_to_delete;
   for (auto& room_iter : server_model_.GetRooms()) {
     if (!room_iter.second->HasPlayers()
@@ -55,64 +50,27 @@ void ServerController::OnTick(int time_from_previous_tick) {
       rooms_to_delete.push_back(room_iter.second->GetId());
     }
   }
+
   for (const auto& room_id : rooms_to_delete) {
     server_model_.DeleteRoom(room_id);
   }
-  ProcessEventsFromRooms();
+
+  this->ProcessEventsFromRooms();
 }
 
 void ServerController::ProcessEventsFromRooms() {
   auto rooms = server_model_.GetRooms();
   for (const auto& room : rooms) {
-    ProcessEventsFromRoom(room.second);
+    this->ProcessEventsFromRoom(room.second);
   }
 }
 
 void ServerController::ProcessEventsFromRoom(
     const std::shared_ptr<RoomController>& room_ptr) {
-  for (auto event : room_ptr->ClaimEventsForServer()) {
-    auto receivers = GetReceiversForEvent(event, room_ptr);
-
-    if (event.GetType() == EventType::kSendEventToClientsList) {
-      event = Event(event.GetArg<EventType>(1),
-                    event.GetArgsSubVector(2));
-    }
-
-    event = Event::CreateSendToClientEvent(event);
-
-    for (auto client_id : receivers) {
-      event.SetArg(0, client_id);
-      this->AddEventToHandle(event);
-    }
+  std::vector<Event> events_from_room = room_ptr->ClaimEventsForServer();
+  for (const auto& event : events_from_room) {
+    this->AddEventToHandle(event);
   }
-}
-
-std::vector<ClientId> ServerController::GetReceiversForEvent(
-    const Event& event,
-    const std::shared_ptr<RoomController>& room_ptr) {
-  std::vector<ClientId> receivers;
-  switch (event.GetType()) {
-    case EventType::kSetClientsPlayerId:
-    case EventType::kCreateAllPlayersData:
-    case EventType::kUpdatePlayersFovRadius:
-      receivers.push_back(event.GetArg<ClientId>(0));
-      break;
-
-    case EventType::kSendEventToClientsList: {
-      auto clients_vector = event.GetArg<QList<QVariant>>(0);
-      for (auto& q_variant_client_id : clients_vector) {
-        receivers.push_back(q_variant_client_id.toInt());
-      }
-      break;
-    }
-
-    default:
-      break;
-  }
-  if (receivers.empty()) {
-    receivers = room_ptr->GetAllClientsIds();
-  }
-  return receivers;
 }
 
 void ServerController::OnByteArrayReceived(const QByteArray& message) {
@@ -123,7 +81,7 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
   qDebug().noquote() << "[SERVER] Received" << event
                      << "from Client ID:" << client_id;
 
-  if (event.GetType() == EventType::kSendGetVarsEvent) {
+  if (event.GetType() == EventType::kSendGetVars) {
     this->AddEventToHandle(Event(EventType::kSendEventToClient,
                                  client_id,
                                  static_cast<int>(EventType::kUpdateVars),
@@ -217,10 +175,6 @@ void ServerController::ClientDisconnectedEvent(const Event& event) {
   auto room_ptr = server_model_.GetRoomByClientId(client_id);
   room_ptr->RemoveClient(client_id);
   server_model_.RemoveClient(client_id);
-}
-
-void ServerController::SetClientsPlayerIdEvent(const Event& event) {
-  this->AddEventToSend(event);
 }
 
 void ServerController::SendEventToClientEvent(const Event& event) {

@@ -29,10 +29,21 @@ class RoomController : public BaseController {
 
   QString GetControllerName() const override;
 
-  void SendEvent(const Event& event) override;
-  void OnTick(int time_from_previous_tick) override;
+  void AddEventToSend() = delete;
+  void AddEventToSendToSingleClient(const Event& event, ClientId client_id);
+  void AddEventToSendToClientList(const Event& event,
+                                  const std::vector<ClientId>& client_ids);
+  void AddEventToSendToAllClients(const Event& event);
 
-  void TickPlayers(int time_from_previous_tick);
+  void AddEventToSendToSinglePlayer(const Event& event, GameObjectId player_id);
+  void AddEventToSendToPlayerList(const Event& event,
+                                  const std::vector<GameObjectId>& player_ids);
+  void AddEventToSendToAllPlayers(const Event& event);
+
+  void SendEvent(const Event& event) override;
+  void OnTick(int delta_time) override;
+
+  void TickPlayers(int delta_time);
 
   void AddClient(ClientId client_id);
   void RemoveClient(ClientId client_id);
@@ -67,15 +78,14 @@ class RoomController : public BaseController {
 
   std::vector<Event> events_for_server_;
 
-  void UpdateReceiversByFov(GameObjectId sender_player_id,
-                            QList<QVariant>* data_receivers,
-                            QList<QVariant>* left_fov_event_receivers);
+  void UpdateReceiversByFov(
+      GameObjectId sender_player_id,
+      std::vector<GameObjectId>* data_receivers,
+      std::vector<GameObjectId>* left_fov_event_receivers);
 
   void AddNewPlayerEvent(const Event& event) override;
   void CreateAllPlayersDataEvent(const Event& event) override;
-  void SendEventToClientsListEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
-  void UpdateVarsEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 

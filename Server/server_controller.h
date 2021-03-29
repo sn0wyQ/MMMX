@@ -22,7 +22,7 @@ class ServerController : public BaseController {
   QString GetControllerName() const override;
 
   void SendEvent(const Event& event) override;
-  void OnTick(int time_from_previous_tick) override;
+  void OnTick(int delta_time) override;
 
   public Q_SLOTS:
   void OnByteArrayReceived(const QByteArray& message);
@@ -37,15 +37,10 @@ class ServerController : public BaseController {
   void ProcessEventsFromRooms();
   void ProcessEventsFromRoom(const std::shared_ptr<RoomController>& room_ptr);
 
-  static std::vector<ClientId> GetReceiversForEvent(
-      const Event& event,
-      const std::shared_ptr<RoomController>& room_ptr);
-
   QWebSocketServer web_socket_server_;
   ServerModel server_model_;
 
   void ClientDisconnectedEvent(const Event& event) override;
-  void SetClientsPlayerIdEvent(const Event& event) override;
   void SendEventToClientEvent(const Event& event) override;
   void SendEventToRoomEvent(const Event& event) override;
 };
