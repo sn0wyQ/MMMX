@@ -43,7 +43,7 @@ void RoomController::AddClient(ClientId client_id) {
     this->AddEventToHandle(Event(EventType::kStartGame));
     qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
-  this->AddEventToHandle(Event(EventType::kUpdatePlayersFov,
+  this->AddEventToHandle(Event(EventType::kUpdatePlayersFovRadius,
                                client_id,
                                Constants::kDefaultPlayersFov));
 }
@@ -166,6 +166,25 @@ bool RoomController::IsPlayerInFov(GameObjectId sender_player_id,
       receiver->GetFovRadius() + Constants::kPlayerRadius;
 }
 
+void RoomController::UpdateReceiversByFov(
+    GameObjectId sender_player_id, QList<QVariant>* data_receivers,
+    QList<QVariant>* left_fov_event_receivers) {
+  for (auto& [receiver_client_id,
+    receiver_player_id] : this->player_ids_) {
+    auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
+    auto sender_receiver_pair = std::make_pair(sender_player_id,
+                                               receiver_player_id);
+    if (this->IsPlayerInFov(sender_player_id, receiver_player_id)) {
+      is_first_in_fov_of_second_.insert(sender_receiver_pair);
+      data_receivers->push_back(receiver_client_id);
+    } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
+        != is_first_in_fov_of_second_.end()) {
+      left_fov_event_receivers->push_back(receiver_client_id);
+      is_first_in_fov_of_second_.erase(sender_receiver_pair);
+    }
+  }
+}
+
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
@@ -185,19 +204,8 @@ void RoomController::SendControlsEvent(const Event& event) {
   QList<QVariant> data_receivers;  // client_ids here
   QList<QVariant> left_fov_event_receivers;  // and here
 
-  for (auto& [receiver_client_id,
-              receiver_player_id] : this->player_ids_) {
-    auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
-    auto sender_receiver_pair = std::make_pair(sender_player_id,
-                                               receiver_player_id);
-    if (this->IsPlayerInFov(sender_player_id, receiver_player_id)) {
-      is_first_in_fov_of_second_.insert(sender_receiver_pair);
-      data_receivers.push_back(receiver_client_id);
-    } else if (is_first_in_fov_of_second_.contains(sender_receiver_pair)) {
-      left_fov_event_receivers.push_back(receiver_client_id);
-      is_first_in_fov_of_second_.erase(sender_receiver_pair);
-    }
-  }
+  UpdateReceiversByFov(sender_player_id,
+                       &data_receivers, &left_fov_event_receivers);
 
   if (!data_receivers.empty()) {
     this->AddEventToSend(Event(EventType::kSendEventToClientsList,
@@ -217,7 +225,7 @@ void RoomController::SendControlsEvent(const Event& event) {
   }
 }
 
-void RoomController::UpdatePlayersFovEvent(const Event& event) {
+void RoomController::UpdatePlayersFovRadiusEvent(const Event& event) {
   GameObjectId player_id = this->ClientIdToPlayerId(
       event.GetArg<ClientId>(0));
   model_.GetPlayerByPlayerId(player_id)->SetFovRadius(

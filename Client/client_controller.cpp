@@ -202,7 +202,7 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
   view_->Update();
 }
 
-void ClientController::UpdatePlayersFovEvent(const Event& event) {
+void ClientController::UpdatePlayersFovRadiusEvent(const Event& event) {
   model_->GetLocalPlayer()->SetFovRadius(event.GetArg<float>(1));
   qDebug() << "[CLIENT] Set player FOV to"
            << model_->GetLocalPlayer()->GetFovRadius();

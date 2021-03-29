@@ -88,3 +88,11 @@ float Player::GetFovRadius() const {
 void Player::SetFovRadius(float fov_radius) {
   fov_radius_ = fov_radius;
 }
+
+bool Player::IsInFov() const {
+  return is_in_fov_;
+}
+
+void Player::SetIsInFov(bool is_in_fov) {
+  is_in_fov_ = is_in_fov;
+}

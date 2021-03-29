@@ -82,7 +82,7 @@ enum class EventType {
 
   // [0] - <ClientId> receiver_client_id,
   // [1] - <float> new player's FOV, FOV should ALWAYS be > 0
-  kUpdatePlayersFov,
+  kUpdatePlayersFovRadius,
 
   SIZE
 };

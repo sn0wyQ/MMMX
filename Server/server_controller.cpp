@@ -94,7 +94,7 @@ std::vector<ClientId> ServerController::GetReceiversForEvent(
   switch (event.GetType()) {
     case EventType::kSetClientsPlayerId:
     case EventType::kCreateAllPlayersData:
-    case EventType::kUpdatePlayersFov:
+    case EventType::kUpdatePlayersFovRadius:
       receivers.push_back(event.GetArg<ClientId>(0));
       break;
 

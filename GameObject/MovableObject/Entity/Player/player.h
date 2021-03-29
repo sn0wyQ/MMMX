@@ -28,9 +28,13 @@ class Player : public Entity {
 
   void UpdateVelocity(uint32_t mask);
 
+  bool IsInFov() const;
+  void SetIsInFov(bool is_in_fov);
+
  private:
   float fov_radius_{Constants::kDefaultPlayersFov};
   bool is_local_player_ = false;
+  bool is_in_fov_{true};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_

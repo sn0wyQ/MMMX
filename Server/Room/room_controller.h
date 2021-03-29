@@ -67,6 +67,10 @@ class RoomController : public BaseController {
 
   std::vector<Event> events_for_server_;
 
+  void UpdateReceiversByFov(GameObjectId sender_player_id,
+                            QList<QVariant>* data_receivers,
+                            QList<QVariant>* left_fov_event_receivers);
+
   void AddNewPlayerEvent(const Event& event) override;
   void CreateAllPlayersDataEvent(const Event& event) override;
   void SendEventToClientsListEvent(const Event& event) override;
@@ -76,7 +80,7 @@ class RoomController : public BaseController {
   // ------------------- GAME EVENTS -------------------
 
   void SendControlsEvent(const Event& event) override;
-  void UpdatePlayersFovEvent(const Event& event) override;
+  void UpdatePlayersFovRadiusEvent(const Event& event) override;
   void PlayerLeftFovEvent(const Event& event) override;
 };
 
