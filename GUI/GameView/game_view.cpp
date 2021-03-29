@@ -1,7 +1,5 @@
 #include "game_view.h"
 
-#include <utility>
-
 GameView::GameView(QWidget* parent, std::shared_ptr<GameDataModel> model)
   : QWidget(parent), model_(std::move(model)) {
   converter_ = std::make_shared<Converter>(this);

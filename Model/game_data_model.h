@@ -49,7 +49,6 @@ class GameDataModel {
   GameObjectId AddTree(float x, float y, float radius);
 
   bool IsLocalPlayerSet() const;
-  GameObjectId GetLocalPlayerId() const;
   void SetLocalPlayerId(GameObjectId player_id);
 
  private:

@@ -26,11 +26,10 @@ void ClientController::OnConnected() {
           &ClientController::OnByteArrayReceived);
 
   connect(&timer_for_server_var_, &QTimer::timeout, this,
-          &ClientController::UpdateServerVar);
-  timer_for_server_var_.start(Constants::kTimeToUpdateServerVar);
-  timer_elapsed_server_var_.start();
+          &ClientController::UpdateVarsAndPing);
+  timer_for_server_var_.start(Constants::kTimeToUpdateVarsAndPing);
   connect(&web_socket_, &QWebSocket::pong, this,
-          &ClientController::UpdatePing);
+          &ClientController::SetPing);
 
   // TODO(Everyone): Send nickname to server after connection
 
@@ -50,13 +49,14 @@ void ClientController::AddNewPlayerEvent(const Event& event) {
 }
 
 void ClientController::EndGameEvent(const Event& event) {
-  game_state_ = GameState::kFinished;
+  game_state_ = GameState::kGameFinished;
+  view_->Update();
 }
 
 void ClientController::SetClientsPlayerIdEvent(const Event& event) {
-  model_->SetLocalPlayerId(event.GetArg<GameObjectId>(1));
+  model_->SetLocalPlayerId(event.GetArg<GameObjectId>(0));
   qInfo().noquote() << "[CLIENT] Set player_id to"
-                    << event.GetArg<GameObjectId>(1);
+                    << event.GetArg<GameObjectId>(0);
 }
 
 void ClientController::CreateAllPlayersDataEvent(const Event& event) {
@@ -78,8 +78,40 @@ void ClientController::SendEvent(const Event& event) {
   web_socket_.sendBinaryMessage(event.ToByteArray());
 }
 
+void ClientController::OnTick(int delta_time) {
+  switch (game_state_) {
+    case GameState::kGameFinished:
+      this->OnTickGameFinished(delta_time);
+      break;
+
+    case GameState::kGameInProgress:
+      this->OnTickGameInProgress(delta_time);
+      break;
+
+    case GameState::kGameNotStarted:
+      this->OnTickGameNotStarted(delta_time);
+      break;
+  }
+
+  view_->Update();
+}
+
+void ClientController::OnTickGameNotStarted(int delta_time) {
+  // Temporary
+  this->OnTickGameInProgress(delta_time);
+}
+
+void ClientController::OnTickGameInProgress(int delta_time) {
+  this->CollidePlayerWithGameObjects(delta_time);
+  this->UpdateLocalPlayer(delta_time);
+  this->TickPlayers(delta_time);
+}
+
 void ClientController::CollidePlayerWithGameObjects(
     int delta_time) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
   auto local_player = model_->GetLocalPlayer();
   QVector2D key_force = GetKeyForce();
   if (key_force.isNull()) {
@@ -116,34 +148,34 @@ void ClientController::CollidePlayerWithGameObjects(
       tangents);
 }
 
-void ClientController::OnTick(int delta_time) {
-  if (model_->IsLocalPlayerSet()) {
-    CollidePlayerWithGameObjects(delta_time);
-  }
-
+void ClientController::TickPlayers(int delta_time) {
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
     player->OnTick(delta_time);
   }
+}
 
-  if (model_->IsLocalPlayerSet()) {
-    auto local_player = model_->GetLocalPlayer();
-    converter_->UpdateGameCenter(local_player->GetPosition());
-    this->AddEventToHandle(Event(EventType::kSendControls,
-                                 local_player->GetId(),
-                                 local_player->GetX(),
-                                 local_player->GetY(),
-                                 local_player->GetVelocity(),
-                                 local_player->GetRotation()));
-
+void ClientController::UpdateLocalPlayer(int delta_time) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
   }
 
-  view_->Update();
+  auto local_player = model_->GetLocalPlayer();
+
+  converter_->UpdateGameCenter(local_player->GetPosition());
+
+  this->AddEventToHandle(Event(EventType::kSendControls,
+                               local_player->GetId(),
+                               local_player->GetX(),
+                               local_player->GetY(),
+                               local_player->GetVelocity(),
+                               local_player->GetRotation()));
 }
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_->DeletePlayer(event.GetArg<GameObjectId>(0));
-  game_state_ = GameState::kNotStarted;
+  game_state_ = GameState::kGameNotStarted;
+  view_->Update();
 }
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
@@ -163,67 +195,54 @@ int ClientController::GetServerVar() const {
   return server_var_;
 }
 
-void ClientController::UpdatePing(int elapsed_time) {
+int ClientController::GetRoomVar() const {
+  return room_var_;
+}
+
+int ClientController::GetClientVar() const {
+  return client_var_;
+}
+
+void ClientController::SetPing(int elapsed_time) {
   ping_ = elapsed_time;
 }
 
-void ClientController::UpdateServerVar() {
-  this->AddEventToSend(Event(EventType::kUpdateServerVar,
-                             model_->GetLocalPlayerId()));
-  timer_elapsed_server_var_.restart();
+void ClientController::UpdateVarsAndPing() {
+  this->AddEventToSend(Event(EventType::kSendGetVarsEvent));
   web_socket_.ping();
 }
 
-void ClientController::UpdateServerVarEvent(const Event& event) {
-  server_var_ = static_cast<int>(timer_elapsed_server_var_.elapsed()) / 2;
+void ClientController::UpdateVarsEvent(const Event& event) {
+  server_var_ = event.GetArg<int>(0);
+  room_var_ = event.GetArg<int>(1);
+  client_var_ = this->GetVar();
+  view_->Update();
 }
 
-// ------------------- GAME EVENTS -------------------
+QVector2D ClientController::GetKeyForce() const {
+  bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
+  bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
+  bool is_down_pressed = is_direction_by_keys_.at(Direction::kDown);
+  bool is_left_pressed = is_direction_by_keys_.at(Direction::kLeft);
 
-void ClientController::SendControlsEvent(const Event& event) {
-  this->AddEventToSend(event);
-}
-
-void ClientController::UpdatePlayerDataEvent(const Event& event) {
-  if (!model_->IsLocalPlayerSet()) {
-    return;
+  QVector2D key_force;
+  if ((is_up_pressed ^ is_down_pressed) == 1) {
+    if (is_up_pressed) {
+      key_force.setY(-1.f);
+    } else {
+      key_force.setY(1.f);
+    }
+  }
+  if ((is_right_pressed ^ is_left_pressed) == 1) {
+    if (is_right_pressed) {
+      key_force.setX(1.f);
+    } else {
+      key_force.setX(-1.f);
+    }
   }
 
-  auto player_ptr = model_->GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
-
-  if (player_ptr->IsLocalPlayer()) {
-    return;
-  }
-
-  player_ptr->SetX(event.GetArg<float>(1));
-  player_ptr->SetY(event.GetArg<float>(2));
-  player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
-  player_ptr->SetRotation(event.GetArg<float>(4));
-}
-
-void ClientController::GameObjectAppearedEvent(const Event& event) {
-  if (!model_->IsLocalPlayerSet()) {
-    return;
-  }
-  auto game_object_id = event.GetArg<GameObjectId>(1);
-  auto game_object_type
-      = static_cast<GameObjectTypeForEvents>(event.GetArg<int>(2));
-  switch (game_object_type) {
-    case GameObjectTypeForEvents::kBox:
-      model_->AddBox(game_object_id,
-                         event.GetArg<float>(3),
-                         event.GetArg<float>(4),
-                         event.GetArg<float>(5),
-                         event.GetArg<float>(6),
-                          event.GetArg<float>(7));
-      break;
-    case GameObjectTypeForEvents::kTree:
-      model_->AddTree(game_object_id,
-                     event.GetArg<float>(3),
-                     event.GetArg<float>(4),
-                     event.GetArg<float>(5));
-      break;
-  }
+  key_force.normalize();
+  return key_force;
 }
 
 // -------------------- CONTROLS --------------------
@@ -270,28 +289,53 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   }
 }
 
-QVector2D ClientController::GetKeyForce() const {
-  bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
-  bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
-  bool is_down_pressed = is_direction_by_keys_.at(Direction::kDown);
-  bool is_left_pressed = is_direction_by_keys_.at(Direction::kLeft);
+// ------------------- GAME EVENTS -------------------
 
-  QVector2D key_force;
-  if ((is_up_pressed ^ is_down_pressed) == 1) {
-    if (is_up_pressed) {
-      key_force.setY(-1.f);
-    } else {
-      key_force.setY(1.f);
-    }
+void ClientController::GameObjectAppearedEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
   }
-  if ((is_right_pressed ^ is_left_pressed) == 1) {
-    if (is_right_pressed) {
-      key_force.setX(1.f);
-    } else {
-      key_force.setX(-1.f);
-    }
+  auto game_object_id = event.GetArg<GameObjectId>(0);
+  auto game_object_type
+      = static_cast<GameObjectTypeForEvents>(event.GetArg<int>(1));
+  switch (game_object_type) {
+    case GameObjectTypeForEvents::kBox:
+      model_->AddBox(game_object_id,
+                     event.GetArg<float>(2),
+                     event.GetArg<float>(3),
+                     event.GetArg<float>(4),
+                     event.GetArg<float>(5),
+                     event.GetArg<float>(6));
+      break;
+    case GameObjectTypeForEvents::kTree:
+      model_->AddTree(game_object_id,
+                      event.GetArg<float>(2),
+                      event.GetArg<float>(3),
+                      event.GetArg<float>(4));
+      break;
+  }
+}
+
+void ClientController::SendControlsEvent(const Event& event) {
+  this->AddEventToSend(event);
+}
+
+void ClientController::UpdatePlayerDataEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
   }
 
-  key_force.normalize();
-  return key_force;
+  auto player_ptr = model_->GetPlayerByPlayerId(
+      event.GetArg<GameObjectId>(0));
+
+  if (player_ptr->IsLocalPlayer()) {
+    return;
+  }
+
+  player_ptr->SetX(event.GetArg<float>(1));
+  player_ptr->SetY(event.GetArg<float>(2));
+  player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
+  player_ptr->SetRotation(event.GetArg<float>(4));
+
+  view_->Update();
 }

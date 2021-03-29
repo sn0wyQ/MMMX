@@ -93,10 +93,6 @@ GameObjectId GameDataModel::AddTree(float x, float y, float radius) {
   return game_object_id;
 }
 
-GameObjectId GameDataModel::GetLocalPlayerId() const {
-  return local_player_id_;
-}
-
 void GameDataModel::SetLocalPlayerId(GameObjectId player_id) {
   local_player_id_ = player_id;
   GetLocalPlayer()->SetIsLocalPlayer(true);

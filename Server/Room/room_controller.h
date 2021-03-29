@@ -17,7 +17,7 @@
 #include "constants.h"
 
 enum class RoomState {
-  kFinished,
+  kGameFinished,
   kGameInProgress,
   kWaitingForClients
 };
@@ -29,8 +29,20 @@ class RoomController : public BaseController {
 
   QString GetControllerName() const override;
 
+  void AddEventToSend() = delete;
+  void AddEventToSendToSingleClient(const Event& event, ClientId client_id);
+  void AddEventToSendToClientList(const Event& event,
+                                  const std::vector<ClientId>& client_ids);
+  void AddEventToSendToAllClients(const Event& event);
+
+  void AddEventToSendToSinglePlayer(const Event& event, GameObjectId player_id);
+  void AddEventToSendToPlayerList(const Event& event,
+                                  const std::vector<GameObjectId>& player_ids);
+  void AddEventToSendToAllPlayers(const Event& event);
+
   void SendEvent(const Event& event) override;
   void OnTick(int delta_time) override;
+  void TickPlayers(int delta_time);
 
   void AddClient(ClientId client_id);
   void RemoveClient(ClientId client_id);
@@ -65,7 +77,6 @@ class RoomController : public BaseController {
   void AddNewPlayerEvent(const Event& event) override;
   void CreateAllPlayersDataEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
-  void UpdateServerVarEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 

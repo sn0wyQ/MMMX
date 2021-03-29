@@ -41,7 +41,6 @@ class ServerController : public BaseController {
   ServerModel server_model_;
 
   void ClientDisconnectedEvent(const Event& event) override;
-  void SetClientsPlayerIdEvent(const Event& event) override;
   void SendEventToClientEvent(const Event& event) override;
   void SendEventToRoomEvent(const Event& event) override;
 };

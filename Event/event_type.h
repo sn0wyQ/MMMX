@@ -11,16 +11,16 @@ enum class EventType {
   // After adding an event, add a function with the same name
   // to the BaseController private functions
 
-  // [0] - <int> client_id,
-  // [1] - <int> player_id
+  // [0] - <ClientId> client_id,
+  // [1] - <GameObjectId> player_id
   kAddNewPlayer,
 
-  // [0] - <int> client_id
+  // [0] - <ClientId> client_id
   kClientDisconnected,
 
-  // [0] - <int> client_id,
+  // [0] - <ClientId> client_id,
   // [1] - <int> number_of_players,
-  // [2+] - player_info [<int> player_id,
+  // [2+] - player_info [<GameObjectId> player_id,
   //                     <float> x,
   //                     <float> y,
   //                     <float> rotation]
@@ -29,10 +29,10 @@ enum class EventType {
   // No arguments
   kEndGame,
 
-  // [0] - <int> player_id
+  // [0] - <GameObjectId> player_id
   kPlayerDisconnected,
 
-  // [0] - <int> client_id,
+  // [0] - <ClientId> client_id,
   // [1] - <int> event_type,
   // [2+] - event_args
   kSendEventToClient,
@@ -42,15 +42,18 @@ enum class EventType {
   // [2+] - event_args
   kSendEventToRoom,
 
-  // [0] - <int> client_id,
-  // [1] - <int> player_id
+  // No arguments
+  kSendGetVarsEvent,
+
+  // [0] - <GameObjectId> player_id
   kSetClientsPlayerId,
 
   // No arguments
   kStartGame,
 
-  // [0] - <int> sender_PLAYER_id / receiver_CLIENT_id
-  kUpdateServerVar,
+  // [0] - <int> server_var,
+  // [1] - <int> room_var
+  kUpdateVars,
 
   // ------------------- GAME EVENTS -------------------
 
@@ -68,10 +71,9 @@ enum class EventType {
   // [4] - <float> rotation
   kUpdatePlayerData,
 
-  // [0] - <int> receiver_client_id
-  // [1] - <int> game_object_id
-  // [2] - <int> game_object_type [game_object.h]
-  // [3+] - game_object_args
+  // [0] - <int> game_object_id
+  // [1] - <int> game_object_type [game_object.h]
+  // [2+] - game_object_args
   kGameObjectAppeared,
 
   SIZE
