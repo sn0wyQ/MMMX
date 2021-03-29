@@ -205,7 +205,7 @@ void RoomController::SendControlsEvent(const Event& event) {
 
 
   // TODO(Matvey): add something here to check if player is in FOV
-  this->AddEventToSendToAllClients(Event(EventType::kUpdatePlayerData,
+  this->AddEventToSendToAllPlayers(Event(EventType::kUpdatePlayerData,
                                          event.GetArg<GameObjectId>(0),
                                          senders_player_ptr->GetX(),
                                          senders_player_ptr->GetY(),
