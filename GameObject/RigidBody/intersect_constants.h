@@ -8,10 +8,10 @@ namespace IntersectChecker {
   // [0, 1]
   // 0 - все касательные противоборствующие
   // 1 - пытаемся скользить по всем
-  constexpr float kCosEps = 0.6f;
+  constexpr float kCosEps = 0.2f;
   // Сила трения
   // (= увеличение внешней оболочки объекта при считании касательной)
-  constexpr float kFrictionForce = 0.08f;
+  constexpr float kFrictionForce = 0.02f;
 }  // namespace IntersectChecker
 
 #endif  // GAMEOBJECT_RIGIDBODY_INTERSECT_CONSTANTS_H_

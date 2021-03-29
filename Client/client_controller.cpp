@@ -86,15 +86,34 @@ void ClientController::CollidePlayerWithGameObjects(
     return;
   }
   local_player->SetVelocity(key_force);
-  ObjectCollision::DoSolidCollisionWithObjects(
+  ObjectCollision::DoFirstPhase(
       local_player, model_->GetAllMovableObjects(),
-      key_force, delta_time);
-  ObjectCollision::DoSolidCollisionWithObjects(
+      delta_time);
+  ObjectCollision::DoFirstPhase(
       local_player, model_->GetAllRectangularStaticObjects(),
-      key_force, delta_time);
-  ObjectCollision::DoSolidCollisionWithObjects(
+      delta_time);
+  ObjectCollision::DoFirstPhase(
       local_player, model_->GetAllRoundStaticObjects(),
-      key_force, delta_time);
+      delta_time);
+  if (!local_player->GetVelocity().isNull()) {
+    return;
+  }
+  std::vector<QVector2D> tangents;
+  ObjectCollision::FindTangents(
+      local_player, model_->GetAllMovableObjects(), &tangents);
+  ObjectCollision::FindTangents(
+      local_player, model_->GetAllRectangularStaticObjects(), &tangents);
+  ObjectCollision::FindTangents(
+      local_player, model_->GetAllRoundStaticObjects(), &tangents);
+  ObjectCollision::DoSecondPhase(
+      local_player, model_->GetAllMovableObjects(), key_force,
+      tangents);
+  ObjectCollision::DoSecondPhase(
+      local_player, model_->GetAllRectangularStaticObjects(), key_force,
+      tangents);
+  ObjectCollision::DoSecondPhase(
+      local_player, model_->GetAllRoundStaticObjects(), key_force,
+      tangents);
 }
 
 void ClientController::OnTick(int delta_time) {
