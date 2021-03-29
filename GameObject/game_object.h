@@ -10,7 +10,7 @@ class GameObject {
  public:
   explicit GameObject(GameObjectId id);
 
-  virtual void OnTick(int time_from_previous_tick) = 0;
+  virtual void OnTick(int delta_time) = 0;
   virtual void Draw(Painter* painter) = 0;
 
   GameObjectId GetId() const;

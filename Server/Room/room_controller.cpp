@@ -5,19 +5,61 @@ RoomController::RoomController(RoomId id, RoomSettings room_settings)
   this->StartTicking();
 }
 
+void RoomController::AddEventToSendToSingleClient(const Event& event,
+                                                  ClientId client_id) {
+  Event event_to_send(EventType::kSendEventToClient, client_id);
+
+  event_to_send.PushBackArg(static_cast<int>(event.GetType()));
+  auto args = event.GetArgs();
+  for (const auto& arg : args) {
+    event_to_send.PushBackArg(arg);
+  }
+
+  this->BaseController::AddEventToSend(event_to_send);
+}
+
+void RoomController::AddEventToSendToClientList(
+    const Event& event,
+    const std::vector<ClientId>& client_ids) {
+  for (ClientId client_id : client_ids) {
+    this->AddEventToSendToSingleClient(event, client_id);
+  }
+}
+
+void RoomController::AddEventToSendToAllClients(const Event& event) {
+  this->AddEventToSendToClientList(event, this->GetAllClientsIds());
+}
+
+void RoomController::AddEventToSendToSinglePlayer(const Event& event,
+                                                  GameObjectId player_id) {
+  this->AddEventToSendToSingleClient(
+      event, this->PlayerIdToClientId(player_id));
+}
+
+void RoomController::AddEventToSendToPlayerList(
+    const Event& event, const std::vector<GameObjectId>& player_ids) {
+  for (GameObjectId player_id : player_ids) {
+    this->AddEventToSendToSinglePlayer(event, player_id);
+  }
+}
+
+void RoomController::AddEventToSendToAllPlayers(const Event& event) {
+  this->AddEventToSendToPlayerList(event, this->GetAllPlayerIds());
+}
+
 void RoomController::SendEvent(const Event& event) {
-  BaseController::LogEvent(event);
+  this->BaseController::LogEvent(event);
   events_for_server_.push_back(event);
 }
 
-void RoomController::OnTick(int time_from_previous_tick) {
-  this->TickPlayers(time_from_previous_tick);
+void RoomController::OnTick(int delta_time) {
+  this->TickPlayers(delta_time);
 }
 
-void RoomController::TickPlayers(int time_from_previous_tick) {
+void RoomController::TickPlayers(int delta_time) {
   std::vector<std::shared_ptr<Player>> players = model_.GetPlayers();
   for (const auto& player : players) {
-    player->OnTick(time_from_previous_tick);
+    player->OnTick(delta_time);
   }
 }
 
@@ -52,7 +94,8 @@ void RoomController::RemoveClient(ClientId client_id) {
         "[ROOM ID:" + std::to_string(id_) + "] Invalid client ID");
   }
   model_.DeletePlayer(player_id);
-  this->AddEventToSend(Event(EventType::kPlayerDisconnected, player_id));
+  this->AddEventToSendToAllClients(Event(EventType::kPlayerDisconnected,
+                                         player_id));
   player_ids_.erase(client_id);
   room_state_ = (model_.GetPlayersCount()
       ? RoomState::kWaitingForClients : RoomState::kGameFinished);
@@ -113,17 +156,18 @@ GameObjectId RoomController::GetNextUnusedPlayerId() const {
 }
 
 void RoomController::AddNewPlayerEvent(const Event& event) {
-  this->AddEventToSend(event);
-  this->AddEventToSend(Event(EventType::kSetClientsPlayerId,
-                             event.GetArgs()));
+  this->AddEventToSendToAllClients(event);
+  this->AddEventToSendToSingleClient(Event(EventType::kSetClientsPlayerId,
+                                           event.GetArg<GameObjectId>(1)),
+                                     event.GetArg<ClientId>(0));
 }
 
 void RoomController::CreateAllPlayersDataEvent(const Event& event) {
-  this->AddEventToSend(event);
+  this->AddEventToSendToSingleClient(event, event.GetArg<ClientId>(0));
 }
 
 void RoomController::StartGameEvent(const Event& event) {
-  this->AddEventToSend(Event(EventType::kStartGame));
+  this->AddEventToSendToAllClients(Event(EventType::kStartGame));
   room_state_ = RoomState::kGameInProgress;
 }
 
@@ -144,14 +188,7 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
 }
 
-void RoomController::UpdateVarsEvent(const Event& event) {
-  this->AddEventToSend(Event(event.GetType(),
-                             PlayerIdToClientId(
-                                 event.GetArg<GameObjectId>(0))));
-}
-
 // ------------------- GAME EVENTS -------------------
-
 void RoomController::SendControlsEvent(const Event& event) {
   if (!model_.IsPlayerIdTaken(event.GetArg<GameObjectId>(0))) {
     return;
@@ -166,10 +203,12 @@ void RoomController::SendControlsEvent(const Event& event) {
   senders_player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
   senders_player_ptr->SetViewAngle(event.GetArg<float>(4));
 
-  this->AddEventToSend(Event(EventType::kUpdatePlayerData,
-                       event.GetArg<GameObjectId>(0),
-                       senders_player_ptr->GetX(),
-                       senders_player_ptr->GetY(),
-                       senders_player_ptr->GetVelocity(),
-                       senders_player_ptr->GetViewAngle()));
+
+  // TODO(Matvey): add something here to check if player is in FOV
+  this->AddEventToSendToAllPlayers(Event(EventType::kUpdatePlayerData,
+                                         event.GetArg<GameObjectId>(0),
+                                         senders_player_ptr->GetX(),
+                                         senders_player_ptr->GetY(),
+                                         senders_player_ptr->GetVelocity(),
+                                         senders_player_ptr->GetViewAngle()));
 }

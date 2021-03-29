@@ -57,9 +57,9 @@ void ClientController::EndGameEvent(const Event& event) {
 }
 
 void ClientController::SetClientsPlayerIdEvent(const Event& event) {
-  model_->SetLocalPlayerId(event.GetArg<GameObjectId>(1));
+  model_->SetLocalPlayerId(event.GetArg<GameObjectId>(0));
   qInfo().noquote() << "[CLIENT] Set player_id to"
-                    << event.GetArg<GameObjectId>(1);
+                    << event.GetArg<GameObjectId>(0);
 }
 
 void ClientController::CreateAllPlayersDataEvent(const Event& event) {
@@ -83,35 +83,40 @@ void ClientController::SendEvent(const Event& event) {
   web_socket_.sendBinaryMessage(event.ToByteArray());
 }
 
-void ClientController::OnTick(int time_from_previous_tick) {
+void ClientController::OnTick(int delta_time) {
   switch (game_state_) {
     case GameState::kGameFinished:
-      this->OnTickGameFinished(time_from_previous_tick);
+      this->OnTickGameFinished(delta_time);
       break;
 
     case GameState::kGameInProgress:
-      this->OnTickGameInProgress(time_from_previous_tick);
+      this->OnTickGameInProgress(delta_time);
       break;
 
     case GameState::kGameNotStarted:
-      this->OnTickGameNotStarted(time_from_previous_tick);
+      this->OnTickGameNotStarted(delta_time);
       break;
   }
 }
 
-void ClientController::OnTickGameInProgress(int time_from_previous_tick) {
-  this->TickPlayers(time_from_previous_tick);
-  this->UpdateLocalPlayer(time_from_previous_tick);
+void ClientController::OnTickGameNotStarted(int delta_time) {
+  // Temporary
+  this->OnTickGameInProgress(delta_time);
 }
 
-void ClientController::TickPlayers(int time_from_previous_tick) {
+void ClientController::OnTickGameInProgress(int delta_time) {
+  this->TickPlayers(delta_time);
+  this->UpdateLocalPlayer(delta_time);
+}
+
+void ClientController::TickPlayers(int delta_time) {
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
-    player->OnTick(time_from_previous_tick);
+    player->OnTick(delta_time);
   }
 }
 
-void ClientController::UpdateLocalPlayer(int time_from_previous_tick) {
+void ClientController::UpdateLocalPlayer(int delta_time) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
@@ -172,31 +177,6 @@ void ClientController::UpdateVarsEvent(const Event& event) {
   server_var_ = event.GetArg<int>(0);
   room_var_ = event.GetArg<int>(1);
   client_var_ = this->GetVar();
-  view_->Update();
-}
-
-// ------------------- GAME EVENTS -------------------
-
-void ClientController::SendControlsEvent(const Event& event) {
-  this->AddEventToSend(event);
-}
-
-void ClientController::UpdatePlayerDataEvent(const Event& event) {
-  if (!model_->IsLocalPlayerSet()) {
-    return;
-  }
-
-  auto player_ptr = model_->GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
-
-  if (player_ptr->IsLocalPlayer()) {
-    return;
-  }
-
-  player_ptr->SetX(event.GetArg<float>(1));
-  player_ptr->SetY(event.GetArg<float>(2));
-  player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
-  player_ptr->SetViewAngle(event.GetArg<float>(4));
-
   view_->Update();
 }
 
@@ -276,4 +256,29 @@ void ClientController::ResetDirection() {
       = is_direction_applied_[Direction::kRight]
       = is_direction_applied_[Direction::kDown]
       = is_direction_applied_[Direction::kLeft] = false;
+}
+
+// ------------------- GAME EVENTS -------------------
+
+void ClientController::SendControlsEvent(const Event& event) {
+  this->AddEventToSend(event);
+}
+
+void ClientController::UpdatePlayerDataEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+
+  auto player_ptr = model_->GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
+
+  if (player_ptr->IsLocalPlayer()) {
+    return;
+  }
+
+  player_ptr->SetX(event.GetArg<float>(1));
+  player_ptr->SetY(event.GetArg<float>(2));
+  player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
+  player_ptr->SetViewAngle(event.GetArg<float>(4));
+
+  view_->Update();
 }

@@ -11,16 +11,16 @@ enum class EventType {
   // After adding an event, add a function with the same name
   // to the BaseController private functions
 
-  // [0] - <int> client_id,
-  // [1] - <int> player_id
+  // [0] - <ClientId> client_id,
+  // [1] - <GameObjectId> player_id
   kAddNewPlayer,
 
-  // [0] - <int> client_id
+  // [0] - <ClientId> client_id
   kClientDisconnected,
 
-  // [0] - <int> client_id,
+  // [0] - <ClientId> client_id,
   // [1] - <int> number_of_players,
-  // [2+] - player_info [<int> player_id,
+  // [2+] - player_info [<GameObjectId> player_id,
   //                     <float> x,
   //                     <float> y,
   //                     <float> view_angle]
@@ -29,10 +29,10 @@ enum class EventType {
   // No arguments
   kEndGame,
 
-  // [0] - <int> player_id
+  // [0] - <GameObjectId> player_id
   kPlayerDisconnected,
 
-  // [0] - <int> client_id,
+  // [0] - <ClientId> client_id,
   // [1] - <int> event_type,
   // [2+] - event_args
   kSendEventToClient,
@@ -45,8 +45,7 @@ enum class EventType {
   // No arguments
   kSendGetVarsEvent,
 
-  // [0] - <int> client_id,
-  // [1] - <int> player_id
+  // [0] - <GameObjectId> player_id
   kSetClientsPlayerId,
 
   // No arguments
