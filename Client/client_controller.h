@@ -113,7 +113,6 @@ class ClientController : public BaseController {
 
   // ------------------- GAME EVENTS -------------------
 
-  void SendControlsEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;

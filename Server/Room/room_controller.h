@@ -75,8 +75,6 @@ class RoomController : public BaseController {
 
   std::vector<Event> events_for_server_;
 
-  void StartGameEvent(const Event& event) override;
-
   // ------------------- GAME EVENTS -------------------
 
   void SendControlsEvent(const Event& event) override;

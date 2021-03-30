@@ -151,12 +151,12 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   converter_->UpdateGameCenter(local_player->GetPosition());
 
-  this->AddEventToHandle(Event(EventType::kSendControls,
-                               local_player->GetId(),
-                               local_player->GetX(),
-                               local_player->GetY(),
-                               local_player->GetVelocity(),
-                               local_player->GetRotation()));
+  this->AddEventToSend(Event(EventType::kSendControls,
+                             local_player->GetId(),
+                             local_player->GetX(),
+                             local_player->GetY(),
+                             local_player->GetVelocity(),
+                             local_player->GetRotation()));
 }
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
@@ -277,10 +277,6 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 // ------------------- GAME EVENTS -------------------
-
-void ClientController::SendControlsEvent(const Event& event) {
-  this->AddEventToSend(event);
-}
 
 void ClientController::UpdateGameObjectDataEvent(const Event& event) {
   auto game_object_id = event.GetArg<GameObjectId>(0);

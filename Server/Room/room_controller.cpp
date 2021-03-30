@@ -99,7 +99,8 @@ void RoomController::AddClient(ClientId client_id) {
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
           << "] Connected client (ID: " << client_id << ")";
   if (!this->HasFreeSpot()) {
-    this->AddEventToHandle(Event(EventType::kStartGame));
+    this->AddEventToSendToAllClients(Event(EventType::kStartGame));
+    room_state_ = RoomState::kGameInProgress;
     qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
   }
 }
@@ -162,11 +163,6 @@ GameObjectId RoomController::ClientIdToPlayerId(ClientId client_id) const {
     return Constants::kNullGameObjectId;
   }
   return iter->second;
-}
-
-void RoomController::StartGameEvent(const Event& event) {
-  this->AddEventToSendToAllClients(Event(EventType::kStartGame));
-  room_state_ = RoomState::kGameInProgress;
 }
 
 QString RoomController::GetControllerName() const {
