@@ -105,19 +105,16 @@ class ClientController : public BaseController {
   void SetPing(int elapsed_time);
 
  private:
-  void AddNewPlayerEvent(const Event& event) override;
   void EndGameEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
   void SetClientsPlayerIdEvent(const Event& event) override;
-  void CreateAllPlayersDataEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateVarsEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
   void SendControlsEvent(const Event& event) override;
-  void UpdatePlayerDataEvent(const Event& event) override;
-  void GameObjectAppearedEvent(const Event& event) override;
+  void UpdateGameObjectDataEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;

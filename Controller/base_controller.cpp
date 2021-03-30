@@ -2,16 +2,12 @@
 
 BaseController::BaseController() {
   using std::placeholders::_1;
-  SetFunctionForEventType(EventType::kAddNewPlayer,
-    std::bind(&BaseController::AddNewPlayerEvent, this, _1));
   SetFunctionForEventType(EventType::kClientDisconnected,
     std::bind(&BaseController::ClientDisconnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kEndGame,
     std::bind(&BaseController::EndGameEvent, this, _1));
   SetFunctionForEventType(EventType::kSetClientsPlayerId,
     std::bind(&BaseController::SetClientsPlayerIdEvent, this, _1));
-  SetFunctionForEventType(EventType::kCreateAllPlayersData,
-    std::bind(&BaseController::CreateAllPlayersDataEvent, this, _1));
   SetFunctionForEventType(EventType::kStartGame,
     std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kPlayerDisconnected,
@@ -27,10 +23,8 @@ BaseController::BaseController() {
 
   SetFunctionForEventType(EventType::kSendControls,
     std::bind(&BaseController::SendControlsEvent, this, _1));
-  SetFunctionForEventType(EventType::kUpdatePlayerData,
-    std::bind(&BaseController::UpdatePlayerDataEvent, this, _1));
-  SetFunctionForEventType(EventType::kGameObjectAppeared,
-         std::bind(&BaseController::GameObjectAppearedEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdateGameObjectData,
+    std::bind(&BaseController::UpdateGameObjectDataEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

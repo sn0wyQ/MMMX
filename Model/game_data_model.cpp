@@ -1,15 +1,24 @@
 #include "game_data_model.h"
 
-#include <utility>
-
 std::shared_ptr<Player>
     GameDataModel::GetPlayerByPlayerId(GameObjectId player_id) const {
-  auto iter = players_.find(player_id);
-  if (iter != players_.end()) {
-    return iter->second;
+  auto iter = game_objects_.find(player_id);
+  if (iter != game_objects_.end()
+    && iter->second->GetGameObjectType() == GameObjectType::kPlayer) {
+    return std::dynamic_pointer_cast<Player>(iter->second);
   }
 
   throw std::runtime_error("[MODEL] Trying to get invalid player...");
+}
+
+std::shared_ptr<GameObject> GameDataModel::GetGameObjectByGameObjectId(
+    GameObjectId game_object_id) const {
+  auto iter = game_objects_.find(game_object_id);
+  if (iter != game_objects_.end()) {
+    return iter->second;
+  }
+
+  throw std::runtime_error("[MODEL] Trying to get invalid game object...");
 }
 
 bool GameDataModel::IsLocalPlayerSet() const {
@@ -21,76 +30,58 @@ std::shared_ptr<Player> GameDataModel::GetLocalPlayer() const {
     throw std::runtime_error("[MODEL] Owner's player_id isn't set...");
   }
 
-  return players_.at(local_player_id_);
+  return std::dynamic_pointer_cast<Player>(
+      game_objects_.at(local_player_id_));
 }
 
 int GameDataModel::GetPlayersCount() const {
-  return players_.size();
+  return GetPlayers().size();
 }
 
-void GameDataModel::AddPlayer(GameObjectId player_id,
-                              float x,
-                              float y,
-                              float rotation) {
-  if (players_.find(player_id) != players_.end()) {
-    throw std::runtime_error("[MODEL] This player_id already exists");
-  }
-  players_.emplace(std::make_pair(
-      player_id, std::make_unique<Player>(player_id, x, y, rotation)));
-
-  qInfo().noquote() << "[MODEL] Added new Player ID:" << player_id;
-}
-
-GameObjectId GameDataModel::AddPlayer(float x, float y, float rotation) {
-  GameObjectId player_id = this->GetNextUnusedGameObjectId();
-  AddPlayer(player_id, x, y, rotation);
-  return player_id;
-}
-
-void GameDataModel::AddBox(GameObjectId game_object_id,
-                                   float x,
-                                   float y,
-                                   float rotation,
-                                   float width,
-                                   float height) {
-  if (boxes_.find(game_object_id) != boxes_.end()) {
+void GameDataModel::AddGameObject(GameObjectId game_object_id,
+                                  GameObjectType type,
+                                  const std::vector<QVariant>& params) {
+  if (game_objects_.find(game_object_id) != game_objects_.end()) {
     throw std::runtime_error("[MODEL] This game_object_id already exists");
   }
-  boxes_.emplace(std::make_pair(
-      game_object_id,
-      std::make_unique<Box>(game_object_id, x, y, rotation, width, height)));
-
-  qInfo().noquote() << "[MODEL] Added new Box:" << game_object_id;
+  switch (type) {
+    case GameObjectType::kPlayer:
+      game_objects_.emplace(std::make_pair(
+          game_object_id,
+          std::make_unique<Player>(game_object_id, params)));
+      break;
+    case GameObjectType::kBox:
+      game_objects_.emplace(std::make_pair(
+          game_object_id,
+          std::make_unique<Box>(game_object_id, params)));
+      break;
+    case GameObjectType::kTree:
+      game_objects_.emplace(std::make_pair(
+          game_object_id,
+          std::make_unique<Tree>(game_object_id, params)));
+      break;
+  }
+  qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
+    << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
+                               .valueToKey(static_cast<uint32_t>(type)));
 }
 
-GameObjectId GameDataModel::AddBox(float x,
-                                   float y,
-                                   float rotation,
-                                   float width,
-                                   float height) {
+GameObjectId GameDataModel::AddGameObject(GameObjectType type,
+                                          const std::vector<QVariant>& params) {
   GameObjectId game_object_id = this->GetNextUnusedGameObjectId();
-  AddBox(game_object_id, x, y, rotation, width, height);
+  AddGameObject(game_object_id, type, params);
   return game_object_id;
 }
 
-void GameDataModel::AddTree(GameObjectId game_object_id,
-                            float x,
-                            float y,
-                            float radius) {
-  if (trees_.find(game_object_id) != trees_.end()) {
-    throw std::runtime_error("[MODEL] This game_object_id already exists");
+void GameDataModel::DeleteGameObject(GameObjectId game_object_id) {
+  auto iter = game_objects_.find(game_object_id);
+  GameObjectType type = iter->second->GetGameObjectType();
+  if (iter != game_objects_.end()) {
+    game_objects_.erase(iter);
   }
-  trees_.emplace(std::make_pair(
-      game_object_id,
-      std::make_unique<Tree>(game_object_id, x, y, radius)));
-
-  qInfo().noquote() << "[MODEL] Added new Tree:" << game_object_id;
-}
-
-GameObjectId GameDataModel::AddTree(float x, float y, float radius) {
-  GameObjectId game_object_id = this->GetNextUnusedGameObjectId();
-  AddTree(game_object_id, x, y, radius);
-  return game_object_id;
+  qInfo().noquote() << "[MODEL] Removed GameObject:" << game_object_id
+    << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
+        .valueToKey(static_cast<uint32_t>(type)));
 }
 
 void GameDataModel::SetLocalPlayerId(GameObjectId player_id) {
@@ -98,57 +89,38 @@ void GameDataModel::SetLocalPlayerId(GameObjectId player_id) {
   GetLocalPlayer()->SetIsLocalPlayer(true);
 }
 
-void GameDataModel::DeletePlayer(GameObjectId player_id) {
-  auto player_to_delete = players_.find(player_id);
-  if (player_to_delete != players_.end()) {
-    players_.erase(player_to_delete);
-  }
-  qInfo().noquote() << "[MODEL] Removed Player ID:" << player_id;
-}
-
 std::vector<std::shared_ptr<Player>> GameDataModel::GetPlayers() const {
   std::vector<std::shared_ptr<Player>> result;
-  for (const auto& player : players_) {
-    result.push_back(player.second);
+  for (const auto& game_object : game_objects_) {
+    if (game_object.second->GetGameObjectType() == GameObjectType::kPlayer) {
+      result.push_back(std::dynamic_pointer_cast<Player>(game_object.second));
+    }
   }
   return result;
 }
 
 std::vector<std::shared_ptr<Box>> GameDataModel::GetBoxes() const {
   std::vector<std::shared_ptr<Box>> result;
-  for (const auto& box : boxes_) {
-    result.push_back(box.second);
+  for (const auto& game_object : game_objects_) {
+    if (game_object.second->GetGameObjectType() == GameObjectType::kBox) {
+      result.push_back(std::dynamic_pointer_cast<Box>(game_object.second));
+    }
   }
   return result;
 }
 
 std::vector<std::shared_ptr<Tree>> GameDataModel::GetTrees() const {
   std::vector<std::shared_ptr<Tree>> result;
-  for (const auto& tree : trees_) {
-    result.push_back(tree.second);
-  }
-  return result;
-}
-
-std::vector<std::shared_ptr<GameObject>>
-  GameDataModel::GetAllGameObjects() const {
-  std::vector<std::shared_ptr<GameObject>> result;
-  for (const auto& player : players_) {
-    result.push_back(player.second);
-  }
-  for (const auto& box : boxes_) {
-    result.push_back(box.second);
-  }
-  for (const auto& tree : trees_) {
-    result.push_back(tree.second);
+  for (const auto& game_object : game_objects_) {
+    if (game_object.second->GetGameObjectType() == GameObjectType::kTree) {
+      result.push_back(std::dynamic_pointer_cast<Tree>(game_object.second));
+    }
   }
   return result;
 }
 
 bool GameDataModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
-  return players_.find(game_object_id) != players_.end()
-    || boxes_.find(game_object_id) != boxes_.end()
-    || trees_.find(game_object_id) != trees_.end();
+  return game_objects_.find(game_object_id) != game_objects_.end();
 }
 
 GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
@@ -161,27 +133,33 @@ GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
 
 std::vector<std::shared_ptr<MovableObject>>
   GameDataModel::GetAllMovableObjects() const {
+  std::vector<std::shared_ptr<Player>> players = GetPlayers();
   std::vector<std::shared_ptr<MovableObject>> result;
-  for (const auto& player : players_) {
-    result.push_back(player.second);
+  result.reserve(players.size());
+  for (const auto& player : players) {
+    result.push_back(player);
   }
   return result;
 }
 
 std::vector<std::shared_ptr<RoundStaticObject>>
   GameDataModel::GetAllRoundStaticObjects() const {
+  std::vector<std::shared_ptr<Tree>> trees = GetTrees();
   std::vector<std::shared_ptr<RoundStaticObject>> result;
-  for (const auto& tree : trees_) {
-    result.push_back(tree.second);
+  result.reserve(trees.size());
+  for (const auto& tree : trees) {
+    result.push_back(tree);
   }
   return result;
 }
 
 std::vector<std::shared_ptr<RectangularStaticObject>>
   GameDataModel::GetAllRectangularStaticObjects() const {
+  std::vector<std::shared_ptr<Box>> boxes = GetBoxes();
   std::vector<std::shared_ptr<RectangularStaticObject>> result;
-  for (const auto& box : boxes_) {
-    result.push_back(box.second);
+  result.reserve(boxes.size());
+  for (const auto& box : boxes) {
+    result.push_back(box);
   }
   return result;
 }

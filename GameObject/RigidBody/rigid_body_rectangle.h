@@ -11,6 +11,9 @@ class RigidBodyRectangle {
   float GetWidth() const;
   float GetHeight() const;
 
+  void SetWidth(float width);
+  void SetHeight(float height);
+
  private:
   float width_;
   float height_;

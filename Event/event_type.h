@@ -11,20 +11,9 @@ enum class EventType {
   // After adding an event, add a function with the same name
   // to the BaseController private functions
 
-  // [0] - <ClientId> client_id,
-  // [1] - <GameObjectId> player_id
-  kAddNewPlayer,
 
   // [0] - <ClientId> client_id
   kClientDisconnected,
-
-  // [0] - <ClientId> client_id,
-  // [1] - <int> number_of_players,
-  // [2+] - player_info [<GameObjectId> player_id,
-  //                     <float> x,
-  //                     <float> y,
-  //                     <float> rotation]
-  kCreateAllPlayersData,
 
   // No arguments
   kEndGame,
@@ -57,24 +46,17 @@ enum class EventType {
 
   // ------------------- GAME EVENTS -------------------
 
-  // [0] - <int> sender_player_id,
+  // [0] - <GameObjectId> sender_player_id,
   // [1] - <float> x,
   // [2] - <float> y,
   // [3] - <QVector2D> velocity,
   // [4] - <float> rotation
   kSendControls,
 
-  // [0] - <int> sender_player_id,
-  // [1] - <float> x,
-  // [2] - <float> y,
-  // [3] - <QVector2D> velocity,
-  // [4] - <float> rotation
-  kUpdatePlayerData,
-
-  // [0] - <int> game_object_id
+  // [0] - <GameObjectId> game_object_id
   // [1] - <int> game_object_type [game_object.h]
-  // [2+] - game_object_args
-  kGameObjectAppeared,
+  // [2+] - game_object_args : relative constructor args
+  kUpdateGameObjectData,
 
   SIZE
 };

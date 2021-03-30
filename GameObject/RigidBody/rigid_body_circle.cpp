@@ -13,3 +13,7 @@ std::shared_ptr<RigidBodyCircle> RigidBodyCircle::External(float friction_force)
   new_circle_ptr->radius_ += friction_force;
   return new_circle_ptr;
 }
+
+void RigidBodyCircle::SetRadius(float radius) {
+  radius_ = radius;
+}

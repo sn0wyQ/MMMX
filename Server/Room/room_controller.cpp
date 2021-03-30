@@ -75,20 +75,27 @@ void RoomController::TickPlayers(int delta_time) {
 }
 
 void RoomController::AddClient(ClientId client_id) {
-  std::vector<QVariant> event_args{client_id, model_.GetPlayersCount()};
   for (const auto& player : model_.GetPlayers()) {
-    event_args.emplace_back(player->GetId());
-    event_args.emplace_back(player->GetX());
-    event_args.emplace_back(player->GetY());
-    event_args.emplace_back(player->GetRotation());
+    Event event(EventType::kUpdateGameObjectData, player->GetId());
+    event.PushBackArgs(player->GetParams());
+    this->AddEventToSendToSingleClient(event, client_id);
   }
-  this->AddEventToHandle(Event(EventType::kCreateAllPlayersData,
-                               event_args));
 
-  GameObjectId player_id = model_.AddPlayer();
+  GameObjectId player_id = model_.AddGameObject(
+      GameObjectType::kPlayer,
+      {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
+       Constants::kDefaultPlayerRotation});
   player_ids_[client_id] = player_id;
-  this->AddEventToHandle(Event(EventType::kAddNewPlayer,
-                               client_id, player_id));
+  Event event(EventType::kUpdateGameObjectData,
+              player_id,
+              static_cast<int>(GameObjectType::kPlayer));
+  event.PushBackArgs(model_.GetPlayerByPlayerId(player_id)->GetParams());
+  this->AddEventToSendToAllClients(event);
+  this->AddEventToSendToSingleClient(Event(EventType::kSetClientsPlayerId,
+                                           player_id),
+                                     client_id);
+  ShareObjectsOnMap(player_id);
+
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
           << "] Connected client (ID: " << client_id << ")";
   if (!this->HasFreeSpot()) {
@@ -103,7 +110,7 @@ void RoomController::RemoveClient(ClientId client_id) {
     throw std::runtime_error(
         "[ROOM ID:" + std::to_string(id_) + "] Invalid client ID");
   }
-  model_.DeletePlayer(player_id);
+  model_.DeleteGameObject(player_id);
   this->AddEventToSendToAllClients(Event(EventType::kPlayerDisconnected,
                                          player_id));
   player_ids_.erase(client_id);
@@ -157,19 +164,6 @@ GameObjectId RoomController::ClientIdToPlayerId(ClientId client_id) const {
   return iter->second;
 }
 
-void RoomController::AddNewPlayerEvent(const Event& event) {
-  this->AddEventToSendToAllClients(event);
-  auto player_id = event.GetArg<GameObjectId>(1);
-  this->AddEventToSendToSingleClient(Event(EventType::kSetClientsPlayerId,
-                                           player_id),
-                                     event.GetArg<ClientId>(0));
-  ShareObjectsOnMap(player_id);
-}
-
-void RoomController::CreateAllPlayersDataEvent(const Event& event) {
-  this->AddEventToSendToSingleClient(event, event.GetArg<ClientId>(0));
-}
-
 void RoomController::StartGameEvent(const Event& event) {
   this->AddEventToSendToAllClients(Event(EventType::kStartGame));
   room_state_ = RoomState::kGameInProgress;
@@ -195,25 +189,26 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
 void RoomController::AddBox(float x, float y, float rotation) {
   float width = 20;
   float height = 10;
-  model_.AddBox(x, y, rotation, width, height);
+  model_.AddGameObject(GameObjectType::kBox,
+                       {x, y, rotation, width, height});
 }
 
 void RoomController::AddTree(float x, float y, float radius) {
-  model_.AddTree(x, y, radius);
+  model_.AddGameObject(GameObjectType::kTree, {x, y, radius});
 }
 
 void RoomController::ShareObjectsOnMap(GameObjectId player_id) {
   for (const auto& box : model_.GetBoxes()) {
     this->AddEventToSendToSinglePlayer(
-        Event(EventType::kGameObjectAppeared, box->GetId(),
-              static_cast<int>(GameObjectTypeForEvents::kBox),
+        Event(EventType::kUpdateGameObjectData, box->GetId(),
+              static_cast<int>(GameObjectType::kBox),
               box->GetX(), box->GetY(), box->GetRotation(),
               box->GetWidth(), box->GetHeight()), player_id);
   }
   for (const auto& tree : model_.GetTrees()) {
     this->AddEventToSendToSinglePlayer(
-        Event(EventType::kGameObjectAppeared, tree->GetId(),
-              static_cast<int>(GameObjectTypeForEvents::kTree),
+        Event(EventType::kUpdateGameObjectData, tree->GetId(),
+              static_cast<int>(GameObjectType::kTree),
               tree->GetX(), tree->GetY(), tree->GetRadius()), player_id);
   }
 }
@@ -236,10 +231,13 @@ void RoomController::SendControlsEvent(const Event& event) {
   senders_player_ptr->SetRotation(event.GetArg<float>(4));
 
   // TODO(Matvey): add something here to check if player is in FOV
-  this->AddEventToSendToAllPlayers(Event(EventType::kUpdatePlayerData,
-                                         event.GetArg<GameObjectId>(0),
-                                         senders_player_ptr->GetX(),
-                                         senders_player_ptr->GetY(),
-                                         senders_player_ptr->GetVelocity(),
-                                         senders_player_ptr->GetRotation()));
+  this->AddEventToSendToAllPlayers(
+      Event(
+          EventType::kUpdateGameObjectData,
+          event.GetArg<GameObjectId>(0),
+          static_cast<int>(GameObjectType::kPlayer),
+          senders_player_ptr->GetX(),
+          senders_player_ptr->GetY(),
+          senders_player_ptr->GetVelocity(),
+          senders_player_ptr->GetRotation()));
 }

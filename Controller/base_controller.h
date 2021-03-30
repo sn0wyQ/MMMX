@@ -62,12 +62,10 @@ class BaseController : public QObject {
   std::array<std::function<void(const Event&)>,
       static_cast<uint32_t>(EventType::SIZE)> function_for_event_;
 
-  virtual void AddNewPlayerEvent(const Event& event) {}
   virtual void ClientDisconnectedEvent(const Event& event) {}
   virtual void EndGameEvent(const Event& event) {}
   virtual void PlayerDisconnectedEvent(const Event& event) {}
   virtual void SetClientsPlayerIdEvent(const Event& event) {}
-  virtual void CreateAllPlayersDataEvent(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
@@ -76,8 +74,7 @@ class BaseController : public QObject {
   // ------------------- GAME EVENTS -------------------
 
   virtual void SendControlsEvent(const Event& event) {}
-  virtual void UpdatePlayerDataEvent(const Event& event) {}
-  virtual void GameObjectAppearedEvent(const Event& event) {}
+  virtual void UpdateGameObjectDataEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

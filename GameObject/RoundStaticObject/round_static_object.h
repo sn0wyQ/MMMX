@@ -18,6 +18,8 @@ class RoundStaticObject : public GameObject {
   std::shared_ptr<RigidBodyCircle> GetRigidBody() const;
 
   float GetRadius() const;
+  void SetRadius(float radius);
+
   virtual float GetFrictionForce() const;
 
  private:

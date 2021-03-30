@@ -12,7 +12,10 @@
 class RigidBodyCircle {
  public:
   explicit RigidBodyCircle(float radius);
+
   float GetRadius() const;
+  void SetRadius(float radius);
+
   std::shared_ptr<RigidBodyCircle> External(float friction_force) const;
 
  private:

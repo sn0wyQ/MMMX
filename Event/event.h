@@ -42,6 +42,13 @@ class Event {
   void PushBackArg(const QVariant& variant) {
     args_.push_back(variant);
   }
+
+  void PushBackArgs(const std::vector<QVariant>& vector) {
+    for (const auto& variant : vector) {
+      args_.push_back(variant);
+    }
+  }
+
   template<typename T>
   void PushBackArg(const T& value) {
     args_.emplace_back(value);

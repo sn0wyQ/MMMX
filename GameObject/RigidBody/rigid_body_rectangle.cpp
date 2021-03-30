@@ -10,3 +10,11 @@ float RigidBodyRectangle::GetWidth() const {
 float RigidBodyRectangle::GetHeight() const {
   return height_;
 }
+
+void RigidBodyRectangle::SetWidth(float width) {
+  width_ = width;
+}
+
+void RigidBodyRectangle::SetHeight(float height) {
+  height_ = height;
+}

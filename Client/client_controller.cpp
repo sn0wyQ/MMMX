@@ -44,10 +44,6 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
   this->AddEventToHandle(Event(message));
 }
 
-void ClientController::AddNewPlayerEvent(const Event& event) {
-  model_->AddPlayer(event.GetArg<GameObjectId>(1));
-}
-
 void ClientController::EndGameEvent(const Event& event) {
   game_state_ = GameState::kGameFinished;
   view_->Update();
@@ -57,15 +53,6 @@ void ClientController::SetClientsPlayerIdEvent(const Event& event) {
   model_->SetLocalPlayerId(event.GetArg<GameObjectId>(0));
   qInfo().noquote() << "[CLIENT] Set player_id to"
                     << event.GetArg<GameObjectId>(0);
-}
-
-void ClientController::CreateAllPlayersDataEvent(const Event& event) {
-  for (int i = 2; i < event.GetArg<int>(1) * 4 + 2; i += 4) {
-    model_->AddPlayer(event.GetArg<GameObjectId>(i),
-                     event.GetArg<float>(i + 1),
-                     event.GetArg<float>(i + 2),
-                     event.GetArg<float>(i + 3));
-  }
 }
 
 void ClientController::StartGameEvent(const Event& event) {
@@ -173,7 +160,7 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 }
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
-  model_->DeletePlayer(event.GetArg<GameObjectId>(0));
+  model_->DeleteGameObject(event.GetArg<GameObjectId>(0));
   game_state_ = GameState::kGameNotStarted;
   view_->Update();
 }
@@ -291,51 +278,24 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
 
 // ------------------- GAME EVENTS -------------------
 
-void ClientController::GameObjectAppearedEvent(const Event& event) {
-  if (!model_->IsLocalPlayerSet()) {
-    return;
-  }
-  auto game_object_id = event.GetArg<GameObjectId>(0);
-  auto game_object_type
-      = static_cast<GameObjectTypeForEvents>(event.GetArg<int>(1));
-  switch (game_object_type) {
-    case GameObjectTypeForEvents::kBox:
-      model_->AddBox(game_object_id,
-                     event.GetArg<float>(2),
-                     event.GetArg<float>(3),
-                     event.GetArg<float>(4),
-                     event.GetArg<float>(5),
-                     event.GetArg<float>(6));
-      break;
-    case GameObjectTypeForEvents::kTree:
-      model_->AddTree(game_object_id,
-                      event.GetArg<float>(2),
-                      event.GetArg<float>(3),
-                      event.GetArg<float>(4));
-      break;
-  }
-}
-
 void ClientController::SendControlsEvent(const Event& event) {
   this->AddEventToSend(event);
 }
 
-void ClientController::UpdatePlayerDataEvent(const Event& event) {
-  if (!model_->IsLocalPlayerSet()) {
-    return;
+void ClientController::UpdateGameObjectDataEvent(const Event& event) {
+  auto game_object_id = event.GetArg<GameObjectId>(0);
+  auto game_object_type
+      = static_cast<GameObjectType>(event.GetArg<int>(1));
+  auto params = event.GetArgsSubVector(2);
+
+  if (model_->IsGameObjectIdTaken(game_object_id)) {
+    if (game_object_type == GameObjectType::kPlayer
+      && game_object_id == model_->GetLocalPlayer()->GetId()) {
+      return;
+    }
+    model_->GetGameObjectByGameObjectId(game_object_id)->SetParams(params);
+  } else {
+    model_->AddGameObject(game_object_id, game_object_type, params);
   }
-
-  auto player_ptr = model_->GetPlayerByPlayerId(
-      event.GetArg<GameObjectId>(0));
-
-  if (player_ptr->IsLocalPlayer()) {
-    return;
-  }
-
-  player_ptr->SetX(event.GetArg<float>(1));
-  player_ptr->SetY(event.GetArg<float>(2));
-  player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
-  player_ptr->SetRotation(event.GetArg<float>(4));
-
   view_->Update();
 }

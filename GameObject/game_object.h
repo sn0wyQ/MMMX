@@ -11,11 +11,23 @@
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
 #include "Painter/painter.h"
 
+namespace GameObjectTypeWrapper {
+
+Q_NAMESPACE
+
 // enum for sending events
-enum class GameObjectTypeForEvents {
+enum class GameObjectType {
+  kPlayer,
   kBox,
   kTree
 };
+
+Q_ENUM_NS(GameObjectType)
+
+}  // namespace GameObjectTypeWrapper
+
+using GameObjectType = GameObjectTypeWrapper::GameObjectType;
+Q_DECLARE_METATYPE(GameObjectType)
 
 class GameObject {
  public:
@@ -37,6 +49,10 @@ class GameObject {
   void SetY(float y);
   float GetRotation() const;
   void SetRotation(float rotation);
+
+  virtual GameObjectType GetGameObjectType() const = 0;
+  virtual void SetParams(const std::vector<QVariant>& params) = 0;
+  virtual std::vector<QVariant> GetParams() const = 0;
 
  private:
   GameObjectId id_ = Constants::kNullGameObjectId;

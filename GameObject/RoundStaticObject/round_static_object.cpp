@@ -17,3 +17,8 @@ float RoundStaticObject::GetRadius() const {
 float RoundStaticObject::GetFrictionForce() const {
   return IntersectChecker::kFrictionForceRoundStaticObject;
 }
+
+void RoundStaticObject::SetRadius(float radius) {
+  radius_ = radius;
+  rigid_body_->SetRadius(radius);
+}

@@ -22,3 +22,13 @@ float RectangularStaticObject::GetHeight() const {
 float RectangularStaticObject::GetFrictionForce() const {
   return IntersectChecker::kFrictionForceRectangularStaticObject;
 }
+
+void RectangularStaticObject::SetWidth(float width) {
+  width_ = width;
+  rigid_body_->SetWidth(width);
+}
+
+void RectangularStaticObject::SetHeight(float height) {
+  height_ = height;
+  rigid_body_->SetHeight(height);
+}

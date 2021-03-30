@@ -15,11 +15,17 @@ class Player : public Entity {
          float x,
          float y,
          float rotation);
+  Player(GameObjectId player_id, const std::vector<QVariant>& params);
 
   void DrawRelatively(Painter* painter) override;
 
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
+
+  void SetParams(const std::vector<QVariant>& params) override;
+  std::vector<QVariant> GetParams() const override;
+
+  GameObjectType GetGameObjectType() const override;
 
  private:
   bool is_local_player_ = false;

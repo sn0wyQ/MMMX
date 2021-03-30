@@ -13,6 +13,10 @@ Player::Player(GameObjectId player_id,
   SetRotation(rotation);
 }
 
+Player::Player(GameObjectId player_id, const std::vector<QVariant>& params)
+  : Player(player_id, params.at(0).toFloat(), params.at(1).toFloat(),
+           params.at(2).toFloat()) {}
+
 void Player::DrawRelatively(Painter* painter) {
   // Body [Temporary]
   painter->DrawEllipse(QPointF(), 1.f, 1.f);
@@ -35,4 +39,24 @@ bool Player::IsLocalPlayer() const {
 
 void Player::SetIsLocalPlayer(bool is_local_player) {
   is_local_player_ = is_local_player;
+}
+
+void Player::SetParams(const std::vector<QVariant>& params) {
+  SetX(params.at(0).toFloat());
+  SetY(params.at(1).toFloat());
+  QPointF vec = params.at(2).toPointF();
+  SetVelocity(QVector2D(vec.x(), vec.y()));
+  SetRotation(params.at(3).toFloat());
+}
+
+std::vector<QVariant> Player::GetParams() const {
+  std::vector<QVariant> result;
+  result.emplace_back(GetX());
+  result.emplace_back(GetY());
+  result.emplace_back(GetVelocity());
+  result.emplace_back(GetRotation());
+  return result;
+}
+GameObjectType Player::GetGameObjectType() const {
+  return GameObjectType::kPlayer;
 }
