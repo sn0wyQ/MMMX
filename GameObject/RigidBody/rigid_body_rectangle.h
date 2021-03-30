@@ -1,7 +1,6 @@
 #ifndef GAMEOBJECT_RIGIDBODY_RIGID_BODY_RECTANGLE_H_
 #define GAMEOBJECT_RIGIDBODY_RIGID_BODY_RECTANGLE_H_
 
-#include "GameObject/RigidBody/rigid_body_rectangle.h"
 #include "Painter/painter.h"
 
 class RigidBodyRectangle {

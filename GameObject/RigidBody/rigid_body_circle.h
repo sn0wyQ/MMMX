@@ -5,7 +5,6 @@
 
 #include <QPointF>
 
-#include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/RigidBody/intersect_constants.h"
 #include "Painter/painter.h"
 
