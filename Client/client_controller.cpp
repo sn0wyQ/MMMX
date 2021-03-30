@@ -97,6 +97,7 @@ void ClientController::OnTick(int delta_time) {
       this->OnTickGameNotStarted(delta_time);
       break;
   }
+  view_->Update();
 }
 
 void ClientController::OnTickGameNotStarted(int delta_time) {
@@ -169,7 +170,7 @@ void ClientController::SetPing(int elapsed_time) {
 }
 
 void ClientController::UpdateVarsAndPing() {
-  this->AddEventToSend(Event(EventType::kSendGetVarsEvent));
+  this->AddEventToSend(Event(EventType::kSendGetVars));
   web_socket_.ping();
 }
 
@@ -279,6 +280,18 @@ void ClientController::UpdatePlayerDataEvent(const Event& event) {
   player_ptr->SetY(event.GetArg<float>(2));
   player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
   player_ptr->SetViewAngle(event.GetArg<float>(4));
+  player_ptr->SetIsInFov(true);
 
   view_->Update();
+}
+
+void ClientController::UpdatePlayersFovRadiusEvent(const Event& event) {
+  model_->GetLocalPlayer()->SetFovRadius(event.GetArg<float>(1));
+  qDebug() << "[CLIENT] Set player FOV to"
+           << model_->GetLocalPlayer()->GetFovRadius();
+}
+
+void ClientController::PlayerLeftFovEvent(const Event& event) {
+  model_->GetPlayerByPlayerId(
+      event.GetArg<GameObjectId>(0))->SetIsInFov(false);
 }

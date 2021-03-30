@@ -81,7 +81,7 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
   qDebug().noquote() << "[SERVER] Received" << event
                      << "from Client ID:" << client_id;
 
-  if (event.GetType() == EventType::kSendGetVarsEvent) {
+  if (event.GetType() == EventType::kSendGetVars) {
     this->AddEventToHandle(Event(EventType::kSendEventToClient,
                                  client_id,
                                  static_cast<int>(EventType::kUpdateVars),

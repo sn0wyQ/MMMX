@@ -17,7 +17,7 @@ class Entity : public MovableObject {
   // 0 is direction from left to right
   // Increasing counterclockwise
   // Measured in degrees
-  float view_angle_ = 0.f;
+  float view_angle_{0.f};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_

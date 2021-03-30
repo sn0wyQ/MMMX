@@ -6,6 +6,7 @@
 #include <QVector2D>
 
 #include "GameObject/MovableObject/Entity/entity.h"
+#include "constants.h"
 
 class Player : public Entity {
  public:
@@ -17,14 +18,23 @@ class Player : public Entity {
 
   void OnTick(int delta_time) override;
   void Draw(Painter* painter) override;
+  bool IsFilteredByFov() const override;
 
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
 
+  float GetFovRadius() const;
+  void SetFovRadius(float fov_radius);
+
   void UpdateVelocity(uint32_t mask);
 
+  bool IsInFov() const;
+  void SetIsInFov(bool is_in_fov);
+
  private:
-  bool is_local_player_ = false;
+  float fov_radius_{Constants::kDefaultPlayersFov};
+  bool is_local_player_{false};
+  bool is_in_fov_{true};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_

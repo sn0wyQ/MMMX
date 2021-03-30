@@ -41,6 +41,10 @@ void Player::Draw(Painter* painter) {
   painter->restore();
 }
 
+bool Player::IsFilteredByFov() const {
+  return true;
+}
+
 // 0th mask bit - IsNeedToGoLeft
 // 1st mask bit - IsNeedToGoDown
 // 2nd mask bit - IsNeedToGoRight
@@ -75,4 +79,20 @@ bool Player::IsLocalPlayer() const {
 
 void Player::SetIsLocalPlayer(bool is_local_player) {
   is_local_player_ = is_local_player;
+}
+
+float Player::GetFovRadius() const {
+  return fov_radius_;
+}
+
+void Player::SetFovRadius(float fov_radius) {
+  fov_radius_ = fov_radius;
+}
+
+bool Player::IsInFov() const {
+  return is_in_fov_;
+}
+
+void Player::SetIsInFov(bool is_in_fov) {
+  is_in_fov_ = is_in_fov;
 }

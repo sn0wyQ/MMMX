@@ -10,7 +10,7 @@ class Converter {
  public:
   explicit Converter(QWidget* widget);
 
-  QPointF GetCenter() const;
+  QPointF GetGameCenter() const;
   float GetCoefficient() const;
 
   void UpdateGameCenter(QPointF center);

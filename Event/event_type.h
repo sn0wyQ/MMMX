@@ -37,13 +37,13 @@ enum class EventType {
   // [2+] - event_args
   kSendEventToClient,
 
-  // [0] - <int> room_id,
+  // [0] - <RoomId> room_id,
   // [1] - <int> event_type,
   // [2+] - event_args
   kSendEventToRoom,
 
   // No arguments
-  kSendGetVarsEvent,
+  kSendGetVars,
 
   // [0] - <GameObjectId> player_id
   kSetClientsPlayerId,
@@ -57,19 +57,26 @@ enum class EventType {
 
   // ------------------- GAME EVENTS -------------------
 
-  // [0] - <int> sender_player_id,
+  // [0] - <GameObjectId> player's that left somebody's FOV player_id
+  kPlayerLeftFov,
+
+  // [0] - <GameObjectId> sender_player_id,
   // [1] - <float> x,
   // [2] - <float> y,
   // [3] - <QVector2D> velocity,
   // [4] - <float> view_angle
   kSendControls,
 
-  // [0] - <int> sender_player_id,
+  // [0] - <GameObjectId> sender_player_id,
   // [1] - <float> x,
   // [2] - <float> y,
   // [3] - <QVector2D> velocity,
   // [4] - <float> view_angle
   kUpdatePlayerData,
+
+  // [0] - <ClientId> receiver_client_id,
+  // [1] - <float> new player's FOV, FOV should ALWAYS be > 0
+  kUpdatePlayersFovRadius,
 
   SIZE
 };

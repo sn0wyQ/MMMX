@@ -30,6 +30,13 @@ class Event {
     return args_.at(index).value<T>();
   }
   template<typename T>
+  void SetArg(int index, const T& value) {
+    args_.at(index).setValue<T>(value);
+  }
+  static Event CreateSendToClientEvent(const Event& event);
+  // Pushes back arguments (not type) into this event |args_|
+  void AddArgsFromEvent(const Event& other);
+  template<typename T>
   T GetLastArg() const {
     return args_.back().value<T>();
   }

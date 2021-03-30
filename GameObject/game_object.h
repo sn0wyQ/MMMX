@@ -12,6 +12,7 @@ class GameObject {
 
   virtual void OnTick(int delta_time) = 0;
   virtual void Draw(Painter* painter) = 0;
+  virtual bool IsFilteredByFov() const = 0;
 
   GameObjectId GetId() const;
   void SetId(GameObjectId id);
@@ -24,7 +25,7 @@ class GameObject {
   void SetY(float y);
 
  private:
-  GameObjectId id_ = Constants::kNullGameObjectId;
+  GameObjectId id_{Constants::kNullGameObjectId};
   QPointF position_{0.f, 0.f};
 };
 
