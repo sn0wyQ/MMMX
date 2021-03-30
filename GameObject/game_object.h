@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECT_GAME_OBJECT_H_
 #define GAMEOBJECT_GAME_OBJECT_H_
 
+#include <vector>
 #include <utility>
 
 #include <QPoint>

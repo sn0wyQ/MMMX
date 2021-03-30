@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECT_RECTANGULARSTATICOBJECT_BOX_H_
 #define GAMEOBJECT_RECTANGULARSTATICOBJECT_BOX_H_
 
+#include <vector>
 #include <memory>
 
 #include "constants.h"

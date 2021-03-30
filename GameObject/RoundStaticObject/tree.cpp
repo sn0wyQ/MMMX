@@ -9,7 +9,7 @@ Tree::Tree(GameObjectId game_object_id, float x, float y, float radius)
 
 Tree::Tree(GameObjectId game_object_id, const std::vector<QVariant>& params)
     : Tree(game_object_id, params.at(0).toFloat(),
-           params.at(1).toFloat(), params.at(2).toFloat()){}
+           params.at(1).toFloat(), params.at(2).toFloat()) {}
 
 void Tree::OnTick(int) {}
 
