@@ -33,7 +33,7 @@ class Player : public Entity {
 
  private:
   float fov_radius_{Constants::kDefaultPlayersFov};
-  bool is_local_player_ = false;
+  bool is_local_player_{false};
   bool is_in_fov_{true};
 };
 

@@ -19,7 +19,7 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
 
   // Nothing here right now :(
 
-  // --------------- NON-CONSTANT OBJECTS ---------------
+  // ------------------ DYNAMIC OBJECTS -----------------
 
   // If LocalPlayer isn't set we don't want to draw anything non-constant
   if (!model_->IsLocalPlayerSet()) {

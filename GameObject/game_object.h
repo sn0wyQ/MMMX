@@ -25,7 +25,7 @@ class GameObject {
   void SetY(float y);
 
  private:
-  GameObjectId id_ = Constants::kNullGameObjectId;
+  GameObjectId id_{Constants::kNullGameObjectId};
   QPointF position_{0.f, 0.f};
 };
 
