@@ -7,6 +7,7 @@
 #include <QVector2D>
 
 #include "GameObject/MovableObject/Entity/entity.h"
+#include "constants.h"
 
 class Player : public Entity {
  public:
@@ -18,6 +19,7 @@ class Player : public Entity {
   Player(GameObjectId player_id, const std::vector<QVariant>& params);
 
   void DrawRelatively(Painter* painter) override;
+  bool IsFilteredByFov() const override;
 
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
@@ -26,9 +28,16 @@ class Player : public Entity {
   std::vector<QVariant> GetParams() const override;
 
   GameObjectType GetGameObjectType() const override;
+  float GetFovRadius() const;
+  void SetFovRadius(float fov_radius);
+
+  bool IsInFov() const;
+  void SetIsInFov(bool is_in_fov);
 
  private:
-  bool is_local_player_ = false;
+  float fov_radius_{Constants::kDefaultPlayersFov};
+  bool is_local_player_{false};
+  bool is_in_fov_{true};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_

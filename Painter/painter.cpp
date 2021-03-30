@@ -14,15 +14,15 @@ void Painter::SetClipCircle(float x,
                             float y,
                             float r,
                             Qt::ClipOperation clip_operation) {
-  converter_->ScaleFromGameToScreen(&x);
-  converter_->ScaleFromGameToScreen(&y);
-  converter_->ScaleFromGameToScreen(&r);
-  int r_casted_to_int = static_cast<int>(r);
+  QPointF clip_center =
+      converter_->ScaleFromGameToScreen(QPointF(x - r, y - r));
+  int doubled_r_scaled =
+      static_cast<int>(converter_->ScaleFromGameToScreen(r * 2));
 
-  QRegion region(static_cast<int>(x),
-                 static_cast<int>(y),
-                 r_casted_to_int,
-                 r_casted_to_int,
+  QRegion region(static_cast<int>(clip_center.x()),
+                 static_cast<int>(clip_center.y()),
+                 doubled_r_scaled,
+                 doubled_r_scaled,
                  QRegion::Ellipse);
   setClipRegion(region, clip_operation);
 }

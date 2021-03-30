@@ -21,11 +21,12 @@ class GameDataModel {
       GameObjectId game_object_id) const;
   std::shared_ptr<Player> GetLocalPlayer() const;
 
-  std::vector<std::shared_ptr<MovableObject>> GetAllMovableObjects() const;
+  std::vector<std::shared_ptr<GameObject>> GetConstantObjects() const;
+  std::vector<std::shared_ptr<MovableObject>> GetMovableObjects() const;
   std::vector<std::shared_ptr<RoundStaticObject>>
-    GetAllRoundStaticObjects() const;
+    GetRoundStaticObjects() const;
   std::vector<std::shared_ptr<RectangularStaticObject>>
-    GetAllRectangularStaticObjects() const;
+    GetRectangularStaticObjects() const;
 
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
   std::vector<std::shared_ptr<Box>> GetBoxes() const;

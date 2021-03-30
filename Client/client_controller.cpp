@@ -106,32 +106,32 @@ void ClientController::CollidePlayerWithGameObjects(
   }
   local_player->SetVelocity(key_force);
   ObjectCollision::DoFirstPhase(
-      local_player, model_->GetAllMovableObjects(),
+      local_player, model_->GetMovableObjects(),
       delta_time);
   ObjectCollision::DoFirstPhase(
-      local_player, model_->GetAllRectangularStaticObjects(),
+      local_player, model_->GetRectangularStaticObjects(),
       delta_time);
   ObjectCollision::DoFirstPhase(
-      local_player, model_->GetAllRoundStaticObjects(),
+      local_player, model_->GetRoundStaticObjects(),
       delta_time);
   if (!local_player->GetVelocity().isNull()) {
     return;
   }
   std::vector<QVector2D> tangents;
   ObjectCollision::FindTangents(
-      local_player, model_->GetAllMovableObjects(), &tangents);
+      local_player, model_->GetMovableObjects(), &tangents);
   ObjectCollision::FindTangents(
-      local_player, model_->GetAllRectangularStaticObjects(), &tangents);
+      local_player, model_->GetRectangularStaticObjects(), &tangents);
   ObjectCollision::FindTangents(
-      local_player, model_->GetAllRoundStaticObjects(), &tangents);
+      local_player, model_->GetRoundStaticObjects(), &tangents);
   ObjectCollision::DoSecondPhase(
-      local_player, model_->GetAllMovableObjects(), key_force,
+      local_player, model_->GetMovableObjects(), key_force,
       tangents);
   ObjectCollision::DoSecondPhase(
-      local_player, model_->GetAllRectangularStaticObjects(), key_force,
+      local_player, model_->GetRectangularStaticObjects(), key_force,
       tangents);
   ObjectCollision::DoSecondPhase(
-      local_player, model_->GetAllRoundStaticObjects(), key_force,
+      local_player, model_->GetRoundStaticObjects(), key_force,
       tangents);
 }
 
@@ -195,7 +195,7 @@ void ClientController::SetPing(int elapsed_time) {
 }
 
 void ClientController::UpdateVarsAndPing() {
-  this->AddEventToSend(Event(EventType::kSendGetVarsEvent));
+  this->AddEventToSend(Event(EventType::kSendGetVars));
   web_socket_.ping();
 }
 
@@ -283,15 +283,28 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
   auto game_object_type
       = static_cast<GameObjectType>(event.GetArg<int>(1));
   auto params = event.GetArgsSubVector(2);
-
   if (model_->IsGameObjectIdTaken(game_object_id)) {
-    if (game_object_type == GameObjectType::kPlayer
-      && game_object_id == model_->GetLocalPlayer()->GetId()) {
-      return;
+    if (game_object_type == GameObjectType::kPlayer) {
+      if (game_object_id == model_->GetLocalPlayer()->GetId()) {
+        return;
+      }
+      model_->GetPlayerByPlayerId(game_object_id)->SetIsInFov(true);
     }
     model_->GetGameObjectByGameObjectId(game_object_id)->SetParams(params);
   } else {
     model_->AddGameObject(game_object_id, game_object_type, params);
   }
+
   view_->Update();
+}
+
+void ClientController::UpdatePlayersFovRadiusEvent(const Event& event) {
+  model_->GetLocalPlayer()->SetFovRadius(event.GetArg<float>(0));
+  qDebug() << "[CLIENT] Set player FOV to"
+           << model_->GetLocalPlayer()->GetFovRadius();
+}
+
+void ClientController::PlayerLeftFovEvent(const Event& event) {
+  model_->GetPlayerByPlayerId(
+      event.GetArg<GameObjectId>(0))->SetIsInFov(false);
 }

@@ -2,6 +2,7 @@
 #define SERVER_ROOM_ROOM_CONTROLLER_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -60,6 +61,9 @@ class RoomController : public BaseController {
   GameObjectId ClientIdToPlayerId(ClientId client_id) const;
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
+  bool IsPlayerInFov(GameObjectId sender_player_id,
+                     GameObjectId receiver_player_id);
+
   std::vector<Event> ClaimEventsForServer();
 
   void AddBox(float x, float y, float rotation);
@@ -73,11 +77,19 @@ class RoomController : public BaseController {
   RoomState room_state_ = RoomState::kWaitingForClients;
   std::unordered_map<ClientId, GameObjectId> player_ids_;
 
+  std::set<std::pair<GameObjectId, GameObjectId>> is_first_in_fov_of_second_;
+
   std::vector<Event> events_for_server_;
+
+  void UpdateReceiversByFov(
+      GameObjectId sender_player_id,
+      std::vector<GameObjectId>* data_receivers,
+      std::vector<GameObjectId>* left_fov_event_receivers);
 
   // ------------------- GAME EVENTS -------------------
 
   void SendControlsEvent(const Event& event) override;
+  void PlayerLeftFovEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

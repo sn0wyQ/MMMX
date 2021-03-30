@@ -15,18 +15,38 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                   model_->IsLocalPlayerSet()
                   ? model_->GetLocalPlayer()->GetPosition()
                   : QPointF(0, 0));
-  std::vector<std::shared_ptr<Box>> boxes = model_->GetBoxes();
-  for (const auto& box : boxes) {
-    box->Draw(&painter);
+
+  // ----------------- CONSTANT OBJECTS -----------------
+
+  std::vector<std::shared_ptr<GameObject>> game_objects
+    = model_->GetConstantObjects();
+  for (const auto& game_object : game_objects) {
+    if (true) {
+      game_object->Draw(&painter);
+    }
   }
-  std::vector<std::shared_ptr<Tree>> trees = model_->GetTrees();
-  for (const auto& tree : trees) {
-    tree->Draw(&painter);
+
+  // ------------------ DYNAMIC OBJECTS -----------------
+
+  // If LocalPlayer isn't set we don't want to draw anything non-constant
+  if (!model_->IsLocalPlayerSet()) {
+    return;
   }
+
+  // Temporary FOV show
+  const auto& local_player = model_->GetLocalPlayer();
+  painter.DrawEllipse(local_player->GetPosition(),
+                      local_player->GetFovRadius(),
+                      local_player->GetFovRadius());
+  painter.SetClipCircle(local_player->GetX(),
+                        local_player->GetY(),
+                        local_player->GetFovRadius());
 
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
-    player->Draw(&painter);
+    if (!player->IsFilteredByFov() || player->IsInFov()) {
+      player->Draw(&painter);
+    }
   }
 }
 

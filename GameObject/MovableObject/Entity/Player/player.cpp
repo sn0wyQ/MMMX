@@ -33,6 +33,10 @@ void Player::DrawRelatively(Painter* painter) {
   }
 }
 
+bool Player::IsFilteredByFov() const {
+  return true;
+}
+
 bool Player::IsLocalPlayer() const {
   return is_local_player_;
 }
@@ -59,4 +63,20 @@ std::vector<QVariant> Player::GetParams() const {
 }
 GameObjectType Player::GetGameObjectType() const {
   return GameObjectType::kPlayer;
+}
+
+float Player::GetFovRadius() const {
+  return fov_radius_;
+}
+
+void Player::SetFovRadius(float fov_radius) {
+  fov_radius_ = fov_radius;
+}
+
+bool Player::IsInFov() const {
+  return is_in_fov_;
+}
+
+void Player::SetIsInFov(bool is_in_fov) {
+  is_in_fov_ = is_in_fov;
 }

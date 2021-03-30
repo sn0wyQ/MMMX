@@ -16,6 +16,10 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendEventToClientEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
     std::bind(&BaseController::SendEventToRoomEvent, this, _1));
+  SetFunctionForEventType(EventType::kSetClientsPlayerId,
+    std::bind(&BaseController::SetClientsPlayerIdEvent, this, _1));
+  SetFunctionForEventType(EventType::kStartGame,
+    std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateVars,
     std::bind(&BaseController::UpdateVarsEvent, this, _1));
 
@@ -25,6 +29,10 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendControlsEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateGameObjectData,
     std::bind(&BaseController::UpdateGameObjectDataEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdatePlayersFovRadius,
+    std::bind(&BaseController::UpdatePlayersFovRadiusEvent, this, _1));
+  SetFunctionForEventType(EventType::kPlayerLeftFov,
+    std::bind(&BaseController::PlayerLeftFovEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

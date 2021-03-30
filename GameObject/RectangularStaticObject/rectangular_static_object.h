@@ -16,6 +16,8 @@ class RectangularStaticObject : public GameObject {
 
   std::shared_ptr<RigidBodyRectangle> GetRigidBody() const;
 
+  bool IsFilteredByFov() const override;
+
   float GetWidth() const;
   float GetHeight() const;
 

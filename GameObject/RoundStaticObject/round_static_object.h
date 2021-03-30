@@ -17,6 +17,8 @@ class RoundStaticObject : public GameObject {
 
   std::shared_ptr<RigidBodyCircle> GetRigidBody() const;
 
+  bool IsFilteredByFov() const override;
+
   float GetRadius() const;
   void SetRadius(float radius);
 

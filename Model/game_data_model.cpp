@@ -30,8 +30,7 @@ std::shared_ptr<Player> GameDataModel::GetLocalPlayer() const {
     throw std::runtime_error("[MODEL] Owner's player_id isn't set...");
   }
 
-  return std::dynamic_pointer_cast<Player>(
-      game_objects_.at(local_player_id_));
+  return GetPlayerByPlayerId(local_player_id_);
 }
 
 int GameDataModel::GetPlayersCount() const {
@@ -132,7 +131,7 @@ GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
 }
 
 std::vector<std::shared_ptr<MovableObject>>
-  GameDataModel::GetAllMovableObjects() const {
+  GameDataModel::GetMovableObjects() const {
   std::vector<std::shared_ptr<Player>> players = GetPlayers();
   std::vector<std::shared_ptr<MovableObject>> result;
   result.reserve(players.size());
@@ -143,7 +142,7 @@ std::vector<std::shared_ptr<MovableObject>>
 }
 
 std::vector<std::shared_ptr<RoundStaticObject>>
-  GameDataModel::GetAllRoundStaticObjects() const {
+  GameDataModel::GetRoundStaticObjects() const {
   std::vector<std::shared_ptr<Tree>> trees = GetTrees();
   std::vector<std::shared_ptr<RoundStaticObject>> result;
   result.reserve(trees.size());
@@ -154,12 +153,29 @@ std::vector<std::shared_ptr<RoundStaticObject>>
 }
 
 std::vector<std::shared_ptr<RectangularStaticObject>>
-  GameDataModel::GetAllRectangularStaticObjects() const {
+  GameDataModel::GetRectangularStaticObjects() const {
   std::vector<std::shared_ptr<Box>> boxes = GetBoxes();
   std::vector<std::shared_ptr<RectangularStaticObject>> result;
   result.reserve(boxes.size());
   for (const auto& box : boxes) {
     result.push_back(box);
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<GameObject>>
+  GameDataModel::GetConstantObjects() const {
+  std::vector<std::shared_ptr<RectangularStaticObject>> rectangular_static
+    = GetRectangularStaticObjects();
+  std::vector<std::shared_ptr<RoundStaticObject>> round_static
+    = GetRoundStaticObjects();
+  std::vector<std::shared_ptr<GameObject>> result;
+  result.reserve(rectangular_static.size() + round_static.size());
+  for (const auto& object : rectangular_static) {
+    result.push_back(object);
+  }
+  for (const auto& object : round_static) {
+    result.push_back(object);
   }
   return result;
 }

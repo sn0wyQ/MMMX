@@ -32,3 +32,7 @@ void RectangularStaticObject::SetHeight(float height) {
   height_ = height;
   rigid_body_->SetHeight(height);
 }
+
+bool RectangularStaticObject::IsFilteredByFov() const {
+  return false;
+}

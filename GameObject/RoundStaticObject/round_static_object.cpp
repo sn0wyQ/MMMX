@@ -22,3 +22,7 @@ void RoundStaticObject::SetRadius(float radius) {
   radius_ = radius;
   rigid_body_->SetRadius(radius);
 }
+
+bool RoundStaticObject::IsFilteredByFov() const {
+  return false;
+}

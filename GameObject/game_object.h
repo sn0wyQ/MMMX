@@ -38,6 +38,7 @@ class GameObject {
   virtual void OnTick(int delta_time) = 0;
   void Draw(Painter* painter);
   virtual void DrawRelatively(Painter* painter) = 0;
+  virtual bool IsFilteredByFov() const = 0;
 
   GameObjectId GetId() const;
   void SetId(GameObjectId id);
@@ -56,7 +57,7 @@ class GameObject {
   virtual std::vector<QVariant> GetParams() const = 0;
 
  private:
-  GameObjectId id_ = Constants::kNullGameObjectId;
+  GameObjectId id_{Constants::kNullGameObjectId};
   QPointF position_{0.f, 0.f};
   float rotation_{0.f};
 };

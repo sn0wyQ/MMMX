@@ -1,3 +1,4 @@
+#include "constants.h"
 #include "event.h"
 
 Event::Event(const Event& event) {
@@ -23,6 +24,21 @@ EventType Event::GetType() const {
 
 QVariant Event::GetArg(int index) const {
   return args_.at(index);
+}
+
+void Event::AddArgsFromEvent(const Event& other) {
+  auto args = other.GetArgs();
+  for (auto& arg : args) {
+    args_.push_back(arg);
+  }
+}
+
+Event Event::CreateSendToClientEvent(const Event& other) {
+  auto event = Event(EventType::kSendEventToClient,
+                     Constants::kNullClientId,
+                     static_cast<int>(other.GetType()));
+  event.AddArgsFromEvent(other);
+  return event;
 }
 
 std::vector<QVariant> Event::GetArgs() const {

@@ -6,7 +6,7 @@ Converter::Converter(QWidget* widget) : widget_(widget) {
                            Constants::kDefaultPlayerY));
 }
 
-QPointF Converter::GetCenter() const {
+QPointF Converter::GetGameCenter() const {
   return game_center_;
 }
 
@@ -14,8 +14,8 @@ float Converter::GetCoefficient() const {
   return coefficient_;
 }
 
-void Converter::UpdateGameCenter(QPointF center) {
-  game_center_ = center;
+void Converter::UpdateGameCenter(QPointF game_center) {
+  game_center_ = game_center;
 }
 
 void Converter::UpdateCoefficient() {
