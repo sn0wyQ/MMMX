@@ -6,6 +6,7 @@
 
 #include <QVector2D>
 
+#include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/game_object.h"
 
 class MovableObject : public GameObject {
@@ -13,6 +14,7 @@ class MovableObject : public GameObject {
   MovableObject(GameObjectId id, std::shared_ptr<RigidBodyCircle> rigid_body);
 
   void OnTick(int delta_time) override;
+  bool IsMovable() const override;
 
   QVector2D GetVelocity() const;
   void SetVelocity(const QVector2D& velocity);
@@ -23,13 +25,8 @@ class MovableObject : public GameObject {
 
   float GetCurrentSpeed() const;
 
-  std::shared_ptr<RigidBodyCircle> GetRigidBody() const;
-
-  virtual float GetFrictionForce() const;
-
  private:
   QVector2D velocity_{};
-  std::shared_ptr<RigidBodyCircle> rigid_body_;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_

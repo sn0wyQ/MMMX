@@ -49,9 +49,9 @@ void ClientView::mouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {
-  auto local_player = model_->IsLocalPlayerSet()
-                      ? model_->GetLocalPlayer()
-                      : std::make_shared<Player>(Constants::kNullGameObjectId);
+  auto position = model_->IsLocalPlayerSet()
+                      ? model_->GetLocalPlayer()->GetPosition()
+                      : QPointF();
 
   info_label_->setText(QString(tr("Server Var: %1\n"
                                   "Room Var: %2\n"
@@ -62,8 +62,8 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
                        .arg(controller_->GetRoomVar())
                        .arg(controller_->GetClientVar())
                        .arg(controller_->GetPing())
-                       .arg(local_player->GetX())
-                       .arg(local_player->GetY()));
+                       .arg(position.x())
+                       .arg(position.y()));
   info_label_->adjustSize();
 
   qDebug().noquote().nospace() << "[VIEW] Repainted";

@@ -47,8 +47,9 @@ class BaseController : public QObject {
  protected:
   BaseController();
 
-  void SetFunctionForEventType(EventType event_type,
-                               const std::function<void(const Event&)>& func);
+  void SetFunctionForEventType(
+      EventType event_type,
+      const std::function<void(const Event&)>& func);
 
  private:
   QTimer ticker_;
@@ -67,7 +68,7 @@ class BaseController : public QObject {
   virtual void PlayerDisconnectedEvent(const Event& event) {}
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
-  virtual void SetClientsPlayerIdEvent(const Event& event) {}
+  virtual void SetPlayerIdToClient(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
   virtual void UpdateVarsEvent(const Event& event) {}
 
@@ -76,7 +77,7 @@ class BaseController : public QObject {
   virtual void SendControlsEvent(const Event& event) {}
   virtual void UpdateGameObjectDataEvent(const Event& event) {}
   virtual void UpdatePlayersFovRadiusEvent(const Event& event) {}
-  virtual void PlayerLeftFovEvent(const Event& event) {}
+  virtual void GameObjectLeftFovEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

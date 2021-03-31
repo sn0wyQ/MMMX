@@ -4,7 +4,7 @@ std::shared_ptr<Player>
     GameDataModel::GetPlayerByPlayerId(GameObjectId player_id) const {
   auto iter = game_objects_.find(player_id);
   if (iter != game_objects_.end()
-    && iter->second->GetGameObjectType() == GameObjectType::kPlayer) {
+    && iter->second->GetType() == GameObjectType::kPlayer) {
     return std::dynamic_pointer_cast<Player>(iter->second);
   }
 
@@ -74,7 +74,7 @@ GameObjectId GameDataModel::AddGameObject(GameObjectType type,
 
 void GameDataModel::DeleteGameObject(GameObjectId game_object_id) {
   auto iter = game_objects_.find(game_object_id);
-  GameObjectType type = iter->second->GetGameObjectType();
+  GameObjectType type = iter->second->GetType();
   if (iter != game_objects_.end()) {
     game_objects_.erase(iter);
   }
@@ -91,7 +91,7 @@ void GameDataModel::SetLocalPlayerId(GameObjectId player_id) {
 std::vector<std::shared_ptr<Player>> GameDataModel::GetPlayers() const {
   std::vector<std::shared_ptr<Player>> result;
   for (const auto& game_object : game_objects_) {
-    if (game_object.second->GetGameObjectType() == GameObjectType::kPlayer) {
+    if (game_object.second->GetType() == GameObjectType::kPlayer) {
       result.push_back(std::dynamic_pointer_cast<Player>(game_object.second));
     }
   }
@@ -101,7 +101,7 @@ std::vector<std::shared_ptr<Player>> GameDataModel::GetPlayers() const {
 std::vector<std::shared_ptr<Box>> GameDataModel::GetBoxes() const {
   std::vector<std::shared_ptr<Box>> result;
   for (const auto& game_object : game_objects_) {
-    if (game_object.second->GetGameObjectType() == GameObjectType::kBox) {
+    if (game_object.second->GetType() == GameObjectType::kBox) {
       result.push_back(std::dynamic_pointer_cast<Box>(game_object.second));
     }
   }
@@ -111,7 +111,7 @@ std::vector<std::shared_ptr<Box>> GameDataModel::GetBoxes() const {
 std::vector<std::shared_ptr<Tree>> GameDataModel::GetTrees() const {
   std::vector<std::shared_ptr<Tree>> result;
   for (const auto& game_object : game_objects_) {
-    if (game_object.second->GetGameObjectType() == GameObjectType::kTree) {
+    if (game_object.second->GetType() == GameObjectType::kTree) {
       result.push_back(std::dynamic_pointer_cast<Tree>(game_object.second));
     }
   }
@@ -132,50 +132,31 @@ GameObjectId GameDataModel::GetNextUnusedGameObjectId() const {
 
 std::vector<std::shared_ptr<MovableObject>>
   GameDataModel::GetMovableObjects() const {
-  std::vector<std::shared_ptr<Player>> players = GetPlayers();
   std::vector<std::shared_ptr<MovableObject>> result;
-  result.reserve(players.size());
-  for (const auto& player : players) {
-    result.push_back(player);
-  }
-  return result;
-}
-
-std::vector<std::shared_ptr<RoundStaticObject>>
-  GameDataModel::GetRoundStaticObjects() const {
-  std::vector<std::shared_ptr<Tree>> trees = GetTrees();
-  std::vector<std::shared_ptr<RoundStaticObject>> result;
-  result.reserve(trees.size());
-  for (const auto& tree : trees) {
-    result.push_back(tree);
-  }
-  return result;
-}
-
-std::vector<std::shared_ptr<RectangularStaticObject>>
-  GameDataModel::GetRectangularStaticObjects() const {
-  std::vector<std::shared_ptr<Box>> boxes = GetBoxes();
-  std::vector<std::shared_ptr<RectangularStaticObject>> result;
-  result.reserve(boxes.size());
-  for (const auto& box : boxes) {
-    result.push_back(box);
+  for (const auto& object : game_objects_) {
+    if (object.second->IsMovable()) {
+      result.push_back(std::dynamic_pointer_cast<MovableObject>(object.second));
+    }
   }
   return result;
 }
 
 std::vector<std::shared_ptr<GameObject>>
   GameDataModel::GetConstantObjects() const {
-  std::vector<std::shared_ptr<RectangularStaticObject>> rectangular_static
-    = GetRectangularStaticObjects();
-  std::vector<std::shared_ptr<RoundStaticObject>> round_static
-    = GetRoundStaticObjects();
   std::vector<std::shared_ptr<GameObject>> result;
-  result.reserve(rectangular_static.size() + round_static.size());
-  for (const auto& object : rectangular_static) {
-    result.push_back(object);
+  for (const auto& object : game_objects_) {
+    if (!object.second->IsMovable()) {
+      result.push_back(object.second);
+    }
   }
-  for (const auto& object : round_static) {
-    result.push_back(object);
+  return result;
+}
+
+std::vector<std::shared_ptr<GameObject>> GameDataModel::GetAllGameObjects()
+  const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& object : game_objects_) {
+    result.push_back(object.second);
   }
   return result;
 }

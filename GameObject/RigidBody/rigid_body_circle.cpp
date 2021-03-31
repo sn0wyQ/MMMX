@@ -1,19 +1,24 @@
 #include "rigid_body_circle.h"
 
 RigidBodyCircle::RigidBodyCircle(float radius)
-  : radius_(radius) {}
+  : RigidBody(radius * 2, radius * 2) {}
 
-float RigidBodyCircle::GetRadius() const {
-  return radius_;
-}
-
-std::shared_ptr<RigidBodyCircle> RigidBodyCircle::External(float friction_force)
+std::shared_ptr<RigidBody> RigidBodyCircle::External(float friction_force)
   const {
   auto new_circle_ptr = std::make_shared<RigidBodyCircle>(*this);
-  new_circle_ptr->radius_ += friction_force;
+  new_circle_ptr->SetRadius(GetRadius() + friction_force);
   return new_circle_ptr;
 }
 
+RigidBodyType RigidBodyCircle::GetType() const {
+  return RigidBodyType::kCircle;
+}
+
+float RigidBodyCircle::GetRadius() const {
+  return GetWidth() / 2.f;
+}
+
 void RigidBodyCircle::SetRadius(float radius) {
-  radius_ = radius;
+  SetWidth(radius * 2.f);
+  SetHeight(radius * 2.f);
 }

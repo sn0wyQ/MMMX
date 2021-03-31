@@ -1,21 +1,21 @@
 #include "player.h"
 
-Player::Player(GameObjectId player_id)
-  : Entity(player_id, std::make_shared<RigidBodyCircle>(1.f)) {}
+Player::Player(GameObjectId player_id, float radius)
+  : Entity(player_id, std::make_shared<RigidBodyCircle>(radius)) {}
 
-Player::Player(GameObjectId player_id,
-               float x,
-               float y,
-               float rotation)
-    : Player(player_id) {
+Player::Player(GameObjectId player_id, float x, float y, float radius)
+    : Player(player_id, radius) {
   SetX(x);
   SetY(y);
-  SetRotation(rotation);
+  SetRadius(radius);
 }
 
 Player::Player(GameObjectId player_id, const std::vector<QVariant>& params)
   : Player(player_id, params.at(0).toFloat(), params.at(1).toFloat(),
-           params.at(2).toFloat()) {}
+           params.at(3).toFloat()) {
+  QPointF vec = params.at(2).toPointF();
+  SetVelocity(QVector2D(vec.x(), vec.y()));
+}
 
 void Player::DrawRelatively(Painter* painter) {
   // Body [Temporary]
@@ -33,10 +33,6 @@ void Player::DrawRelatively(Painter* painter) {
   }
 }
 
-bool Player::IsFilteredByFov() const {
-  return true;
-}
-
 bool Player::IsLocalPlayer() const {
   return is_local_player_;
 }
@@ -50,7 +46,7 @@ void Player::SetParams(const std::vector<QVariant>& params) {
   SetY(params.at(1).toFloat());
   QPointF vec = params.at(2).toPointF();
   SetVelocity(QVector2D(vec.x(), vec.y()));
-  SetRotation(params.at(3).toFloat());
+  SetRadius(params.at(3).toFloat());
 }
 
 std::vector<QVariant> Player::GetParams() const {
@@ -58,10 +54,10 @@ std::vector<QVariant> Player::GetParams() const {
   result.emplace_back(GetX());
   result.emplace_back(GetY());
   result.emplace_back(GetVelocity());
-  result.emplace_back(GetRotation());
+  result.emplace_back(GetRadius());
   return result;
 }
-GameObjectType Player::GetGameObjectType() const {
+GameObjectType Player::GetType() const {
   return GameObjectType::kPlayer;
 }
 
@@ -73,10 +69,11 @@ void Player::SetFovRadius(float fov_radius) {
   fov_radius_ = fov_radius;
 }
 
-bool Player::IsInFov() const {
-  return is_in_fov_;
+void Player::SetRadius(float radius) {
+  SetWidth(radius * 2.f);
+  SetHeight(radius * 2.f);
 }
 
-void Player::SetIsInFov(bool is_in_fov) {
-  is_in_fov_ = is_in_fov;
+float Player::GetRadius() const {
+  return GetWidth() / 2.f;
 }

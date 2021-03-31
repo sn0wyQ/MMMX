@@ -18,11 +18,11 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
 
   // ----------------- CONSTANT OBJECTS -----------------
 
-  std::vector<std::shared_ptr<GameObject>> game_objects
+  std::vector<std::shared_ptr<GameObject>> constant_objects
     = model_->GetConstantObjects();
-  for (const auto& game_object : game_objects) {
-    if (true) {
-      game_object->Draw(&painter);
+  for (const auto& object : constant_objects) {
+    if (object->IsInFov()) {
+      object->Draw(&painter);
     }
   }
 
@@ -42,10 +42,11 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                         local_player->GetY(),
                         local_player->GetFovRadius());
 
-  std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
-  for (const auto& player : players) {
-    if (!player->IsFilteredByFov() || player->IsInFov()) {
-      player->Draw(&painter);
+  std::vector<std::shared_ptr<MovableObject>> movable_objects
+    = model_->GetMovableObjects();
+  for (const auto& object : movable_objects) {
+    if (object->IsInFov()) {
+      object->Draw(&painter);
     }
   }
 }

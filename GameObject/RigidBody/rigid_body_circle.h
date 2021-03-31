@@ -3,22 +3,18 @@
 
 #include <memory>
 
-#include <QPointF>
-
-#include "GameObject/RigidBody/intersect_constants.h"
+#include "GameObject/RigidBody/rigid_body.h"
 #include "Painter/painter.h"
 
-class RigidBodyCircle {
+class RigidBodyCircle : public RigidBody {
  public:
   explicit RigidBodyCircle(float radius);
 
-  float GetRadius() const;
   void SetRadius(float radius);
+  float GetRadius() const;
 
-  std::shared_ptr<RigidBodyCircle> External(float friction_force) const;
-
- private:
-  float radius_;
+  RigidBodyType GetType() const override;
+  std::shared_ptr<RigidBody> External(float friction_force) const override;
 };
 
 #endif  // GAMEOBJECT_RIGIDBODY_RIGID_BODY_CIRCLE_H_

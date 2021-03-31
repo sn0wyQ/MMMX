@@ -2,7 +2,7 @@
 
 MovableObject::MovableObject(GameObjectId id,
                              std::shared_ptr<RigidBodyCircle> rigid_body)
-    : GameObject(id), rigid_body_(std::move(rigid_body)) {}
+    : GameObject(id, std::move(rigid_body)) {}
 
 QVector2D MovableObject::GetVelocity() const {
   return velocity_;
@@ -38,14 +38,10 @@ float MovableObject::GetCurrentSpeed() const {
   return Constants::kDefaultMovableObjectSpeed;
 }
 
-std::shared_ptr<RigidBodyCircle> MovableObject::GetRigidBody() const {
-  return rigid_body_;
-}
-
 void MovableObject::OnTick(int delta_time) {
   ApplyVelocity(delta_time);
 }
 
-float MovableObject::GetFrictionForce() const {
-  return IntersectChecker::kFrictionForceMovableObject;
+bool MovableObject::IsMovable() const {
+  return true;
 }

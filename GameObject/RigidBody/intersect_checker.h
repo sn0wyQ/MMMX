@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include <QVector2D>
+#include <QDebug>
 
 #include "Math/math.h"
 #include "GameObject/RigidBody/intersect_constants.h"
@@ -14,6 +15,11 @@
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
 
 namespace IntersectChecker {
+  std::vector<QPointF> GetIntersectPointsBodies(
+    const std::shared_ptr<RigidBody>& first,
+    const std::shared_ptr<RigidBody>& second,
+    QVector2D offset, float rotation);
+
   std::vector<QPointF> GetIntersectPoints(
       const std::shared_ptr<RigidBodyCircle>& circle,
       const std::shared_ptr<RigidBodyRectangle>& rectangle,
@@ -29,24 +35,10 @@ namespace IntersectChecker {
 
   bool IsPointInSegment(QPointF first, QPointF second, QPointF point);
 
-  template <typename T>
   QVector2D CalculateDistanceToObjectNotToIntersectBodies(
-      const std::shared_ptr<RigidBodyCircle>& first,
-      const std::shared_ptr<T>& second,
-      QVector2D offset, float rotation, QVector2D delta_intersect) {
-    float l = 0;
-    float r = 1;
-    while (r - l > kEps) {
-      float m = (l + r) / 2;
-      if (!GetIntersectPoints(first, second,
-                              offset - delta_intersect * m, rotation).empty()) {
-        r = m - kEps;
-      } else {
-        l = m;
-      }
-    }
-    return delta_intersect * l;
-  }
+      const std::shared_ptr<RigidBody>& first,
+      const std::shared_ptr<RigidBody>& second,
+      QVector2D offset, float rotation, QVector2D delta_intersect);
 
   bool IsSimilarVectors(QVector2D first, QVector2D second);
 }  // namespace IntersectChecker

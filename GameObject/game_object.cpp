@@ -1,12 +1,19 @@
 #include "game_object.h"
 
-GameObject::GameObject(GameObjectId id)
-  : id_(id) {}
+GameObject::GameObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body)
+  : id_(id), rigid_body_(std::move(rigid_body)) {}
 
-GameObject::GameObject(GameObjectId id,
-                       QPointF position,
-                       float rotation)
-  : id_(id), position_(position), rotation_(rotation) {}
+GameObject::GameObject(
+    GameObjectId id, float x, float y, float rotation,
+    float width, float height,
+    std::shared_ptr<RigidBody> rigid_body)
+    : GameObject(id, std::move(rigid_body)) {
+  SetWidth(width);
+  SetHeight(height);
+  SetX(x);
+  SetY(y);
+  SetRotation(rotation);
+}
 
 GameObjectId GameObject::GetId() const {
   return id_;
@@ -54,4 +61,40 @@ float GameObject::GetRotation() const {
 
 void GameObject::SetRotation(float rotation) {
   rotation_ = rotation;
+}
+
+std::shared_ptr<RigidBody> GameObject::GetRigidBody() const {
+  return rigid_body_;
+}
+
+float GameObject::GetFrictionForce() const {
+  return IntersectChecker::kDefaultFrictionForce;
+}
+
+float GameObject::GetWidth() const {
+  return width_;
+}
+
+float GameObject::GetHeight() const {
+  return height_;
+}
+
+void GameObject::SetWidth(float width) {
+  width_ = width;
+}
+
+void GameObject::SetHeight(float height) {
+  height_ = height;
+}
+
+bool GameObject::IsMovable() const {
+  return false;
+}
+
+bool GameObject::IsInFov() const {
+  return is_in_fov_;
+}
+
+void GameObject::SetIsInFov(bool is_in_fov) {
+  is_in_fov_ = is_in_fov;
 }

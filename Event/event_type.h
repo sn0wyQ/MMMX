@@ -35,7 +35,7 @@ enum class EventType {
   kSendGetVars,
 
   // [0] - <GameObjectId> player_id
-  kSetClientsPlayerId,
+  kSetPlayerIdToClient,
 
   // No arguments
   kStartGame,
@@ -46,8 +46,8 @@ enum class EventType {
 
   // ------------------- GAME EVENTS -------------------
 
-  // [0] - <GameObjectId> player's that left somebody's FOV player_id
-  kPlayerLeftFov,
+  // [0] - <GameObjectId> game_object_id that left receiver player FOV
+  kGameObjectLeftFov,
 
   // [0] - <GameObjectId> sender_player_id,
   // [1] - <float> x,

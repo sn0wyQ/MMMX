@@ -6,9 +6,9 @@
 
 #include "constants.h"
 #include "GameObject/game_object.h"
-#include "GameObject/RectangularStaticObject/rectangular_static_object.h"
+#include "GameObject/RigidBody/rigid_body_rectangle.h"
 
-class Box : public RectangularStaticObject {
+class Box : public GameObject {
  public:
   Box(GameObjectId game_object_id,
       float x, float y, float rotation, float width, float height);
@@ -21,7 +21,7 @@ class Box : public RectangularStaticObject {
   void SetParams(const std::vector<QVariant>& params) override;
   std::vector<QVariant> GetParams() const override;
 
-  GameObjectType GetGameObjectType() const override;
+  GameObjectType GetType() const override;
 };
 
 #endif  // GAMEOBJECT_RECTANGULARSTATICOBJECT_BOX_H_

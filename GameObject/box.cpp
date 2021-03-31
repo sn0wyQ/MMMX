@@ -2,13 +2,8 @@
 
 Box::Box(GameObjectId game_object_id, float x, float y, float rotation,
          float width, float height)
-         : RectangularStaticObject(
-             game_object_id, width, height,
-             std::make_shared<RigidBodyRectangle>(width, height)) {
-  this->SetX(x);
-  this->SetY(y);
-  this->SetRotation(rotation);
-}
+         : GameObject(game_object_id, x, y, rotation, width, height,
+             std::make_shared<RigidBodyRectangle>(width, height)) {}
 
 Box::Box(GameObjectId game_object_id, const std::vector<QVariant>& params)
   : Box(game_object_id,
@@ -43,6 +38,6 @@ std::vector<QVariant> Box::GetParams() const {
   result.emplace_back(GetHeight());
   return result;
 }
-GameObjectType Box::GetGameObjectType() const {
+GameObjectType Box::GetType() const {
   return GameObjectType::kBox;
 }

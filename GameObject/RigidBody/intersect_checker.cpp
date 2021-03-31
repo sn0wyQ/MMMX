@@ -1,5 +1,22 @@
 #include "intersect_checker.h"
 
+std::vector<QPointF> IntersectChecker::GetIntersectPointsBodies(
+    const std::shared_ptr<RigidBody>& first,
+    const std::shared_ptr<RigidBody>& second,
+    QVector2D offset, float rotation) {
+  if (second->GetType() == RigidBodyType::kRectangle) {
+    return GetIntersectPoints(
+        std::dynamic_pointer_cast<RigidBodyCircle>(first),
+        std::dynamic_pointer_cast<RigidBodyRectangle>(second),
+        offset, rotation);
+  } else {
+    return GetIntersectPoints(
+        std::dynamic_pointer_cast<RigidBodyCircle>(first),
+        std::dynamic_pointer_cast<RigidBodyCircle>(second),
+        offset, rotation);
+  }
+}
+
 std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     const std::shared_ptr<RigidBodyCircle>& circle1,
     const std::shared_ptr<RigidBodyCircle>& circle2,
@@ -17,6 +34,7 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     const std::shared_ptr<RigidBodyCircle>& circle,
     const std::shared_ptr<RigidBodyRectangle>& rectangle,
     QVector2D offset, float rotation) {
+
   float r = circle->GetRadius();
   std::vector<QPointF> points;
   points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
@@ -97,4 +115,22 @@ bool IntersectChecker::IsPointInSegment(QPointF first,
 bool IntersectChecker::IsSimilarVectors(QVector2D first, QVector2D second) {
   return QVector2D::dotProduct(first, second)
     / first.length() / second.length() >= 1 - kCosEps;
+}
+
+QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
+    const std::shared_ptr<RigidBody>& first,
+    const std::shared_ptr<RigidBody>& second,
+    QVector2D offset, float rotation, QVector2D delta_intersect) {
+  float l = 0;
+  float r = 1;
+  while (r - l > kEps) {
+    float m = (l + r) / 2;
+    if (!GetIntersectPointsBodies(first, second,
+                            offset - delta_intersect * m, rotation).empty()) {
+      r = m - kEps;
+    } else {
+      l = m;
+    }
+  }
+  return delta_intersect * l;
 }

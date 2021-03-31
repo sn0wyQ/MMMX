@@ -72,15 +72,14 @@ set(SOURCES
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
         GameObject/game_object.cpp
-        GameObject/RectangularStaticObject/rectangular_static_object.cpp
-        GameObject/RoundStaticObject/round_static_object.cpp
+        GameObject/RigidBody/rigid_body.cpp
         GameObject/RigidBody/rigid_body_rectangle.cpp
         GameObject/RigidBody/rigid_body_circle.cpp
         GameObject/RigidBody/intersect_checker.cpp
         GameObject/RigidBody/intersect_constants.h
-        GameObject/RigidBody/object_collision.h
-        GameObject/RectangularStaticObject/box.cpp
-        GameObject/RoundStaticObject/tree.cpp
+        GameObject/RigidBody/object_collision.cpp
+        GameObject/box.cpp
+        GameObject/tree.cpp
         Math/math.cpp
         Model/game_data_model.cpp
         Model/server_model.cpp

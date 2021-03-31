@@ -75,28 +75,24 @@ void RoomController::TickPlayers(int delta_time) {
 }
 
 void RoomController::AddClient(ClientId client_id) {
-  for (const auto& player : model_.GetPlayers()) {
-    Event event(EventType::kUpdateGameObjectData, player->GetId(),
-                static_cast<int>(GameObjectType::kPlayer));
-    event.PushBackArgs(player->GetParams());
-    this->AddEventToSendToSingleClient(event, client_id);
-  }
+
+  ShareGameObjectsToClient(client_id);
 
   GameObjectId player_id = model_.AddGameObject(
       GameObjectType::kPlayer,
       {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
-       Constants::kDefaultPlayerRotation});
+       Constants::kDefaultPlayerRotation, Constants::kDefaultPlayerRadius});
   player_ids_[client_id] = player_id;
+
   Event event(EventType::kUpdateGameObjectData,
               player_id,
               static_cast<int>(GameObjectType::kPlayer));
   auto player_ptr = model_.GetPlayerByPlayerId(player_id);
   event.PushBackArgs(player_ptr->GetParams());
   this->AddEventToSendToAllClients(event);
-  this->AddEventToSendToSingleClient(Event(EventType::kSetClientsPlayerId,
-                                           player_id),
-                                     client_id);
-  ShareObjectsOnMap(player_id);
+
+  this->AddEventToSendToSingleClient(
+      Event(EventType::kSetPlayerIdToClient, player_id), client_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
           << "] Connected client (ID: " << client_id << ")";
@@ -199,26 +195,19 @@ void RoomController::AddTree(float x, float y, float radius) {
   model_.AddGameObject(GameObjectType::kTree, {x, y, radius});
 }
 
-void RoomController::ShareObjectsOnMap(GameObjectId player_id) {
-  for (const auto& box : model_.GetBoxes()) {
-    this->AddEventToSendToSinglePlayer(
-        Event(EventType::kUpdateGameObjectData, box->GetId(),
-              static_cast<int>(GameObjectType::kBox),
-              box->GetX(), box->GetY(), box->GetRotation(),
-              box->GetWidth(), box->GetHeight()), player_id);
-  }
-  for (const auto& tree : model_.GetTrees()) {
-    this->AddEventToSendToSinglePlayer(
-        Event(EventType::kUpdateGameObjectData, tree->GetId(),
-              static_cast<int>(GameObjectType::kTree),
-              tree->GetX(), tree->GetY(), tree->GetRadius()), player_id);
+void RoomController::ShareGameObjectsToClient(ClientId client_id) {
+  for (const auto& object : model_.GetAllGameObjects()) {
+    Event event(EventType::kUpdateGameObjectData, object->GetId(),
+                static_cast<int>(object->GetType()));
+    event.PushBackArgs(object->GetParams());
+    this->AddEventToSendToSingleClient(event, client_id);
   }
 }
 
-bool RoomController::IsPlayerInFov(GameObjectId sender_player_id,
+bool RoomController::IsObjectInFov(GameObjectId sender_player_id,
                                    GameObjectId receiver_player_id) {
   auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
-  auto sender = model_.GetPlayerByPlayerId(sender_player_id);
+  auto sender = model_.GetGameObjectByGameObjectId(sender_player_id);
 
   return QLineF(receiver->GetPosition(), sender->GetPosition()).length() <
       receiver->GetFovRadius() + Constants::kPlayerRadius;
@@ -233,7 +222,7 @@ void RoomController::UpdateReceiversByFov(
     auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
     auto sender_receiver_pair = std::make_pair(sender_player_id,
                                                receiver_player_id);
-    if (this->IsPlayerInFov(sender_player_id, receiver_player_id)) {
+    if (this->IsObjectInFov(sender_player_id, receiver_player_id)) {
       is_first_in_fov_of_second_.insert(sender_receiver_pair);
       data_receivers->push_back(receiver_player_id);
     } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
@@ -268,22 +257,19 @@ void RoomController::SendControlsEvent(const Event& event) {
                        &left_fov_event_receivers);
 
   if (!data_receivers.empty()) {
-    this->AddEventToSendToPlayerList(
-        Event(EventType::kUpdateGameObjectData,
-                    sender_player_id,
-                    static_cast<int>(GameObjectType::kPlayer),
-                    sender_player_ptr->GetX(),
-                    sender_player_ptr->GetY(),
-                    sender_player_ptr->GetVelocity(),
-                    sender_player_ptr->GetRotation()), data_receivers);
+    Event new_event(EventType::kUpdateGameObjectData,
+                      sender_player_id,
+                      static_cast<int>(GameObjectType::kPlayer));
+    new_event.PushBackArgs(sender_player_ptr->GetParams());
+    this->AddEventToSendToPlayerList(new_event, data_receivers);
   }
   if (!left_fov_event_receivers.empty()) {
     this->AddEventToSendToPlayerList(
-        Event(EventType::kPlayerLeftFov,
+        Event(EventType::kGameObjectLeftFov,
               sender_player_id), left_fov_event_receivers);
   }
 }
 
-void RoomController::PlayerLeftFovEvent(const Event& event) {
+void RoomController::GameObjectLeftFovEvent(const Event& event) {
   this->AddEventToSendToAllPlayers(event);
 }

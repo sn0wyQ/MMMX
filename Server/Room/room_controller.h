@@ -12,7 +12,7 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
-#include "GameObject/RectangularStaticObject/box.h"
+#include "GameObject/box.h"
 #include "Model/game_data_model.h"
 #include "Server/Room/room_settings.h"
 #include "constants.h"
@@ -61,14 +61,14 @@ class RoomController : public BaseController {
   GameObjectId ClientIdToPlayerId(ClientId client_id) const;
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
-  bool IsPlayerInFov(GameObjectId sender_player_id,
+  bool IsObjectInFov(GameObjectId sender_player_id,
                      GameObjectId receiver_player_id);
 
   std::vector<Event> ClaimEventsForServer();
 
   void AddBox(float x, float y, float rotation);
   void AddTree(float x, float y, float radius);
-  void ShareObjectsOnMap(GameObjectId player_id);
+  void ShareGameObjectsToClient(ClientId client_id);
 
  private:
   RoomId id_;
@@ -89,7 +89,7 @@ class RoomController : public BaseController {
   // ------------------- GAME EVENTS -------------------
 
   void SendControlsEvent(const Event& event) override;
-  void PlayerLeftFovEvent(const Event& event) override;
+  void GameObjectLeftFovEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

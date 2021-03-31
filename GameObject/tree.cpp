@@ -1,10 +1,9 @@
 #include "tree.h"
 
 Tree::Tree(GameObjectId game_object_id, float x, float y, float radius)
-  : RoundStaticObject(game_object_id, radius,
+  : GameObject(game_object_id, x, y,
+               0.f, radius * 2.f, radius * 2.f,
                       std::make_shared<RigidBodyCircle>(radius)) {
-  this->SetX(x);
-  this->SetY(y);
 }
 
 Tree::Tree(GameObjectId game_object_id, const std::vector<QVariant>& params)
@@ -34,6 +33,15 @@ std::vector<QVariant> Tree::GetParams() const {
   return result;
 }
 
-GameObjectType Tree::GetGameObjectType() const {
+GameObjectType Tree::GetType() const {
   return GameObjectType::kTree;
+}
+
+void Tree::SetRadius(float radius) {
+  SetWidth(radius * 2.f);
+  SetHeight(radius * 2.f);
+}
+
+float Tree::GetRadius() const {
+  return GetWidth() / 2.f;
 }

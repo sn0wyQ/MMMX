@@ -107,14 +107,14 @@ class ClientController : public BaseController {
  private:
   void EndGameEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
-  void SetClientsPlayerIdEvent(const Event& event) override;
+  void SetPlayerIdToClient(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateVarsEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
   void UpdateGameObjectDataEvent(const Event& event) override;
-  void PlayerLeftFovEvent(const Event& event) override;
+  void GameObjectLeftFovEvent(const Event& event) override;
   void UpdatePlayersFovRadiusEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;

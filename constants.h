@@ -64,6 +64,7 @@ constexpr float kDefaultPlayersFov = 10.5f;
 constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerRotation = 0.f;
+constexpr float kDefaultPlayerRadius = 1.f;
 
 }  // namespace Constants
 

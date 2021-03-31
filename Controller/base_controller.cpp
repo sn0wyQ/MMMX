@@ -6,8 +6,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::ClientDisconnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kEndGame,
     std::bind(&BaseController::EndGameEvent, this, _1));
-  SetFunctionForEventType(EventType::kSetClientsPlayerId,
-    std::bind(&BaseController::SetClientsPlayerIdEvent, this, _1));
+  SetFunctionForEventType(EventType::kSetPlayerIdToClient,
+    std::bind(&BaseController::SetPlayerIdToClient, this, _1));
   SetFunctionForEventType(EventType::kStartGame,
     std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kPlayerDisconnected,
@@ -16,8 +16,6 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendEventToClientEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
     std::bind(&BaseController::SendEventToRoomEvent, this, _1));
-  SetFunctionForEventType(EventType::kSetClientsPlayerId,
-    std::bind(&BaseController::SetClientsPlayerIdEvent, this, _1));
   SetFunctionForEventType(EventType::kStartGame,
     std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateVars,
@@ -31,8 +29,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::UpdateGameObjectDataEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdatePlayersFovRadius,
     std::bind(&BaseController::UpdatePlayersFovRadiusEvent, this, _1));
-  SetFunctionForEventType(EventType::kPlayerLeftFov,
-    std::bind(&BaseController::PlayerLeftFovEvent, this, _1));
+  SetFunctionForEventType(EventType::kGameObjectLeftFov,
+    std::bind(&BaseController::GameObjectLeftFovEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }
