@@ -14,3 +14,8 @@ std::shared_ptr<RigidBody> RigidBodyRectangle::External(float friction_force)
   new_rect_ptr->SetHeight(this->GetHeight() + friction_force);
   return new_rect_ptr;
 }
+
+void RigidBodyRectangle::Draw(Painter* painter) {
+  painter->DrawRect(- GetWidth() / 2.f, - GetHeight() / 2.f,
+                    GetWidth(), GetHeight());
+}

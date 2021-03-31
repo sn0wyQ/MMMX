@@ -15,6 +15,7 @@ class RigidBodyCircle : public RigidBody {
 
   RigidBodyType GetType() const override;
   std::shared_ptr<RigidBody> External(float friction_force) const override;
+  void Draw(Painter* painter) override;
 };
 
 #endif  // GAMEOBJECT_RIGIDBODY_RIGID_BODY_CIRCLE_H_

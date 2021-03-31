@@ -209,7 +209,7 @@ bool RoomController::IsObjectInFov(GameObjectId sender_player_id,
   auto sender = model_.GetGameObjectByGameObjectId(sender_player_id);
 
   return QLineF(receiver->GetPosition(), sender->GetPosition()).length() <
-      receiver->GetFovRadius() + Constants::kPlayerRadius;
+      receiver->GetFovRadius() + receiver->GetRadius();
 }
 
 void RoomController::UpdateReceiversByFov(

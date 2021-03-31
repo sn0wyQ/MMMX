@@ -22,3 +22,8 @@ void RigidBodyCircle::SetRadius(float radius) {
   SetWidth(radius * 2.f);
   SetHeight(radius * 2.f);
 }
+
+void RigidBodyCircle::Draw(Painter* painter) {
+  painter->DrawEllipse({0.f, 0.f},
+                       GetRadius(), GetRadius());
+}

@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include "Painter/painter.h"
+
 enum class RigidBodyType {
   kCircle,
   kRectangle
@@ -21,6 +23,8 @@ class RigidBody {
   virtual RigidBodyType GetType() const = 0;
 
   virtual std::shared_ptr<RigidBody> External(float friction_force) const = 0;
+
+  virtual void Draw(Painter* painter) = 0;
 
  private:
   float width_{};

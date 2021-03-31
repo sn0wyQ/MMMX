@@ -38,6 +38,7 @@ std::vector<QVariant> Box::GetParams() const {
   result.emplace_back(GetHeight());
   return result;
 }
+
 GameObjectType Box::GetType() const {
   return GameObjectType::kBox;
 }

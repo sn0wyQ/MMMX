@@ -46,7 +46,6 @@ class GameObject {
   virtual float GetFrictionForce() const;
 
   GameObjectId GetId() const;
-  void SetId(GameObjectId id);
 
   QPointF GetPosition() const;
   void SetPosition(QPointF point);

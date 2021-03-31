@@ -54,12 +54,12 @@ constexpr int kTimeToUpdateVarsAndPing = 1000;
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
+constexpr bool kRigidBodyShow = true;
 
 // MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
-constexpr float kPlayerRadius = 1.f;
 constexpr float kDefaultPlayersFov = 10.5f;
 constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;

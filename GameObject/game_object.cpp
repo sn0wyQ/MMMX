@@ -19,10 +19,6 @@ GameObjectId GameObject::GetId() const {
   return id_;
 }
 
-void GameObject::SetId(GameObjectId id) {
-  id_ = id;
-}
-
 QPointF GameObject::GetPosition() const {
   return position_;
 }
@@ -52,6 +48,10 @@ void GameObject::Draw(Painter* painter) {
   painter->Translate(GetPosition());
   painter->RotateCounterClockWise(rotation_);
   this->DrawRelatively(painter);
+  if (Constants::kRigidBodyShow) {
+    painter->setPen(Qt::red);
+    rigid_body_->Draw(painter);
+  }
   painter->restore();
 }
 
