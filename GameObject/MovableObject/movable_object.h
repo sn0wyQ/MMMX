@@ -3,6 +3,7 @@
 
 #include <utility>
 #include <memory>
+#include <vector>
 
 #include <QVector2D>
 
@@ -12,7 +13,6 @@
 class MovableObject : public GameObject {
  public:
   explicit MovableObject(GameObjectId game_object_id);
-  MovableObject(GameObjectId id, std::shared_ptr<RigidBodyCircle> rigid_body);
 
   void OnTick(int delta_time) override;
   bool IsMovable() const override;
