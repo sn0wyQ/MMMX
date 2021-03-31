@@ -8,7 +8,7 @@
 
 class Entity : public MovableObject {
  public:
-  Entity(GameObjectId id, std::shared_ptr<RigidBodyCircle> rigid_body);
+  explicit Entity(GameObjectId id);
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_

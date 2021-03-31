@@ -12,6 +12,7 @@ enum class RigidBodyType {
 
 class RigidBody {
  public:
+  RigidBody() = default;
   RigidBody(float width, float height);
 
   float GetWidth() const;

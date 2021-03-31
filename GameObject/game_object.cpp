@@ -1,19 +1,7 @@
 #include "game_object.h"
 
-GameObject::GameObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body)
-  : id_(id), rigid_body_(std::move(rigid_body)) {}
-
-GameObject::GameObject(
-    GameObjectId id, float x, float y, float rotation,
-    float width, float height,
-    std::shared_ptr<RigidBody> rigid_body)
-    : GameObject(id, std::move(rigid_body)) {
-  SetWidth(width);
-  SetHeight(height);
-  SetX(x);
-  SetY(y);
-  SetRotation(rotation);
-}
+GameObject::GameObject(GameObjectId game_object_id)
+  : id_(game_object_id) {}
 
 GameObjectId GameObject::GetId() const {
   return id_;
@@ -97,4 +85,46 @@ bool GameObject::IsInFov() const {
 
 void GameObject::SetIsInFov(bool is_in_fov) {
   is_in_fov_ = is_in_fov;
+}
+
+void GameObject::SetParams(std::vector<QVariant> params) {
+  auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
+  if (rigid_body_ == nullptr) {
+    switch (rigid_body_type) {
+      case RigidBodyType::kCircle:
+        rigid_body_ = std::make_shared<RigidBodyCircle>();
+        break;
+      case RigidBodyType::kRectangle:
+        rigid_body_ = std::make_shared<RigidBodyRectangle>();
+        break;
+    }
+  }
+  params.pop_back();
+  SetHeight(params.back().toFloat());
+  params.pop_back();
+  SetWidth(params.back().toFloat());
+  params.pop_back();
+  SetRotation(params.back().toFloat());
+  params.pop_back();
+  SetY(params.back().toFloat());
+  params.pop_back();
+  SetX(params.back().toFloat());
+  params.pop_back();
+  rigid_body_->SetWidth(GetWidth());
+  rigid_body_->SetHeight(GetHeight());
+}
+
+std::vector<QVariant> GameObject::GetParams() const {
+  std::vector<QVariant> result;
+  result.emplace_back(GetX());
+  result.emplace_back(GetY());
+  result.emplace_back(GetRotation());
+  result.emplace_back(GetWidth());
+  result.emplace_back(GetHeight());
+  result.emplace_back(static_cast<int>(rigid_body_->GetType()));
+  return result;
+}
+
+GameObjectType GameObject::GetType() const {
+  return GameObjectType::kGameObject;
 }

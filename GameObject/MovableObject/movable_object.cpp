@@ -1,8 +1,7 @@
 #include "movable_object.h"
 
-MovableObject::MovableObject(GameObjectId id,
-                             std::shared_ptr<RigidBodyCircle> rigid_body)
-    : GameObject(id, std::move(rigid_body)) {}
+MovableObject::MovableObject(GameObjectId game_object_id)
+    : GameObject(game_object_id) {}
 
 QVector2D MovableObject::GetVelocity() const {
   return velocity_;
@@ -44,4 +43,20 @@ void MovableObject::OnTick(int delta_time) {
 
 bool MovableObject::IsMovable() const {
   return true;
+}
+
+void MovableObject::SetParams(std::vector<QVariant> params) {
+  float vel_x = params.back().toFloat();
+  params.pop_back();
+  float vel_y = params.back().toFloat();
+  params.pop_back();
+  SetVelocity(QVector2D(vel_x, vel_y));
+  GameObject::SetParams(params);
+}
+
+std::vector<QVariant> MovableObject::GetParams() const {
+  std::vector<QVariant> result = GameObject::GetParams();
+  result.emplace_back(velocity_.x());
+  result.emplace_back(velocity_.y());
+  return result;
 }

@@ -1,21 +1,7 @@
 #include "player.h"
 
-Player::Player(GameObjectId player_id, float radius)
-  : Entity(player_id, std::make_shared<RigidBodyCircle>(radius)) {}
+Player::Player(GameObjectId player_id) : Entity(player_id) {}
 
-Player::Player(GameObjectId player_id, float x, float y, float radius)
-    : Player(player_id, radius) {
-  SetX(x);
-  SetY(y);
-  SetRadius(radius);
-}
-
-Player::Player(GameObjectId player_id, const std::vector<QVariant>& params)
-  : Player(player_id, params.at(0).toFloat(), params.at(1).toFloat(),
-           params.at(3).toFloat()) {
-  QPointF vec = params.at(2).toPointF();
-  SetVelocity(QVector2D(vec.x(), vec.y()));
-}
 
 void Player::DrawRelatively(Painter* painter) {
   // Body [Temporary]
@@ -41,22 +27,6 @@ void Player::SetIsLocalPlayer(bool is_local_player) {
   is_local_player_ = is_local_player;
 }
 
-void Player::SetParams(const std::vector<QVariant>& params) {
-  SetX(params.at(0).toFloat());
-  SetY(params.at(1).toFloat());
-  QPointF vec = params.at(2).toPointF();
-  SetVelocity(QVector2D(vec.x(), vec.y()));
-  SetRadius(params.at(3).toFloat());
-}
-
-std::vector<QVariant> Player::GetParams() const {
-  std::vector<QVariant> result;
-  result.emplace_back(GetX());
-  result.emplace_back(GetY());
-  result.emplace_back(GetVelocity());
-  result.emplace_back(GetRadius());
-  return result;
-}
 GameObjectType Player::GetType() const {
   return GameObjectType::kPlayer;
 }

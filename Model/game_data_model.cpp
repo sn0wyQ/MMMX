@@ -43,23 +43,17 @@ void GameDataModel::AddGameObject(GameObjectId game_object_id,
   if (game_objects_.find(game_object_id) != game_objects_.end()) {
     throw std::runtime_error("[MODEL] This game_object_id already exists");
   }
+  std::shared_ptr<GameObject> object;
   switch (type) {
     case GameObjectType::kPlayer:
-      game_objects_.emplace(std::make_pair(
-          game_object_id,
-          std::make_unique<Player>(game_object_id, params)));
+      object = std::make_unique<Player>(game_object_id);
       break;
-    case GameObjectType::kBox:
-      game_objects_.emplace(std::make_pair(
-          game_object_id,
-          std::make_unique<Box>(game_object_id, params)));
-      break;
-    case GameObjectType::kTree:
-      game_objects_.emplace(std::make_pair(
-          game_object_id,
-          std::make_unique<Tree>(game_object_id, params)));
+    case GameObjectType::kGameObject:
+      object = std::make_unique<GameObject>(game_object_id);
       break;
   }
+  object->SetParams(params);
+  game_objects_.emplace(std::make_pair(game_object_id, object));
   qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
                                .valueToKey(static_cast<uint32_t>(type)));
@@ -93,26 +87,6 @@ std::vector<std::shared_ptr<Player>> GameDataModel::GetPlayers() const {
   for (const auto& game_object : game_objects_) {
     if (game_object.second->GetType() == GameObjectType::kPlayer) {
       result.push_back(std::dynamic_pointer_cast<Player>(game_object.second));
-    }
-  }
-  return result;
-}
-
-std::vector<std::shared_ptr<Box>> GameDataModel::GetBoxes() const {
-  std::vector<std::shared_ptr<Box>> result;
-  for (const auto& game_object : game_objects_) {
-    if (game_object.second->GetType() == GameObjectType::kBox) {
-      result.push_back(std::dynamic_pointer_cast<Box>(game_object.second));
-    }
-  }
-  return result;
-}
-
-std::vector<std::shared_ptr<Tree>> GameDataModel::GetTrees() const {
-  std::vector<std::shared_ptr<Tree>> result;
-  for (const auto& game_object : game_objects_) {
-    if (game_object.second->GetType() == GameObjectType::kTree) {
-      result.push_back(std::dynamic_pointer_cast<Tree>(game_object.second));
     }
   }
   return result;

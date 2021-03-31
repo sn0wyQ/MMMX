@@ -1,5 +1,7 @@
 #include "rigid_body_circle.h"
 
+RigidBodyCircle::RigidBodyCircle() : RigidBody() {}
+
 RigidBodyCircle::RigidBodyCircle(float radius)
   : RigidBody(radius * 2, radius * 2) {}
 

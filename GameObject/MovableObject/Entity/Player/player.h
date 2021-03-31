@@ -11,9 +11,7 @@
 
 class Player : public Entity {
  public:
-  explicit Player(GameObjectId player_id, float radius);
-  Player(GameObjectId player_id, float x, float y, float radius);
-  Player(GameObjectId player_id, const std::vector<QVariant>& params);
+  explicit Player(GameObjectId player_id);
 
   void DrawRelatively(Painter* painter) override;
 
@@ -22,9 +20,6 @@ class Player : public Entity {
 
   void SetRadius(float radius);
   float GetRadius() const;
-
-  void SetParams(const std::vector<QVariant>& params) override;
-  std::vector<QVariant> GetParams() const override;
 
   GameObjectType GetType() const override;
   float GetFovRadius() const;

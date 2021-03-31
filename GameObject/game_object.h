@@ -11,6 +11,8 @@
 #include "constants.h"
 #include "GameObject/RigidBody/intersect_constants.h"
 #include "GameObject/RigidBody/rigid_body.h"
+#include "GameObject/RigidBody/rigid_body_circle.h"
+#include "GameObject/RigidBody/rigid_body_rectangle.h"
 #include "Painter/painter.h"
 
 namespace GameObjectTypeWrapper {
@@ -20,8 +22,7 @@ Q_NAMESPACE
 // enum for sending events
 enum class GameObjectType {
   kPlayer,
-  kBox,
-  kTree
+  kGameObject
 };
 
 Q_ENUM_NS(GameObjectType)
@@ -33,13 +34,11 @@ Q_DECLARE_METATYPE(GameObjectType)
 
 class GameObject {
  public:
-  explicit GameObject(GameObjectId id, std::shared_ptr<RigidBody> rigid_body);
-  GameObject(GameObjectId id, float x, float y, float rotation, float width,
-             float height, std::shared_ptr<RigidBody> rigid_body);
+  explicit GameObject(GameObjectId game_object_id);
 
-  virtual void OnTick(int delta_time) = 0;
+  virtual void OnTick(int delta_time) {}
   void Draw(Painter* painter);
-  virtual void DrawRelatively(Painter* painter) = 0;
+  virtual void DrawRelatively(Painter* painter) {}
   virtual bool IsMovable() const;
 
   std::shared_ptr<RigidBody> GetRigidBody() const;
@@ -61,10 +60,10 @@ class GameObject {
   void SetWidth(float width);
   void SetHeight(float height);
 
-  virtual GameObjectType GetType() const = 0;
-  virtual void SetParams(const std::vector<QVariant>& params) = 0;
+  virtual GameObjectType GetType() const;
 
-  virtual std::vector<QVariant> GetParams() const = 0;
+  virtual void SetParams(std::vector<QVariant> params);
+  virtual std::vector<QVariant> GetParams() const;
 
   bool IsInFov() const;
   void SetIsInFov(bool is_in_fov);

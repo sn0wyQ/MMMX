@@ -12,7 +12,6 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
-#include "GameObject/box.h"
 #include "Model/game_data_model.h"
 #include "Server/Room/room_settings.h"
 #include "constants.h"
@@ -66,8 +65,10 @@ class RoomController : public BaseController {
 
   std::vector<Event> ClaimEventsForServer();
 
-  void AddBox(float x, float y, float rotation);
+  GameObjectId AddDefaultPlayer();
+  void AddBox(float x, float y, float rotation, float width, float height);
   void AddTree(float x, float y, float radius);
+
   void ShareGameObjectsToClient(ClientId client_id);
 
  private:

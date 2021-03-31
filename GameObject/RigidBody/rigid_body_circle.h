@@ -8,6 +8,7 @@
 
 class RigidBodyCircle : public RigidBody {
  public:
+  RigidBodyCircle();
   explicit RigidBodyCircle(float radius);
 
   void SetRadius(float radius);

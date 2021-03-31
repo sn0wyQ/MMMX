@@ -3,12 +3,12 @@
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), room_settings_(room_settings) {
   this->StartTicking();
-  this->AddBox(-5.f, -15.f, 45.f);
-  this->AddBox(12.f, -10.f, 120.f);
-  this->AddBox(15.f, -11.f, 120.f);
-  this->AddBox(-10.f, -10.f, 30.f);
-  this->AddBox(25.f, 0.f, 0.f);
-  this->AddBox(30.f, 5.f, 0.f);
+  this->AddBox(-5.f, -15.f, 45.f, 20.f, 10.f);
+  this->AddBox(12.f, -10.f, 120.f, 20.f, 10.f);
+  this->AddBox(15.f, -11.f, 120.f, 20.f, 10.f);
+  this->AddBox(-10.f, -10.f, 30.f, 20.f, 10.f);
+  this->AddBox(25.f, 0.f, 0.f, 20.f, 10.f);
+  this->AddBox(30.f, 5.f, 0.f, 20.f, 10.f);
   this->AddTree(9.f, 7.f, 2.f);
   this->AddTree(13.f, 6.f, 2.5f);
   this->AddTree(10.f, 8.5f, 3.f);
@@ -77,10 +77,7 @@ void RoomController::TickPlayers(int delta_time) {
 void RoomController::AddClient(ClientId client_id) {
   ShareGameObjectsToClient(client_id);
 
-  GameObjectId player_id = model_.AddGameObject(
-      GameObjectType::kPlayer,
-      {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
-       Constants::kDefaultPlayerRotation, Constants::kDefaultPlayerRadius});
+  GameObjectId player_id = AddDefaultPlayer();
   player_ids_[client_id] = player_id;
 
   Event event(EventType::kUpdateGameObjectData,
@@ -183,15 +180,17 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
 }
 
-void RoomController::AddBox(float x, float y, float rotation) {
-  float width = 20;
-  float height = 10;
-  model_.AddGameObject(GameObjectType::kBox,
-                       {x, y, rotation, width, height});
+void RoomController::AddBox(float x, float y, float rotation,
+                            float width, float height) {
+  model_.AddGameObject(GameObjectType::kGameObject,
+                       {x, y, rotation, width, height,
+                        static_cast<int>(RigidBodyType::kRectangle)});
 }
 
 void RoomController::AddTree(float x, float y, float radius) {
-  model_.AddGameObject(GameObjectType::kTree, {x, y, radius});
+  model_.AddGameObject(GameObjectType::kGameObject,
+                       {x, y, 0.f, radius * 2.f, radius * 2.f,
+                        static_cast<int>(RigidBodyType::kCircle)});
 }
 
 void RoomController::ShareGameObjectsToClient(ClientId client_id) {
@@ -232,14 +231,24 @@ void RoomController::UpdateReceiversByFov(
   }
 }
 
+GameObjectId RoomController::AddDefaultPlayer() {
+  return model_.AddGameObject(
+      GameObjectType::kPlayer,
+      {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
+       Constants::kDefaultPlayerRotation, Constants::kDefaultPlayerRadius * 2,
+       Constants::kDefaultPlayerRadius * 2, 0.f, 0.f,
+       static_cast<int>(RigidBodyType::kCircle)});
+}
+
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
-  if (!model_.IsGameObjectIdTaken(
-      event.GetArg<GameObjectId>(0))) {
+  auto sender_player_id = event.GetArg<GameObjectId>(0);
+
+  if (!model_.IsGameObjectIdTaken(sender_player_id)) {
     return;
   }
-  auto sender_player_id = event.GetArg<GameObjectId>(0);
+
   auto sender_player_ptr = model_.GetPlayerByPlayerId(sender_player_id);
 
   // TODO(Everyone): add anti-cheat mechanism to check

@@ -10,8 +10,6 @@
 #include <QDebug>
 
 #include "GameObject/MovableObject/Entity/Player/player.h"
-#include "GameObject/box.h"
-#include "GameObject/tree.h"
 #include "constants.h"
 
 class GameDataModel {
@@ -26,8 +24,6 @@ class GameDataModel {
   std::vector<std::shared_ptr<MovableObject>> GetMovableObjects() const;
 
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
-  std::vector<std::shared_ptr<Box>> GetBoxes() const;
-  std::vector<std::shared_ptr<Tree>> GetTrees() const;
 
   int GetPlayersCount() const;
   bool IsGameObjectIdTaken(GameObjectId game_object_id) const;

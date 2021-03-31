@@ -11,6 +11,7 @@
 
 class MovableObject : public GameObject {
  public:
+  explicit MovableObject(GameObjectId game_object_id);
   MovableObject(GameObjectId id, std::shared_ptr<RigidBodyCircle> rigid_body);
 
   void OnTick(int delta_time) override;
@@ -24,6 +25,9 @@ class MovableObject : public GameObject {
   void ApplyVelocity(int delta_time);
 
   float GetCurrentSpeed() const;
+
+  void SetParams(std::vector<QVariant> params) override;
+  std::vector<QVariant> GetParams() const override;
 
  private:
   QVector2D velocity_{};
