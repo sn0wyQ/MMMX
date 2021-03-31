@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <utility>
+#include <memory>
 
 #include <QPoint>
 #include <QDebug>

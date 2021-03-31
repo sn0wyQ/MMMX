@@ -1,5 +1,5 @@
-#ifndef GAMEOBJECT_RECTANGULARSTATICOBJECT_BOX_H_
-#define GAMEOBJECT_RECTANGULARSTATICOBJECT_BOX_H_
+#ifndef GAMEOBJECT_BOX_H_
+#define GAMEOBJECT_BOX_H_
 
 #include <vector>
 #include <memory>
@@ -24,4 +24,4 @@ class Box : public GameObject {
   GameObjectType GetType() const override;
 };
 
-#endif  // GAMEOBJECT_RECTANGULARSTATICOBJECT_BOX_H_
+#endif  // GAMEOBJECT_BOX_H_

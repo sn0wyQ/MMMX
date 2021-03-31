@@ -75,7 +75,6 @@ void RoomController::TickPlayers(int delta_time) {
 }
 
 void RoomController::AddClient(ClientId client_id) {
-
   ShareGameObjectsToClient(client_id);
 
   GameObjectId player_id = model_.AddGameObject(

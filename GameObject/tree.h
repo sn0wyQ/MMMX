@@ -1,5 +1,5 @@
-#ifndef GAMEOBJECT_ROUNDSTATICOBJECT_TREE_H_
-#define GAMEOBJECT_ROUNDSTATICOBJECT_TREE_H_
+#ifndef GAMEOBJECT_TREE_H_
+#define GAMEOBJECT_TREE_H_
 
 #include <vector>
 #include <memory>
@@ -25,4 +25,4 @@ class Tree : public GameObject {
   GameObjectType GetType() const override;
 };
 
-#endif  // GAMEOBJECT_ROUNDSTATICOBJECT_TREE_H_
+#endif  // GAMEOBJECT_TREE_H_
