@@ -79,7 +79,7 @@ void GameDataModel::DeleteGameObject(GameObjectId game_object_id) {
 
 void GameDataModel::SetLocalPlayerId(GameObjectId player_id) {
   local_player_id_ = player_id;
-  GetLocalPlayer()->SetIsLocalPlayer(true);
+  this->GetLocalPlayer()->SetIsLocalPlayer(true);
 }
 
 std::vector<std::shared_ptr<Player>> GameDataModel::GetPlayers() const {
@@ -131,6 +131,28 @@ std::vector<std::shared_ptr<GameObject>> GameDataModel::GetAllGameObjects()
   std::vector<std::shared_ptr<GameObject>> result;
   for (const auto& object : game_objects_) {
     result.push_back(object.second);
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<GameObject>>
+  GameDataModel::GetFilteredByFovObjects() const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& object : game_objects_) {
+    if (object.second->IsFilteredByFov()) {
+      result.push_back(object.second);
+    }
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<GameObject>>
+  GameDataModel::GetNotFilteredByFovObjects() const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& object : game_objects_) {
+    if (!object.second->IsFilteredByFov()) {
+      result.push_back(object.second);
+    }
   }
   return result;
 }

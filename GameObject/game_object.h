@@ -9,6 +9,7 @@
 #include <QDebug>
 
 #include "constants.h"
+#include "Math/math.h"
 #include "GameObject/RigidBody/intersect_constants.h"
 #include "GameObject/RigidBody/rigid_body.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
@@ -67,6 +68,7 @@ class GameObject {
 
   bool IsInFov() const;
   void SetIsInFov(bool is_in_fov);
+  virtual bool IsFilteredByFov() const;
 
  private:
   GameObjectId id_{Constants::kNullGameObjectId};

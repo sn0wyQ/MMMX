@@ -47,3 +47,15 @@ void Player::SetRadius(float radius) {
 float Player::GetRadius() const {
   return GetWidth() / 2.f;
 }
+
+void Player::SetParams(std::vector<QVariant> params) {
+  fov_radius_ = params.back().toFloat();
+  params.pop_back();
+  Entity::SetParams(params);
+}
+
+std::vector<QVariant> Player::GetParams() const {
+  std::vector<QVariant> result = Entity::GetParams();
+  result.emplace_back(fov_radius_);
+  return result;
+}

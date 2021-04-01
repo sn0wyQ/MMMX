@@ -29,6 +29,12 @@ class MovableObject : public GameObject {
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
 
+  bool IsFilteredByFov() const override;
+
+  static float GetShortestDistance(
+      const std::shared_ptr<MovableObject>& main,
+      const std::shared_ptr<GameObject>& object);
+
  private:
   QVector2D velocity_{};
 };

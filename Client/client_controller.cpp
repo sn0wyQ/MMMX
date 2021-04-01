@@ -93,23 +93,6 @@ void ClientController::OnTickGameInProgress(int delta_time) {
   this->TickPlayers(delta_time);
 }
 
-void ClientController::CollidePlayerWithGameObjects(
-    int delta_time) {
-  auto local_player = model_->GetLocalPlayer();
-  ObjectCollision::DoFirstPhase(
-      local_player, model_->GetAllGameObjects(),
-      delta_time);
-  if (!local_player->GetVelocity().isNull()) {
-    return;
-  }
-  std::vector<QVector2D> tangents;
-  ObjectCollision::FindTangents(
-      local_player, model_->GetAllGameObjects(), &tangents);
-  ObjectCollision::DoSecondPhase(
-      local_player, model_->GetAllGameObjects(), GetKeyForce(),
-      tangents);
-}
-
 void ClientController::TickPlayers(int delta_time) {
   std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
@@ -124,11 +107,9 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   auto local_player = model_->GetLocalPlayer();
 
-  QVector2D key_force = GetKeyForce();
-  local_player->SetVelocity(key_force);
-  if (!key_force.isNull()) {
-    this->CollidePlayerWithGameObjects(delta_time);
-  }
+  ObjectCollision::MoveWithSlidingCollision(
+      local_player, model_->GetAllGameObjects(),
+      this->GetKeyForce(), delta_time);
 
   converter_->UpdateGameCenter(local_player->GetPosition());
 
@@ -265,27 +246,20 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
       = static_cast<GameObjectType>(event.GetArg<int>(1));
   auto params = event.GetArgsSubVector(2);
   if (model_->IsGameObjectIdTaken(game_object_id)) {
-    if (game_object_type == GameObjectType::kPlayer) {
-      if (game_object_id == model_->GetLocalPlayer()->GetId()) {
-        return;
-      }
+    if (model_->IsLocalPlayerSet()
+      && game_object_id == model_->GetLocalPlayer()->GetId()) {
+      return;
     }
     model_->GetGameObjectByGameObjectId(game_object_id)->SetParams(params);
   } else {
     model_->AddGameObject(game_object_id, game_object_type, params);
   }
   model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(true);
-
-  view_->Update();
-}
-
-void ClientController::UpdatePlayersFovRadiusEvent(const Event& event) {
-  model_->GetLocalPlayer()->SetFovRadius(event.GetArg<float>(0));
-  qDebug() << "[CLIENT] Set player FOV to"
-           << model_->GetLocalPlayer()->GetFovRadius();
 }
 
 void ClientController::GameObjectLeftFovEvent(const Event& event) {
-  model_->GetGameObjectByGameObjectId(
-      event.GetArg<GameObjectId>(0))->SetIsInFov(false);
+  auto game_object_id = event.GetArg<GameObjectId>(0);
+  if (model_->IsGameObjectIdTaken(game_object_id)) {
+    model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(false);
+  }
 }

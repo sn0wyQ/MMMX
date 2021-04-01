@@ -33,8 +33,6 @@ namespace IntersectChecker {
   std::vector<QPointF> GetLineWithCircleIntersectPoints(
       float a, float b, float c, float r);
 
-  bool IsPointInSegment(QPointF first, QPointF second, QPointF point);
-
   QVector2D CalculateDistanceToObjectNotToIntersectBodies(
       const std::shared_ptr<RigidBody>& first,
       const std::shared_ptr<RigidBody>& second,

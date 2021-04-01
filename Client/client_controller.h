@@ -83,7 +83,6 @@ class ClientController : public BaseController {
 
   void SetView(std::shared_ptr<AbstractClientView> view);
 
-  void CollidePlayerWithGameObjects(int delta_time);
   void UpdateLocalPlayer(int delta_time);
 
   // -------------------- CONTROLS --------------------
@@ -115,7 +114,6 @@ class ClientController : public BaseController {
 
   void UpdateGameObjectDataEvent(const Event& event) override;
   void GameObjectLeftFovEvent(const Event& event) override;
-  void UpdatePlayersFovRadiusEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;

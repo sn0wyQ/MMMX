@@ -12,16 +12,20 @@
 
 namespace ObjectCollision {
 
-void DoFirstPhase(
+void MoveWithSlidingCollision(
+    const std::shared_ptr<MovableObject>& main,
+    const std::vector<std::shared_ptr<GameObject>>& objects,
+    QVector2D force, int delta_time);
+
+void DoPressurePhase(
     const std::shared_ptr<MovableObject>& main,
     const std::vector<std::shared_ptr<GameObject>>& objects, int delta_time);
 
-void FindTangents(
+std::vector<QVector2D> GetTangents(
     const std::shared_ptr<MovableObject>& main,
-    const std::vector<std::shared_ptr<GameObject>>& objects,
-    std::vector<QVector2D>* tangents_to_push);
+    const std::vector<std::shared_ptr<GameObject>>& objects);
 
-void DoSecondPhase(
+void MoveOnTangents(
     const std::shared_ptr<MovableObject>& main,
     const std::vector<std::shared_ptr<GameObject>>& objects,
     QVector2D force, const std::vector<QVector2D>& tangents);

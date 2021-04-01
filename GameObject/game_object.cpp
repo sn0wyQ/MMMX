@@ -128,3 +128,7 @@ std::vector<QVariant> GameObject::GetParams() const {
 GameObjectType GameObject::GetType() const {
   return GameObjectType::kGameObject;
 }
+
+bool GameObject::IsFilteredByFov() const {
+  return true;
+}

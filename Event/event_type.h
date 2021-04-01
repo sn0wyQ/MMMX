@@ -61,9 +61,6 @@ enum class EventType {
   // [2+] - game_object_args : relative constructor args
   kUpdateGameObjectData,
 
-  // [0] - <float> new player's FOV, FOV should ALWAYS be > 0
-  kUpdatePlayersFovRadius,
-
   SIZE
 };
 

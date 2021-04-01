@@ -60,37 +60,35 @@ class RoomController : public BaseController {
   GameObjectId ClientIdToPlayerId(ClientId client_id) const;
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
-  bool IsObjectInFov(GameObjectId sender_player_id,
-                     GameObjectId receiver_player_id);
-
   std::vector<Event> ClaimEventsForServer();
 
-  GameObjectId AddDefaultPlayer();
-  void AddBox(float x, float y, float rotation, float width, float height);
-  void AddTree(float x, float y, float radius);
-
-  void ShareGameObjectsToClient(ClientId client_id);
-
  private:
+
   RoomId id_;
   GameDataModel model_;
   RoomSettings room_settings_;
   RoomState room_state_ = RoomState::kWaitingForClients;
   std::unordered_map<ClientId, GameObjectId> player_ids_;
-
   std::set<std::pair<GameObjectId, GameObjectId>> is_first_in_fov_of_second_;
-
   std::vector<Event> events_for_server_;
 
+  GameObjectId AddDefaultPlayer();
+  void AddBox(float x, float y, float rotation, float width, float height);
+  void AddTree(float x, float y, float radius);
+
+  void SendGameObjectDataToPlayersAccordingFov(GameObjectId game_object_id);
   void UpdateReceiversByFov(
       GameObjectId sender_player_id,
       std::vector<GameObjectId>* data_receivers,
       std::vector<GameObjectId>* left_fov_event_receivers);
+  void SendGameObjectsDataToPlayer(GameObjectId player_id);
+  bool IsGameObjectInFov(GameObjectId game_object_id,
+                         GameObjectId player_id);
+  Event GetEventOfGameObjectData(GameObjectId game_object_id) const;
 
   // ------------------- GAME EVENTS -------------------
 
   void SendControlsEvent(const Event& event) override;
-  void GameObjectLeftFovEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

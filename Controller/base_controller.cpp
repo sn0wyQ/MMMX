@@ -27,8 +27,6 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendControlsEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateGameObjectData,
     std::bind(&BaseController::UpdateGameObjectDataEvent, this, _1));
-  SetFunctionForEventType(EventType::kUpdatePlayersFovRadius,
-    std::bind(&BaseController::UpdatePlayersFovRadiusEvent, this, _1));
   SetFunctionForEventType(EventType::kGameObjectLeftFov,
     std::bind(&BaseController::GameObjectLeftFovEvent, this, _1));
 

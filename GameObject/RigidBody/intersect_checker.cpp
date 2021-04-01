@@ -36,30 +36,9 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     QVector2D offset, float rotation) {
 
   float r = circle->GetRadius();
-  std::vector<QPointF> points;
-  points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
-                           offset.y() - rectangle->GetHeight() / 2.);
-  points.emplace_back(offset.x() + rectangle->GetWidth() / 2.,
-                           offset.y() - rectangle->GetHeight() / 2.);
-  points.emplace_back(offset.x() + rectangle->GetWidth() / 2.,
-                           offset.y() + rectangle->GetHeight() / 2.);
-  points.emplace_back(offset.x() - rectangle->GetWidth() / 2.,
-                           offset.y() + rectangle->GetHeight() / 2.);
-  float rotation_rad = Math::DegreesToRadians(rotation);
-  for (auto& point : points) {
-    float x = point.x();
-    float y = point.y();
-    point.setX(x - offset.x());
-    point.setY(y - offset.y());
-    x = point.x();
-    y = point.y();
-    point.setX(x * std::cos(rotation_rad) + y * std::sin(rotation_rad));
-    point.setY(-x * std::sin(rotation_rad) + y * std::cos(rotation_rad));
-    x = point.x();
-    y = point.y();
-    point.setX(x + offset.x());
-    point.setY(y + offset.y());
-  }
+
+  std::vector<QPointF> points = Math::GetRectanglePoints(
+      offset.toPointF(), rotation, rectangle);
   std::vector<QPointF> result;
   for (int i = 0; i < 4; i++) {
     QPointF first = points[i];
@@ -71,7 +50,7 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     std::vector<QPointF> points_on_line
       = GetLineWithCircleIntersectPoints(a, b, c, r);
     for (const auto& point : points_on_line) {
-      if (IsPointInSegment(first, second, point)) {
+      if (Math::IsPointInSegment(first, second, point)) {
         result.push_back(point);
       }
     }
@@ -96,20 +75,6 @@ std::vector<QPointF> IntersectChecker::GetLineWithCircleIntersectPoints(
     result.push_back(second_intersect);
   }
   return result;
-}
-
-bool IntersectChecker::IsPointInSegment(QPointF first,
-                                        QPointF second,
-                                        QPointF point) {
-  float min_x = std::min(first.x(), second.x());
-  float max_x = std::max(first.x(), second.x());
-  float min_y = std::min(first.y(), second.y());
-  float max_y = std::max(first.y(), second.y());
-  if (min_x - kEps <= point.x() && point.x() <= max_x + kEps
-    && min_y - kEps <= point.y() && point.y() <= max_y + kEps) {
-    return true;
-  }
-  return false;
 }
 
 bool IntersectChecker::IsSimilarVectors(QVector2D first, QVector2D second) {

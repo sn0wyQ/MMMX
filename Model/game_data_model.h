@@ -23,6 +23,9 @@ class GameDataModel {
   std::vector<std::shared_ptr<GameObject>> GetConstantObjects() const;
   std::vector<std::shared_ptr<MovableObject>> GetMovableObjects() const;
 
+  std::vector<std::shared_ptr<GameObject>> GetFilteredByFovObjects() const;
+  std::vector<std::shared_ptr<GameObject>> GetNotFilteredByFovObjects() const;
+
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
 
   int GetPlayersCount() const;

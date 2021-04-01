@@ -76,7 +76,6 @@ class BaseController : public QObject {
 
   virtual void SendControlsEvent(const Event& event) {}
   virtual void UpdateGameObjectDataEvent(const Event& event) {}
-  virtual void UpdatePlayersFovRadiusEvent(const Event& event) {}
   virtual void GameObjectLeftFovEvent(const Event& event) {}
 };
 

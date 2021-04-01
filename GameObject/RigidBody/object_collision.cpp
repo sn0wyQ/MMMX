@@ -2,7 +2,7 @@
 
 namespace ObjectCollision {
 
-void DoFirstPhase(
+void DoPressurePhase(
     const std::shared_ptr<MovableObject>& main,
     const std::vector<std::shared_ptr<GameObject>>& objects,
     int delta_time) {
@@ -27,8 +27,8 @@ void DoFirstPhase(
 
   // Если мы будем в объекте в будущем...
     if (!intersect_points_in_future.empty()) {
-  // То высчитываем расстояние, чтобы мы не пересекались с объектом
-  // O(log -log_10 kEps)
+    // То высчитываем расстояние, чтобы мы не пересекались с объектом
+    // O(log -log_10 kEps)
       QVector2D delta_to_set
           = IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
               main->GetRigidBody(), object->GetRigidBody(),
@@ -44,13 +44,13 @@ void DoFirstPhase(
   }
 }
 
-void FindTangents(const std::shared_ptr<MovableObject>& main,
-                  const std::vector<std::shared_ptr<GameObject>>& objects,
-                  std::vector<QVector2D>* tangents_to_push) {
+std::vector<QVector2D> GetTangents(const std::shared_ptr<MovableObject>& main,
+                  const std::vector<std::shared_ptr<GameObject>>& objects) {
   // Вторая фаза (скользкая):
   // Если наша внешняя оболочка [RigidBody::External()]
   // оказалась уже прижата,
   // то ищем все касательные к нашему объекту
+  std::vector<QVector2D> tangents;
   for (const auto& object : objects) {
     if (main->GetId() == object->GetId()) {
       continue;
@@ -70,14 +70,16 @@ void FindTangents(const std::shared_ptr<MovableObject>& main,
       // делаем касательную
       QVector2D tangent_vector(-point.y(), point.x());
       tangent_vector.normalize();
-      tangents_to_push->push_back(tangent_vector);
+      tangents.push_back(tangent_vector);
     }
   }
+  return tangents;
 }
-void DoSecondPhase(const std::shared_ptr<MovableObject>& main,
-                   const std::vector<std::shared_ptr<GameObject>>& objects,
-                   QVector2D force,
-                   const std::vector<QVector2D>& tangents) {
+
+void MoveOnTangents(const std::shared_ptr<MovableObject>& main,
+                    const std::vector<std::shared_ptr<GameObject>>& objects,
+                    QVector2D force,
+                    const std::vector<QVector2D>& tangents) {
   // Если касательные нашлись, то пробуем скользить по ним
   if (!tangents.empty()) {
     bool full_stop = false;
@@ -135,6 +137,25 @@ void DoSecondPhase(const std::shared_ptr<MovableObject>& main,
       main->SetVelocity(result);
     }
   }
+}
+
+void MoveWithSlidingCollision(
+    const std::shared_ptr<MovableObject>& main,
+    const std::vector<std::shared_ptr<GameObject>>& objects,
+    QVector2D force, int delta_time) {
+  main->SetVelocity(force);
+  // Если хотим стоять на месте, то коллизии НАМ не нужно обрабатывать
+  if (force.isNull()) {
+    return;
+  }
+  ObjectCollision::DoPressurePhase(main, objects, delta_time);
+  // Если мы двигаемся, то мы не прижаты в этот тик, значит всё
+  if (!main->GetVelocity().isNull()) {
+    return;
+  }
+  // иначе мы прижаты, а значит можем попробавать двигаться по касательным
+  std::vector<QVector2D> tangents = ObjectCollision::GetTangents(main, objects);
+  ObjectCollision::MoveOnTangents(main, objects, force, tangents);
 }
 
 }  // namespace ObjectCollision
