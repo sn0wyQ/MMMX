@@ -33,10 +33,6 @@ std::shared_ptr<Player> GameDataModel::GetLocalPlayer() const {
   return GetPlayerByPlayerId(local_player_id_);
 }
 
-int GameDataModel::GetPlayersCount() const {
-  return GetPlayers().size();
-}
-
 void GameDataModel::AddGameObject(GameObjectId game_object_id,
                                   GameObjectType type,
                                   const std::vector<QVariant>& params) {

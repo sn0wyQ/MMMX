@@ -36,8 +36,8 @@ constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 
 // Map
-constexpr int kMapWidth = 50;
-constexpr int kMapHeight = 50;
+constexpr float kDefaultMapWidth = 50.f;
+constexpr float kDefaultMapHeight = 50.f;
 
 // Room
 constexpr int kDefaultMaxClients = 4;

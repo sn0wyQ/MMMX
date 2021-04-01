@@ -21,6 +21,8 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     const std::shared_ptr<RigidBodyCircle>& circle1,
     const std::shared_ptr<RigidBodyCircle>& circle2,
     QVector2D offset, float) {
+  // Формула нахождения точек пересечения двух кругов:
+  // http://e-maxx.ru/algo/circles_intersection
   float r1 = circle1->GetRadius();
   float r2 = circle2->GetRadius();
   float a = -2 * offset.x();
@@ -36,7 +38,6 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     QVector2D offset, float rotation) {
 
   float r = circle->GetRadius();
-
   std::vector<QPointF> points = Math::GetRectanglePoints(
       offset.toPointF(), rotation, rectangle);
   std::vector<QPointF> result;
@@ -60,13 +61,15 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
 
 std::vector<QPointF> IntersectChecker::GetLineWithCircleIntersectPoints(
     float a, float b, float c, float r) {
+  // Формула нахождения точек пересечения линии с кругом:
+  // http://e-maxx.ru/algo/circle_line_intersection
   std::vector<QPointF> result;
   float x0 = -a * c / (a * a + b * b);
   float y0 = -b * c / (a * a + b * b);
   float formula = c * c - r * r * (a * a + b * b);
   if (std::abs(formula) < kEps) {
     result.emplace_back(x0, y0);
-  } else if (formula <= kEps) {
+  } else if (formula < -kEps) {
     float d = r * r - c * c / (a * a + b * b);
     float mult = std::sqrt(d / (a * a + b * b));
     QPointF first_intersect(x0 + b * mult, y0 - a * mult);
@@ -78,8 +81,9 @@ std::vector<QPointF> IntersectChecker::GetLineWithCircleIntersectPoints(
 }
 
 bool IntersectChecker::IsSimilarVectors(QVector2D first, QVector2D second) {
-  return QVector2D::dotProduct(first, second)
-    / first.length() / second.length() >= 1 - kCosEps;
+  float cos_between_vectors = QVector2D::dotProduct(first, second)
+      / first.length() / second.length();
+  return cos_between_vectors >= 1 - kCosEps;
 }
 
 QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(

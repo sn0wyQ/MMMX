@@ -28,7 +28,6 @@ class GameDataModel {
 
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
 
-  int GetPlayersCount() const;
   bool IsGameObjectIdTaken(GameObjectId game_object_id) const;
   GameObjectId GetNextUnusedGameObjectId() const;
 

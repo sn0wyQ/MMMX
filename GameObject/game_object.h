@@ -9,12 +9,12 @@
 #include <QDebug>
 
 #include "constants.h"
+#include "Painter/painter.h"
 #include "Math/math.h"
 #include "GameObject/RigidBody/intersect_constants.h"
 #include "GameObject/RigidBody/rigid_body.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
-#include "Painter/painter.h"
 
 namespace GameObjectTypeWrapper {
 
@@ -35,7 +35,7 @@ Q_DECLARE_METATYPE(GameObjectType)
 
 class GameObject {
  public:
-  explicit GameObject(GameObjectId game_object_id);
+  explicit GameObject(GameObjectId id);
 
   virtual void OnTick(int delta_time) {}
   void Draw(Painter* painter);
@@ -73,11 +73,14 @@ class GameObject {
  private:
   GameObjectId id_{Constants::kNullGameObjectId};
   QPointF position_{0.f, 0.f};
+  // 0 is direction from left to right
+  // Increasing counterclockwise
+  // Measured in degrees
   float rotation_{0.f};
   float width_{0.f};
   float height_{0.f};
   std::shared_ptr<RigidBody> rigid_body_;
-  bool is_in_fov_{true};
+  bool is_in_fov_{false};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_

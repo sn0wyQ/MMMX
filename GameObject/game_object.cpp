@@ -1,7 +1,7 @@
 #include "game_object.h"
 
-GameObject::GameObject(GameObjectId game_object_id)
-  : id_(game_object_id) {}
+GameObject::GameObject(GameObjectId id)
+  : id_(id) {}
 
 GameObjectId GameObject::GetId() const {
   return id_;

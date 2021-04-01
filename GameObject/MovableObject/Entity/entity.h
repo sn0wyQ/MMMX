@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "GameObject/MovableObject/movable_object.h"
 

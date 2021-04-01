@@ -5,7 +5,11 @@ float Math::DirectionAngle(const QPointF& start, const QPointF& end) {
 }
 
 float Math::DegreesToRadians(float degrees) {
-  return degrees / 180.f * static_cast<float>(M_PI);
+  return degrees * kDegToRad;
+}
+
+float Math::RadiansToDegrees(float radians) {
+  return radians * kRadToDeg;
 }
 
 bool Math::IsPointInSegment(QPointF first,

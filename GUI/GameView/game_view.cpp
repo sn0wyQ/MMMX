@@ -14,17 +14,20 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                   converter_,
                   model_->IsLocalPlayerSet()
                   ? model_->GetLocalPlayer()->GetPosition()
-                  : QPointF(0, 0));
-
-  // ----------------- CONSTANT OBJECTS -----------------
+                  : QPointF(0.f, 0.f));
 
   std::vector<std::shared_ptr<GameObject>> not_filtered_objects
     = model_->GetNotFilteredByFovObjects();
   for (const auto& object : not_filtered_objects) {
-    object->Draw(&painter);
+    if(!object->IsMovable()) {
+      object->Draw(&painter);
+    }
   }
-
-  // ------------------ DYNAMIC OBJECTS -----------------
+  for (const auto& object : not_filtered_objects) {
+    if(object->IsMovable()) {
+      object->Draw(&painter);
+    }
+  }
 
   // If LocalPlayer isn't set we don't want to draw anything non-constant
   if (!model_->IsLocalPlayerSet()) {
@@ -43,7 +46,12 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
   std::vector<std::shared_ptr<GameObject>> filtered_objects
       = model_->GetFilteredByFovObjects();
   for (const auto& object : filtered_objects) {
-    if (object->IsInFov()) {
+    if (object->IsInFov() && !object->IsMovable()) {
+      object->Draw(&painter);
+    }
+  }
+  for (const auto& object : filtered_objects) {
+    if (object->IsInFov() && object->IsMovable()) {
       object->Draw(&painter);
     }
   }

@@ -61,9 +61,9 @@ class RoomController : public BaseController {
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
   std::vector<Event> ClaimEventsForServer();
+  int GetPlayersCount() const;
 
  private:
-
   RoomId id_;
   GameDataModel model_;
   RoomSettings room_settings_;
@@ -75,6 +75,7 @@ class RoomController : public BaseController {
   GameObjectId AddDefaultPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);
   void AddTree(float x, float y, float radius);
+  void AddConstantObjects();
 
   void SendGameObjectDataToPlayersAccordingFov(GameObjectId game_object_id);
   void UpdateReceiversByFov(

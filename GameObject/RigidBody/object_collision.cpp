@@ -105,16 +105,17 @@ void MoveOnTangents(const std::shared_ptr<MovableObject>& main,
       // Если мы нашли несколько касательных, то тут два варианта
       // - они как бы замыкают нас и довольно строго, что дальше пройти
       // мы не сможем никак
-      // - они более-менее похожи, тогда мы можем проскальзить по двоим сразу,
+      // - угол между ними весьма мал,
+      // тогда мы можем проскальзить по двоим сразу,
       // тогда найдем сумму, а потом ее нормализуем
       if (IntersectChecker::IsSimilarVectors(common_tangent_vector,
                                              tangent_vector)) {
         common_tangent_vector += tangent_vector;
-        continue;
+      } else {
+        // Если касательные не похожи, то мы должны остановится
+        full_stop = true;
+        break;
       }
-      // Если касательные не похожи, то мы должны остановится
-      full_stop = true;
-      break;
     }
     if (full_stop) {
       main->SetVelocity({0.f, 0.f});

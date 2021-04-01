@@ -5,17 +5,22 @@ Player::Player(GameObjectId player_id) : Entity(player_id) {}
 
 void Player::DrawRelatively(Painter* painter) {
   // Body [Temporary]
-  painter->DrawEllipse(QPointF(), 1.f, 1.f);
+  painter->DrawEllipse(QPointF(), GetRadius(), GetRadius());
 
   // Eyes [Temporary]
-  painter->DrawEllipse(QPointF(0.4f, -0.3f), 0.2f, 0.2f);
-  painter->DrawEllipse(QPointF(0.4, 0.3f), 0.2f, 0.2f);
+  painter->DrawEllipse(QPointF(0.4f * GetRadius(),
+                               -0.3f * GetRadius()),
+                       0.2f,
+                       0.2f);
+  painter->DrawEllipse(
+      QPointF(0.4f * GetRadius(), 0.3f * GetRadius()),
+      0.2f, 0.2f);
 
   // Direction Arrow [Needs improvement to look cuter]
   if (IsLocalPlayer()) {
-    painter->DrawTriangle(QPointF(1.2f, -0.3f),
-                          QPointF(1.2f, 0.3f),
-                          QPointF(1.7f, 0.f));
+    painter->DrawTriangle(QPointF(GetRadius() + 0.2f, -0.3f),
+                          QPointF(GetRadius() + 0.2f, 0.3f),
+                          QPointF(GetRadius() + 0.7f, 0.f));
   }
 }
 

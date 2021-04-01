@@ -254,12 +254,18 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
   } else {
     model_->AddGameObject(game_object_id, game_object_type, params);
   }
+  bool previous_state
+    = model_->GetGameObjectByGameObjectId(game_object_id)->IsInFov();
   model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(true);
+  if (!previous_state) {
+    qInfo() << "[CLIENT] Appeared in fov " << game_object_id;
+  }
 }
 
 void ClientController::GameObjectLeftFovEvent(const Event& event) {
   auto game_object_id = event.GetArg<GameObjectId>(0);
   if (model_->IsGameObjectIdTaken(game_object_id)) {
     model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(false);
+    qInfo() << "[CLIENT] Left from fov " << game_object_id;
   }
 }
