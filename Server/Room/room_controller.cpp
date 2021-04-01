@@ -211,7 +211,6 @@ void RoomController::UpdateReceiversByFov(
     auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
     auto sender_receiver_pair = std::make_pair(game_object_id,
                                                receiver_player_id);
-    qInfo() << sender_receiver_pair;
     if (this->IsGameObjectInFov(game_object_id, receiver_player_id)) {
       is_first_in_fov_of_second_.insert(sender_receiver_pair);
       data_receivers->push_back(receiver_player_id);
