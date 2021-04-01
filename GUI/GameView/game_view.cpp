@@ -19,12 +19,12 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
   std::vector<std::shared_ptr<GameObject>> not_filtered_objects
     = model_->GetNotFilteredByFovObjects();
   for (const auto& object : not_filtered_objects) {
-    if(!object->IsMovable()) {
+    if (!object->IsMovable()) {
       object->Draw(&painter);
     }
   }
   for (const auto& object : not_filtered_objects) {
-    if(object->IsMovable()) {
+    if (object->IsMovable()) {
       object->Draw(&painter);
     }
   }
