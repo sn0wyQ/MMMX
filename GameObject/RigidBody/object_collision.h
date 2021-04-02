@@ -25,7 +25,7 @@ std::vector<QVector2D> GetTangents(
     const std::shared_ptr<MovableObject>& main,
     const std::vector<std::shared_ptr<GameObject>>& objects);
 
-void MoveOnTangents(
+void MoveAlongTangents(
     const std::shared_ptr<MovableObject>& main,
     const std::vector<std::shared_ptr<GameObject>>& objects,
     QVector2D force, const std::vector<QVector2D>& tangents);

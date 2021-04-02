@@ -46,7 +46,7 @@ void DoPressurePhase(
 
 std::vector<QVector2D> GetTangents(const std::shared_ptr<MovableObject>& main,
                   const std::vector<std::shared_ptr<GameObject>>& objects) {
-  // Вторая фаза (скользкая):
+  // Начало второй фазы:
   // Если наша внешняя оболочка [RigidBody::External()]
   // оказалась уже прижата,
   // то ищем все касательные к нашему объекту
@@ -76,10 +76,11 @@ std::vector<QVector2D> GetTangents(const std::shared_ptr<MovableObject>& main,
   return tangents;
 }
 
-void MoveOnTangents(const std::shared_ptr<MovableObject>& main,
-                    const std::vector<std::shared_ptr<GameObject>>& objects,
-                    QVector2D force,
-                    const std::vector<QVector2D>& tangents) {
+void MoveAlongTangents(const std::shared_ptr<MovableObject>& main,
+                       const std::vector<std::shared_ptr<GameObject>>& objects,
+                       QVector2D force,
+                       const std::vector<QVector2D>& tangents) {
+  // Продолжение второй фазы (скольжение по найденным касательным):
   // Если касательные нашлись, то пробуем скользить по ним
   if (!tangents.empty()) {
     bool full_stop = false;
@@ -93,7 +94,7 @@ void MoveOnTangents(const std::shared_ptr<MovableObject>& main,
       float cos = QVector2D::dotProduct(
           force, QVector2D(tangent_vector.y(), -tangent_vector.x()));
       // Это проверка на то, находится ли касательная на пути нажатия клавиш
-      if (cos <= 0) {
+      if (cos < 0) {
         continue;
       }
       if (!has_common) {
@@ -106,13 +107,13 @@ void MoveOnTangents(const std::shared_ptr<MovableObject>& main,
       // - они как бы замыкают нас и довольно строго, что дальше пройти
       // мы не сможем никак
       // - угол между ними весьма мал,
-      // тогда мы можем проскальзить по двоим сразу,
+      // тогда мы можем проскользить по двоим сразу,
       // тогда найдем сумму, а потом ее нормализуем
       if (IntersectChecker::IsSimilarVectors(common_tangent_vector,
                                              tangent_vector)) {
         common_tangent_vector += tangent_vector;
       } else {
-        // Если касательные не похожи, то мы должны остановится
+        // Если касательные не похожи, то мы должны остановиться
         full_stop = true;
         break;
       }
@@ -156,7 +157,7 @@ void MoveWithSlidingCollision(
   }
   // иначе мы прижаты, а значит можем попробавать двигаться по касательным
   std::vector<QVector2D> tangents = ObjectCollision::GetTangents(main, objects);
-  ObjectCollision::MoveOnTangents(main, objects, force, tangents);
+  ObjectCollision::MoveAlongTangents(main, objects, force, tangents);
 }
 
 }  // namespace ObjectCollision
