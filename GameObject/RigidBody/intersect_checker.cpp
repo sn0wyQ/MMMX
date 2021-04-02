@@ -91,7 +91,10 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
     const std::shared_ptr<RigidBody>& first,
     const std::shared_ptr<RigidBody>& second,
     QVector2D offset, float rotation, QVector2D delta_intersect) {
-  // Диха максимального расстояния без пересечения с объектом
+  // Диха максимального расстояния от первого объекта
+  // без пересечения со вторым
+  // Гарантируется, что при r = 1 пересечение есть
+  // При l = 0 может как быть, так и не быть пересечения
   float l = 0;
   float r = 1;
   while (r - l > kEps) {
