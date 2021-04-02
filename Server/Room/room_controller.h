@@ -53,15 +53,16 @@ class RoomController : public BaseController {
   bool IsGameInProgress() const;
   bool IsWaitingForClients() const;
 
+  int GetPlayersCount() const;
+
   std::vector<ClientId> GetAllClientsIds() const;
   std::vector<GameObjectId> GetAllPlayerIds() const;
+
   RoomId GetId() const;
-
   GameObjectId ClientIdToPlayerId(ClientId client_id) const;
-  ClientId PlayerIdToClientId(GameObjectId player_id) const;
 
+  ClientId PlayerIdToClientId(GameObjectId player_id) const;
   std::vector<Event> ClaimEventsForServer();
-  int GetPlayersCount() const;
 
  private:
   RoomId id_;
@@ -77,15 +78,15 @@ class RoomController : public BaseController {
   void AddTree(float x, float y, float radius);
   void AddConstantObjects();
 
-  void TellPlayerAboutOthers(GameObjectId player_id);
-  void TellPlayersAboutGameObject(GameObjectId game_object_id);
+  Event GetEventOfGameObjectData(GameObjectId game_object_id) const;
+  bool IsGameObjectInFov(GameObjectId game_object_id,
+                         GameObjectId player_id);
   void UpdateReceiversByFov(
       GameObjectId sender_player_id,
       std::vector<GameObjectId>* data_receivers,
       std::vector<GameObjectId>* left_fov_event_receivers);
-  bool IsGameObjectInFov(GameObjectId game_object_id,
-                         GameObjectId player_id);
-  Event GetEventOfGameObjectData(GameObjectId game_object_id) const;
+  void TellPlayerAboutGameObjects(GameObjectId player_id);
+  void TellPlayersAboutGameObject(GameObjectId game_object_id);
 
   // ------------------- GAME EVENTS -------------------
 
