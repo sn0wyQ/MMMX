@@ -1,7 +1,7 @@
 #include "client_controller.h"
 
 ClientController::ClientController(const QUrl& url) : url_(url),
-  model_(std::make_shared<GameDataModel>()) {
+  model_(std::make_shared<ClientGameModel>()) {
   qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
   connect(&web_socket_, &QWebSocket::connected, this,
           &ClientController::OnConnected);
@@ -11,7 +11,7 @@ ClientController::ClientController(const QUrl& url) : url_(url),
   this->StartTicking();
 }
 
-std::shared_ptr<GameDataModel> ClientController::GetModel() {
+std::shared_ptr<ClientGameModel> ClientController::GetModel() {
   return model_;
 }
 

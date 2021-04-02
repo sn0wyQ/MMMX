@@ -19,7 +19,7 @@
 #include "Converter/converter.h"
 #include "GameObject/RigidBody/object_collision.h"
 #include "Math/math.h"
-#include "Model/game_data_model.h"
+#include "Model/client_game_model.h"
 
 // TODO(Everyone): make class Hotkeys instead of enum Controls
 // (with possibility to rebind keys)
@@ -73,7 +73,7 @@ class ClientController : public BaseController {
 
   void TickPlayers(int delta_time);
 
-  std::shared_ptr<GameDataModel> GetModel();
+  std::shared_ptr<ClientGameModel> GetModel();
   int GetServerVar() const;
   int GetRoomVar() const;
   int GetClientVar() const;
@@ -118,7 +118,7 @@ class ClientController : public BaseController {
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;
   QWebSocket web_socket_;
-  std::shared_ptr<GameDataModel> model_;
+  std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<AbstractClientView> view_;
   int server_var_{0};
   int room_var_{0};

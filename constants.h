@@ -60,7 +60,7 @@ constexpr bool kRigidBodyShow = true;
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
-constexpr float kDefaultPlayersFov = 10.5f;
+constexpr float kDefaultEntityFov = 10.5f;
 constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerRotation = 0.f;

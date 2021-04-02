@@ -22,14 +22,11 @@ class Player : public Entity {
   float GetRadius() const;
 
   GameObjectType GetType() const override;
-  float GetFovRadius() const;
-  void SetFovRadius(float fov_radius);
 
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
 
  private:
-  float fov_radius_{Constants::kDefaultPlayersFov};
   bool is_local_player_{false};
 };
 

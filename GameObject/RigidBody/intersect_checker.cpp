@@ -36,7 +36,8 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     const std::shared_ptr<RigidBodyCircle>& circle,
     const std::shared_ptr<RigidBodyRectangle>& rectangle,
     QVector2D offset, float rotation) {
-
+  // Нахождение всех точек пересечения круга с прямоугольником -
+  // это нахождение точек пересечения с каждой стороной круга
   float r = circle->GetRadius();
   std::vector<QPointF> points = Math::GetRectanglePoints(
       offset.toPointF(), rotation, rectangle);
@@ -90,6 +91,7 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
     const std::shared_ptr<RigidBody>& first,
     const std::shared_ptr<RigidBody>& second,
     QVector2D offset, float rotation, QVector2D delta_intersect) {
+  // Диха максимального расстояния без пересечения с объектом
   float l = 0;
   float r = 1;
   while (r - l > kEps) {

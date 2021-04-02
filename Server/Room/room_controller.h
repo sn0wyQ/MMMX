@@ -12,7 +12,7 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
-#include "Model/game_data_model.h"
+#include "Model/room_game_model.h"
 #include "Server/Room/room_settings.h"
 #include "constants.h"
 
@@ -65,7 +65,7 @@ class RoomController : public BaseController {
 
  private:
   RoomId id_;
-  GameDataModel model_;
+  std::shared_ptr<RoomGameModel> model_;
   RoomSettings room_settings_;
   RoomState room_state_ = RoomState::kWaitingForClients;
   std::unordered_map<ClientId, GameObjectId> player_ids_;
@@ -77,12 +77,12 @@ class RoomController : public BaseController {
   void AddTree(float x, float y, float radius);
   void AddConstantObjects();
 
-  void SendGameObjectDataToPlayersAccordingFov(GameObjectId game_object_id);
+  void TellPlayerAboutOthers(GameObjectId player_id);
+  void TellPlayersAboutGameObject(GameObjectId game_object_id);
   void UpdateReceiversByFov(
       GameObjectId sender_player_id,
       std::vector<GameObjectId>* data_receivers,
       std::vector<GameObjectId>* left_fov_event_receivers);
-  void SendGameObjectsDataToPlayer(GameObjectId player_id);
   bool IsGameObjectInFov(GameObjectId game_object_id,
                          GameObjectId player_id);
   Event GetEventOfGameObjectData(GameObjectId game_object_id) const;

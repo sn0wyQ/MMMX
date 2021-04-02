@@ -79,7 +79,9 @@ set(SOURCES
         GameObject/RigidBody/intersect_constants.h
         GameObject/RigidBody/object_collision.cpp
         Math/math.cpp
-        Model/game_data_model.cpp
+        Model/game_model.cpp
+        Model/room_game_model.cpp
+        Model/client_game_model.cpp
         Model/server_model.cpp
         Painter/painter.cpp
         Server/Room/room_controller.cpp

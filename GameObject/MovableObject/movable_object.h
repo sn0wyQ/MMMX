@@ -31,9 +31,7 @@ class MovableObject : public GameObject {
 
   bool IsFilteredByFov() const override;
 
-  static float GetShortestDistance(
-      const std::shared_ptr<MovableObject>& main,
-      const std::shared_ptr<GameObject>& object);
+  float GetShortestDistance(const std::shared_ptr<GameObject>& object);
 
  private:
   QVector2D velocity_{};

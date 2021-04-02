@@ -1,7 +1,8 @@
 #include "room_controller.h"
 
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
-    : id_(id), room_settings_(room_settings) {
+    : id_(id), model_(std::make_shared<RoomGameModel>()),
+    room_settings_(room_settings) {
   this->StartTicking();
   this->AddConstantObjects();
 }
@@ -58,7 +59,7 @@ void RoomController::OnTick(int delta_time) {
 }
 
 void RoomController::TickPlayers(int delta_time) {
-  std::vector<std::shared_ptr<Player>> players = model_.GetPlayers();
+  std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
   for (const auto& player : players) {
     player->OnTick(delta_time);
   }
@@ -68,12 +69,12 @@ void RoomController::AddClient(ClientId client_id) {
   GameObjectId player_id = AddDefaultPlayer();
   player_ids_[client_id] = player_id;
 
-  SendGameObjectsDataToPlayer(player_id);
+  TellPlayerAboutOthers(player_id);
 
   this->AddEventToSendToSingleClient(
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
 
-  SendGameObjectDataToPlayersAccordingFov(player_id);
+  TellPlayersAboutGameObject(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
           << "] Connected client (ID: " << client_id << ")";
@@ -90,7 +91,7 @@ void RoomController::RemoveClient(ClientId client_id) {
     throw std::runtime_error(
         "[ROOM ID:" + std::to_string(id_) + "] Invalid client ID");
   }
-  model_.DeleteGameObject(player_id);
+  model_->DeleteGameObject(player_id);
   this->AddEventToSendToAllClients(Event(EventType::kPlayerDisconnected,
                                          player_id));
   player_ids_.erase(client_id);
@@ -163,19 +164,19 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
 
 void RoomController::AddBox(float x, float y, float rotation,
                             float width, float height) {
-  model_.AddGameObject(GameObjectType::kGameObject,
+  model_->AddGameObject(GameObjectType::kGameObject,
                        {x, y, rotation, width, height,
                         static_cast<int>(RigidBodyType::kRectangle)});
 }
 
 void RoomController::AddTree(float x, float y, float radius) {
-  model_.AddGameObject(GameObjectType::kGameObject,
+  model_->AddGameObject(GameObjectType::kGameObject,
                        {x, y, 0.f, radius * 2.f, radius * 2.f,
                         static_cast<int>(RigidBodyType::kCircle)});
 }
 
-void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
-  for (const auto& object : model_.GetAllGameObjects()) {
+void RoomController::TellPlayerAboutOthers(GameObjectId player_id) {
+  for (const auto& object : model_->GetAllGameObjects()) {
     auto sender_receiver_pair = std::make_pair(object->GetId(), player_id);
     if (this->IsGameObjectInFov(object->GetId(), player_id)) {
       is_first_in_fov_of_second_.insert(sender_receiver_pair);
@@ -192,8 +193,8 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
 
 bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
                                        GameObjectId player_id) {
-  auto game_object = model_.GetGameObjectByGameObjectId(game_object_id);
-  auto player = model_.GetPlayerByPlayerId(player_id);
+  auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+  auto player = model_->GetPlayerByPlayerId(player_id);
   if (!game_object->IsFilteredByFov()) {
     return true;
   }
@@ -208,7 +209,7 @@ void RoomController::UpdateReceiversByFov(
     std::vector<GameObjectId>* left_fov_event_receivers) {
   for (auto& [receiver_client_id,
     receiver_player_id] : this->player_ids_) {
-    auto receiver = model_.GetPlayerByPlayerId(receiver_player_id);
+    auto receiver = model_->GetPlayerByPlayerId(receiver_player_id);
     auto sender_receiver_pair = std::make_pair(game_object_id,
                                                receiver_player_id);
     if (this->IsGameObjectInFov(game_object_id, receiver_player_id)) {
@@ -223,9 +224,9 @@ void RoomController::UpdateReceiversByFov(
 }
 
 GameObjectId RoomController::AddDefaultPlayer() {
-  float new_fov = Constants::kDefaultPlayersFov * (GetPlayersCount() + 1);
+  float new_fov = Constants::kDefaultEntityFov * (GetPlayersCount() + 1);
   float new_radius = Constants::kDefaultPlayerRadius * (GetPlayersCount() + 1);
-  return model_.AddGameObject(
+  return model_->AddGameObject(
       GameObjectType::kPlayer,
       {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
        Constants::kDefaultPlayerRotation, new_radius * 2,
@@ -234,7 +235,7 @@ GameObjectId RoomController::AddDefaultPlayer() {
        new_fov});
 }
 
-void RoomController::SendGameObjectDataToPlayersAccordingFov(
+void RoomController::TellPlayersAboutGameObject(
     GameObjectId game_object_id) {
   std::vector<GameObjectId> data_receivers;
   std::vector<GameObjectId> left_fov_event_receivers;
@@ -255,7 +256,7 @@ void RoomController::SendGameObjectDataToPlayersAccordingFov(
 
 Event RoomController::GetEventOfGameObjectData(GameObjectId game_object_id)
 const {
-  auto game_object = model_.GetGameObjectByGameObjectId(game_object_id);
+  auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
   Event event(EventType::kUpdateGameObjectData, game_object_id,
               static_cast<int>(game_object->GetType()));
   event.PushBackArgs(game_object->GetParams());
@@ -285,11 +286,11 @@ void RoomController::AddConstantObjects() {
 void RoomController::SendControlsEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
 
-  if (!model_.IsGameObjectIdTaken(player_id)) {
+  if (!model_->IsGameObjectIdTaken(player_id)) {
     return;
   }
 
-  auto player = model_.GetPlayerByPlayerId(player_id);
+  auto player = model_->GetPlayerByPlayerId(player_id);
 
   // TODO(Everyone): add anti-cheat mechanism to check
   //  if it was possible for player to travel this distance so fast
@@ -299,7 +300,7 @@ void RoomController::SendControlsEvent(const Event& event) {
   player->SetRotation(event.GetArg<float>(4));
 
   // Рассказываем ДРУГИМ о нас с учетом FOV
-  SendGameObjectDataToPlayersAccordingFov(player_id);
+  TellPlayersAboutGameObject(player_id);
   // Рассказываем НАМ о других с учетом FOV
-  SendGameObjectsDataToPlayer(player_id);
+  TellPlayerAboutOthers(player_id);
 }

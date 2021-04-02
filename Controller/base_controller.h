@@ -12,7 +12,7 @@
 #include <QTimer>
 
 #include "Event/event.h"
-#include "Model/game_data_model.h"
+#include "Model/game_model.h"
 #include "constants.h"
 
 class BaseController : public QObject {
