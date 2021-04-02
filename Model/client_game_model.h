@@ -1,5 +1,7 @@
-#ifndef MODEL_CLIENT_GAME_DATA_MODEL_H_
-#define MODEL_CLIENT_GAME_DATA_MODEL_H_
+#ifndef MODEL_CLIENT_GAME_MODEL_H_
+#define MODEL_CLIENT_GAME_MODEL_H_
+
+#include <memory>
 
 #include "Model/game_model.h"
 
@@ -13,4 +15,4 @@ class ClientGameModel : public GameModel {
   GameObjectId local_player_id_{Constants::kNullGameObjectId};
 };
 
-#endif  // MODEL_CLIENT_GAME_DATA_MODEL_H_
+#endif  // MODEL_CLIENT_GAME_MODEL_H_

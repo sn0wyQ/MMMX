@@ -1,5 +1,7 @@
-#ifndef MODEL_ROOM_GAME_DATA_MODEL_H_
-#define MODEL_ROOM_GAME_DATA_MODEL_H_
+#ifndef MODEL_ROOM_GAME_MODEL_H_
+#define MODEL_ROOM_GAME_MODEL_H_
+
+#include <vector>
 
 #include "Model/game_model.h"
 
@@ -11,4 +13,4 @@ class RoomGameModel : public GameModel {
                              const std::vector<QVariant>& params);
 };
 
-#endif  // MODEL_ROOM_GAME_DATA_MODEL_H_
+#endif  // MODEL_ROOM_GAME_MODEL_H_

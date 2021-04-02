@@ -1,5 +1,5 @@
-#ifndef MODEL_GAME_DATA_MODEL_H_
-#define MODEL_GAME_DATA_MODEL_H_
+#ifndef MODEL_GAME_MODEL_H_
+#define MODEL_GAME_MODEL_H_
 
 #include <map>
 #include <memory>
@@ -35,4 +35,4 @@ class GameModel {
   std::map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
 };
 
-#endif  // MODEL_GAME_DATA_MODEL_H_
+#endif  // MODEL_GAME_MODEL_H_
