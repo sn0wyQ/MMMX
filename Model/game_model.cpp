@@ -1,10 +1,10 @@
 #include "game_model.h"
 
-std::shared_ptr<Player>
-    GameModel::GetPlayerByPlayerId(GameObjectId player_id) const {
+std::shared_ptr<Player> GameModel::GetPlayerByPlayerId(
+    GameObjectId player_id) const {
   auto iter = game_objects_.find(player_id);
-  if (iter != game_objects_.end()
-    && iter->second->GetType() == GameObjectType::kPlayer) {
+  if (iter != game_objects_.end() &&
+      iter->second->GetType() == GameObjectType::kPlayer) {
     return std::dynamic_pointer_cast<Player>(iter->second);
   }
   throw std::runtime_error("[MODEL] Trying to get invalid player...");
@@ -66,8 +66,8 @@ bool GameModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return game_objects_.find(game_object_id) != game_objects_.end();
 }
 
-std::vector<std::shared_ptr<GameObject>> GameModel::GetAllGameObjects()
-  const {
+std::vector<std::shared_ptr<GameObject>>
+  GameModel::GetAllGameObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;
   for (const auto& object : game_objects_) {
     result.push_back(object.second);

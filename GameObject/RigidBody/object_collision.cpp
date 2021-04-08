@@ -47,8 +47,7 @@ void DoPressurePhase(
 std::vector<QVector2D> GetTangents(const std::shared_ptr<MovableObject>& main,
                   const std::vector<std::shared_ptr<GameObject>>& objects) {
   // Начало второй фазы:
-  // Если наша внешняя оболочка [RigidBody::External()]
-  // оказалась уже прижата,
+  // Если наша внешняя оболочка [RigidBody::External()] оказалась уже прижата,
   // то ищем все касательные к нашему объекту
   std::vector<QVector2D> tangents;
   for (const auto& object : objects) {
@@ -66,8 +65,7 @@ std::vector<QVector2D> GetTangents(const std::shared_ptr<MovableObject>& main,
             offset, rotation);
 
     for (const auto& point : intersect_points_now) {
-      // Из вектора, задающего точку прикосновения
-      // делаем касательную
+      // Из вектора, задающего точку прикосновения делаем касательную
       QVector2D tangent_vector(-point.y(), point.x());
       tangent_vector.normalize();
       tangents.push_back(tangent_vector);

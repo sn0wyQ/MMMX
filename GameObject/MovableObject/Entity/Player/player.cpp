@@ -3,6 +3,14 @@
 Player::Player(GameObjectId player_id) : Entity(player_id) {}
 
 
+void Player::SetParams(std::vector<QVariant> params) {
+  Entity::SetParams(params);
+}
+
+std::vector<QVariant> Player::GetParams() const {
+  return Entity::GetParams();
+}
+
 void Player::DrawRelatively(Painter* painter) {
   // Body [Temporary]
   painter->DrawEllipse(QPointF(), GetRadius(), GetRadius());
@@ -43,12 +51,4 @@ void Player::SetRadius(float radius) {
 
 float Player::GetRadius() const {
   return GetWidth() / 2.f;
-}
-
-void Player::SetParams(std::vector<QVariant> params) {
-  Entity::SetParams(params);
-}
-
-std::vector<QVariant> Player::GetParams() const {
-  return Entity::GetParams();
 }

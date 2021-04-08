@@ -85,8 +85,8 @@ class RoomController : public BaseController {
       GameObjectId sender_player_id,
       std::vector<GameObjectId>* data_receivers,
       std::vector<GameObjectId>* left_fov_event_receivers);
-  void TellPlayerAboutGameObjects(GameObjectId player_id);
-  void TellPlayersAboutGameObject(GameObjectId game_object_id);
+  void SendGameObjectsDataToPlayer(GameObjectId player_id);
+  void SendGameObjectDataToPlayers(GameObjectId game_object_id);
 
   // ------------------- GAME EVENTS -------------------
 

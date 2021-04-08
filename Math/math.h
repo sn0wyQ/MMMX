@@ -21,13 +21,13 @@ namespace Math {
 
   // Returns the angle between X axis and line from |start| to |end|
   // Angle is measured in degrees, return value is inside [0.f, 360.f)
-  float DirectionAngle(const QPointF& start, const QPointF& end);
+  float VectorAngle(const QPointF& start, const QPointF& end);
 
 
   float DegreesToRadians(float degrees);
   float RadiansToDegrees(float radians);
 
-  bool IsPointInSegment(QPointF first, QPointF second, QPointF point);
+  bool IsPointOnSegment(QPointF first, QPointF second, QPointF point);
 
   template <typename T>
   std::vector<QPointF> GetRectanglePoints(QPointF position, float rotation,

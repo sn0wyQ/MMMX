@@ -52,7 +52,7 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     std::vector<QPointF> points_on_line
       = GetLineWithCircleIntersectPoints(a, b, c, r);
     for (const auto& point : points_on_line) {
-      if (Math::IsPointInSegment(first, second, point)) {
+      if (Math::IsPointOnSegment(first, second, point)) {
         result.push_back(point);
       }
     }
@@ -91,8 +91,8 @@ QVector2D IntersectChecker::CalculateDistanceToObjectNotToIntersectBodies(
     const std::shared_ptr<RigidBody>& first,
     const std::shared_ptr<RigidBody>& second,
     QVector2D offset, float rotation, QVector2D delta_intersect) {
-  // Диха максимального расстояния от первого объекта
-  // без пересечения со вторым
+  // Поиск максимального расстояния без пересечений
+  // от первого объекта до второго
   // Гарантируется, что при r = 1 пересечение есть
   // При l = 0 может как быть, так и не быть пересечения
   float l = 0;

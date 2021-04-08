@@ -3,6 +3,56 @@
 GameObject::GameObject(GameObjectId id)
   : id_(id) {}
 
+void GameObject::SetParams(std::vector<QVariant> params) {
+  auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
+  if (rigid_body_ == nullptr) {
+    switch (rigid_body_type) {
+      case RigidBodyType::kCircle:
+        rigid_body_ = std::make_shared<RigidBodyCircle>();
+        break;
+      case RigidBodyType::kRectangle:
+        rigid_body_ = std::make_shared<RigidBodyRectangle>();
+        break;
+    }
+  }
+  params.pop_back();
+  SetHeight(params.back().toFloat());
+  params.pop_back();
+  SetWidth(params.back().toFloat());
+  params.pop_back();
+  SetRotation(params.back().toFloat());
+  params.pop_back();
+  SetY(params.back().toFloat());
+  params.pop_back();
+  SetX(params.back().toFloat());
+  params.pop_back();
+  rigid_body_->SetWidth(GetWidth());
+  rigid_body_->SetHeight(GetHeight());
+}
+
+std::vector<QVariant> GameObject::GetParams() const {
+  std::vector<QVariant> result;
+  result.emplace_back(GetX());
+  result.emplace_back(GetY());
+  result.emplace_back(GetRotation());
+  result.emplace_back(GetWidth());
+  result.emplace_back(GetHeight());
+  result.emplace_back(static_cast<int>(rigid_body_->GetType()));
+  return result;
+}
+
+void GameObject::Draw(Painter* painter) {
+  painter->save();
+  painter->Translate(GetPosition());
+  painter->RotateCounterClockWise(rotation_);
+  this->DrawRelatively(painter);
+  if (Constants::kRigidBodyShow) {
+    painter->setPen(Qt::red);
+    rigid_body_->Draw(painter);
+  }
+  painter->restore();
+}
+
 GameObjectId GameObject::GetId() const {
   return id_;
 }
@@ -29,18 +79,6 @@ float GameObject::GetX() const {
 
 float GameObject::GetY() const {
   return position_.y();
-}
-
-void GameObject::Draw(Painter* painter) {
-  painter->save();
-  painter->Translate(GetPosition());
-  painter->RotateCounterClockWise(rotation_);
-  this->DrawRelatively(painter);
-  if (Constants::kRigidBodyShow) {
-    painter->setPen(Qt::red);
-    rigid_body_->Draw(painter);
-  }
-  painter->restore();
 }
 
 float GameObject::GetRotation() const {
@@ -85,44 +123,6 @@ bool GameObject::IsInFov() const {
 
 void GameObject::SetIsInFov(bool is_in_fov) {
   is_in_fov_ = is_in_fov;
-}
-
-void GameObject::SetParams(std::vector<QVariant> params) {
-  auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
-  if (rigid_body_ == nullptr) {
-    switch (rigid_body_type) {
-      case RigidBodyType::kCircle:
-        rigid_body_ = std::make_shared<RigidBodyCircle>();
-        break;
-      case RigidBodyType::kRectangle:
-        rigid_body_ = std::make_shared<RigidBodyRectangle>();
-        break;
-    }
-  }
-  params.pop_back();
-  SetHeight(params.back().toFloat());
-  params.pop_back();
-  SetWidth(params.back().toFloat());
-  params.pop_back();
-  SetRotation(params.back().toFloat());
-  params.pop_back();
-  SetY(params.back().toFloat());
-  params.pop_back();
-  SetX(params.back().toFloat());
-  params.pop_back();
-  rigid_body_->SetWidth(GetWidth());
-  rigid_body_->SetHeight(GetHeight());
-}
-
-std::vector<QVariant> GameObject::GetParams() const {
-  std::vector<QVariant> result;
-  result.emplace_back(GetX());
-  result.emplace_back(GetY());
-  result.emplace_back(GetRotation());
-  result.emplace_back(GetWidth());
-  result.emplace_back(GetHeight());
-  result.emplace_back(static_cast<int>(rigid_body_->GetType()));
-  return result;
 }
 
 GameObjectType GameObject::GetType() const {

@@ -69,12 +69,12 @@ void RoomController::AddClient(ClientId client_id) {
   GameObjectId player_id = AddDefaultPlayer();
   player_ids_[client_id] = player_id;
 
-  TellPlayerAboutGameObjects(player_id);
+  SendGameObjectsDataToPlayer(player_id);
 
   this->AddEventToSendToSingleClient(
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
 
-  TellPlayersAboutGameObject(player_id);
+  SendGameObjectDataToPlayers(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
           << "] Connected client (ID: " << client_id << ")";
@@ -175,7 +175,7 @@ const {
   return event;
 }
 
-void RoomController::TellPlayerAboutGameObjects(GameObjectId player_id) {
+void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
   for (const auto& object : model_->GetAllGameObjects()) {
     auto sender_receiver_pair = std::make_pair(object->GetId(), player_id);
     if (this->IsGameObjectInFov(object->GetId(), player_id)) {
@@ -191,7 +191,7 @@ void RoomController::TellPlayerAboutGameObjects(GameObjectId player_id) {
   }
 }
 
-void RoomController::TellPlayersAboutGameObject(
+void RoomController::SendGameObjectDataToPlayers(
     GameObjectId game_object_id) {
   std::vector<GameObjectId> data_receivers;
   std::vector<GameObjectId> left_fov_event_receivers;
@@ -299,7 +299,7 @@ void RoomController::SendControlsEvent(const Event& event) {
   player->SetRotation(event.GetArg<float>(4));
 
   // Рассказываем ДРУГИМ о нас с учетом FOV
-  TellPlayersAboutGameObject(player_id);
+  SendGameObjectDataToPlayers(player_id);
   // Рассказываем НАМ о других с учетом FOV
-  TellPlayerAboutGameObjects(player_id);
+  SendGameObjectsDataToPlayer(player_id);
 }

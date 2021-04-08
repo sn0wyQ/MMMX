@@ -231,9 +231,9 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
-    float rotation = Math::DirectionAngle(local_player->GetPosition(),
-                                            converter_->PointFromScreenToGame(
-                                                mouse_event->pos()));
+    float rotation = Math::VectorAngle(local_player->GetPosition(),
+                                       converter_->PointFromScreenToGame(
+                                           mouse_event->pos()));
     local_player->SetRotation(rotation);
   }
 }
@@ -267,5 +267,6 @@ void ClientController::GameObjectLeftFovEvent(const Event& event) {
   if (model_->IsGameObjectIdTaken(game_object_id)) {
     model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(false);
     qInfo() << "[CLIENT] Left from fov " << game_object_id;
+    model_->DeleteGameObject(game_object_id);
   }
 }
