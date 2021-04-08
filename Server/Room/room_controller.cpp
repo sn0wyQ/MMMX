@@ -242,7 +242,7 @@ void RoomController::UpdateReceiversByFov(
 
 GameObjectId RoomController::AddDefaultPlayer() {
   float new_fov = Constants::kDefaultEntityFov * (GetPlayersCount() + 1);
-  float new_radius = Constants::kDefaultPlayerRadius * (GetPlayersCount() + 1);
+  float new_radius = Constants::kDefaultPlayerRadius;
   return model_->AddGameObject(
       GameObjectType::kPlayer,
       {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
