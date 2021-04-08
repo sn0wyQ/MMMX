@@ -130,5 +130,6 @@ GameObjectType GameObject::GetType() const {
 }
 
 bool GameObject::IsFilteredByFov() const {
+  // Temporarily. For testing FOV
   return true;
 }
