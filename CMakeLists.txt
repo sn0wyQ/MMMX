@@ -65,15 +65,23 @@ set(SOURCES
         Client/client_view.cpp
         Controller/base_controller.cpp
         Converter/converter.cpp
-        Event/event_type.h
         Event/event.cpp
+        Event/event_type.h
         GUI/GameView/game_view.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
+        GameObject/RigidBody/intersect_checker.cpp
+        GameObject/RigidBody/intersect_constants.h
+        GameObject/RigidBody/object_collision.cpp
+        GameObject/RigidBody/rigid_body.cpp
+        GameObject/RigidBody/rigid_body_circle.cpp
+        GameObject/RigidBody/rigid_body_rectangle.cpp
         GameObject/game_object.cpp
         Math/math.cpp
-        Model/game_data_model.cpp
+        Model/client_game_model.cpp
+        Model/game_model.cpp
+        Model/room_game_model.cpp
         Model/server_model.cpp
         Painter/painter.cpp
         Server/Room/room_controller.cpp

@@ -1,23 +1,24 @@
 #ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_
 
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "GameObject/MovableObject/movable_object.h"
 
 class Entity : public MovableObject {
  public:
   explicit Entity(GameObjectId id);
 
-  void OnTick(int delta_time) override = 0;
-  void Draw(Painter* painter) override = 0;
+  float GetFovRadius() const;
+  void SetFovRadius(float fov_radius);
 
-  float GetViewAngle() const;
-  void SetViewAngle(float view_angle);
+  void SetParams(std::vector<QVariant> params) override;
+  std::vector<QVariant> GetParams() const override;
 
  private:
-  // 0 is direction from left to right
-  // Increasing counterclockwise
-  // Measured in degrees
-  float view_angle_{0.f};
+  float fov_radius_{Constants::kDefaultEntityFov};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_

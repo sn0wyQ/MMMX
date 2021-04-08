@@ -1,6 +1,6 @@
 #include "game_view.h"
 
-GameView::GameView(QWidget* parent, std::shared_ptr<GameDataModel> model)
+GameView::GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model)
   : QWidget(parent), model_(std::move(model)) {
   converter_ = std::make_shared<Converter>(this);
 }
@@ -14,12 +14,20 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                   converter_,
                   model_->IsLocalPlayerSet()
                   ? model_->GetLocalPlayer()->GetPosition()
-                  : QPointF(0, 0));
-  // ----------------- CONSTANT OBJECTS -----------------
+                  : QPointF(0.f, 0.f));
 
-  // Nothing here right now :(
-
-  // ------------------ DYNAMIC OBJECTS -----------------
+  std::vector<std::shared_ptr<GameObject>> not_filtered_objects
+    = model_->GetNotFilteredByFovObjects();
+  for (const auto& object : not_filtered_objects) {
+    if (!object->IsMovable()) {
+      object->Draw(&painter);
+    }
+  }
+  for (const auto& object : not_filtered_objects) {
+    if (object->IsMovable()) {
+      object->Draw(&painter);
+    }
+  }
 
   // If LocalPlayer isn't set we don't want to draw anything non-constant
   if (!model_->IsLocalPlayerSet()) {
@@ -35,10 +43,16 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                         local_player->GetY(),
                         local_player->GetFovRadius());
 
-  std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
-  for (const auto& player : players) {
-    if (!player->IsFilteredByFov() || player->IsInFov()) {
-      player->Draw(&painter);
+  std::vector<std::shared_ptr<GameObject>> filtered_objects
+      = model_->GetFilteredByFovObjects();
+  for (const auto& object : filtered_objects) {
+    if (object->IsInFov() && !object->IsMovable()) {
+      object->Draw(&painter);
+    }
+  }
+  for (const auto& object : filtered_objects) {
+    if (object->IsInFov() && object->IsMovable()) {
+      object->Draw(&painter);
     }
   }
 }

@@ -1,7 +1,7 @@
 #include "client_controller.h"
 
 ClientController::ClientController(const QUrl& url) : url_(url),
-  model_(std::make_shared<GameDataModel>()) {
+  model_(std::make_shared<ClientGameModel>()) {
   qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
   connect(&web_socket_, &QWebSocket::connected, this,
           &ClientController::OnConnected);
@@ -11,7 +11,7 @@ ClientController::ClientController(const QUrl& url) : url_(url),
   this->StartTicking();
 }
 
-std::shared_ptr<GameDataModel> ClientController::GetModel() {
+std::shared_ptr<ClientGameModel> ClientController::GetModel() {
   return model_;
 }
 
@@ -31,8 +31,6 @@ void ClientController::OnConnected() {
   connect(&web_socket_, &QWebSocket::pong, this,
           &ClientController::SetPing);
 
-  view_->Update();
-
   // TODO(Everyone): Send nickname to server after connection
 
   qInfo().noquote() << "[CLIENT] Connected to" << url_;
@@ -46,35 +44,19 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
   this->AddEventToHandle(Event(message));
 }
 
-void ClientController::AddNewPlayerEvent(const Event& event) {
-  model_->AddPlayer(event.GetArg<GameObjectId>(1));
-  view_->Update();
-}
-
 void ClientController::EndGameEvent(const Event& event) {
   game_state_ = GameState::kGameFinished;
   view_->Update();
 }
 
-void ClientController::SetClientsPlayerIdEvent(const Event& event) {
+void ClientController::SetPlayerIdToClient(const Event& event) {
   model_->SetLocalPlayerId(event.GetArg<GameObjectId>(0));
   qInfo().noquote() << "[CLIENT] Set player_id to"
                     << event.GetArg<GameObjectId>(0);
 }
 
-void ClientController::CreateAllPlayersDataEvent(const Event& event) {
-  for (int i = 2; i < event.GetArg<int>(1) * 4 + 2; i += 4) {
-    model_->AddPlayer(event.GetArg<GameObjectId>(i),
-                     event.GetArg<float>(i + 1),
-                     event.GetArg<float>(i + 2),
-                     event.GetArg<float>(i + 3));
-  }
-  view_->Update();
-}
-
 void ClientController::StartGameEvent(const Event& event) {
   game_state_ = GameState::kGameInProgress;
-  view_->Update();
   qInfo().noquote().nospace() << "[CLIENT] Started game";
 }
 
@@ -97,6 +79,7 @@ void ClientController::OnTick(int delta_time) {
       this->OnTickGameNotStarted(delta_time);
       break;
   }
+
   view_->Update();
 }
 
@@ -106,8 +89,8 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
 }
 
 void ClientController::OnTickGameInProgress(int delta_time) {
-  this->TickPlayers(delta_time);
   this->UpdateLocalPlayer(delta_time);
+  this->TickPlayers(delta_time);
 }
 
 void ClientController::TickPlayers(int delta_time) {
@@ -124,18 +107,22 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   auto local_player = model_->GetLocalPlayer();
 
+  ObjectCollision::MoveWithSlidingCollision(
+      local_player, model_->GetAllGameObjects(),
+      this->GetKeyForce(), delta_time);
+
   converter_->UpdateGameCenter(local_player->GetPosition());
 
-  this->AddEventToHandle(Event(EventType::kSendControls,
-                               local_player->GetId(),
-                               local_player->GetX(),
-                               local_player->GetY(),
-                               local_player->GetVelocity(),
-                               local_player->GetViewAngle()));
+  this->AddEventToSend(Event(EventType::kSendControls,
+                             local_player->GetId(),
+                             local_player->GetX(),
+                             local_player->GetY(),
+                             local_player->GetVelocity(),
+                             local_player->GetRotation()));
 }
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
-  model_->DeletePlayer(event.GetArg<GameObjectId>(0));
+  model_->DeleteGameObject(event.GetArg<GameObjectId>(0));
   game_state_ = GameState::kGameNotStarted;
   view_->Update();
 }
@@ -181,6 +168,32 @@ void ClientController::UpdateVarsEvent(const Event& event) {
   view_->Update();
 }
 
+QVector2D ClientController::GetKeyForce() const {
+  bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
+  bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
+  bool is_down_pressed = is_direction_by_keys_.at(Direction::kDown);
+  bool is_left_pressed = is_direction_by_keys_.at(Direction::kLeft);
+
+  QVector2D key_force;
+  if ((is_up_pressed ^ is_down_pressed) == 1) {
+    if (is_up_pressed) {
+      key_force.setY(-1.f);
+    } else {
+      key_force.setY(1.f);
+    }
+  }
+  if ((is_right_pressed ^ is_left_pressed) == 1) {
+    if (is_right_pressed) {
+      key_force.setX(1.f);
+    } else {
+      key_force.setX(-1.f);
+    }
+  }
+
+  key_force.normalize();
+  return key_force;
+}
+
 // -------------------- CONTROLS --------------------
 
 void ClientController::FocusOutEvent(QFocusEvent* focus_event) {
@@ -199,7 +212,9 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
 
-  this->ApplyDirection();
+  if (model_->IsLocalPlayerSet()) {
+    model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
+  }
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
@@ -208,90 +223,50 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
     is_direction_by_keys_[key_to_direction_[native_key]] = false;
   }
 
-  this->ApplyDirection();
+  if (model_->IsLocalPlayerSet()) {
+    model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
+  }
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
-    float view_angle = Math::DirectionAngle(local_player->GetPosition(),
-                                            converter_->PointFromScreenToGame(
-                                                mouse_event->pos()));
-    local_player->SetViewAngle(view_angle);
-    view_->Update();
+    float rotation = Math::VectorAngle(local_player->GetPosition(),
+                                       converter_->PointFromScreenToGame(
+                                           mouse_event->pos()));
+    local_player->SetRotation(rotation);
   }
-}
-
-void ClientController::ApplyDirection() {
-  if (!model_->IsLocalPlayerSet()) {
-    return;
-  }
-
-  ResetDirection();
-
-  bool is_up_pressed = is_direction_by_keys_[Direction::kUp];
-  bool is_right_pressed = is_direction_by_keys_[Direction::kRight];
-  bool is_down_pressed = is_direction_by_keys_[Direction::kDown];
-  bool is_left_pressed = is_direction_by_keys_[Direction::kLeft];
-
-  if ((is_up_pressed ^ is_down_pressed) == 1) {
-    is_direction_applied_[is_up_pressed ? Direction::kUp : Direction::kDown]
-        = true;
-  }
-  if ((is_right_pressed ^ is_left_pressed) == 1) {
-    is_direction_applied_[is_right_pressed ?
-                          Direction::kRight : Direction::kLeft] = true;
-  }
-
-  uint32_t direction_mask = is_direction_applied_[Direction::kUp] * 0b1000
-      + is_direction_applied_[Direction::kRight] * 0b0100
-      + is_direction_applied_[Direction::kDown] * 0b0010
-      + is_direction_applied_[Direction::kLeft] * 0b0001;
-
-  model_->GetLocalPlayer()->UpdateVelocity(direction_mask);
-  view_->Update();
-}
-
-void ClientController::ResetDirection() {
-  is_direction_applied_[Direction::kUp]
-      = is_direction_applied_[Direction::kRight]
-      = is_direction_applied_[Direction::kDown]
-      = is_direction_applied_[Direction::kLeft] = false;
 }
 
 // ------------------- GAME EVENTS -------------------
 
-void ClientController::SendControlsEvent(const Event& event) {
-  this->AddEventToSend(event);
-}
-
-void ClientController::UpdatePlayerDataEvent(const Event& event) {
-  if (!model_->IsLocalPlayerSet()) {
-    return;
+void ClientController::UpdateGameObjectDataEvent(const Event& event) {
+  auto game_object_id = event.GetArg<GameObjectId>(0);
+  auto game_object_type
+      = static_cast<GameObjectType>(event.GetArg<int>(1));
+  auto params = event.GetArgsSubVector(2);
+  if (model_->IsGameObjectIdTaken(game_object_id)) {
+    if (model_->IsLocalPlayerSet()
+      && game_object_id == model_->GetLocalPlayer()->GetId()) {
+      return;
+    }
+    model_->GetGameObjectByGameObjectId(game_object_id)->SetParams(params);
+  } else {
+    model_->AddGameObject(game_object_id, game_object_type, params);
   }
-
-  auto player_ptr = model_->GetPlayerByPlayerId(event.GetArg<GameObjectId>(0));
-
-  if (player_ptr->IsLocalPlayer()) {
-    return;
+  bool previous_state
+    = model_->GetGameObjectByGameObjectId(game_object_id)->IsInFov();
+  model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(true);
+  if (!previous_state) {
+    qInfo() << "[CLIENT] Appeared in fov " << game_object_id;
   }
-
-  player_ptr->SetX(event.GetArg<float>(1));
-  player_ptr->SetY(event.GetArg<float>(2));
-  player_ptr->SetVelocity(event.GetArg<QVector2D>(3));
-  player_ptr->SetViewAngle(event.GetArg<float>(4));
-  player_ptr->SetIsInFov(true);
-
-  view_->Update();
 }
 
-void ClientController::UpdatePlayersFovRadiusEvent(const Event& event) {
-  model_->GetLocalPlayer()->SetFovRadius(event.GetArg<float>(1));
-  qDebug() << "[CLIENT] Set player FOV to"
-           << model_->GetLocalPlayer()->GetFovRadius();
-}
-
-void ClientController::PlayerLeftFovEvent(const Event& event) {
-  model_->GetPlayerByPlayerId(
-      event.GetArg<GameObjectId>(0))->SetIsInFov(false);
+void ClientController::GameObjectLeftFovEvent(const Event& event) {
+  auto game_object_id = event.GetArg<GameObjectId>(0);
+  if (model_->IsGameObjectIdTaken(game_object_id)) {
+    model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(false);
+    qInfo() << "[CLIENT] Left from fov " << game_object_id;
+    model_->DeleteGameObject(game_object_id);
+  }
 }

@@ -17,8 +17,9 @@
 #include "Client/abstract_client_view.h"
 #include "Controller/base_controller.h"
 #include "Converter/converter.h"
+#include "GameObject/RigidBody/object_collision.h"
 #include "Math/math.h"
-#include "Model/game_data_model.h"
+#include "Model/client_game_model.h"
 
 // TODO(Everyone): make class Hotkeys instead of enum Controls
 // (with possibility to rebind keys)
@@ -72,7 +73,7 @@ class ClientController : public BaseController {
 
   void TickPlayers(int delta_time);
 
-  std::shared_ptr<GameDataModel> GetModel();
+  std::shared_ptr<ClientGameModel> GetModel();
   int GetServerVar() const;
   int GetRoomVar() const;
   int GetClientVar() const;
@@ -86,8 +87,7 @@ class ClientController : public BaseController {
 
   // -------------------- CONTROLS --------------------
 
-  void ApplyDirection();
-  void ResetDirection();
+  QVector2D GetKeyForce() const;
 
   void FocusOutEvent(QFocusEvent* focus_event);
   void KeyPressEvent(QKeyEvent* key_event);
@@ -104,25 +104,21 @@ class ClientController : public BaseController {
   void SetPing(int elapsed_time);
 
  private:
-  void AddNewPlayerEvent(const Event& event) override;
   void EndGameEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
-  void SetClientsPlayerIdEvent(const Event& event) override;
-  void CreateAllPlayersDataEvent(const Event& event) override;
+  void SetPlayerIdToClient(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateVarsEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
-  void PlayerLeftFovEvent(const Event& event) override;
-  void SendControlsEvent(const Event& event) override;
-  void UpdatePlayerDataEvent(const Event& event) override;
-  void UpdatePlayersFovRadiusEvent(const Event& event) override;
+  void UpdateGameObjectDataEvent(const Event& event) override;
+  void GameObjectLeftFovEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;
   QWebSocket web_socket_;
-  std::shared_ptr<GameDataModel> model_;
+  std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<AbstractClientView> view_;
   int server_var_{0};
   int room_var_{0};
@@ -131,15 +127,18 @@ class ClientController : public BaseController {
   QTimer timer_for_server_var_;
   std::shared_ptr<Converter> converter_;
 
-  // TODO(Everyone): Rework
   std::unordered_map<Controls, Direction> key_to_direction_{
       {Controls::kKeyW, Direction::kUp},
       {Controls::kKeyD, Direction::kRight},
       {Controls::kKeyS, Direction::kDown},
       {Controls::kKeyA, Direction::kLeft}
   };
-  std::unordered_map<Direction, bool> is_direction_by_keys_{false};
-  std::unordered_map<Direction, bool> is_direction_applied_{false};
+  std::unordered_map<Direction, bool> is_direction_by_keys_{
+      {Direction::kUp, false},
+      {Direction::kRight, false},
+      {Direction::kDown, false},
+      {Direction::kLeft, false}
+  };
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

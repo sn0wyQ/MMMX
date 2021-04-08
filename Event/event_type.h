@@ -11,20 +11,9 @@ enum class EventType {
   // After adding an event, add a function with the same name
   // to the BaseController private functions
 
-  // [0] - <ClientId> client_id,
-  // [1] - <GameObjectId> player_id
-  kAddNewPlayer,
 
   // [0] - <ClientId> client_id
   kClientDisconnected,
-
-  // [0] - <ClientId> client_id,
-  // [1] - <int> number_of_players,
-  // [2+] - player_info [<GameObjectId> player_id,
-  //                     <float> x,
-  //                     <float> y,
-  //                     <float> view_angle]
-  kCreateAllPlayersData,
 
   // No arguments
   kEndGame,
@@ -46,7 +35,7 @@ enum class EventType {
   kSendGetVars,
 
   // [0] - <GameObjectId> player_id
-  kSetClientsPlayerId,
+  kSetPlayerIdToClient,
 
   // No arguments
   kStartGame,
@@ -57,26 +46,20 @@ enum class EventType {
 
   // ------------------- GAME EVENTS -------------------
 
-  // [0] - <GameObjectId> player's that left somebody's FOV player_id
-  kPlayerLeftFov,
+  // [0] - <GameObjectId> game_object_id that left receiver player FOV
+  kGameObjectLeftFov,
 
   // [0] - <GameObjectId> sender_player_id,
   // [1] - <float> x,
   // [2] - <float> y,
   // [3] - <QVector2D> velocity,
-  // [4] - <float> view_angle
+  // [4] - <float> rotation
   kSendControls,
 
-  // [0] - <GameObjectId> sender_player_id,
-  // [1] - <float> x,
-  // [2] - <float> y,
-  // [3] - <QVector2D> velocity,
-  // [4] - <float> view_angle
-  kUpdatePlayerData,
-
-  // [0] - <ClientId> receiver_client_id,
-  // [1] - <float> new player's FOV, FOV should ALWAYS be > 0
-  kUpdatePlayersFovRadius,
+  // [0] - <GameObjectId> game_object_id
+  // [1] - <int> game_object_type [game_object.h]
+  // [2+] - game_object_args : relative constructor args
+  kUpdateGameObjectData,
 
   SIZE
 };

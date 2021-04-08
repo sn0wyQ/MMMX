@@ -25,6 +25,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 
 void ClientView::Update() {
   this->update();
+  game_view_->update();
 }
 
 std::shared_ptr<Converter> ClientView::GetConverter() {
@@ -48,9 +49,9 @@ void ClientView::mouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {
-  auto local_player = model_->IsLocalPlayerSet()
-                      ? model_->GetLocalPlayer()
-                      : std::make_shared<Player>(Constants::kNullGameObjectId);
+  auto local_player_position = model_->IsLocalPlayerSet()
+                      ? model_->GetLocalPlayer()->GetPosition()
+                      : QPointF(0.f, 0.f);
 
   info_label_->setText(QString(tr("Server Var: %1\n"
                                   "Room Var: %2\n"
@@ -61,8 +62,8 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
                        .arg(controller_->GetRoomVar())
                        .arg(controller_->GetClientVar())
                        .arg(controller_->GetPing())
-                       .arg(local_player->GetX())
-                       .arg(local_player->GetY()));
+                       .arg(local_player_position.x())
+                       .arg(local_player_position.y()));
   info_label_->adjustSize();
 
   qDebug().noquote().nospace() << "[VIEW] Repainted";
@@ -70,8 +71,4 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
   game_view_->resize(resize_event->size());
-}
-
-bool ClientView::IsFocused() const {
-  return hasFocus();
 }

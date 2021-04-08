@@ -12,7 +12,7 @@
 #include <QTimer>
 
 #include "Event/event.h"
-#include "Model/game_data_model.h"
+#include "Model/game_model.h"
 #include "constants.h"
 
 class BaseController : public QObject {
@@ -47,8 +47,9 @@ class BaseController : public QObject {
  protected:
   BaseController();
 
-  void SetFunctionForEventType(EventType event_type,
-                               const std::function<void(const Event&)>& func);
+  void SetFunctionForEventType(
+      EventType event_type,
+      const std::function<void(const Event&)>& func);
 
  private:
   QTimer ticker_;
@@ -62,23 +63,20 @@ class BaseController : public QObject {
   std::array<std::function<void(const Event&)>,
       static_cast<uint32_t>(EventType::SIZE)> function_for_event_;
 
-  virtual void AddNewPlayerEvent(const Event& event) {}
   virtual void ClientDisconnectedEvent(const Event& event) {}
-  virtual void CreateAllPlayersDataEvent(const Event& event) {}
   virtual void EndGameEvent(const Event& event) {}
   virtual void PlayerDisconnectedEvent(const Event& event) {}
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
-  virtual void SetClientsPlayerIdEvent(const Event& event) {}
+  virtual void SetPlayerIdToClient(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
   virtual void UpdateVarsEvent(const Event& event) {}
 
   // ------------------- GAME EVENTS -------------------
 
   virtual void SendControlsEvent(const Event& event) {}
-  virtual void UpdatePlayerDataEvent(const Event& event) {}
-  virtual void UpdatePlayersFovRadiusEvent(const Event& event) {}
-  virtual void PlayerLeftFovEvent(const Event& event) {}
+  virtual void UpdateGameObjectDataEvent(const Event& event) {}
+  virtual void GameObjectLeftFovEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

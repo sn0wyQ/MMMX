@@ -54,3 +54,10 @@ void Painter::DrawTriangle(const QPointF& p1,
           << converter_->ScaleFromGameToScreen(p3);
   drawPolygon(polygon);
 }
+
+void Painter::DrawRect(float x, float y, float width, float height) {
+  drawRect(converter_->ScaleFromGameToScreen(x),
+           converter_->ScaleFromGameToScreen(y),
+           converter_->ScaleFromGameToScreen(width),
+           converter_->ScaleFromGameToScreen(height));
+}

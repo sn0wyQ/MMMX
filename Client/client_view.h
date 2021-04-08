@@ -28,7 +28,6 @@ class ClientView : public AbstractClientView {
 
   void Update() override;
   std::shared_ptr<Converter> GetConverter() override;
-  bool IsFocused() const override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;
@@ -39,7 +38,7 @@ class ClientView : public AbstractClientView {
   void resizeEvent(QResizeEvent* resize_event) override;
 
   std::shared_ptr<ClientController> controller_;
-  std::shared_ptr<GameDataModel> model_;
+  std::shared_ptr<ClientGameModel> model_;
   GameView* game_view_;
   QLabel* info_label_;
 };

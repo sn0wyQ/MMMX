@@ -35,6 +35,10 @@ const QUrl kServerUrl =
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 
+// Map
+constexpr float kDefaultMapWidth = 50.f;
+constexpr float kDefaultMapHeight = 50.f;
+
 // Room
 constexpr int kDefaultMaxClients = 4;
 
@@ -50,16 +54,17 @@ constexpr int kTimeToUpdateVarsAndPing = 1000;
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
+constexpr bool kRigidBodyShow = true;
 
 // MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
-constexpr float kPlayerRadius = 1.f;
-constexpr float kDefaultPlayersFov = 10.5f;
+constexpr float kDefaultEntityFov = 10.5f;
 constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
-constexpr float kDefaultPlayerViewAngle = 0.f;
+constexpr float kDefaultPlayerRotation = 0.f;
+constexpr float kDefaultPlayerRadius = 1.f;
 
 }  // namespace Constants
 
