@@ -43,7 +43,7 @@ std::vector<QVariant> GameObject::GetParams() const {
 
 void GameObject::Draw(Painter* painter) {
   painter->save();
-  painter->Translate(GetPosition());
+  painter->Translate(position_);
   painter->RotateCounterClockWise(rotation_);
   this->DrawRelatively(painter);
   if (Constants::kRigidBodyShow) {
