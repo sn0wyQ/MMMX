@@ -15,7 +15,7 @@ class Converter {
 
   void UpdateGameCenter(QPointF center);
 
-  void UpdateCoefficient();
+  void UpdateCoefficient(float fov = Constants::kDefaultEntityFov);
 
   QPointF PointFromGameToScreen(const QPointF& point);
   QPointF PointFromScreenToGame(const QPointF& point);

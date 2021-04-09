@@ -34,6 +34,8 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
     return;
   }
 
+  converter_->UpdateCoefficient(model_->GetLocalPlayer()->GetFovRadius());
+
   // Temporary FOV show
   const auto& local_player = model_->GetLocalPlayer();
   painter.DrawEllipse(local_player->GetPosition(),
