@@ -22,10 +22,17 @@ void GameObject::SetParams(std::vector<QVariant> params) {
   params.pop_back();
   SetRotation(params.back().toFloat());
   params.pop_back();
+  if (is_params_set_) {
+    previous_position_ = position_;
+  }
   SetY(params.back().toFloat());
   params.pop_back();
   SetX(params.back().toFloat());
   params.pop_back();
+  if (!is_params_set_) {
+    previous_position_ = position_;
+    is_params_set_ = true;
+  }
   rigid_body_->SetWidth(GetWidth());
   rigid_body_->SetHeight(GetHeight());
 }
@@ -43,7 +50,11 @@ std::vector<QVariant> GameObject::GetParams() const {
 
 void GameObject::Draw(Painter* painter) {
   painter->save();
-  painter->Translate(position_);
+  QPointF draw_position = previous_position_;
+  draw_position += position_;
+  draw_position /= 2.f;
+  previous_position_ = draw_position;
+  painter->Translate(draw_position);
   painter->RotateCounterClockWise(rotation_);
   this->DrawRelatively(painter);
   if (Constants::kRigidBodyShow) {
