@@ -55,13 +55,29 @@ void RoomController::SendEvent(const Event& event) {
 }
 
 void RoomController::OnTick(int delta_time) {
-  this->TickPlayers(delta_time);
+  models_cache_.push_back({
+    std::make_shared<RoomGameModel>(*model_), delta_time});
+  this->RecalculateModel(models_cache_.back());
+  model_ = models_cache_.back().model;
+  for (const auto& player_id : this->GetAllPlayerIds()) {
+    // Рассказываем ДРУГИМ о нас с учетом FOV
+    SendGameObjectDataToPlayers(player_id);
+    // Рассказываем НАМ о других с учетом FOV
+    SendGameObjectsDataToPlayer(player_id);
+  }
+  if (models_cache_.size() > Constants::kTicksToStore) {
+    models_cache_.pop_front();
+  }
 }
 
-void RoomController::TickPlayers(int delta_time) {
-  std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
+void RoomController::RecalculateModel(const ModelData& model_data) {
+  this->TickPlayersInModel(model_data);
+}
+
+void RoomController::TickPlayersInModel(const ModelData& model_data) {
+  std::vector<std::shared_ptr<Player>> players = model_data.model->GetPlayers();
   for (const auto& player : players) {
-    player->OnTick(delta_time);
+    player->OnTick(model_data.delta_time);
   }
 }
 
@@ -289,17 +305,28 @@ void RoomController::SendControlsEvent(const Event& event) {
     return;
   }
 
-  auto player = model_->GetPlayerByPlayerId(player_id);
+  auto timestamp = event.GetArg<int64_t>(1);
+  int64_t latency_in_msecs = QDateTime::currentMSecsSinceEpoch() - timestamp;
+  int64_t latency = latency_in_msecs / Constants::kTimeToTick;
+  // qInfo() << latency << models_cache_.size();
+  if (latency > models_cache_.size()) {
+    // kick player
+    throw std::runtime_error("Too slow connection Mr. Vlad Kozulin "
+                             "from Krakow with ID" + std::to_string(player_id));
+  }
+  int id_of_model = static_cast<int64_t>(models_cache_.size()) - 1 - latency;
+  auto current_model = models_cache_[id_of_model];
+
+  auto player = current_model.model->GetPlayerByPlayerId(player_id);
 
   // TODO(Everyone): add anti-cheat mechanism to check
   //  if it was possible for player to travel this distance so fast
-  player->SetX(event.GetArg<float>(1));
-  player->SetY(event.GetArg<float>(2));
-  player->SetVelocity(event.GetArg<QVector2D>(3));
-  player->SetRotation(event.GetArg<float>(4));
-
-  // Рассказываем ДРУГИМ о нас с учетом FOV
-  SendGameObjectDataToPlayers(player_id);
-  // Рассказываем НАМ о других с учетом FOV
-  SendGameObjectsDataToPlayer(player_id);
+  player->SetX(event.GetArg<float>(2));
+  player->SetY(event.GetArg<float>(3));
+  player->SetVelocity(event.GetArg<QVector2D>(4));
+  player->SetRotation(event.GetArg<float>(5));
+  while (id_of_model != models_cache_.size()) {
+    RecalculateModel(models_cache_[id_of_model]);
+    id_of_model++;
+  }
 }

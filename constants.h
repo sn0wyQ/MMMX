@@ -34,6 +34,8 @@ const QUrl kServerUrl =
     QUrl(QString("ws://") + kServerIp + ":" + QString::number(kServerPort));
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
+constexpr int kMSecsToStore = 200;
+constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
 
 // Map
 constexpr float kDefaultMapWidth = 50.f;

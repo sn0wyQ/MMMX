@@ -72,8 +72,6 @@ class GameObject {
 
  private:
   GameObjectId id_{Constants::kNullGameObjectId};
-  bool is_params_set_{false};
-  QPointF previous_position_{0.f, 0.f};
   QPointF position_{0.f, 0.f};
   // 0 is direction from left to right
   // Increasing counterclockwise

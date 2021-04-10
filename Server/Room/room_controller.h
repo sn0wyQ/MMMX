@@ -10,6 +10,7 @@
 
 #include <QDebug>
 #include <QString>
+#include <QDateTime>
 
 #include "Controller/base_controller.h"
 #include "Model/room_game_model.h"
@@ -43,7 +44,6 @@ class RoomController : public BaseController {
 
   void SendEvent(const Event& event) override;
   void OnTick(int delta_time) override;
-  void TickPlayers(int delta_time);
 
   void AddClient(ClientId client_id);
   void RemoveClient(ClientId client_id);
@@ -67,12 +67,19 @@ class RoomController : public BaseController {
  private:
   RoomId id_;
   std::shared_ptr<RoomGameModel> model_;
+  struct ModelData {
+    std::shared_ptr<RoomGameModel> model;
+    int delta_time;
+  };
+  std::deque<ModelData> models_cache_;
   RoomSettings room_settings_;
   RoomState room_state_ = RoomState::kWaitingForClients;
   std::unordered_map<ClientId, GameObjectId> player_ids_;
   std::set<std::pair<GameObjectId, GameObjectId>> is_first_in_fov_of_second_;
   std::vector<Event> events_for_server_;
 
+  void RecalculateModel(const ModelData& model_data);
+  void TickPlayersInModel(const ModelData& model_data);
   GameObjectId AddDefaultPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);
   void AddTree(float x, float y, float radius);

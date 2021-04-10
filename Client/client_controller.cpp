@@ -115,6 +115,7 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   this->AddEventToSend(Event(EventType::kSendControls,
                              local_player->GetId(),
+                             QDateTime::currentMSecsSinceEpoch(),
                              local_player->GetX(),
                              local_player->GetY(),
                              local_player->GetVelocity(),

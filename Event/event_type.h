@@ -50,10 +50,11 @@ enum class EventType {
   kGameObjectLeftFov,
 
   // [0] - <GameObjectId> sender_player_id,
-  // [1] - <float> x,
-  // [2] - <float> y,
-  // [3] - <QVector2D> velocity,
-  // [4] - <float> rotation
+  // [1] - <int64> timestamp
+  // [2] - <float> x,
+  // [3] - <float> y,
+  // [4] - <QVector2D> velocity,
+  // [5] - <float> rotation
   kSendControls,
 
   // [0] - <GameObjectId> game_object_id
