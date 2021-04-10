@@ -308,7 +308,7 @@ void RoomController::SendControlsEvent(const Event& event) {
   auto timestamp = event.GetArg<int64_t>(1);
   int64_t latency_in_msecs = QDateTime::currentMSecsSinceEpoch() - timestamp;
   int64_t latency = latency_in_msecs / Constants::kTimeToTick;
-  // qInfo() << latency << models_cache_.size();
+  qInfo() << latency << models_cache_.size();
   if (latency > models_cache_.size()) {
     // kick player
     throw std::runtime_error("Too slow connection Mr. Vlad Kozulin "
