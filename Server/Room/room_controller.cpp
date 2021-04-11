@@ -326,7 +326,9 @@ void RoomController::SendControlsEvent(const Event& event) {
   player->SetVelocity(event.GetArg<QVector2D>(4));
   player->SetRotation(event.GetArg<float>(5));
   while (id_of_model != models_cache_.size()) {
-    RecalculateModel(models_cache_[id_of_model]);
+    auto player_in_model
+      = models_cache_[id_of_model].model->GetPlayerByPlayerId(player_id);
+    player_in_model->OnTick(models_cache_[id_of_model].delta_time);
     id_of_model++;
   }
 }

@@ -44,6 +44,20 @@ enum class EventType {
   // [1] - <int> room_var
   kUpdateVars,
 
+  // [0] - <int64> client_sent_time
+  // [1] - null / <int64> server_received_time
+  // Клиент отправляет в клиентское время X пакет
+  // Сервер отвечает тем же запросом, только добавляя серверное время получения
+  // Пусть получили запрос на клиенте в клиентское время client_received_time
+  // Тогда latency = (client_received_time - client_sent_time) / 2
+  // time_difference = server_received_time - client_sent_time - latency
+  // Тогда теперь чтобы получить текущее серверное время:
+  // server_time = cur_time + time_difference
+  // ВНИМАНИЕ: Так как в этих замерах нам важна каждая миллисекунда
+  // и мы не хотим зависеть от тикрейта, нам нужно сразу вне тика
+  // отправлять и получать этот ивент
+  kSetTimeDifference,
+
   // ------------------- GAME EVENTS -------------------
 
   // [0] - <GameObjectId> game_object_id that left receiver player FOV

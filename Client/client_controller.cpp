@@ -33,6 +33,8 @@ void ClientController::OnConnected() {
 
   // TODO(Everyone): Send nickname to server after connection
 
+  this->SendEvent(Event(EventType::kSetTimeDifference,
+                  QDateTime::currentMSecsSinceEpoch()));
   qInfo().noquote() << "[CLIENT] Connected to" << url_;
 }
 
@@ -41,7 +43,18 @@ void ClientController::OnDisconnected() {
 }
 
 void ClientController::OnByteArrayReceived(const QByteArray& message) {
-  this->AddEventToHandle(Event(message));
+  Event event(message);
+  if (event.GetType() == EventType::kSetTimeDifference) {
+    auto client_sent_time = event.GetArg<int64_t>(0);
+    auto server_received_time = event.GetArg<int64_t>(1);
+    int64_t client_received_time = QDateTime::currentMSecsSinceEpoch();
+    int64_t latency = (client_received_time - client_sent_time) / 2;
+    time_difference_ = server_received_time - client_sent_time - latency;
+    qInfo() << time_difference_;
+    is_time_difference_set_ = true;
+    return;
+  }
+  this->AddEventToHandle(event);
 }
 
 void ClientController::EndGameEvent(const Event& event) {
@@ -66,6 +79,9 @@ void ClientController::SendEvent(const Event& event) {
 }
 
 void ClientController::OnTick(int delta_time) {
+  if (!is_time_difference_set_) {
+    return;
+  }
   switch (game_state_) {
     case GameState::kGameFinished:
       this->OnTickGameFinished(delta_time);
@@ -115,7 +131,8 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   this->AddEventToSend(Event(EventType::kSendControls,
                              local_player->GetId(),
-                             QDateTime::currentMSecsSinceEpoch(),
+                             QDateTime::currentMSecsSinceEpoch()
+                             + time_difference_,
                              local_player->GetX(),
                              local_player->GetY(),
                              local_player->GetVelocity(),
@@ -198,6 +215,7 @@ QVector2D ClientController::GetKeyForce() const {
 // -------------------- CONTROLS --------------------
 
 void ClientController::FocusOutEvent(QFocusEvent* focus_event) {
+  return;
   for (const auto& [key, direction] : key_to_direction_) {
     is_direction_by_keys_[direction] = false;
   }

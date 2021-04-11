@@ -126,7 +126,8 @@ class ClientController : public BaseController {
   int ping_{0};
   QTimer timer_for_server_var_;
   std::shared_ptr<Converter> converter_;
-
+  bool is_time_difference_set_{false};
+  int64_t time_difference_{0};
   std::unordered_map<Controls, Direction> key_to_direction_{
       {Controls::kKeyW, Direction::kUp},
       {Controls::kKeyD, Direction::kRight},
