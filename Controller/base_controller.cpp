@@ -94,3 +94,7 @@ void BaseController::LogEvent(const Event& event) const {
   qDebug().noquote().nospace() << "[" << GetControllerName()
                                << "] Sending " << event;
 }
+
+int64_t BaseController::GetCurrentServerTime() const {
+  return QDateTime::currentMSecsSinceEpoch();
+}

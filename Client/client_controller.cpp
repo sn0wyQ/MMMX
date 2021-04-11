@@ -105,10 +105,14 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
 }
 
 void ClientController::OnTickGameInProgress(int delta_time) {
+  this->UpdateInterpolationInfo();
+  this->UpdateLocalPlayer(delta_time);
+}
+
+void ClientController::UpdateInterpolationInfo() {
   for (const auto& [game_object_id, game_object_data] : game_objects_cache_) {
     auto server_sent_time = game_object_data.server_time;
-    auto cur_time_on_server =
-        QDateTime::currentMSecsSinceEpoch() + time_difference_;
+    auto cur_time_on_server = GetCurrentServerTime();
     auto time_to_interpolate = cur_time_on_server
         - Constants::kInterpolationMSecs;
     if (server_sent_time < time_to_interpolate) {
@@ -156,7 +160,20 @@ void ClientController::OnTickGameInProgress(int delta_time) {
       qInfo() << "[CLIENT] Appeared in fov " << game_object_id;
     }
   }
-  this->UpdateLocalPlayer(delta_time);
+  for (const auto& [game_object_id, server_sent_time]
+    : left_fov_cache_at_time_) {
+    auto cur_time_on_server = GetCurrentServerTime();
+    auto time_to_interpolate = cur_time_on_server
+        - Constants::kInterpolationMSecs;
+    if (server_sent_time < time_to_interpolate) {
+      continue;
+    }
+    if (model_->IsGameObjectIdTaken(game_object_id)) {
+      model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(false);
+      qInfo() << "[CLIENT] Left from fov " << game_object_id;
+      model_->DeleteGameObject(game_object_id);
+    }
+  }
 }
 
 void ClientController::UpdateLocalPlayer(int delta_time) {
@@ -175,7 +192,7 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
   converter_->UpdateGameCenter(local_player->GetPosition());
 
   this->AddEventToSend(Event(EventType::kSendControls,
-                        QDateTime::currentMSecsSinceEpoch() + time_difference_,
+                        GetCurrentServerTime(),
                         local_player->GetId(),
                         local_player->GetX(),
                         local_player->GetY(),
@@ -256,10 +273,13 @@ QVector2D ClientController::GetKeyForce() const {
   return key_force;
 }
 
+int64_t ClientController::GetCurrentServerTime() const {
+  return BaseController::GetCurrentServerTime() + time_difference_;
+}
+
 // -------------------- CONTROLS --------------------
 
-void ClientController::FocusOutEvent(QFocusEvent* focus_event) {
-  return;
+void ClientController::FocusOutEvent(QFocusEvent*) {
   for (const auto& [key, direction] : key_to_direction_) {
     is_direction_by_keys_[direction] = false;
   }
@@ -318,16 +338,13 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
       = static_cast<GameObjectType>(event.GetArg<int>(2));
   auto params = event.GetArgsSubVector(3);
   if (game_object_id != model_->GetLocalPlayer()->GetId()) {
-    game_objects_cache_[game_object_id] ={server_sent_time, game_object_type,
-                                                   params};
+    game_objects_cache_[game_object_id] =
+        {server_sent_time, game_object_type, params};
   }
 }
 
 void ClientController::GameObjectLeftFovEvent(const Event& event) {
-  auto game_object_id = event.GetArg<GameObjectId>(0);
-  if (model_->IsGameObjectIdTaken(game_object_id)) {
-    model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(false);
-    qInfo() << "[CLIENT] Left from fov " << game_object_id;
-    model_->DeleteGameObject(game_object_id);
-  }
+  auto server_sent_time = event.GetArg<int64_t>(0);
+  auto game_object_id = event.GetArg<GameObjectId>(1);
+  left_fov_cache_at_time_[game_object_id] = server_sent_time;
 }

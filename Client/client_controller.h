@@ -82,12 +82,14 @@ class ClientController : public BaseController {
   void SetView(std::shared_ptr<AbstractClientView> view);
 
   void UpdateLocalPlayer(int delta_time);
+  void UpdateInterpolationInfo();
+  int64_t GetCurrentServerTime() const override;
 
   // -------------------- CONTROLS --------------------
 
   QVector2D GetKeyForce() const;
 
-  void FocusOutEvent(QFocusEvent* focus_event);
+  void FocusOutEvent(QFocusEvent*);
   void KeyPressEvent(QKeyEvent* key_event);
   void KeyReleaseEvent(QKeyEvent* key_event);
   void MouseMoveEvent(QMouseEvent* mouse_event);
@@ -133,6 +135,7 @@ class ClientController : public BaseController {
     std::vector<QVariant> params;
   };
   std::unordered_map<GameObjectId, GameObjectData> game_objects_cache_;
+  std::unordered_map<GameObjectId, int64_t> left_fov_cache_at_time_;
   std::unordered_map<GameObjectId, int64_t> last_time_updated_;
   std::unordered_map<Controls, Direction> key_to_direction_{
       {Controls::kKeyW, Direction::kUp},

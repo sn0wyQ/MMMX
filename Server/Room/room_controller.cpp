@@ -206,7 +206,8 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
         != is_first_in_fov_of_second_.end()) {
       is_first_in_fov_of_second_.erase(sender_receiver_pair);
       this->AddEventToSendToSinglePlayer(
-          Event(EventType::kGameObjectLeftFov, object->GetId()), player_id);
+          Event(EventType::kGameObjectLeftFov, GetCurrentServerTime(),
+                object->GetId()), player_id);
     }
   }
 }
@@ -225,7 +226,7 @@ void RoomController::SendGameObjectDataToPlayers(
   }
   if (!left_fov_event_receivers.empty()) {
     this->AddEventToSendToPlayerList(
-        Event(EventType::kGameObjectLeftFov,
+        Event(EventType::kGameObjectLeftFov, GetCurrentServerTime(),
               game_object_id), left_fov_event_receivers);
   }
 }

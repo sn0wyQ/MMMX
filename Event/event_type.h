@@ -78,7 +78,8 @@ enum class EventType {
   // [3+] - game_object_args : relative constructor args
   kUpdateGameObjectData,
 
-  // [0] - <GameObjectId> game_object_id that left receiver player FOV
+  // [0] - <int64> timestamp
+  // [1] - <GameObjectId> game_object_id that left receiver player FOV
   kGameObjectLeftFov,
 
   SIZE

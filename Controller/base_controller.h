@@ -10,6 +10,7 @@
 #include <QElapsedTimer>
 #include <QString>
 #include <QTimer>
+#include <QDateTime>
 
 #include "Event/event.h"
 #include "Model/game_model.h"
@@ -43,6 +44,7 @@ class BaseController : public QObject {
   void StartTicking();
 
   int GetVar() const;
+  virtual int64_t GetCurrentServerTime() const;
 
  protected:
   BaseController();
