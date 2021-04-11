@@ -327,15 +327,11 @@ void RoomController::SendControlsEvent(const Event& event) {
   if (!current_model.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
-  auto player = current_model.model->GetPlayerByPlayerId(player_id);
-
   // Мы перемещаем человека в той самой модели из прошлого
-  player->SetX(event.GetArg<float>(2));
-  player->SetY(event.GetArg<float>(3));
+  QPointF position_to_set =
+      {event.GetArg<float>(2), event.GetArg<float>(3)};
   auto velocity = event.GetArg<QVector2D>(4);
-  player->SetVelocity(velocity);
   auto rotation = event.GetArg<float>(5);
-  player->SetRotation(rotation);
   // А теперь с учетом этого проталкиваем его пересечение на будущее
   // учитывая velocity и rotation
   while (id_of_model != static_cast<int64_t>(models_cache_.size())) {
@@ -345,9 +341,11 @@ void RoomController::SendControlsEvent(const Event& event) {
     }
     auto player_in_model
       = cur_model->GetPlayerByPlayerId(player_id);
+    player_in_model->SetPosition(position_to_set);
     player_in_model->SetVelocity(velocity);
     player_in_model->SetRotation(rotation);
     player_in_model->OnTick(models_cache_[id_of_model].delta_time);
+    position_to_set = player_in_model->GetPosition();
     id_of_model++;
   }
 }
