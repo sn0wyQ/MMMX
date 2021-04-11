@@ -75,6 +75,7 @@ class BaseController : public QObject {
   // ------------------- GAME EVENTS -------------------
 
   virtual void SendControlsEvent(const Event& event) {}
+  virtual void AddLocalPlayerGameObjectEvent(const Event& event) {}
   virtual void UpdateGameObjectDataEvent(const Event& event) {}
   virtual void GameObjectLeftFovEvent(const Event& event) {}
 };

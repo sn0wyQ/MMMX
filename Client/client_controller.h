@@ -112,6 +112,7 @@ class ClientController : public BaseController {
 
   // ------------------- GAME EVENTS -------------------
 
+  void AddLocalPlayerGameObjectEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void GameObjectLeftFovEvent(const Event& event) override;
 
@@ -128,6 +129,13 @@ class ClientController : public BaseController {
   std::shared_ptr<Converter> converter_;
   bool is_time_difference_set_{false};
   int64_t time_difference_{0};
+  struct GameObjectData {
+    int64_t server_time;
+    GameObjectType type;
+    std::vector<QVariant> params;
+  };
+  std::unordered_map<GameObjectId, std::deque<GameObjectData>>
+    game_objects_cache_;
   std::unordered_map<Controls, Direction> key_to_direction_{
       {Controls::kKeyW, Direction::kUp},
       {Controls::kKeyD, Direction::kRight},

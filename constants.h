@@ -36,6 +36,7 @@ constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 constexpr int kMSecsToStore = 5000;
 constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
+constexpr int64_t kInterpolationMSecs = 100;
 
 // Map
 constexpr float kDefaultMapWidth = 50.f;

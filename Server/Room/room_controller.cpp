@@ -60,10 +60,12 @@ void RoomController::OnTick(int delta_time) {
   this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
   for (const auto& player_id : this->GetAllPlayerIds()) {
-    // Рассказываем ДРУГИМ о нас с учетом FOV
-    SendGameObjectDataToPlayers(player_id);
     // Рассказываем НАМ о других с учетом FOV
     SendGameObjectsDataToPlayer(player_id);
+  }
+  for (const auto& game_object : model_->GetAllGameObjects()) {
+    // Рассказываем ДРУГИМ о нас с учетом FOV
+    SendGameObjectDataToPlayers(game_object->GetId());
   }
   if (models_cache_.size() > Constants::kTicksToStore) {
     models_cache_.pop_front();
@@ -85,12 +87,12 @@ void RoomController::AddClient(ClientId client_id) {
   GameObjectId player_id = AddDefaultPlayer();
   player_ids_[client_id] = player_id;
 
-  SendGameObjectsDataToPlayer(player_id);
-
+  Event event(EventType::kAddLocalPlayerGameObject, player_id);
+  event.PushBackArgs(
+      model_->GetGameObjectByGameObjectId(player_id)->GetParams());
+  this->AddEventToSendToSinglePlayer(event, player_id);
   this->AddEventToSendToSingleClient(
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
-
-  SendGameObjectDataToPlayers(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
           << "] Connected client (ID: " << client_id << ")";
@@ -185,7 +187,9 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
 Event RoomController::GetEventOfGameObjectData(GameObjectId game_object_id)
 const {
   auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-  Event event(EventType::kUpdateGameObjectData, game_object_id,
+  Event event(EventType::kUpdateGameObjectData,
+              QDateTime::currentMSecsSinceEpoch(),
+              game_object_id,
               static_cast<int>(game_object->GetType()));
   event.PushBackArgs(game_object->GetParams());
   return event;
@@ -299,23 +303,23 @@ void RoomController::AddConstantObjects() {
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
-  auto player_id = event.GetArg<GameObjectId>(0);
-
-  if (!model_->IsGameObjectIdTaken(player_id)) {
-    return;
-  }
-
-  auto timestamp = event.GetArg<int64_t>(1);
+  auto timestamp = event.GetArg<int64_t>(0);
   int64_t latency_in_msecs = QDateTime::currentMSecsSinceEpoch() - timestamp;
   int64_t latency = latency_in_msecs / Constants::kTimeToTick;
   qInfo() << latency << models_cache_.size();
   if (latency > models_cache_.size()) {
     // kick player
     throw std::runtime_error("Too slow connection Mr. Vlad Kozulin "
-                             "from Krakow with ID" + std::to_string(player_id));
+                             "from Krakow");
   }
   int id_of_model = static_cast<int64_t>(models_cache_.size()) - 1 - latency;
   auto current_model = models_cache_[id_of_model];
+
+  auto player_id = event.GetArg<GameObjectId>(1);
+
+  if (!current_model.model->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
 
   auto player = current_model.model->GetPlayerByPlayerId(player_id);
 

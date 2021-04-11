@@ -60,21 +60,26 @@ enum class EventType {
 
   // ------------------- GAME EVENTS -------------------
 
-  // [0] - <GameObjectId> game_object_id that left receiver player FOV
-  kGameObjectLeftFov,
-
-  // [0] - <GameObjectId> sender_player_id,
-  // [1] - <int64> timestamp
+  // [0] - <int64> timestamp
+  // [1] - <GameObjectId> sender_player_id,
   // [2] - <float> x,
   // [3] - <float> y,
   // [4] - <QVector2D> velocity,
   // [5] - <float> rotation
   kSendControls,
 
-  // [0] - <GameObjectId> game_object_id
-  // [1] - <int> game_object_type [game_object.h]
-  // [2+] - game_object_args : relative constructor args
+  // [0] - <GameObjectId> player_id
+  // [1] - player_args
+  kAddLocalPlayerGameObject,
+
+  // [0] - <int64> timestamp
+  // [1] - <GameObjectId> game_object_id
+  // [2] - <int> game_object_type [game_object.h]
+  // [3+] - game_object_args : relative constructor args
   kUpdateGameObjectData,
+
+  // [0] - <GameObjectId> game_object_id that left receiver player FOV
+  kGameObjectLeftFov,
 
   SIZE
 };
