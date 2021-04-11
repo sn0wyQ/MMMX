@@ -206,7 +206,8 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
         != is_first_in_fov_of_second_.end()) {
       is_first_in_fov_of_second_.erase(sender_receiver_pair);
       this->AddEventToSendToSinglePlayer(
-          Event(EventType::kGameObjectLeftFov, GetCurrentServerTime(),
+          Event(EventType::kGameObjectLeftFov,
+                QVariant::fromValue(GetCurrentServerTime()),
                 object->GetId()), player_id);
     }
   }
