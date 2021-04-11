@@ -192,7 +192,7 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
   converter_->UpdateGameCenter(local_player->GetPosition());
 
   this->AddEventToSend(Event(EventType::kSendControls,
-                        GetCurrentServerTime(),
+                        QVariant::fromValue(GetCurrentServerTime()),
                         local_player->GetId(),
                         local_player->GetX(),
                         local_player->GetY(),
