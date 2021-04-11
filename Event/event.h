@@ -4,6 +4,7 @@
 #include <cmath>
 #include <utility>
 #include <vector>
+#include <cinttypes>
 
 #include <QByteArray>
 #include <QDataStream>
