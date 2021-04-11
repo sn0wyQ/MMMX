@@ -308,13 +308,12 @@ void RoomController::SendControlsEvent(const Event& event) {
   auto timestamp = event.GetArg<int64_t>(0);
   int64_t latency_in_msecs = QDateTime::currentMSecsSinceEpoch() - timestamp;
   int64_t latency = latency_in_msecs / Constants::kTimeToTick;
-  qInfo() << latency << models_cache_.size();
-  if (latency > models_cache_.size()) {
+  if (latency > static_cast<int>(models_cache_.size())) {
     // kick player
     throw std::runtime_error("Too slow connection Mr. Vlad Kozulin "
                              "from Krakow");
   }
-  int id_of_model = static_cast<int64_t>(models_cache_.size()) - 1 - latency;
+  int64_t id_of_model = static_cast<int64_t>(models_cache_.size()) - 1 - latency;
   auto current_model = models_cache_[id_of_model];
 
   auto player_id = event.GetArg<GameObjectId>(1);
@@ -331,7 +330,7 @@ void RoomController::SendControlsEvent(const Event& event) {
   player->SetY(event.GetArg<float>(3));
   player->SetVelocity(event.GetArg<QVector2D>(4));
   player->SetRotation(event.GetArg<float>(5));
-  while (id_of_model != models_cache_.size()) {
+  while (id_of_model != static_cast<int64_t>(models_cache_.size())) {
     auto cur_model = models_cache_[id_of_model].model;
     if (!cur_model->IsGameObjectIdTaken(player_id)) {
       break;

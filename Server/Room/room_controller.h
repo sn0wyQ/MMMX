@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <deque>
 
 #include <QDebug>
 #include <QString>

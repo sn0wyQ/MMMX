@@ -109,7 +109,6 @@ void ClientController::OnTickGameInProgress(int delta_time) {
     auto server_sent_time = game_object_data.server_time;
     auto cur_time_on_server =
         QDateTime::currentMSecsSinceEpoch() + time_difference_;
-    int64_t ccc = 1618155950011;
     auto time_to_interpolate = cur_time_on_server
         - Constants::kInterpolationMSecs;
     if (server_sent_time < time_to_interpolate) {
@@ -125,10 +124,7 @@ void ClientController::OnTickGameInProgress(int delta_time) {
       auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
       if (game_object->IsMovable()) {
         int64_t update_time = last_time_updated_[game_object_id];
-        // qInfo() << update_time - ccc << time_to_interpolate - ccc
-        //         << server_sent_time - ccc << cur_time_on_server - ccc;
         int64_t delta_interpolation_time = server_sent_time - update_time;
-        // qInfo() << delta_interpolation_time << "dit";
         float x = params[0].toFloat();
         float old_x = game_object->GetX();
         float delta_x = x - old_x;
@@ -138,8 +134,10 @@ void ClientController::OnTickGameInProgress(int delta_time) {
         float delta_y = y - old_y;
         float speed_y = delta_y / delta_interpolation_time;
 
-        float new_x = old_x + speed_x * (time_to_interpolate - update_time);
-        float new_y = old_y + speed_y * (time_to_interpolate - update_time);
+        auto delta_update_time =
+            static_cast<float>(time_to_interpolate - update_time);
+        float new_x = old_x + speed_x * delta_update_time;
+        float new_y = old_y + speed_y * delta_update_time;
         params[0] = new_x;
         params[1] = new_y;
       }
@@ -159,14 +157,6 @@ void ClientController::OnTickGameInProgress(int delta_time) {
     }
   }
   this->UpdateLocalPlayer(delta_time);
-  // this->TickPlayers(delta_time);
-}
-
-void ClientController::TickPlayers(int delta_time) {
-  std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
-  for (const auto& player : players) {
-    player->OnTick(delta_time);
-  }
 }
 
 void ClientController::UpdateLocalPlayer(int delta_time) {
@@ -302,7 +292,6 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
-  return;
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
     float rotation = Math::VectorAngle(local_player->GetPosition(),

@@ -89,7 +89,7 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
                                  server_model_.GetRoomByClientId(client_id)
                                   ->GetVar()));
     return;
-  } else if(event.GetType() == EventType::kSetTimeDifference) {
+  } else if (event.GetType() == EventType::kSetTimeDifference) {
     Event new_event = event;
     new_event.PushBackArg(QDateTime::currentMSecsSinceEpoch());
     this->SendToClient(client_id, new_event);

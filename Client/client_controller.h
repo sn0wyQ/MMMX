@@ -71,8 +71,6 @@ class ClientController : public BaseController {
   void OnTickGameInProgress(int delta_time);
   void OnTickGameNotStarted(int delta_time);
 
-  void TickPlayers(int delta_time);
-
   std::shared_ptr<ClientGameModel> GetModel();
   int GetServerVar() const;
   int GetRoomVar() const;
