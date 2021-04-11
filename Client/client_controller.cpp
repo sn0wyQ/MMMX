@@ -105,45 +105,57 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
 }
 
 void ClientController::OnTickGameInProgress(int delta_time) {
-  for (const auto& [game_object_id, deque] : game_objects_cache_) {
-    while (!deque.empty()) {
-      auto game_object_data = deque.front();
-      auto server_sent_time = game_object_data.server_time;
-      auto cur_time_on_server =
-          QDateTime::currentMSecsSinceEpoch() + time_difference_;
-      auto time_to_interpolate = cur_time_on_server
-          - Constants::kInterpolationMSecs;
-      // int64_t ccc = 1618150310011;
-      // qInfo() << server_sent_time - ccc << cur_time_on_server - ccc
-      //         << time_to_interpolate - ccc;
-      if (server_sent_time >= time_to_interpolate) {
+  for (const auto& [game_object_id, game_object_data] : game_objects_cache_) {
+    auto server_sent_time = game_object_data.server_time;
+    auto cur_time_on_server =
+        QDateTime::currentMSecsSinceEpoch() + time_difference_;
+    int64_t ccc = 1618155950011;
+    auto time_to_interpolate = cur_time_on_server
+        - Constants::kInterpolationMSecs;
+    if (server_sent_time < time_to_interpolate) {
+      continue;
+    }
+    auto params = game_object_data.params;
+    if (model_->IsGameObjectIdTaken(game_object_id)) {
+      if (model_->IsLocalPlayerSet()
+          && game_object_id == model_->GetLocalPlayer()->GetId()) {
         break;
       }
-      auto params = game_object_data.params;
-      if (model_->IsGameObjectIdTaken(game_object_id)) {
-        if (model_->IsLocalPlayerSet()
-            && game_object_id == model_->GetLocalPlayer()->GetId()) {
-          break;
-        }
-        // Interpolate position
+      // Interpolate position for movable objects
+      auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+      if (game_object->IsMovable()) {
+        int64_t update_time = last_time_updated_[game_object_id];
+        // qInfo() << update_time - ccc << time_to_interpolate - ccc
+        //         << server_sent_time - ccc << cur_time_on_server - ccc;
+        int64_t delta_interpolation_time = server_sent_time - update_time;
+        // qInfo() << delta_interpolation_time << "dit";
         float x = params[0].toFloat();
+        float old_x = game_object->GetX();
+        float delta_x = x - old_x;
+        float speed_x = delta_x / delta_interpolation_time;
         float y = params[1].toFloat();
-        float new_x = x * time_to_interpolate / server_sent_time;
-        float new_y = y * time_to_interpolate / server_sent_time;
+        float old_y = game_object->GetY();
+        float delta_y = y - old_y;
+        float speed_y = delta_y / delta_interpolation_time;
+
+        float new_x = old_x + speed_x * (time_to_interpolate - update_time);
+        float new_y = old_y + speed_y * (time_to_interpolate - update_time);
         params[0] = new_x;
         params[1] = new_y;
-        model_->GetGameObjectByGameObjectId(game_object_id)->SetParams(params);
-      } else {
-        model_->AddGameObject(game_object_id,
-                              game_object_data.type, params);
       }
-      bool previous_state
-          = model_->GetGameObjectByGameObjectId(game_object_id)->IsInFov();
-      model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(true);
-      if (!previous_state) {
-        qInfo() << "[CLIENT] Appeared in fov " << game_object_id;
-      }
-      game_objects_cache_[game_object_id].pop_front();
+      game_object->SetParams(params);
+    } else {
+      model_->AddGameObject(game_object_id,
+                            game_object_data.type, params);
+    }
+    if (model_->GetGameObjectByGameObjectId(game_object_id)->IsMovable()) {
+      last_time_updated_[game_object_id] = time_to_interpolate;
+    }
+    bool previous_state
+        = model_->GetGameObjectByGameObjectId(game_object_id)->IsInFov();
+    model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(true);
+    if (!previous_state) {
+      qInfo() << "[CLIENT] Appeared in fov " << game_object_id;
     }
   }
   this->UpdateLocalPlayer(delta_time);
@@ -290,6 +302,7 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
+  return;
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
     float rotation = Math::VectorAngle(local_player->GetPosition(),
@@ -316,8 +329,8 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
       = static_cast<GameObjectType>(event.GetArg<int>(2));
   auto params = event.GetArgsSubVector(3);
   if (game_object_id != model_->GetLocalPlayer()->GetId()) {
-    game_objects_cache_[game_object_id].push_back({server_sent_time, game_object_type,
-                                                   params});
+    game_objects_cache_[game_object_id] ={server_sent_time, game_object_type,
+                                                   params};
   }
 }
 

@@ -134,8 +134,8 @@ class ClientController : public BaseController {
     GameObjectType type;
     std::vector<QVariant> params;
   };
-  std::unordered_map<GameObjectId, std::deque<GameObjectData>>
-    game_objects_cache_;
+  std::unordered_map<GameObjectId, GameObjectData> game_objects_cache_;
+  std::unordered_map<GameObjectId, int64_t> last_time_updated_;
   std::unordered_map<Controls, Direction> key_to_direction_{
       {Controls::kKeyW, Direction::kUp},
       {Controls::kKeyD, Direction::kRight},

@@ -268,7 +268,9 @@ GameObjectId RoomController::AddDefaultPlayer() {
       {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
        Constants::kDefaultPlayerRotation, new_radius * 2,
        new_radius * 2,
-       static_cast<int>(RigidBodyType::kCircle), 0.f, 0.f,
+       static_cast<int>(RigidBodyType::kCircle),
+       0.f, 0.f,
+       QDateTime::currentMSecsSinceEpoch(),
        new_fov});
 }
 
@@ -330,8 +332,12 @@ void RoomController::SendControlsEvent(const Event& event) {
   player->SetVelocity(event.GetArg<QVector2D>(4));
   player->SetRotation(event.GetArg<float>(5));
   while (id_of_model != models_cache_.size()) {
+    auto cur_model = models_cache_[id_of_model].model;
+    if (!cur_model->IsGameObjectIdTaken(player_id)) {
+      break;
+    }
     auto player_in_model
-      = models_cache_[id_of_model].model->GetPlayerByPlayerId(player_id);
+      = cur_model->GetPlayerByPlayerId(player_id);
     player_in_model->OnTick(models_cache_[id_of_model].delta_time);
     id_of_model++;
   }
