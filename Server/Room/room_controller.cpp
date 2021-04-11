@@ -227,7 +227,8 @@ void RoomController::SendGameObjectDataToPlayers(
   }
   if (!left_fov_event_receivers.empty()) {
     this->AddEventToSendToPlayerList(
-        Event(EventType::kGameObjectLeftFov, GetCurrentServerTime(),
+        Event(EventType::kGameObjectLeftFov,
+              QVariant::fromValue(GetCurrentServerTime()),
               game_object_id), left_fov_event_receivers);
   }
 }
