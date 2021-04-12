@@ -4,9 +4,12 @@
 #include <vector>
 
 #include <QVector2D>
+#include <QEvent>
 
 #include "GameObject/MovableObject/Entity/entity.h"
+#include "Weapon/weapon.h"
 #include "constants.h"
+
 
 class Player : public Entity {
  public:
@@ -27,6 +30,7 @@ class Player : public Entity {
 
  private:
   bool is_local_player_{false};
+  std::shared_ptr<Weapon> weapon_;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_

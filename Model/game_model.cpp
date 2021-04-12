@@ -33,6 +33,9 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
     case GameObjectType::kGameObject:
       object = std::make_unique<GameObject>(game_object_id);
       break;
+    case GameObjectType::kBullet:
+      object = std::make_unique<Bullet>(game_object_id);
+      break;
   }
   object->SetParams(params);
   game_objects_.emplace(std::make_pair(game_object_id, object));

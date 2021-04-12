@@ -22,6 +22,7 @@ Q_NAMESPACE
 
 // enum for sending events
 enum class GameObjectType {
+  kBullet,
   kPlayer,
   kGameObject
 };

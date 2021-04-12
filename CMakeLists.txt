@@ -68,6 +68,7 @@ set(SOURCES
         Event/event.cpp
         Event/event_type.h
         GUI/GameView/game_view.cpp
+        GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
@@ -87,6 +88,8 @@ set(SOURCES
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
+        Weapon/MachineGun/machine_gun.cpp
+        Weapon/weapon.cpp
         )
 
 # If necessary, add resources files

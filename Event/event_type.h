@@ -15,6 +15,12 @@ enum class EventType {
   // [0] - <ClientId> client_id
   kClientDisconnected,
 
+  // [0] - <Bullet> bullet
+  kCreateBullet,
+
+  // [0] - <Bullet> bullet
+  kDeleteBullet,
+
   // No arguments
   kEndGame,
 

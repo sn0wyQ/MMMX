@@ -2,13 +2,16 @@
 
 Player::Player(GameObjectId player_id) : Entity(player_id) {}
 
-
 void Player::SetParams(std::vector<QVariant> params) {
+  weapon_ = params.back();
+  params.pop_back();
   Entity::SetParams(params);
 }
 
 std::vector<QVariant> Player::GetParams() const {
-  return Entity::GetParams();
+  std::vector<QVariant> result = Entity::GetParams();
+  result.emplace_back(weapon_);
+  return result;
 }
 
 void Player::DrawRelatively(Painter* painter) {
@@ -30,6 +33,7 @@ void Player::DrawRelatively(Painter* painter) {
                           QPointF(GetRadius() + 0.2f, 0.3f),
                           QPointF(GetRadius() + 0.7f, 0.f));
   }
+  weapon_->DrawWeapon(painter);
 }
 
 bool Player::IsLocalPlayer() const {

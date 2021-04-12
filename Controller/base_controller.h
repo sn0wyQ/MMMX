@@ -64,6 +64,8 @@ class BaseController : public QObject {
       static_cast<uint32_t>(EventType::SIZE)> function_for_event_;
 
   virtual void ClientDisconnectedEvent(const Event& event) {}
+  virtual void CreateBullet(const Event& event) {}
+  virtual void DeleteBullet(const Event& event) {}
   virtual void EndGameEvent(const Event& event) {}
   virtual void PlayerDisconnectedEvent(const Event& event) {}
   virtual void SendEventToClientEvent(const Event& event) {}

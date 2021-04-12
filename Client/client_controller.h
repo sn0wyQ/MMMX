@@ -93,6 +93,7 @@ class ClientController : public BaseController {
   void KeyPressEvent(QKeyEvent* key_event);
   void KeyReleaseEvent(QKeyEvent* key_event);
   void MouseMoveEvent(QMouseEvent* mouse_event);
+  void MousePressEvent(QMouseEvent* mouse_event);
 
   // --------------------------------------------------
 
@@ -104,6 +105,8 @@ class ClientController : public BaseController {
   void SetPing(int elapsed_time);
 
  private:
+  void CreateBullet(const Event& event) override;
+  void DeleteBullet(const Event& event) override;
   void EndGameEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
   void SetPlayerIdToClient(const Event& event) override;

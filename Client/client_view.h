@@ -34,6 +34,7 @@ class ClientView : public AbstractClientView {
   void keyPressEvent(QKeyEvent* key_event) override;
   void keyReleaseEvent(QKeyEvent* key_event) override;
   void mouseMoveEvent(QMouseEvent* mouse_event) override;
+  void mousePressEvent(QMouseEvent* mouse_event) override;
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
