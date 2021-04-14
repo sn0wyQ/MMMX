@@ -60,6 +60,18 @@ enum class EventType {
 
   // ------------------- GAME EVENTS -------------------
 
+  // [0] - <GameObjectId> game_object_id
+  // [1] - <GameObjectType> game_object_type
+  // [2] - <int64> sent_time (on server)
+  // [3] - <EventType> event_type
+  // [4+] - event_args
+  // Send game events to client through this event
+  // it will interpolate game object
+  // Game events to client which interpolate :
+  // kUpdateGameObjectData
+  // kGameObjectLeftFov
+  kSendGameInfoToInterpolate,
+
   // [0] - <int64> timestamp
   // [1] - <GameObjectId> sender_player_id,
   // [2] - <float> x,
@@ -72,14 +84,11 @@ enum class EventType {
   // [1] - player_args
   kAddLocalPlayerGameObject,
 
-  // [0] - <int64> timestamp
-  // [1] - <GameObjectId> game_object_id
-  // [2] - <int> game_object_type [game_object.h]
-  // [3+] - game_object_args : relative constructor args
+  // [0] - <GameObjectId> game_object_id
+  // [1+] - game_object_args : relative SetParams
   kUpdateGameObjectData,
 
-  // [0] - <int64> timestamp
-  // [1] - <GameObjectId> game_object_id that left receiver player FOV
+  // [0] - <GameObjectId> game_object_id that left receiver player FOV
   kGameObjectLeftFov,
 
   SIZE

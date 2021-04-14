@@ -20,6 +20,7 @@
 #include "GameObject/RigidBody/object_collision.h"
 #include "Math/math.h"
 #include "Model/client_game_model.h"
+#include "GameObject/interpolator.h"
 
 // TODO(Everyone): make class Hotkeys instead of enum Controls
 // (with possibility to rebind keys)
@@ -112,6 +113,7 @@ class ClientController : public BaseController {
 
   // ------------------- GAME EVENTS -------------------
 
+  void SendGameInfoToInterpolateEvent(const Event& event) override;
   void AddLocalPlayerGameObjectEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void GameObjectLeftFovEvent(const Event& event) override;

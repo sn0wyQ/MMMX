@@ -50,7 +50,6 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
     int64_t client_received_time = QDateTime::currentMSecsSinceEpoch();
     int64_t latency = (client_received_time - client_sent_time) / 2;
     time_difference_ = server_received_time - client_sent_time - latency;
-    qInfo() << time_difference_;
     is_time_difference_set_ = true;
     return;
   }
@@ -110,69 +109,28 @@ void ClientController::OnTickGameInProgress(int delta_time) {
 }
 
 void ClientController::UpdateInterpolationInfo() {
-  for (const auto& [game_object_id, game_object_data] : game_objects_cache_) {
-    auto server_sent_time = game_object_data.server_time;
-    auto cur_time_on_server = GetCurrentServerTime();
-    auto time_to_interpolate = cur_time_on_server
-        - Constants::kInterpolationMSecs;
-    if (server_sent_time < time_to_interpolate) {
-      continue;
-    }
-    auto params = game_object_data.params;
-    if (model_->IsGameObjectIdTaken(game_object_id)) {
-      if (model_->IsLocalPlayerSet()
-          && game_object_id == model_->GetLocalPlayer()->GetId()) {
-        break;
-      }
-      // Interpolate position for movable objects
-      auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-      if (game_object->IsMovable()) {
-        int64_t update_time = last_time_updated_[game_object_id];
-        int64_t delta_interpolation_time = server_sent_time - update_time;
-        float x = params[0].toFloat();
-        float old_x = game_object->GetX();
-        float delta_x = x - old_x;
-        float speed_x = delta_x / delta_interpolation_time;
-        float y = params[1].toFloat();
-        float old_y = game_object->GetY();
-        float delta_y = y - old_y;
-        float speed_y = delta_y / delta_interpolation_time;
-
-        auto delta_update_time =
-            static_cast<float>(time_to_interpolate - update_time);
-        float new_x = old_x + speed_x * delta_update_time;
-        float new_y = old_y + speed_y * delta_update_time;
-        params[0] = new_x;
-        params[1] = new_y;
-      }
-      game_object->SetParams(params);
-    } else {
-      model_->AddGameObject(game_object_id,
-                            game_object_data.type, params);
-    }
-    if (model_->GetGameObjectByGameObjectId(game_object_id)->IsMovable()) {
-      last_time_updated_[game_object_id] = time_to_interpolate;
-    }
-    bool previous_state
-        = model_->GetGameObjectByGameObjectId(game_object_id)->IsInFov();
-    model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(true);
-    if (!previous_state) {
-      qInfo() << "[CLIENT] Appeared in fov " << game_object_id;
+  auto time_to_interpolate = GetCurrentServerTime()
+      - Constants::kInterpolationMSecs;
+  model_->UpdateScheduledBools(time_to_interpolate);
+  for (const auto& game_object : model_->GetAllGameObjects()) {
+    if (!game_object->IsInFov()) {
+      auto game_object_id = game_object->GetId();
+      model_->DeleteGameObject(game_object_id);
+      model_->GetInterpolator().erase(game_object_id);
     }
   }
-  for (const auto& [game_object_id, server_sent_time]
-    : left_fov_cache_at_time_) {
-    auto cur_time_on_server = GetCurrentServerTime();
-    auto time_to_interpolate = cur_time_on_server
-        - Constants::kInterpolationMSecs;
-    if (server_sent_time < time_to_interpolate) {
-      continue;
+
+  for (const auto& [game_object_id, game_object_to_be_interpolated]
+    : model_->GetInterpolator()) {
+    if (!model_->IsGameObjectIdTaken(game_object_id)) {
+      model_->AttachGameObject(game_object_id,
+                               game_object_to_be_interpolated->Clone());
     }
-    if (model_->IsGameObjectIdTaken(game_object_id)) {
-      model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(false);
-      qInfo() << "[CLIENT] Left from fov " << game_object_id;
-      model_->DeleteGameObject(game_object_id);
-    }
+    auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+
+    Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
+                                    time_to_interpolate);
+    game_object->SetIsInFov(true);
   }
 }
 
@@ -201,7 +159,9 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 }
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
-  model_->DeleteGameObject(event.GetArg<GameObjectId>(0));
+  auto player_id = event.GetArg<GameObjectId>(0);
+  model_->DeleteGameObject(player_id);
+  model_->GetInterpolator().erase(player_id);
   game_state_ = GameState::kGameNotStarted;
   view_->Update();
 }
@@ -332,19 +292,34 @@ void ClientController::AddLocalPlayerGameObjectEvent(const Event& event) {
 }
 
 void ClientController::UpdateGameObjectDataEvent(const Event& event) {
-  auto server_sent_time = event.GetArg<int64_t>(0);
-  auto game_object_id = event.GetArg<GameObjectId>(1);
-  auto game_object_type
-      = static_cast<GameObjectType>(event.GetArg<int>(2));
-  auto params = event.GetArgsSubVector(3);
-  if (game_object_id != model_->GetLocalPlayer()->GetId()) {
-    game_objects_cache_[game_object_id] =
-        {server_sent_time, game_object_type, params};
+  auto game_object_id = event.GetArg<GameObjectId>(0);
+  auto params = event.GetArgsSubVector(1);
+  if (model_->IsLocalPlayerSet() &&
+      game_object_id == model_->GetLocalPlayer()->GetId()) {
+    return;
   }
+  auto game_object =
+      model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
+  game_object->SetParams(params);
 }
 
 void ClientController::GameObjectLeftFovEvent(const Event& event) {
-  auto server_sent_time = event.GetArg<int64_t>(0);
-  auto game_object_id = event.GetArg<GameObjectId>(1);
-  left_fov_cache_at_time_[game_object_id] = server_sent_time;
+  auto game_object_id = event.GetArg<GameObjectId>(0);
+  auto game_object =
+      model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
+  model_->AddScheduledUpdate(
+      game_object_id,BoolVariable::kIsInFov,
+      {game_object->GetUpdatedTime(), false});
+}
+
+void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
+  auto game_object_id = event.GetArg<GameObjectId>(0);
+  auto game_object_type = event.GetArg<GameObjectType>(1);
+  auto sent_time = event.GetArg<int64_t>(2);
+  auto event_type = event.GetArg<EventType>(3);
+  if (event_type == EventType::kUpdateGameObjectData) {
+    model_->AddInterpolateInfo(game_object_id, game_object_type, sent_time);
+  }
+  auto args = event.GetArgsSubVector(4);
+  this->HandleEvent(Event(event_type, args));
 }

@@ -87,14 +87,10 @@ class RoomController : public BaseController {
   void AddConstantObjects();
 
   Event GetEventOfGameObjectData(GameObjectId game_object_id) const;
+  Event GetEventOfGameObjectLeftFov(GameObjectId game_object_id) const;
   bool IsGameObjectInFov(GameObjectId game_object_id,
                          GameObjectId player_id);
-  void UpdateReceiversByFov(
-      GameObjectId sender_player_id,
-      std::vector<GameObjectId>* data_receivers,
-      std::vector<GameObjectId>* left_fov_event_receivers);
   void SendGameObjectsDataToPlayer(GameObjectId player_id);
-  void SendGameObjectDataToPlayers(GameObjectId game_object_id);
 
   // ------------------- GAME EVENTS -------------------
 

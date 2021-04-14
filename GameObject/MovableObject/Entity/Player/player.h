@@ -11,6 +11,7 @@
 class Player : public Entity {
  public:
   explicit Player(GameObjectId player_id);
+  Player(const Player& other);
 
   void DrawRelatively(Painter* painter) override;
 
@@ -24,6 +25,8 @@ class Player : public Entity {
 
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
+
+  virtual std::shared_ptr<GameObject> Clone() const override;
 
  private:
   bool is_local_player_{false};

@@ -25,6 +25,8 @@ BaseController::BaseController() {
 
   // ------------------- GAME EVENTS -------------------
 
+  SetFunctionForEventType(EventType::kSendGameInfoToInterpolate,
+    std::bind(&BaseController::SendGameInfoToInterpolateEvent, this, _1));
   SetFunctionForEventType(EventType::kSendControls,
     std::bind(&BaseController::SendControlsEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateGameObjectData,

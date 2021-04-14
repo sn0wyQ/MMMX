@@ -63,10 +63,6 @@ void RoomController::OnTick(int delta_time) {
     // Рассказываем НАМ о других с учетом FOV
     SendGameObjectsDataToPlayer(player_id);
   }
-  for (const auto& game_object : model_->GetAllGameObjects()) {
-    // Рассказываем ДРУГИМ о нас с учетом FOV
-    SendGameObjectDataToPlayers(game_object->GetId());
-  }
   if (models_cache_.size() > Constants::kTicksToStore) {
     models_cache_.pop_front();
   }
@@ -184,14 +180,28 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
 }
 
-Event RoomController::GetEventOfGameObjectData(GameObjectId game_object_id)
-const {
+Event RoomController::GetEventOfGameObjectData(
+    GameObjectId game_object_id) const {
   auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-  Event event(EventType::kUpdateGameObjectData,
-              QDateTime::currentMSecsSinceEpoch(),
+  Event event(EventType::kSendGameInfoToInterpolate,
               game_object_id,
-              static_cast<int>(game_object->GetType()));
+              static_cast<int>(game_object->GetType()),
+              QVariant::fromValue(GetCurrentServerTime()),
+              static_cast<int>(EventType::kUpdateGameObjectData),
+              game_object_id);
   event.PushBackArgs(game_object->GetParams());
+  return event;
+}
+
+Event RoomController::GetEventOfGameObjectLeftFov(
+    GameObjectId game_object_id) const {
+  auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+  Event event(EventType::kSendGameInfoToInterpolate,
+              game_object_id,
+              static_cast<int>(game_object->GetType()),
+              QVariant::fromValue(GetCurrentServerTime()),
+              static_cast<int>(EventType::kGameObjectLeftFov),
+              game_object_id);
   return event;
 }
 
@@ -206,30 +216,8 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
         != is_first_in_fov_of_second_.end()) {
       is_first_in_fov_of_second_.erase(sender_receiver_pair);
       this->AddEventToSendToSinglePlayer(
-          Event(EventType::kGameObjectLeftFov,
-                QVariant::fromValue(GetCurrentServerTime()),
-                object->GetId()), player_id);
+          GetEventOfGameObjectLeftFov(object->GetId()), player_id);
     }
-  }
-}
-
-void RoomController::SendGameObjectDataToPlayers(
-    GameObjectId game_object_id) {
-  std::vector<GameObjectId> data_receivers;
-  std::vector<GameObjectId> left_fov_event_receivers;
-
-  UpdateReceiversByFov(game_object_id, &data_receivers,
-                       &left_fov_event_receivers);
-
-  if (!data_receivers.empty()) {
-    this->AddEventToSendToPlayerList(
-        GetEventOfGameObjectData(game_object_id), data_receivers);
-  }
-  if (!left_fov_event_receivers.empty()) {
-    this->AddEventToSendToPlayerList(
-        Event(EventType::kGameObjectLeftFov,
-              QVariant::fromValue(GetCurrentServerTime()),
-              game_object_id), left_fov_event_receivers);
   }
 }
 
@@ -243,25 +231,6 @@ bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
   return player->GetShortestDistance(game_object) < player->GetFovRadius();
 }
 
-void RoomController::UpdateReceiversByFov(
-    GameObjectId game_object_id,
-    std::vector<GameObjectId>* data_receivers,
-    std::vector<GameObjectId>* left_fov_event_receivers) {
-  for (auto& [receiver_client_id,
-    receiver_player_id] : this->player_ids_) {
-    auto receiver = model_->GetPlayerByPlayerId(receiver_player_id);
-    auto sender_receiver_pair = std::make_pair(game_object_id,
-                                               receiver_player_id);
-    if (this->IsGameObjectInFov(game_object_id, receiver_player_id)) {
-      is_first_in_fov_of_second_.insert(sender_receiver_pair);
-      data_receivers->push_back(receiver_player_id);
-    } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
-        != is_first_in_fov_of_second_.end()) {
-      is_first_in_fov_of_second_.erase(sender_receiver_pair);
-      left_fov_event_receivers->push_back(receiver_player_id);
-    }
-  }
-}
 
 GameObjectId RoomController::AddDefaultPlayer() {
   float new_fov = Constants::kDefaultEntityFov * (GetPlayersCount() + 1);
@@ -273,10 +242,8 @@ GameObjectId RoomController::AddDefaultPlayer() {
        new_radius * 2,
        static_cast<int>(RigidBodyType::kCircle),
        0.f, 0.f,
-       QDateTime::currentMSecsSinceEpoch(),
        new_fov});
 }
-
 
 void RoomController::AddBox(float x, float y, float rotation,
                             float width, float height) {

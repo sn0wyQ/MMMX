@@ -10,12 +10,15 @@
 class Entity : public MovableObject {
  public:
   explicit Entity(GameObjectId id);
+  Entity(const Entity& other);
 
   float GetFovRadius() const;
   void SetFovRadius(float fov_radius);
 
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
+
+  virtual std::shared_ptr<GameObject> Clone() const override;
 
  private:
   float fov_radius_{Constants::kDefaultEntityFov};
