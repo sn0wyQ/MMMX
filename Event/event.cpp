@@ -14,6 +14,7 @@ Event::Event(const QByteArray& message) {
   while (!data_stream.atEnd()) {
     QVariant next_variable;
     data_stream >> next_variable;
+    // qInfo() << next_variable;
     args_.push_back(next_variable);
   }
 }
@@ -61,6 +62,7 @@ QByteArray Event::ToByteArray() const {
   QDataStream data_stream(&result, QIODevice::WriteOnly);
   data_stream << static_cast<int>(type_);
   for (const auto& arg : args_) {
+    qInfo() << arg;
     data_stream << arg;
   }
   return result;

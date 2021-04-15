@@ -199,6 +199,5 @@ void ServerController::ReplyWithTimeToClient(
   Event new_event(EventType::kSetTimeDifference,
                   QVariant::fromValue(client_time),
                   QVariant::fromValue(this->GetCurrentServerTime()));
-  qInfo() << new_event;
   this->SendToClient(client_id, new_event);
 }

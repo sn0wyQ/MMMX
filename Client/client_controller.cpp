@@ -48,6 +48,7 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
   // Каждая миллисекунда важна для разницы времени,
   // так что не пропускаем через тик, а делаем сразу
   if (event.GetType() == EventType::kSetTimeDifference) {
+    qInfo() << event;
     this->HandleEvent(event);
     return;
   }
@@ -236,6 +237,7 @@ void ClientController::SetTimeDifferenceEvent(const Event& event) {
   int64_t client_received_time = QDateTime::currentMSecsSinceEpoch();
   int64_t latency = (client_received_time - client_sent_time) / 2;
   time_difference_ = server_received_time - client_sent_time - latency;
+  qInfo() << client_sent_time << server_received_time << latency;
   is_time_difference_set_ = true;
   qInfo() << time_difference_;
 }
