@@ -197,7 +197,7 @@ QString ServerController::GetControllerName() const {
 void ServerController::ReplyWithTimeToClient(
     ClientId client_id, int64_t client_time) {
   Event new_event(EventType::kSetTimeDifference,
-                  QVariant::fromValue(client_time),
-                  QVariant::fromValue(this->GetCurrentServerTime()));
+                  static_cast<qint64>(client_time),
+                  static_cast<qint64>(this->GetCurrentServerTime()));
   this->SendToClient(client_id, new_event);
 }

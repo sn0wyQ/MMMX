@@ -34,7 +34,7 @@ void ClientController::OnConnected() {
   // TODO(Everyone): Send nickname to server after connection
 
   Event time_event(EventType::kSetTimeDifference,
-                   QVariant::fromValue(QDateTime::currentMSecsSinceEpoch()));
+                   static_cast<qint64>(QDateTime::currentMSecsSinceEpoch()));
   this->SendEvent(time_event);
   qInfo().noquote() << "[CLIENT] Connected to" << url_;
 }
@@ -154,7 +154,7 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
   converter_->UpdateGameCenter(local_player->GetPosition());
 
   this->AddEventToSend(Event(EventType::kSendControls,
-                        QVariant::fromValue(GetCurrentServerTime()),
+                        static_cast<qint64>(GetCurrentServerTime()),
                         local_player->GetId(),
                         local_player->GetX(),
                         local_player->GetY(),

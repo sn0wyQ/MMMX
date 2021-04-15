@@ -186,7 +186,7 @@ Event RoomController::GetEventOfGameObjectData(
   Event event(EventType::kSendGameInfoToInterpolate,
               game_object_id,
               static_cast<int>(game_object->GetType()),
-              QVariant::fromValue(GetCurrentServerTime()),
+              static_cast<qint64>(GetCurrentServerTime()),
               static_cast<int>(EventType::kUpdateGameObjectData),
               game_object_id);
   event.PushBackArgs(game_object->GetParams());
@@ -199,7 +199,7 @@ Event RoomController::GetEventOfGameObjectLeftFov(
   Event event(EventType::kSendGameInfoToInterpolate,
               game_object_id,
               static_cast<int>(game_object->GetType()),
-              QVariant::fromValue(GetCurrentServerTime()),
+              static_cast<qint64>(GetCurrentServerTime()),
               static_cast<int>(EventType::kGameObjectLeftFov),
               game_object_id);
   return event;

@@ -79,7 +79,7 @@ QVariant GetInterpolatedParam(const QVariant& object_param,
     case QMetaType::Type::LongLong: {
       int64_t x1 = object_param.toLongLong();
       int64_t x3 = future_object_param.toLongLong();
-      result = QVariant::fromValue(
+      result = static_cast<qint64>(
           InterpolateNumber(x1, x3, object_updated_time, get_on_time,
                             future_object_updated_time));
       break;
