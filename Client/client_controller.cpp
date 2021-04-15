@@ -33,8 +33,9 @@ void ClientController::OnConnected() {
 
   // TODO(Everyone): Send nickname to server after connection
 
-  this->SendEvent(Event(EventType::kSetTimeDifference,
-                  QDateTime::currentMSecsSinceEpoch()));
+  Event time_event(EventType::kSetTimeDifference,
+                   QVariant::fromValue(QDateTime::currentMSecsSinceEpoch()));
+  this->SendEvent(time_event);
   qInfo().noquote() << "[CLIENT] Connected to" << url_;
 }
 
@@ -229,12 +230,14 @@ QVector2D ClientController::GetKeyForce() const {
 
 
 void ClientController::SetTimeDifferenceEvent(const Event& event) {
+  qInfo() << event;
   auto client_sent_time = event.GetArg<int64_t>(0);
   auto server_received_time = event.GetArg<int64_t>(1);
   int64_t client_received_time = QDateTime::currentMSecsSinceEpoch();
   int64_t latency = (client_received_time - client_sent_time) / 2;
   time_difference_ = server_received_time - client_sent_time - latency;
   is_time_difference_set_ = true;
+  qInfo() << time_difference_;
 }
 
 int64_t ClientController::GetCurrentServerTime() const {
