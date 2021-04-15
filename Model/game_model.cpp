@@ -1,5 +1,11 @@
 #include "game_model.h"
 
+GameModel::GameModel(const GameModel& other) {
+  for (const auto& [game_object_id, game_object] : other.game_objects_) {
+    game_objects_.emplace(game_object_id, game_object->Clone());
+  }
+}
+
 std::shared_ptr<Player> GameModel::GetPlayerByPlayerId(
     GameObjectId player_id) const {
   auto iter = game_objects_.find(player_id);
@@ -69,11 +75,9 @@ std::vector<std::shared_ptr<Player>> GameModel::GetPlayers() const {
   }
   return result;
 }
-
 bool GameModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return game_objects_.find(game_object_id) != game_objects_.end();
 }
-
 std::vector<std::shared_ptr<GameObject>>
   GameModel::GetAllGameObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;
@@ -82,6 +86,7 @@ std::vector<std::shared_ptr<GameObject>>
   }
   return result;
 }
+
 std::vector<std::shared_ptr<GameObject>>
   GameModel::GetFilteredByFovObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;
@@ -92,6 +97,7 @@ std::vector<std::shared_ptr<GameObject>>
   }
   return result;
 }
+
 std::vector<std::shared_ptr<GameObject>>
   GameModel::GetNotFilteredByFovObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;

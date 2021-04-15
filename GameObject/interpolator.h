@@ -1,6 +1,7 @@
-#ifndef GAME_OBJECT_INTERPOLATOR_H_
-#define GAME_OBJECT_INTERPOLATOR_H_
+#ifndef GAMEOBJECT_INTERPOLATOR_H_
+#define GAMEOBJECT_INTERPOLATOR_H_
 
+#include <string>
 #include <memory>
 
 #include <QVariant>
@@ -17,7 +18,8 @@ void InterpolateObject(const std::shared_ptr<GameObject>& object,
 
 QVariant GetInterpolatedParam(const QVariant& object_param,
                               const QVariant& future_object_param,
-                              int64_t object_updated_time, int64_t future_object_updated_time,
+                              int64_t object_updated_time,
+                              int64_t future_object_updated_time,
                               int64_t get_on_time);
 
 template<typename T>
@@ -33,4 +35,4 @@ T InterpolateNumber(T x1, T x3, int64_t t1, int64_t t2, int64_t t3) {
 
 }  // namespace Interpolator
 
-#endif  // GAME_OBJECT_INTERPOLATOR_H_
+#endif  // GAMEOBJECT_INTERPOLATOR_H_

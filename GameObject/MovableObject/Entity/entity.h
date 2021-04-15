@@ -18,7 +18,7 @@ class Entity : public MovableObject {
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
 
-  virtual std::shared_ptr<GameObject> Clone() const override;
+  std::shared_ptr<GameObject> Clone() const override;
 
  private:
   float fov_radius_{Constants::kDefaultEntityFov};

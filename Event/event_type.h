@@ -18,9 +18,6 @@ enum class EventType {
   // No arguments
   kEndGame,
 
-  // [0] - <GameObjectId> player_id
-  kPlayerDisconnected,
-
   // [0] - <ClientId> client_id,
   // [1] - <int> event_type,
   // [2+] - event_args
@@ -67,10 +64,19 @@ enum class EventType {
   // [4+] - event_args
   // Send game events to client through this event
   // it will interpolate game object
-  // Game events to client which interpolate :
-  // kUpdateGameObjectData
-  // kGameObjectLeftFov
   kSendGameInfoToInterpolate,
+
+  // Game events to client which interpolate :
+  // [[[[[[[[[
+
+  // [0] - <GameObjectId> game_object_id
+  // [1+] - game_object_args : relative SetParams
+  kUpdateGameObjectData,
+
+  // [0] - <GameObjectId> game_object_id that left receiver player FOV
+  kGameObjectLeftFov,
+
+  // ]]]]]]]]]
 
   // [0] - <int64> timestamp
   // [1] - <GameObjectId> sender_player_id,
@@ -84,12 +90,8 @@ enum class EventType {
   // [1] - player_args
   kAddLocalPlayerGameObject,
 
-  // [0] - <GameObjectId> game_object_id
-  // [1+] - game_object_args : relative SetParams
-  kUpdateGameObjectData,
-
-  // [0] - <GameObjectId> game_object_id that left receiver player FOV
-  kGameObjectLeftFov,
+  // [0] - <GameObjectId> player_id
+  kPlayerDisconnected,
 
   SIZE
 };

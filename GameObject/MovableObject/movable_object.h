@@ -34,7 +34,7 @@ class MovableObject : public GameObject {
 
   float GetShortestDistance(const std::shared_ptr<GameObject>& object);
 
-  virtual std::shared_ptr<GameObject> Clone() const override;
+  std::shared_ptr<GameObject> Clone() const override;
 
  private:
   QVector2D velocity_{};

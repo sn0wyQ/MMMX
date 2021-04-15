@@ -90,9 +90,9 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
                                   ->GetVar()));
     return;
   } else if (event.GetType() == EventType::kSetTimeDifference) {
-    Event new_event = event;
-    new_event.PushBackArg(QDateTime::currentMSecsSinceEpoch());
-    this->SendToClient(client_id, new_event);
+    // Важная каждая миллисекунда - отправляем ответ сразу без тика
+    this->ReplyWithTimeToClient(client_id,
+                                event.GetArg<int64_t>(0));
     return;
   }
 
@@ -192,4 +192,12 @@ void ServerController::SendEventToRoomEvent(const Event& event) {
 
 QString ServerController::GetControllerName() const {
   return "SERVER";
+}
+
+void ServerController::ReplyWithTimeToClient(
+    ClientId client_id, int64_t client_time) {
+  Event new_event(EventType::kSetTimeDifference,
+                  QVariant::fromValue(client_time),
+                  this->GetCurrentServerTime());
+  this->SendToClient(client_id, new_event);
 }

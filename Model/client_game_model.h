@@ -1,7 +1,9 @@
 #ifndef MODEL_CLIENT_GAME_MODEL_H_
 #define MODEL_CLIENT_GAME_MODEL_H_
 
+#include <deque>
 #include <memory>
+#include <unordered_map>
 
 #include "Model/game_model.h"
 
@@ -12,6 +14,7 @@ enum class BoolVariable {
 
 class ClientGameModel : public GameModel {
  public:
+  ClientGameModel() = default;
   std::shared_ptr<Player> GetLocalPlayer() const;
   bool IsLocalPlayerSet() const;
   void SetLocalPlayerId(GameObjectId player_id);
@@ -22,8 +25,7 @@ class ClientGameModel : public GameModel {
   std::shared_ptr<GameObject> GetGameObjectByGameObjectIdToBeInterpolated(
         GameObjectId game_object_id) const;
 
-  std::unordered_map<GameObjectId, std::shared_ptr<GameObject>>&
-    GetInterpolator();
+  std::unordered_map<GameObjectId, std::shared_ptr<GameObject>>& Interpolator();
 
   struct BoolUpdate {
     int64_t update_time;
@@ -38,7 +40,7 @@ class ClientGameModel : public GameModel {
 
  private:
   GameObjectId local_player_id_{Constants::kNullGameObjectId};
-  std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> interpolater_;
+  std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> interpolator_;
 
   bool GetValueAccordingVariable(GameObjectId game_object_id,
                                  BoolVariable bool_variable);

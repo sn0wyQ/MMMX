@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <unordered_map>
 #include <vector>
 
 #include <QMetaEnum>
@@ -14,6 +15,8 @@
 
 class GameModel {
  public:
+  GameModel() = default;
+  GameModel(const GameModel& other);
   std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
   std::shared_ptr<GameObject> GetGameObjectByGameObjectId(
       GameObjectId game_object_id) const;

@@ -1,10 +1,10 @@
 #ifndef EVENT_EVENT_H_
 #define EVENT_EVENT_H_
 
+#include <cinttypes>
 #include <cmath>
 #include <utility>
 #include <vector>
-#include <cinttypes>
 
 #include <QByteArray>
 #include <QDataStream>

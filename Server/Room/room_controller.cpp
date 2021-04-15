@@ -55,8 +55,8 @@ void RoomController::SendEvent(const Event& event) {
 }
 
 void RoomController::OnTick(int delta_time) {
-  models_cache_.push_back({
-    std::make_shared<RoomGameModel>(*model_), delta_time});
+  models_cache_.push_back({delta_time,
+    std::make_shared<RoomGameModel>(*model_)});
   this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
   for (const auto& player_id : this->GetAllPlayerIds()) {
@@ -73,7 +73,7 @@ void RoomController::RecalculateModel(const ModelData& model_data) {
 }
 
 void RoomController::TickPlayersInModel(const ModelData& model_data) {
-  std::vector<std::shared_ptr<Player>> players = model_data.model->GetPlayers();
+  auto players = model_data.model->GetPlayers();
   for (const auto& player : players) {
     player->OnTick(model_data.delta_time);
   }
@@ -83,10 +83,10 @@ void RoomController::AddClient(ClientId client_id) {
   GameObjectId player_id = AddDefaultPlayer();
   player_ids_[client_id] = player_id;
 
-  Event event(EventType::kAddLocalPlayerGameObject, player_id);
-  event.PushBackArgs(
+  Event event_add_local_player(EventType::kAddLocalPlayerGameObject, player_id);
+  event_add_local_player.PushBackArgs(
       model_->GetGameObjectByGameObjectId(player_id)->GetParams());
-  this->AddEventToSendToSinglePlayer(event, player_id);
+  this->AddEventToSendToSinglePlayer(event_add_local_player, player_id);
   this->AddEventToSendToSingleClient(
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
 
@@ -277,18 +277,18 @@ void RoomController::AddConstantObjects() {
 void RoomController::SendControlsEvent(const Event& event) {
   // Узнаем в какой модели в прошлом мы передвинулись
   auto timestamp = event.GetArg<int64_t>(0);
-  int64_t latency_in_msecs = QDateTime::currentMSecsSinceEpoch() - timestamp;
-  int64_t latency = latency_in_msecs / Constants::kTimeToTick;
+  int64_t latency = GetCurrentServerTime() - timestamp;
+  int64_t latency_in_ticks = latency / Constants::kTimeToTick;
+
+  int64_t id_of_model =
+      static_cast<int64_t>(models_cache_.size()) - 1 - latency_in_ticks;
   // Если этой модели уже нет, то у чела большой пинг
   // Значит его нужно кикать (большой = Constants::kMSecsToStore)
-  if (latency > static_cast<int>(models_cache_.size())) {
+  if (id_of_model < 0) {
     // TODO(Everyone): Kick player
     throw std::runtime_error("Too slow connection Mr. Vlad Kozulin "
                              "from Krakow");
   }
-
-  int64_t id_of_model =
-      static_cast<int64_t>(models_cache_.size()) - 1 - latency;
   auto current_model = models_cache_[id_of_model];
   auto player_id = event.GetArg<GameObjectId>(1);
   if (!current_model.model->IsGameObjectIdTaken(player_id)) {

@@ -1,17 +1,17 @@
 #ifndef SERVER_ROOM_ROOM_CONTROLLER_H_
 #define SERVER_ROOM_ROOM_CONTROLLER_H_
 
+#include <deque>
 #include <memory>
 #include <set>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <deque>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QString>
-#include <QDateTime>
 
 #include "Controller/base_controller.h"
 #include "Model/room_game_model.h"
@@ -69,8 +69,8 @@ class RoomController : public BaseController {
   RoomId id_;
   std::shared_ptr<RoomGameModel> model_;
   struct ModelData {
-    std::shared_ptr<RoomGameModel> model;
     int delta_time;
+    std::shared_ptr<RoomGameModel> model;
   };
   std::deque<ModelData> models_cache_;
   RoomSettings room_settings_;

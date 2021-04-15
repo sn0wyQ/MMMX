@@ -28,21 +28,21 @@ void ClientGameModel::AddInterpolateInfo(GameObjectId game_object_id,
         this->GetNewEmptyGameObject(game_object_id, game_object_type);
   }
   game_object->SetUpdatedTime(server_time);
-  interpolater_[game_object_id] = game_object;
+  interpolator_[game_object_id] = game_object;
 }
 
 std::shared_ptr<GameObject>
     ClientGameModel::GetGameObjectByGameObjectIdToBeInterpolated(
         GameObjectId game_object_id) const {
-  if (interpolater_.find(game_object_id) == interpolater_.end()) {
+  if (interpolator_.find(game_object_id) == interpolator_.end()) {
     throw std::runtime_error("No such game object to interpolate");
   }
-  return interpolater_.at(game_object_id);
+  return interpolator_.at(game_object_id);
 }
 
 std::unordered_map<GameObjectId, std::shared_ptr<GameObject>>&
-  ClientGameModel::GetInterpolator() {
-  return interpolater_;
+  ClientGameModel::Interpolator() {
+  return interpolator_;
 }
 
 void ClientGameModel::AddScheduledUpdate(

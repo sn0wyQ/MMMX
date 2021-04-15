@@ -44,13 +44,10 @@ void ClientController::OnDisconnected() {
 
 void ClientController::OnByteArrayReceived(const QByteArray& message) {
   Event event(message);
+  // Каждая миллисекунда важна для разницы времени,
+  // так что не пропускаем через тик, а делаем сразу
   if (event.GetType() == EventType::kSetTimeDifference) {
-    auto client_sent_time = event.GetArg<int64_t>(0);
-    auto server_received_time = event.GetArg<int64_t>(1);
-    int64_t client_received_time = QDateTime::currentMSecsSinceEpoch();
-    int64_t latency = (client_received_time - client_sent_time) / 2;
-    time_difference_ = server_received_time - client_sent_time - latency;
-    is_time_difference_set_ = true;
+    this->HandleEvent(event);
     return;
   }
   this->AddEventToHandle(event);
@@ -111,25 +108,30 @@ void ClientController::OnTickGameInProgress(int delta_time) {
 void ClientController::UpdateInterpolationInfo() {
   auto time_to_interpolate = GetCurrentServerTime()
       - Constants::kInterpolationMSecs;
+
+  // Применяем запланированные на какое-то время обновления
   model_->UpdateScheduledBools(time_to_interpolate);
+  // С учетом обновления булевской IsInFov
+  // Удаляем объект из модели и из интерполятора
   for (const auto& game_object : model_->GetAllGameObjects()) {
     if (!game_object->IsInFov()) {
       auto game_object_id = game_object->GetId();
       model_->DeleteGameObject(game_object_id);
-      model_->GetInterpolator().erase(game_object_id);
+      model_->Interpolator().erase(game_object_id);
     }
   }
 
+  // Интерполируем все, о чем есть информация
   for (const auto& [game_object_id, game_object_to_be_interpolated]
-    : model_->GetInterpolator()) {
+    : model_->Interpolator()) {
     if (!model_->IsGameObjectIdTaken(game_object_id)) {
       model_->AttachGameObject(game_object_id,
                                game_object_to_be_interpolated->Clone());
     }
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
+    // Если о нем есть информация, то он явно в FOV
     game_object->SetIsInFov(true);
   }
 }
@@ -156,14 +158,6 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
                         local_player->GetY(),
                         local_player->GetVelocity(),
                         local_player->GetRotation()));
-}
-
-void ClientController::PlayerDisconnectedEvent(const Event& event) {
-  auto player_id = event.GetArg<GameObjectId>(0);
-  model_->DeleteGameObject(player_id);
-  model_->GetInterpolator().erase(player_id);
-  game_state_ = GameState::kGameNotStarted;
-  view_->Update();
 }
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
@@ -232,6 +226,16 @@ QVector2D ClientController::GetKeyForce() const {
   key_force.normalize();
   return key_force;
 }
+
+
+void ClientController::SetTimeDifferenceEvent(const Event& event) {
+  auto client_sent_time = event.GetArg<int64_t>(0);
+  auto server_received_time = event.GetArg<int64_t>(1);
+  int64_t client_received_time = QDateTime::currentMSecsSinceEpoch();
+  int64_t latency = (client_received_time - client_sent_time) / 2;
+  time_difference_ = server_received_time - client_sent_time - latency;
+  is_time_difference_set_ = true;
+};
 
 int64_t ClientController::GetCurrentServerTime() const {
   return BaseController::GetCurrentServerTime() + time_difference_;
@@ -322,4 +326,12 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   }
   auto args = event.GetArgsSubVector(4);
   this->HandleEvent(Event(event_type, args));
+}
+
+void ClientController::PlayerDisconnectedEvent(const Event& event) {
+  auto player_id = event.GetArg<GameObjectId>(0);
+  model_->DeleteGameObject(player_id);
+  model_->Interpolator().erase(player_id);
+  game_state_ = GameState::kGameNotStarted;
+  view_->Update();
 }

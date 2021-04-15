@@ -110,9 +110,9 @@ class ClientController : public BaseController {
   void SetPlayerIdToClient(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateVarsEvent(const Event& event) override;
+  void SetTimeDifferenceEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
-
   void SendGameInfoToInterpolateEvent(const Event& event) override;
   void AddLocalPlayerGameObjectEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
@@ -131,14 +131,6 @@ class ClientController : public BaseController {
   std::shared_ptr<Converter> converter_;
   bool is_time_difference_set_{false};
   int64_t time_difference_{0};
-  struct GameObjectData {
-    int64_t server_time;
-    GameObjectType type;
-    std::vector<QVariant> params;
-  };
-  std::unordered_map<GameObjectId, GameObjectData> game_objects_cache_;
-  std::unordered_map<GameObjectId, int64_t> left_fov_cache_at_time_;
-  std::unordered_map<GameObjectId, int64_t> last_time_updated_;
   std::unordered_map<Controls, Direction> key_to_direction_{
       {Controls::kKeyW, Direction::kUp},
       {Controls::kKeyD, Direction::kRight},

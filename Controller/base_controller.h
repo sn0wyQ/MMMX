@@ -6,11 +6,11 @@
 #include <memory>
 #include <queue>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QString>
 #include <QTimer>
-#include <QDateTime>
 
 #include "Event/event.h"
 #include "Model/game_model.h"
@@ -73,14 +73,15 @@ class BaseController : public QObject {
   virtual void SetPlayerIdToClient(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
   virtual void UpdateVarsEvent(const Event& event) {}
+  virtual void SetTimeDifferenceEvent(const Event& event) {}
 
   // ------------------- GAME EVENTS -------------------
 
-  virtual void SendGameInfoToInterpolateEvent(const Event& event) {}
-  virtual void SendControlsEvent(const Event& event) {}
   virtual void AddLocalPlayerGameObjectEvent(const Event& event) {}
+  virtual void SendGameInfoToInterpolateEvent(const Event& event) {}
   virtual void UpdateGameObjectDataEvent(const Event& event) {}
   virtual void GameObjectLeftFovEvent(const Event& event) {}
+  virtual void SendControlsEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_
