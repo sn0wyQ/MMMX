@@ -235,7 +235,7 @@ void ClientController::SetTimeDifferenceEvent(const Event& event) {
   int64_t latency = (client_received_time - client_sent_time) / 2;
   time_difference_ = server_received_time - client_sent_time - latency;
   is_time_difference_set_ = true;
-};
+}
 
 int64_t ClientController::GetCurrentServerTime() const {
   return BaseController::GetCurrentServerTime() + time_difference_;
@@ -312,7 +312,7 @@ void ClientController::GameObjectLeftFovEvent(const Event& event) {
   auto game_object =
       model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
   model_->AddScheduledUpdate(
-      game_object_id,BoolVariable::kIsInFov,
+      game_object_id, BoolVariable::kIsInFov,
       {game_object->GetUpdatedTime(), false});
 }
 
