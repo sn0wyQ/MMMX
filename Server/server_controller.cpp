@@ -91,9 +91,8 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
     return;
   } else if (event.GetType() == EventType::kSetTimeDifference) {
     // Важная каждая миллисекунда - отправляем ответ сразу без тика
-    qInfo() << event.GetArg<qlonglong>(0) << event.GetArg<int64_t>(0) << event.GetArg<long long int>(0);
     this->ReplyWithTimeToClient(client_id,
-                                event.GetArg<qlonglong>(0));
+                                event.GetArg<int64_t>(0));
     return;
   }
 
@@ -200,5 +199,6 @@ void ServerController::ReplyWithTimeToClient(
   Event new_event(EventType::kSetTimeDifference,
                   QVariant::fromValue(client_time),
                   QVariant::fromValue(this->GetCurrentServerTime()));
+  qInfo() << new_event;
   this->SendToClient(client_id, new_event);
 }
