@@ -28,13 +28,15 @@ class ClientGameModel : public GameModel {
   std::shared_ptr<GameObject> GetGameObjectByGameObjectIdToBeInterpolated(
         GameObjectId game_object_id) const;
 
-  std::unordered_map<GameObjectId, std::shared_ptr<GameObject>>& Interpolator();
+  const std::unordered_map<GameObjectId, std::shared_ptr<GameObject>>&
+    GetInterpolatorMap() const;
 
   struct UpdateVariable {
     int64_t update_time;
     QVariant value;
   };
 
+  void RemoveScheduled(GameObjectId game_object_id);
   void AddScheduledUpdate(GameObjectId game_object_id,
                           Variable variable,
                           const UpdateVariable& update);
@@ -52,7 +54,7 @@ class ClientGameModel : public GameModel {
                                  const QVariant& value);
   std::array<std::unordered_map<GameObjectId, std::deque<UpdateVariable>>,
   static_cast<uint32_t>(Variable::SIZE)>
-    scheduled_bool_updates_;
+    scheduled_updates_;
 };
 
 #endif  // MODEL_CLIENT_GAME_MODEL_H_

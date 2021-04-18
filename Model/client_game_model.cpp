@@ -40,15 +40,15 @@ std::shared_ptr<GameObject>
   return interpolator_.at(game_object_id);
 }
 
-std::unordered_map<GameObjectId, std::shared_ptr<GameObject>>&
-  ClientGameModel::Interpolator() {
+const std::unordered_map<GameObjectId, std::shared_ptr<GameObject>>&
+  ClientGameModel::GetInterpolatorMap() const {
   return interpolator_;
 }
 
 void ClientGameModel::AddScheduledUpdate(
     GameObjectId game_object_id, Variable variable,
     const ClientGameModel::UpdateVariable& update) {
-  auto map = &scheduled_bool_updates_[static_cast<uint32_t>(variable)];
+  auto map = &scheduled_updates_[static_cast<uint32_t>(variable)];
   if (map->find(game_object_id) != map->end()) {
     auto last_update = map->at(game_object_id).back();
     auto last_update_value = last_update.value;
@@ -67,15 +67,15 @@ void ClientGameModel::AddScheduledUpdate(
 }
 
 void ClientGameModel::UpdateScheduled(int64_t current_time) {
-  for (size_t i = 0; i < scheduled_bool_updates_.size(); i++) {
-    auto bool_variable = static_cast<Variable>(i);
+  for (size_t i = 0; i < scheduled_updates_.size(); i++) {
+    auto variable = static_cast<Variable>(i);
     for (auto& [game_object_id, deque_update]
-      : scheduled_bool_updates_[i]) {
+      : scheduled_updates_[i]) {
       while (!deque_update.empty()) {
         UpdateVariable update = deque_update.front();
         if (update.update_time < current_time) {
           if (this->IsGameObjectIdTaken(game_object_id)) {
-            SetValueAccordingVariable(game_object_id, bool_variable,
+            SetValueAccordingVariable(game_object_id, variable,
                                       update.value);
           }
           deque_update.pop_front();
@@ -122,4 +122,8 @@ void ClientGameModel::SetValueAccordingVariable(
 bool ClientGameModel::IsGameObjectInInterpolation(
     GameObjectId game_object_id) const {
   return interpolator_.find(game_object_id) != interpolator_.end();
+}
+
+void ClientGameModel::RemoveScheduled(GameObjectId game_object_id) {
+  interpolator_.erase(game_object_id);
 }

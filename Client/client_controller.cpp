@@ -118,13 +118,13 @@ void ClientController::UpdateInterpolationInfo() {
     if (!game_object->IsInFov()) {
       auto game_object_id = game_object->GetId();
       model_->DeleteGameObject(game_object_id);
-      model_->Interpolator().erase(game_object_id);
+      model_->RemoveScheduled(game_object_id);
     }
   }
 
   // Интерполируем все, о чем есть информация
   for (const auto& [game_object_id, game_object_to_be_interpolated]
-    : model_->Interpolator()) {
+    : model_->GetInterpolatorMap()) {
     if (!model_->IsGameObjectIdTaken(game_object_id)) {
       model_->AttachGameObject(game_object_id,
                                game_object_to_be_interpolated->Clone());
@@ -348,7 +348,7 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   model_->DeleteGameObject(player_id);
-  model_->Interpolator().erase(player_id);
+  model_->RemoveScheduled(player_id);
   game_state_ = GameState::kGameNotStarted;
   view_->Update();
 }
