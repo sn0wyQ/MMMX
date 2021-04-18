@@ -180,8 +180,11 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
     auto sender_receiver_pair = std::make_pair(object->GetId(), player_id);
     if (this->IsGameObjectInFov(object->GetId(), player_id)) {
       is_first_in_fov_of_second_.insert(sender_receiver_pair);
-      this->AddEventToSendToSinglePlayer(
-          GetEventOfGameObjectData(object->GetId()), player_id);
+      if (model_->IsNeededToSendGameObjectData(object->GetId())) {
+        this->AddEventToSendToSinglePlayer(
+            GetEventOfGameObjectData(object->GetId()), player_id);
+        model_->UpdateGameObjectHash(object->GetId());
+      }
     } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
         != is_first_in_fov_of_second_.end()) {
       is_first_in_fov_of_second_.erase(sender_receiver_pair);

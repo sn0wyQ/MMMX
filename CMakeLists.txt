@@ -87,7 +87,7 @@ set(SOURCES
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
-        )
+        Hash/hash_calculator.cpp)
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
