@@ -61,6 +61,9 @@ QVariant GetInterpolatedParam(const QVariant& object_param,
   if (object_updated_time == future_object_updated_time) {
     return future_object_param;
   }
+  if (future_object_updated_time <= get_on_time) {
+    return future_object_param;
+  }
   // QVariant::type() returns the storage type of the value stored
   // in the variant.
   // Although this function is declared as returning QVariant::Type,

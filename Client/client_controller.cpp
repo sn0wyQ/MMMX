@@ -322,6 +322,8 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
       game_object_id == model_->GetLocalPlayer()->GetId()) {
     return;
   }
+  sent_time = std::max(
+      GetCurrentServerTime() - Constants::kInterpolationMSecs, sent_time);
   if (event_type == EventType::kUpdateGameObjectData) {
     model_->AddInterpolateInfo(game_object_id, game_object_type, sent_time);
   }

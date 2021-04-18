@@ -278,17 +278,13 @@ void RoomController::SendControlsEvent(const Event& event) {
   // Узнаем в какой модели в прошлом мы передвинулись
   auto timestamp = event.GetArg<int64_t>(0);
   int64_t latency = GetCurrentServerTime() - timestamp;
+  latency = std::max(0ll, latency);
   int64_t latency_in_ticks = latency / Constants::kTimeToTick;
-  qInfo() << latency << latency_in_ticks;
   int64_t id_of_model =
       static_cast<int64_t>(models_cache_.size()) - 1 - latency_in_ticks;
-  qInfo() << id_of_model;
-  // Если этой модели уже нет, то у чела большой пинг
-  // Значит его нужно кикать (большой = Constants::kMSecsToStore)
+  // Проигнорим, если чел нам прислал то, что он сделал очень давно
   if (id_of_model < 0) {
-    // TODO(Everyone): Kick player
-    throw std::runtime_error("Too slow connection Mr. Vlad Kozulin "
-                             "from Krakow");
+    return;
   }
   auto current_model = models_cache_[id_of_model];
   auto player_id = event.GetArg<GameObjectId>(1);
