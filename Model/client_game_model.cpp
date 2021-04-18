@@ -46,9 +46,9 @@ std::unordered_map<GameObjectId, std::shared_ptr<GameObject>>&
 }
 
 void ClientGameModel::AddScheduledUpdate(
-    GameObjectId game_object_id, BoolVariable bool_variable,
-    const ClientGameModel::BoolUpdate& bool_update) {
-  auto map = &scheduled_bool_updates_[static_cast<uint32_t>(bool_variable)];
+    GameObjectId game_object_id, Variable variable,
+    const ClientGameModel::UpdateVariable& update) {
+  auto map = &scheduled_bool_updates_[static_cast<uint32_t>(variable)];
   if (map->find(game_object_id) != map->end()) {
     auto last_update = map->at(game_object_id).back();
     auto last_update_value = last_update.value;
@@ -56,29 +56,29 @@ void ClientGameModel::AddScheduledUpdate(
       auto game_object = this->GetGameObjectByGameObjectId(game_object_id);
       if (game_object->GetUpdatedTime() > last_update.update_time) {
         last_update_value = GetValueAccordingVariable(game_object_id,
-                                                      bool_variable);
+                                                      variable);
       }
     }
-    if (last_update_value == bool_update.value) {
+    if (last_update_value == update.value) {
       return;
     }
   }
-  (*map)[game_object_id].push_back(bool_update);
+  (*map)[game_object_id].push_back(update);
 }
 
-void ClientGameModel::UpdateScheduledBools(int64_t current_time) {
+void ClientGameModel::UpdateScheduled(int64_t current_time) {
   for (size_t i = 0; i < scheduled_bool_updates_.size(); i++) {
-    auto bool_variable = static_cast<BoolVariable>(i);
-    for (auto& [game_object_id, deque_bool_update]
+    auto bool_variable = static_cast<Variable>(i);
+    for (auto& [game_object_id, deque_update]
       : scheduled_bool_updates_[i]) {
-      while (!deque_bool_update.empty()) {
-        BoolUpdate bool_update = deque_bool_update.front();
-        if (bool_update.update_time < current_time) {
+      while (!deque_update.empty()) {
+        UpdateVariable update = deque_update.front();
+        if (update.update_time < current_time) {
           if (this->IsGameObjectIdTaken(game_object_id)) {
             SetValueAccordingVariable(game_object_id, bool_variable,
-                                      bool_update.value);
+                                      update.value);
           }
-          deque_bool_update.pop_front();
+          deque_update.pop_front();
         } else {
           break;
         }
@@ -87,22 +87,33 @@ void ClientGameModel::UpdateScheduledBools(int64_t current_time) {
   }
 }
 
-bool ClientGameModel::GetValueAccordingVariable(
-    GameObjectId game_object_id, BoolVariable bool_variable) {
-  switch (bool_variable) {
-    case BoolVariable::kIsInFov:
+QVariant ClientGameModel::GetValueAccordingVariable(
+    GameObjectId game_object_id, Variable variable) {
+  switch (variable) {
+    case Variable::kIsInFov:
       return GetGameObjectByGameObjectId(game_object_id)->IsInFov();
+    case Variable::kVelocity:
+      return std::dynamic_pointer_cast<MovableObject>(
+          GetGameObjectByGameObjectId(game_object_id))->GetVelocity();
     default:
       return false;
   }
 }
 
 void ClientGameModel::SetValueAccordingVariable(
-    GameObjectId game_object_id, BoolVariable bool_variable, bool value) {
-  switch (bool_variable) {
-    case BoolVariable::kIsInFov:
-      GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(value);
+    GameObjectId game_object_id, Variable variable,
+    const QVariant& value) {
+  switch (variable) {
+    case Variable::kIsInFov: {
+      GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(value.toBool());
       break;
+    }
+    case Variable::kVelocity: {
+      QVector2D vec(value.toPointF());
+      std::dynamic_pointer_cast<MovableObject>(
+          GetGameObjectByGameObjectId(game_object_id))->SetVelocity(vec);
+      break;
+    }
     default:
       break;
   }

@@ -111,7 +111,7 @@ void ClientController::UpdateInterpolationInfo() {
       - Constants::kInterpolationMSecs;
 
   // Применяем запланированные на какое-то время обновления
-  model_->UpdateScheduledBools(time_to_interpolate);
+  model_->UpdateScheduled(time_to_interpolate);
   // С учетом обновления булевской IsInFov
   // Удаляем объект из модели и из интерполятора
   for (const auto& game_object : model_->GetAllGameObjects()) {
@@ -301,7 +301,18 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
   auto params = event.GetArgsSubVector(1);
   auto game_object =
       model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
-  game_object->SetParams(params);
+  if (game_object->IsMovable()) {
+    auto movable_object = std::dynamic_pointer_cast<MovableObject>(game_object);
+    auto velocity_to_return = movable_object->GetVelocity();
+    movable_object->SetParams(params);
+    model_->AddScheduledUpdate(
+        game_object_id, Variable::kVelocity,
+        {game_object->GetUpdatedTime(),
+         movable_object->GetVelocity()});
+    movable_object->SetVelocity(velocity_to_return);
+  } else {
+    game_object->SetParams(params);
+  }
 }
 
 void ClientController::GameObjectLeftFovEvent(const Event& event) {
@@ -312,7 +323,7 @@ void ClientController::GameObjectLeftFovEvent(const Event& event) {
   auto game_object =
       model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
   model_->AddScheduledUpdate(
-      game_object_id, BoolVariable::kIsInFov,
+      game_object_id, Variable::kIsInFov,
       {game_object->GetUpdatedTime(), false});
 }
 

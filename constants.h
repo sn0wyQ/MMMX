@@ -12,7 +12,7 @@ using RoomId = int;
 namespace Constants {
 
 // Build Options
-constexpr bool kRemote = false;
+constexpr bool kRemote = true;
 constexpr bool kServerShowOnlyInfoMessages = false;
 constexpr bool kServerShowDebugMessagesOnScreen = false;
 constexpr bool kClientShowOnlyInfoMessages = false;
