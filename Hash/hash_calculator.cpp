@@ -2,7 +2,6 @@
 // Created by matvey on 18.04.21.
 //
 
-#include <vector>
 #include <QCryptographicHash>
 
 #include "constants.h"

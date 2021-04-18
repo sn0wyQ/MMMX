@@ -5,6 +5,7 @@
 #ifndef HASH_HASH_CALCULATOR_H_
 #define HASH_HASH_CALCULATOR_H_
 
+#include <vector>
 #include <QVariant>
 
 namespace HashCalculator {
