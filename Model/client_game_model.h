@@ -22,6 +22,8 @@ class ClientGameModel : public GameModel {
   void AddInterpolateInfo(GameObjectId game_object_id,
                           GameObjectType game_object_type,
                           int64_t server_time);
+
+  bool IsGameObjectInInterpolation(GameObjectId game_object_id) const;
   std::shared_ptr<GameObject> GetGameObjectByGameObjectIdToBeInterpolated(
         GameObjectId game_object_id) const;
 

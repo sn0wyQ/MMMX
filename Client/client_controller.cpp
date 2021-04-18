@@ -306,6 +306,9 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
 
 void ClientController::GameObjectLeftFovEvent(const Event& event) {
   auto game_object_id = event.GetArg<GameObjectId>(0);
+  if (!model_->IsGameObjectInInterpolation(game_object_id)) {
+    return;
+  }
   auto game_object =
       model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
   model_->AddScheduledUpdate(

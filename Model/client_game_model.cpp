@@ -107,3 +107,8 @@ void ClientGameModel::SetValueAccordingVariable(
       break;
   }
 }
+
+bool ClientGameModel::IsGameObjectInInterpolation(
+    GameObjectId game_object_id) const {
+  return interpolator_.find(game_object_id) != interpolator_.end();
+}
