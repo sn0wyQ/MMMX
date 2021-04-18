@@ -279,9 +279,10 @@ void RoomController::SendControlsEvent(const Event& event) {
   auto timestamp = event.GetArg<int64_t>(0);
   int64_t latency = GetCurrentServerTime() - timestamp;
   int64_t latency_in_ticks = latency / Constants::kTimeToTick;
-
+  qInfo() << latency << latency_in_ticks;
   int64_t id_of_model =
       static_cast<int64_t>(models_cache_.size()) - 1 - latency_in_ticks;
+  qInfo() << id_of_model;
   // Если этой модели уже нет, то у чела большой пинг
   // Значит его нужно кикать (большой = Constants::kMSecsToStore)
   if (id_of_model < 0) {
