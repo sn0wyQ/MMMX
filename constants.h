@@ -36,6 +36,9 @@ const QUrl kServerUrl =
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 const auto kHashAlgorithm = QCryptographicHash::Algorithm::Md5;
+constexpr int kMSecsToStore = 1000;
+constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
+constexpr int64_t kInterpolationMSecs = 200;
 
 // Map
 constexpr float kDefaultMapWidth = 50.f;
@@ -67,7 +70,6 @@ constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
-
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

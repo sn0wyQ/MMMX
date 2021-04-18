@@ -18,9 +18,6 @@ enum class EventType {
   // No arguments
   kEndGame,
 
-  // [0] - <GameObjectId> player_id
-  kPlayerDisconnected,
-
   // [0] - <ClientId> client_id,
   // [1] - <int> event_type,
   // [2+] - event_args
@@ -44,22 +41,57 @@ enum class EventType {
   // [1] - <int> room_var
   kUpdateVars,
 
+  // [0] - <int64> client_sent_time
+  // [1] - null / <int64> server_received_time
+  // Клиент отправляет в клиентское время X пакет
+  // Сервер отвечает тем же запросом, только добавляя серверное время получения
+  // Пусть получили запрос на клиенте в клиентское время client_received_time
+  // Тогда latency = (client_received_time - client_sent_time) / 2
+  // time_difference = server_received_time - client_sent_time - latency
+  // Тогда теперь чтобы получить текущее серверное время:
+  // server_time = cur_time + time_difference
+  // ВНИМАНИЕ: Так как в этих замерах нам важна каждая миллисекунда
+  // и мы не хотим зависеть от тикрейта, нам нужно сразу вне тика
+  // отправлять и получать этот ивент
+  kSetTimeDifference,
+
   // ------------------- GAME EVENTS -------------------
+
+  // [0] - <GameObjectId> game_object_id
+  // [1] - <GameObjectType> game_object_type
+  // [2] - <int64> sent_time (on server)
+  // [3] - <EventType> event_type
+  // [4+] - event_args
+  // Send game events to client through this event
+  // it will interpolate game object
+  kSendGameInfoToInterpolate,
+
+  // Game events to client which interpolate :
+  // [[[[[[[[[
+
+  // [0] - <GameObjectId> game_object_id
+  // [1+] - game_object_args : relative SetParams
+  kUpdateGameObjectData,
 
   // [0] - <GameObjectId> game_object_id that left receiver player FOV
   kGameObjectLeftFov,
 
-  // [0] - <GameObjectId> sender_player_id,
-  // [1] - <float> x,
-  // [2] - <float> y,
-  // [3] - <QVector2D> velocity,
-  // [4] - <float> rotation
+  // ]]]]]]]]]
+
+  // [0] - <int64> timestamp
+  // [1] - <GameObjectId> sender_player_id,
+  // [2] - <float> x,
+  // [3] - <float> y,
+  // [4] - <QVector2D> velocity,
+  // [5] - <float> rotation
   kSendControls,
 
-  // [0] - <GameObjectId> game_object_id
-  // [1] - <int> game_object_type [game_object.h]
-  // [2+] - game_object_args : relative constructor args
-  kUpdateGameObjectData,
+  // [0] - <GameObjectId> player_id
+  // [1] - player_args
+  kAddLocalPlayerGameObject,
+
+  // [0] - <GameObjectId> player_id
+  kPlayerDisconnected,
 
   SIZE
 };

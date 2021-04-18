@@ -8,13 +8,16 @@
 
 class RoomGameModel : public GameModel {
  public:
+  RoomGameModel() = default;
+  RoomGameModel(const RoomGameModel& model);
+
   GameObjectId GetNextUnusedGameObjectId() const;
 
   GameObjectId AddGameObject(GameObjectType type,
                              const std::vector<QVariant>& params);
 
   bool IsNeededToSendGameObjectData(GameObjectId game_object_id) const;
-  void UpdateGameObjectHash(GameObjectId game_object_id);
+  void UpdateGameObjectHashes();
 
  private:
   std::map<GameObjectId, QByteArray> last_object_hash_;

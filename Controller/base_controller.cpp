@@ -20,15 +20,21 @@ BaseController::BaseController() {
     std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateVars,
     std::bind(&BaseController::UpdateVarsEvent, this, _1));
+  SetFunctionForEventType(EventType::kSetTimeDifference,
+    std::bind(&BaseController::SetTimeDifferenceEvent, this, _1));
 
   // ------------------- GAME EVENTS -------------------
 
-  SetFunctionForEventType(EventType::kSendControls,
-    std::bind(&BaseController::SendControlsEvent, this, _1));
+  SetFunctionForEventType(EventType::kAddLocalPlayerGameObject,
+         std::bind(&BaseController::AddLocalPlayerGameObjectEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendGameInfoToInterpolate,
+    std::bind(&BaseController::SendGameInfoToInterpolateEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateGameObjectData,
     std::bind(&BaseController::UpdateGameObjectDataEvent, this, _1));
   SetFunctionForEventType(EventType::kGameObjectLeftFov,
     std::bind(&BaseController::GameObjectLeftFovEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendControls,
+    std::bind(&BaseController::SendControlsEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }
@@ -91,4 +97,8 @@ void BaseController::HandleEvent(const Event& event) {
 void BaseController::LogEvent(const Event& event) const {
   qDebug().noquote().nospace() << "[" << GetControllerName()
                                << "] Sending " << event;
+}
+
+int64_t BaseController::GetCurrentServerTime() const {
+  return QDateTime::currentMSecsSinceEpoch();
 }

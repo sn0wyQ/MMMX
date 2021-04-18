@@ -37,6 +37,8 @@ class ServerController : public BaseController {
   void ProcessEventsFromRooms();
   void ProcessEventsFromRoom(const std::shared_ptr<RoomController>& room_ptr);
 
+  void ReplyWithTimeToClient(ClientId client_id, int64_t client_time);
+
   QWebSocketServer web_socket_server_;
   ServerModel server_model_;
 

@@ -55,13 +55,28 @@ void RoomController::SendEvent(const Event& event) {
 }
 
 void RoomController::OnTick(int delta_time) {
-  this->TickPlayers(delta_time);
+  models_cache_.push_back({delta_time,
+    std::make_shared<RoomGameModel>(*model_)});
+  this->RecalculateModel(models_cache_.back());
+  model_ = models_cache_.back().model;
+  for (const auto& player_id : this->GetAllPlayerIds()) {
+    // Рассказываем НАМ о других с учетом FOV
+    SendGameObjectsDataToPlayer(player_id);
+  }
+  model_->UpdateGameObjectHashes();
+  if (models_cache_.size() > Constants::kTicksToStore) {
+    models_cache_.pop_front();
+  }
 }
 
-void RoomController::TickPlayers(int delta_time) {
-  std::vector<std::shared_ptr<Player>> players = model_->GetPlayers();
+void RoomController::RecalculateModel(const ModelData& model_data) {
+  this->TickPlayersInModel(model_data);
+}
+
+void RoomController::TickPlayersInModel(const ModelData& model_data) {
+  auto players = model_data.model->GetPlayers();
   for (const auto& player : players) {
-    player->OnTick(delta_time);
+    player->OnTick(model_data.delta_time);
   }
 }
 
@@ -69,12 +84,12 @@ void RoomController::AddClient(ClientId client_id) {
   GameObjectId player_id = AddDefaultPlayer();
   player_ids_[client_id] = player_id;
 
-  SendGameObjectsDataToPlayer(player_id);
-
+  Event event_add_local_player(EventType::kAddLocalPlayerGameObject, player_id);
+  event_add_local_player.PushBackArgs(
+      model_->GetGameObjectByGameObjectId(player_id)->GetParams());
+  this->AddEventToSendToSinglePlayer(event_add_local_player, player_id);
   this->AddEventToSendToSingleClient(
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
-
-  SendGameObjectDataToPlayers(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
           << "] Connected client (ID: " << client_id << ")";
@@ -166,12 +181,28 @@ std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
 }
 
-Event RoomController::GetEventOfGameObjectData(GameObjectId game_object_id)
-const {
+Event RoomController::GetEventOfGameObjectData(
+    GameObjectId game_object_id) const {
   auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-  Event event(EventType::kUpdateGameObjectData, game_object_id,
-              static_cast<int>(game_object->GetType()));
+  Event event(EventType::kSendGameInfoToInterpolate,
+              game_object_id,
+              static_cast<int>(game_object->GetType()),
+              static_cast<qint64>(GetCurrentServerTime()),
+              static_cast<int>(EventType::kUpdateGameObjectData),
+              game_object_id);
   event.PushBackArgs(game_object->GetParams());
+  return event;
+}
+
+Event RoomController::GetEventOfGameObjectLeftFov(
+    GameObjectId game_object_id) const {
+  auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+  Event event(EventType::kSendGameInfoToInterpolate,
+              game_object_id,
+              static_cast<int>(game_object->GetType()),
+              static_cast<qint64>(GetCurrentServerTime()),
+              static_cast<int>(EventType::kGameObjectLeftFov),
+              game_object_id);
   return event;
 }
 
@@ -183,33 +214,13 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
       if (model_->IsNeededToSendGameObjectData(object->GetId())) {
         this->AddEventToSendToSinglePlayer(
             GetEventOfGameObjectData(object->GetId()), player_id);
-        model_->UpdateGameObjectHash(object->GetId());
       }
     } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
         != is_first_in_fov_of_second_.end()) {
       is_first_in_fov_of_second_.erase(sender_receiver_pair);
       this->AddEventToSendToSinglePlayer(
-          Event(EventType::kGameObjectLeftFov, object->GetId()), player_id);
+          GetEventOfGameObjectLeftFov(object->GetId()), player_id);
     }
-  }
-}
-
-void RoomController::SendGameObjectDataToPlayers(
-    GameObjectId game_object_id) {
-  std::vector<GameObjectId> data_receivers;
-  std::vector<GameObjectId> left_fov_event_receivers;
-
-  UpdateReceiversByFov(game_object_id, &data_receivers,
-                       &left_fov_event_receivers);
-
-  if (!data_receivers.empty()) {
-    this->AddEventToSendToPlayerList(
-        GetEventOfGameObjectData(game_object_id), data_receivers);
-  }
-  if (!left_fov_event_receivers.empty()) {
-    this->AddEventToSendToPlayerList(
-        Event(EventType::kGameObjectLeftFov,
-              game_object_id), left_fov_event_receivers);
   }
 }
 
@@ -223,25 +234,6 @@ bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
   return player->GetShortestDistance(game_object) < player->GetFovRadius();
 }
 
-void RoomController::UpdateReceiversByFov(
-    GameObjectId game_object_id,
-    std::vector<GameObjectId>* data_receivers,
-    std::vector<GameObjectId>* left_fov_event_receivers) {
-  for (auto& [receiver_client_id,
-    receiver_player_id] : this->player_ids_) {
-    auto receiver = model_->GetPlayerByPlayerId(receiver_player_id);
-    auto sender_receiver_pair = std::make_pair(game_object_id,
-                                               receiver_player_id);
-    if (this->IsGameObjectInFov(game_object_id, receiver_player_id)) {
-      is_first_in_fov_of_second_.insert(sender_receiver_pair);
-      data_receivers->push_back(receiver_player_id);
-    } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
-        != is_first_in_fov_of_second_.end()) {
-      is_first_in_fov_of_second_.erase(sender_receiver_pair);
-      left_fov_event_receivers->push_back(receiver_player_id);
-    }
-  }
-}
 
 GameObjectId RoomController::AddDefaultPlayer() {
   float new_fov = Constants::kDefaultEntityFov * (GetPlayersCount() + 1);
@@ -251,10 +243,10 @@ GameObjectId RoomController::AddDefaultPlayer() {
       {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
        Constants::kDefaultPlayerRotation, new_radius * 2,
        new_radius * 2,
-       static_cast<int>(RigidBodyType::kCircle), 0.f, 0.f,
+       static_cast<int>(RigidBodyType::kCircle),
+       0.f, 0.f,
        new_fov});
 }
-
 
 void RoomController::AddBox(float x, float y, float rotation,
                             float width, float height) {
@@ -286,23 +278,41 @@ void RoomController::AddConstantObjects() {
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
-  auto player_id = event.GetArg<GameObjectId>(0);
-
-  if (!model_->IsGameObjectIdTaken(player_id)) {
+  // Узнаем в какой модели в прошлом мы передвинулись
+  auto timestamp = event.GetArg<int64_t>(0);
+  int64_t latency = GetCurrentServerTime() - timestamp;
+  latency = std::max(static_cast<int64_t>(0), latency);
+  int64_t latency_in_ticks = latency / Constants::kTimeToTick;
+  int64_t id_of_model =
+      static_cast<int64_t>(models_cache_.size()) - 1 - latency_in_ticks;
+  // Проигнорим, если чел нам прислал то, что он сделал очень давно
+  if (id_of_model < 0) {
     return;
   }
-
-  auto player = model_->GetPlayerByPlayerId(player_id);
-
-  // TODO(Everyone): add anti-cheat mechanism to check
-  //  if it was possible for player to travel this distance so fast
-  player->SetX(event.GetArg<float>(1));
-  player->SetY(event.GetArg<float>(2));
-  player->SetVelocity(event.GetArg<QVector2D>(3));
-  player->SetRotation(event.GetArg<float>(4));
-
-  // Рассказываем ДРУГИМ о нас с учетом FOV
-  SendGameObjectDataToPlayers(player_id);
-  // Рассказываем НАМ о других с учетом FOV
-  SendGameObjectsDataToPlayer(player_id);
+  auto current_model = models_cache_[id_of_model];
+  auto player_id = event.GetArg<GameObjectId>(1);
+  if (!current_model.model->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  // Мы перемещаем человека в той самой модели из прошлого
+  QPointF position_to_set =
+      {event.GetArg<float>(2), event.GetArg<float>(3)};
+  auto velocity = event.GetArg<QVector2D>(4);
+  auto rotation = event.GetArg<float>(5);
+  // А теперь с учетом этого проталкиваем его пересечение на будущее
+  // учитывая velocity и rotation
+  while (id_of_model != static_cast<int64_t>(models_cache_.size())) {
+    auto cur_model = models_cache_[id_of_model].model;
+    if (!cur_model->IsGameObjectIdTaken(player_id)) {
+      break;
+    }
+    auto player_in_model
+      = cur_model->GetPlayerByPlayerId(player_id);
+    player_in_model->SetPosition(position_to_set);
+    player_in_model->SetVelocity(velocity);
+    player_in_model->SetRotation(rotation);
+    player_in_model->OnTick(models_cache_[id_of_model].delta_time);
+    position_to_set = player_in_model->GetPosition();
+    id_of_model++;
+  }
 }

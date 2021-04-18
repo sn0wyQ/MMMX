@@ -1,6 +1,8 @@
 #include "Hash/hash_calculator.h"
 #include "room_game_model.h"
 
+RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {}
+
 GameObjectId RoomGameModel::GetNextUnusedGameObjectId() const {
   GameObjectId game_object_id = 1;
   while (GameModel::IsGameObjectIdTaken(game_object_id)) {
@@ -27,7 +29,9 @@ bool RoomGameModel::IsNeededToSendGameObjectData(
   return hash != object_iter->second;
 }
 
-void RoomGameModel::UpdateGameObjectHash(GameObjectId game_object_id) {
-  last_object_hash_[game_object_id] = HashCalculator::GetHash(
-      this->GetGameObjectByGameObjectId(game_object_id)->GetParams());
+void RoomGameModel::UpdateGameObjectHashes() {
+  for (auto& object : this->GetAllGameObjects()) {
+    last_object_hash_[object->GetId()] =
+        HashCalculator::GetHash(object->GetParams());
+  }
 }
