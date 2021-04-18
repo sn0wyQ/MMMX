@@ -3,6 +3,10 @@
 Player::Player(GameObjectId player_id) : Entity(player_id) {}
 
 
+Player::Player(const Player& other) : Entity(other) {
+  is_local_player_ = other.is_local_player_;
+}
+
 void Player::SetParams(std::vector<QVariant> params) {
   Entity::SetParams(params);
 }
@@ -51,4 +55,8 @@ void Player::SetRadius(float radius) {
 
 float Player::GetRadius() const {
   return GetWidth() / 2.f;
+}
+
+std::shared_ptr<GameObject> Player::Clone() const {
+  return std::make_shared<Player>(*this);
 }

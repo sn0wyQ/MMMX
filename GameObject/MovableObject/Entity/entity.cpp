@@ -2,6 +2,10 @@
 
 Entity::Entity(GameObjectId id) : MovableObject(id) {}
 
+Entity::Entity(const Entity& other) : MovableObject(other) {
+  fov_radius_ = other.fov_radius_;
+}
+
 void Entity::SetParams(std::vector<QVariant> params) {
   fov_radius_ = params.back().toFloat();
   params.pop_back();
@@ -20,4 +24,8 @@ float Entity::GetFovRadius() const {
 
 void Entity::SetFovRadius(float fov_radius) {
   fov_radius_ = fov_radius;
+}
+
+std::shared_ptr<GameObject> Entity::Clone() const {
+  return std::make_shared<Entity>(*this);
 }

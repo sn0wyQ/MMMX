@@ -13,6 +13,7 @@
 class MovableObject : public GameObject {
  public:
   explicit MovableObject(GameObjectId game_object_id);
+  MovableObject(const MovableObject& other);
 
   void OnTick(int delta_time) override;
   bool IsMovable() const override;
@@ -32,6 +33,8 @@ class MovableObject : public GameObject {
   bool IsFilteredByFov() const override;
 
   float GetShortestDistance(const std::shared_ptr<GameObject>& object);
+
+  std::shared_ptr<GameObject> Clone() const override;
 
  private:
   QVector2D velocity_{};

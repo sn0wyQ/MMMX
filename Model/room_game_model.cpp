@@ -1,5 +1,7 @@
 #include "room_game_model.h"
 
+RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {}
+
 GameObjectId RoomGameModel::GetNextUnusedGameObjectId() const {
   GameObjectId game_object_id = 1;
   while (GameModel::IsGameObjectIdTaken(game_object_id)) {

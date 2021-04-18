@@ -20,6 +20,7 @@
 #include "GameObject/RigidBody/object_collision.h"
 #include "Math/math.h"
 #include "Model/client_game_model.h"
+#include "Interpolator/interpolator.h"
 
 // TODO(Everyone): make class Hotkeys instead of enum Controls
 // (with possibility to rebind keys)
@@ -71,8 +72,6 @@ class ClientController : public BaseController {
   void OnTickGameInProgress(int delta_time);
   void OnTickGameNotStarted(int delta_time);
 
-  void TickPlayers(int delta_time);
-
   std::shared_ptr<ClientGameModel> GetModel();
   int GetServerVar() const;
   int GetRoomVar() const;
@@ -84,12 +83,14 @@ class ClientController : public BaseController {
   void SetView(std::shared_ptr<AbstractClientView> view);
 
   void UpdateLocalPlayer(int delta_time);
+  void UpdateInterpolationInfo();
+  int64_t GetCurrentServerTime() const override;
 
   // -------------------- CONTROLS --------------------
 
   QVector2D GetKeyForce() const;
 
-  void FocusOutEvent(QFocusEvent* focus_event);
+  void FocusOutEvent(QFocusEvent*);
   void KeyPressEvent(QKeyEvent* key_event);
   void KeyReleaseEvent(QKeyEvent* key_event);
   void MouseMoveEvent(QMouseEvent* mouse_event);
@@ -109,9 +110,11 @@ class ClientController : public BaseController {
   void SetPlayerIdToClient(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateVarsEvent(const Event& event) override;
+  void SetTimeDifferenceEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
-
+  void SendGameInfoToInterpolateEvent(const Event& event) override;
+  void AddLocalPlayerGameObjectEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void GameObjectLeftFovEvent(const Event& event) override;
 
@@ -126,7 +129,8 @@ class ClientController : public BaseController {
   int ping_{0};
   QTimer timer_for_server_var_;
   std::shared_ptr<Converter> converter_;
-
+  bool is_time_difference_set_{false};
+  int64_t time_difference_{0};
   std::unordered_map<Controls, Direction> key_to_direction_{
       {Controls::kKeyW, Direction::kUp},
       {Controls::kKeyD, Direction::kRight},

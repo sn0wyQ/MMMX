@@ -4,6 +4,7 @@
 #include <vector>
 #include <utility>
 #include <memory>
+#include <deque>
 
 #include <QPoint>
 #include <QDebug>
@@ -36,6 +37,7 @@ Q_DECLARE_METATYPE(GameObjectType)
 class GameObject {
  public:
   explicit GameObject(GameObjectId id);
+  GameObject(const GameObject& other);
 
   virtual void OnTick(int delta_time) {}
   void Draw(Painter* painter);
@@ -70,6 +72,11 @@ class GameObject {
   void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
 
+  virtual std::shared_ptr<GameObject> Clone() const;
+
+  void SetUpdatedTime(int64_t updated_time);
+  int64_t GetUpdatedTime() const;
+
  private:
   GameObjectId id_{Constants::kNullGameObjectId};
   QPointF position_{0.f, 0.f};
@@ -81,6 +88,7 @@ class GameObject {
   float height_{0.f};
   std::shared_ptr<RigidBody> rigid_body_;
   bool is_in_fov_{false};
+  int64_t updated_time_{};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_
