@@ -23,7 +23,7 @@ bool Math::IsPointOnSegment(QPointF first, QPointF second, QPointF point) {
 }
 
 float Math::GetRotationInOtherAxis(float rotation) {
-  float new_rotation = 540 - rotation;
+  float new_rotation = 540.f - rotation;
   if (new_rotation >= 360.f) {
     new_rotation -= 360.f;
   }

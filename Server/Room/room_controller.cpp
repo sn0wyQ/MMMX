@@ -278,7 +278,7 @@ void RoomController::SendControlsEvent(const Event& event) {
   // Узнаем в какой модели в прошлом мы передвинулись
   auto timestamp = event.GetArg<int64_t>(0);
   int64_t latency = GetCurrentServerTime() - timestamp;
-  latency = std::max(0ll, latency);
+  latency = std::max(static_cast<int64_t>(0), latency);
   int64_t latency_in_ticks = latency / Constants::kTimeToTick;
   int64_t id_of_model =
       static_cast<int64_t>(models_cache_.size()) - 1 - latency_in_ticks;

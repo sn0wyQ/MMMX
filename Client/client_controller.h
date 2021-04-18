@@ -20,7 +20,7 @@
 #include "GameObject/RigidBody/object_collision.h"
 #include "Math/math.h"
 #include "Model/client_game_model.h"
-#include "GameObject/interpolator.h"
+#include "Interpolator/interpolator.h"
 
 // TODO(Everyone): make class Hotkeys instead of enum Controls
 // (with possibility to rebind keys)

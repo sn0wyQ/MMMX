@@ -1,4 +1,4 @@
-#include "GameObject/interpolator.h"
+#include "interpolator.h"
 
 namespace Interpolator {
 
