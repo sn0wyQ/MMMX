@@ -299,10 +299,6 @@ void ClientController::AddLocalPlayerGameObjectEvent(const Event& event) {
 void ClientController::UpdateGameObjectDataEvent(const Event& event) {
   auto game_object_id = event.GetArg<GameObjectId>(0);
   auto params = event.GetArgsSubVector(1);
-  if (model_->IsLocalPlayerSet() &&
-      game_object_id == model_->GetLocalPlayer()->GetId()) {
-    return;
-  }
   auto game_object =
       model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
   game_object->SetParams(params);
@@ -322,6 +318,10 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   auto game_object_type = event.GetArg<GameObjectType>(1);
   auto sent_time = event.GetArg<int64_t>(2);
   auto event_type = event.GetArg<EventType>(3);
+  if (model_->IsLocalPlayerSet() &&
+      game_object_id == model_->GetLocalPlayer()->GetId()) {
+    return;
+  }
   if (event_type == EventType::kUpdateGameObjectData) {
     model_->AddInterpolateInfo(game_object_id, game_object_type, sent_time);
   }
