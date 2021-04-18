@@ -1,5 +1,5 @@
-#ifndef GAMEOBJECT_INTERPOLATOR_H_
-#define GAMEOBJECT_INTERPOLATOR_H_
+#ifndef INTERPOLATOR_INTERPOLATOR_H_
+#define INTERPOLATOR_INTERPOLATOR_H_
 
 #include <string>
 #include <memory>
@@ -35,4 +35,4 @@ T InterpolateNumber(T x1, T x3, int64_t t1, int64_t t2, int64_t t3) {
 
 }  // namespace Interpolator
 
-#endif  // GAMEOBJECT_INTERPOLATOR_H_
+#endif  // INTERPOLATOR_INTERPOLATOR_H_
