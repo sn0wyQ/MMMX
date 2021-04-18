@@ -1,6 +1,7 @@
 #ifndef MODEL_ROOM_GAME_MODEL_H_
 #define MODEL_ROOM_GAME_MODEL_H_
 
+#include <map>
 #include <vector>
 
 #include "Model/game_model.h"

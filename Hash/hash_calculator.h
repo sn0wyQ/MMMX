@@ -11,4 +11,4 @@ namespace HashCalculator {
   QByteArray GetHash(const std::vector<QVariant>& params);
 }
 
-#endif //  HASH_HASH_CALCULATOR_H_
+#endif  // HASH_HASH_CALCULATOR_H_
