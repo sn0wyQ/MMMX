@@ -9,10 +9,9 @@ MachineGun::MachineGun() {
   SetRateOfFire(kDefaultRateOfFire);
   SetReloadingTime(kDefaultReloadingTime);
   SetClipSize(kDefaultClipSize);
-
   SetCurrentBulletsInClip(kDefaultClipSize);
 }
 
 void MachineGun::DrawWeapon(Painter* painter) {
-  painter->DrawRect(0.7f, -0.3f, 0.8f, 0.6);
+  painter->DrawRect(0.7f, -0.3f, 0.8f, 0.6f);
 }
