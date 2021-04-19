@@ -12,6 +12,7 @@
 #include "GameObject/game_object.h"
 #include "GameObject/MovableObject/Bullet/bullet.h"
 #include "Weapon/WeaponConstants/weapon_constants.h"
+#include "Model/game_model.h"
 
 class Weapon {
  public:
@@ -21,7 +22,7 @@ class Weapon {
   bool IsPossibleToShoot();
   void CreateBulletAndAddToModel();
 
-  virtual void DrawWeapon(Painter* painter) = 0;
+  virtual void DrawWeapon(Painter* painter);
 
   float GetBaseBulletDamage() const;
   void SetBaseBulletDamage(float base_bullet_damage);

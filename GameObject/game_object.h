@@ -62,9 +62,6 @@ class GameObject {
   void SetWidth(float width);
   void SetHeight(float height);
 
-  bool IsNeedToDelete() const;
-  void SetIsNeedToDelete(bool is_need_to_delete);
-
   virtual GameObjectType GetType() const;
 
   virtual void SetParams(std::vector<QVariant> params);
@@ -85,7 +82,6 @@ class GameObject {
   float height_{0.f};
   std::shared_ptr<RigidBody> rigid_body_;
   bool is_in_fov_{false};
-  bool is_need_to_delete_{false};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_
