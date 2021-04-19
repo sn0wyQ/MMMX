@@ -296,7 +296,7 @@ void ClientController::MousePressEvent(QMouseEvent*) {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
-                               GetCurrentServerTime(),
+                               static_cast<qint64>(GetCurrentServerTime()),
                                local_player->GetId()));
   }
 }
