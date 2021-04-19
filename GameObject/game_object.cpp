@@ -67,6 +67,7 @@ std::vector<QVariant> GameObject::GetParams() const {
 void GameObject::Draw(Painter* painter) {
   painter->save();
   painter->Translate(position_);
+  this->DrawHealthBar(painter);
   painter->RotateCounterClockWise(rotation_);
   this->DrawRelatively(painter);
   if (Constants::kRigidBodyShow) {
@@ -167,4 +168,8 @@ void GameObject::SetUpdatedTime(int64_t updated_time) {
 
 int64_t GameObject::GetUpdatedTime() const {
   return updated_time_;
+}
+
+bool GameObject::IsEntity() const {
+  return false;
 }

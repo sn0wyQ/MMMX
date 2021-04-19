@@ -242,7 +242,9 @@ GameObjectId RoomController::AddDefaultPlayer() {
        new_radius * 2,
        static_cast<int>(RigidBodyType::kCircle),
        0.f, 0.f,
-       new_fov});
+       new_fov,
+       Constants::kDefaultMaxHealthPoints * 0.733f,
+       Constants::kDefaultMaxHealthPoints});
 }
 
 void RoomController::AddBox(float x, float y, float rotation,

@@ -59,7 +59,10 @@ constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
 constexpr bool kRigidBodyShow = true;
 
-// MovableObject
+// GameObject
+constexpr float kDefaultMaxHealthPoints = 100.f;
+
+    // MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
