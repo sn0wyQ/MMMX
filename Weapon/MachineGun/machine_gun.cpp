@@ -12,8 +12,5 @@ MachineGun::MachineGun() {
 }
 
 void MachineGun::DrawWeapon(Painter* painter) {
-  // painter->DrawRect(QPointF(0.7f, -0.3f),
-  //                        QPointF(1.5f, -0.3f),
-  //                        QPointF(1.5f, 0.3f),
-  //                        QPointF(0.7f, 0.3f));
+  painter->DrawRect(0.7f, -0.3f, 0.8f, 0.6);
 }

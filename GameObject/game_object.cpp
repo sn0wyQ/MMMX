@@ -140,6 +140,14 @@ bool GameObject::IsMovable() const {
   return false;
 }
 
+bool GameObject::IsNeedToDelete() const {
+  return is_need_to_delete_;
+}
+
+void GameObject::SetIsNeedToDelete(bool is_need_to_delete) {
+  is_need_to_delete_ = is_need_to_delete;
+}
+
 bool GameObject::IsInFov() const {
   return is_in_fov_;
 }
