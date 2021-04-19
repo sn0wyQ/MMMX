@@ -1,7 +1,7 @@
 #ifndef MODEL_ROOM_GAME_MODEL_H_
 #define MODEL_ROOM_GAME_MODEL_H_
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 
 #include "Model/game_model.h"
@@ -20,7 +20,7 @@ class RoomGameModel : public GameModel {
   void UpdateGameObjectHashes();
 
  private:
-  std::map<GameObjectId, QByteArray> last_object_hash_;
+  std::unordered_map<GameObjectId, QByteArray> last_object_hash_;
 };
 
 #endif  // MODEL_ROOM_GAME_MODEL_H_

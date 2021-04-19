@@ -78,6 +78,7 @@ set(SOURCES
         GameObject/RigidBody/rigid_body_circle.cpp
         GameObject/RigidBody/rigid_body_rectangle.cpp
         GameObject/game_object.cpp
+        Hash/hash_calculator.cpp
         Interpolator/interpolator.cpp
         Math/math.cpp
         Model/client_game_model.cpp
@@ -87,8 +88,7 @@ set(SOURCES
         Painter/painter.cpp
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
-        Server/server_controller.cpp
-        Hash/hash_calculator.cpp)
+        Server/server_controller.cpp)
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT

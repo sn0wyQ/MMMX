@@ -1,7 +1,3 @@
-//
-// Created by matvey on 18.04.21.
-//
-
 #ifndef HASH_HASH_CALCULATOR_H_
 #define HASH_HASH_CALCULATOR_H_
 
