@@ -9,6 +9,10 @@ Entity::Entity(const Entity& other) : MovableObject(other) {
 }
 
 void Entity::SetParams(std::vector<QVariant> params) {
+  SetSpawnY(params.back().toFloat());
+  params.pop_back();
+  SetSpawnX(params.back().toFloat());
+  params.pop_back();
   SetMaxHealthPoints(params.back().toFloat());
   params.pop_back();
   SetHealthPoints(params.back().toFloat());
@@ -23,6 +27,8 @@ std::vector<QVariant> Entity::GetParams() const {
   result.emplace_back(fov_radius_);
   result.emplace_back(GetHealthPoints());
   result.emplace_back(GetMaxHealthPoints());
+  result.emplace_back(GetSpawnX());
+  result.emplace_back(GetSpawnY());
   return result;
 }
 
@@ -65,7 +71,6 @@ void Entity::DrawHealthBar(Painter* painter) {
   float rect_width = 2.5f;
   float rect_height = 0.6f;
   QFont font{};
-  // font.setPointSizeF(6.f);
   painter->setFont(font);
   QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
                    rect_width, rect_height);
@@ -91,4 +96,29 @@ void Entity::DrawHealthBar(Painter* painter) {
   painter->setBrush(brush);
   painter->setPen(pen);
   painter->Translate(-translation);
+}
+
+void Entity::SetSpawnX(float spawn_x) {
+  spawn_position_.setX(spawn_x);
+}
+
+float Entity::GetSpawnX() const {
+  return spawn_position_.x();
+}
+
+void Entity::SetSpawnY(float spawn_y) {
+  spawn_position_.setY(spawn_y);
+}
+
+float Entity::GetSpawnY() const {
+  return spawn_position_.y();
+}
+
+void Entity::Revive() {
+  SetPosition(GetSpawnPosition());
+  SetHealthPoints(GetMaxHealthPoints());
+}
+
+QPointF Entity::GetSpawnPosition() const {
+  return spawn_position_;
 }

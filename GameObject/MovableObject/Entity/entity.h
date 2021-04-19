@@ -28,12 +28,22 @@ class Entity : public MovableObject {
 
   bool IsEntity() const override;
 
+  void Revive();
+
+  QPointF GetSpawnPosition() const;
+
+  void SetSpawnX(float spawn_x);
+  float GetSpawnX() const;
+  void SetSpawnY(float spawn_y);
+  float GetSpawnY() const;
+
   std::shared_ptr<GameObject> Clone() const override;
 
  private:
   float fov_radius_{Constants::kDefaultEntityFov};
   float health_points_{};
   float max_health_points_{};
+  QPointF spawn_position_;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_
