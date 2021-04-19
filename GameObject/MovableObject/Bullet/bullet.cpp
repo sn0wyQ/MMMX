@@ -40,7 +40,8 @@ void Bullet::OnTick(int delta_time) {
 }
 
 void Bullet::CheckRange() {
-  if (Math::DistanceBetweenPoints(GetStartPosition(), GetPosition()) > GetBulletRange()) {
+  if (Math::DistanceBetweenPoints(GetStartPosition(), GetPosition())
+      > GetBulletRange()) {
     SetIsNeedToDelete(true);
   }
 }

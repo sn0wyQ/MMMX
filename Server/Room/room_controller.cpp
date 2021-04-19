@@ -74,7 +74,8 @@ void RoomController::RecalculateModel(const ModelData& model_data) {
   this->DeleteObjectsThatAreReadyToBeDeleted(model_data);
 }
 
-void RoomController::DeleteObjectsThatAreReadyToBeDeleted(const ModelData& model_data) {
+void RoomController::DeleteObjectsThatAreReadyToBeDeleted(
+    const ModelData& model_data) {
   auto game_objects = model_data.model->GetAllGameObjects();
   for (const auto& game_object : game_objects) {
     if (game_object->IsNeedToDelete()) {
