@@ -69,6 +69,9 @@ class GameObject {
   virtual void SetParams(std::vector<QVariant> params);
   virtual std::vector<QVariant> GetParams() const;
 
+  bool IsNeedToDelete() const;
+  void SetIsNeedToDelete(bool is_need_to_delete);
+
   bool IsInFov() const;
   void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
@@ -89,6 +92,7 @@ class GameObject {
   float height_{0.f};
   std::shared_ptr<RigidBody> rigid_body_;
   bool is_in_fov_{false};
+  bool is_need_to_delete_{false};
   int64_t updated_time_{};
 };
 
