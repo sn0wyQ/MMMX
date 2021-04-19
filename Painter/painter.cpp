@@ -69,3 +69,7 @@ void Painter::DrawText(QRectF rect, int flags, const QString& str) {
                   converter_->ScaleFromGameToScreen(rect.height()));
   drawText(new_rect, flags, str);
 }
+
+float Painter::GetScaledFloat(float x) const {
+  return converter_->ScaleFromGameToScreen(x);
+}

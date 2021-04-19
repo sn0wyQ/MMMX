@@ -30,12 +30,8 @@ class Entity : public MovableObject {
 
   void Revive();
 
+  void SetSpawnPosition(QPointF spawn_position);
   QPointF GetSpawnPosition() const;
-
-  void SetSpawnX(float spawn_x);
-  float GetSpawnX() const;
-  void SetSpawnY(float spawn_y);
-  float GetSpawnY() const;
 
   std::shared_ptr<GameObject> Clone() const override;
 

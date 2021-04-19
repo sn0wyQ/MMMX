@@ -17,24 +17,24 @@ class Converter {
 
   void UpdateCoefficient(float fov = Constants::kDefaultEntityFov);
 
-  QPointF PointFromGameToScreen(const QPointF& point);
-  QPointF PointFromScreenToGame(const QPointF& point);
+  QPointF PointFromGameToScreen(const QPointF& point) const;
+  QPointF PointFromScreenToGame(const QPointF& point) const;
 
   template<typename T>
-  T ScaleFromGameToScreen(const T& object) {
+  T ScaleFromGameToScreen(const T& object) const {
     return object * coefficient_;
   }
   template<typename T>
-  T ScaleFromGameToScreen(T* object) {
+  T ScaleFromGameToScreen(T* object) const {
     return (*object) *= coefficient_;
   }
 
   template<typename T>
-  T ScaleFromScreenToGame(const T& object) {
+  T ScaleFromScreenToGame(const T& object) const {
     return object / coefficient_;
   }
   template<typename T>
-  T ScaleFromScreenToGame(T* object) {
+  T ScaleFromScreenToGame(T* object) const {
     return (*object) /= coefficient_;
   }
 

@@ -32,6 +32,8 @@ class Painter : public QPainter {
   void DrawRect(float x, float y, float width, float height);
   void DrawText(QRectF rect, int flags, const QString& str);
 
+  float GetScaledFloat(float x) const;
+
  private:
   std::shared_ptr<Converter> converter_;
 };
