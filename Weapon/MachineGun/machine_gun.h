@@ -3,12 +3,12 @@
 
 #include "Weapon/weapon.h"
 
-using Constants::Weapon::MachineGun::kDefaultMachineGunBaseBulletDamage;
-using Constants::Weapon::MachineGun::kDefaultMachineGunBulletSpeed;
-using Constants::Weapon::MachineGun::kDefaultMachineGunBulletRange;
-using Constants::Weapon::MachineGun::kDefaultMachineGunRateOfFire;
-using Constants::Weapon::MachineGun::kDefaultMachineGunBaseReloadingTime;
-using Constants::Weapon::MachineGun::kDefaultMachineGunBaseClipSize;
+using Constants::Weapon::MachineGun::kDefaultBaseBulletDamage;
+using Constants::Weapon::MachineGun::kDefaultBulletSpeed;
+using Constants::Weapon::MachineGun::kDefaultBulletRange;
+using Constants::Weapon::MachineGun::kDefaultRateOfFire;
+using Constants::Weapon::MachineGun::kDefaultReloadingTime;
+using Constants::Weapon::MachineGun::kDefaultClipSize;
 
 class MachineGun : public Weapon {
  public:

@@ -3,6 +3,15 @@
 Bullet::Bullet(GameObjectId bullet_id) : MovableObject(bullet_id) {}
 
 void Bullet::SetParams(std::vector<QVariant> params) {
+  auto bullet_range = params.back().toFloat();
+  SetBulletRange(bullet_range);
+  params.pop_back();
+  auto bullet_speed = params.back().toFloat();
+  SetBulletSpeed(bullet_speed);
+  params.pop_back();
+  auto bullet_damage = params.back().toFloat();
+  SetBulletDamage(bullet_damage);
+  params.pop_back();
   float start_position_y = params.back().toFloat();
   params.pop_back();
   float start_position_x = params.back().toFloat();
@@ -16,9 +25,12 @@ void Bullet::SetParams(std::vector<QVariant> params) {
 
 std::vector<QVariant> Bullet::GetParams() const {
   std::vector<QVariant> result = MovableObject::GetParams();
-  result.emplace_back(parent_id_);
-  result.emplace_back(start_position_.x());
-  result.emplace_back(start_position_.y());
+  result.emplace_back(GetParentId());
+  result.emplace_back(static_cast<float>(GetStartPosition().x()));
+  result.emplace_back(static_cast<float>(GetStartPosition().y()));
+  result.emplace_back(GetBulletDamage());
+  result.emplace_back(GetBulletSpeed());
+  result.emplace_back(GetBulletRange());
   return result;
 }
 
@@ -49,4 +61,28 @@ void Bullet::DrawRelatively(Painter* painter) {
 
 std::shared_ptr<GameObject> Bullet::Clone() const {
   return std::make_shared<Bullet>(*this);
+}
+
+float Bullet::GetBulletDamage() const {
+  return bullet_damage_;
+}
+
+float Bullet::GetBulletSpeed() const {
+  return bullet_speed_;
+}
+
+float Bullet::GetBulletRange() const {
+  return bullet_range_;
+}
+
+void Bullet::SetBulletDamage(float bullet_damage) {
+  bullet_damage_ = bullet_damage;
+}
+
+void Bullet::SetBulletSpeed(float bullet_speed) {
+  bullet_speed_ = bullet_speed;
+}
+
+void Bullet::SetBulletRange(float bullet_range) {
+  bullet_range_ = bullet_range;
 }

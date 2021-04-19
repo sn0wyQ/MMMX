@@ -79,3 +79,7 @@ float Player::GetRadius() const {
 std::shared_ptr<GameObject> Player::Clone() const {
   return std::make_shared<Player>(*this);
 }
+
+const std::shared_ptr<Weapon>& Player::GetWeapon() const {
+  return weapon_;
+}

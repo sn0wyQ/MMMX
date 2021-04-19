@@ -30,6 +30,8 @@ class Player : public Entity {
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
 
+  const std::shared_ptr<Weapon>& GetWeapon() const;
+
   std::shared_ptr<GameObject> Clone() const override;
 
  private:

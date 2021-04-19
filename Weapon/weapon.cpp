@@ -1,5 +1,27 @@
 #include "weapon.h"
 
+void Weapon::SetCurrentBulletsInClip(int current_bullets_in_clip) {
+  current_bullets_in_clip_ = current_bullets_in_clip;
+}
+
+bool Weapon::IsPossibleToShoot(int64_t cur_time) const {
+  if (cur_time - last_time_shooted_ < GetTimeBetweenShoots()
+      || GetCurrentBulletsInClip() <= 0
+      || cur_time - last_time_pressed_reload_ < reloading_time_) {
+    return false;
+  }
+  return true;
+}
+
+void Weapon::Reload(int64_t cur_time) {
+  last_time_pressed_reload_ = cur_time;
+  SetCurrentBulletsInClip(GetClipSize());
+}
+
+int64_t Weapon::GetTimeBetweenShoots() const {
+  return 60'000 / rate_of_fire_;
+}
+
 float Weapon::GetBulletDamage() const {
   return bullet_damage_;
 }
@@ -32,11 +54,11 @@ void Weapon::SetRateOfFire(int rate_of_fire) {
   rate_of_fire_ = rate_of_fire;
 }
 
-float Weapon::GetReloadingTime() const {
+int64_t Weapon::GetReloadingTime() const {
   return reloading_time_;
 }
 
-void Weapon::SetReloadingTime(float reloading_time) {
+void Weapon::SetReloadingTime(int64_t reloading_time) {
   reloading_time_ = reloading_time;
 }
 
@@ -52,25 +74,6 @@ int Weapon::GetCurrentBulletsInClip() const {
   return current_bullets_in_clip_;
 }
 
-void Weapon::SetCurrentBulletsInClip(int current_bullets_in_clip) {
-  current_bullets_in_clip_ = current_bullets_in_clip;
+void Weapon::SetLastTimeShooted(int64_t cur_time) {
+  last_time_shooted_ = cur_time;
 }
-
-bool Weapon::IsPossibleToShoot(int64_t cur_time) {
-  if (cur_time - last_time_shooted_ > GetTimeBetweenShoots()
-      || GetCurrentBulletsInClip() <= 0
-      || cur_time - last_time_pressed_reload_ >= reloading_time_) {
-    return false;
-  }
-  return true;
-}
-
-void Weapon::Reload(int64_t cur_time) {
-  last_time_pressed_reload_ = cur_time;
-  SetCurrentBulletsInClip(GetClipSize());
-}
-
-int64_t Weapon::GetTimeBetweenShoots() const {
-  return 60'000 / rate_of_fire_;
-}
-

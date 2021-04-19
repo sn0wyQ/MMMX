@@ -22,7 +22,8 @@ class Weapon {
   Weapon(const Weapon& weapon) = default;
 
   void Reload(int64_t cur_time);
-  bool IsPossibleToShoot(int64_t cur_time);
+  bool IsPossibleToShoot(int64_t cur_time) const;
+  void SetLastTimeShooted(int64_t cur_time);
   int64_t GetTimeBetweenShoots() const;
 
   virtual void DrawWeapon(Painter* painter) = 0;
@@ -39,8 +40,8 @@ class Weapon {
   void SetRateOfFire(int rate_of_fire);
   int GetRateOfFire() const;
 
-  float GetReloadingTime() const;
-  void SetReloadingTime(float base_reloading_time);
+  int64_t GetReloadingTime() const;
+  void SetReloadingTime(int64_t reloading_time);
 
   int GetClipSize() const;
   void SetClipSize(int clip_size);
@@ -53,7 +54,7 @@ class Weapon {
   float bullet_speed_{}; // скорость полета пули
   float bullet_range_{}; // расстояние полета пули
   int rate_of_fire_{}; // скорострельность пушки (кол-во выстрелов в минуту)
-  float reloading_time_{}; // базовое время перезарядки(который может прокачать герой)
+  int64_t reloading_time_{}; // базовое время перезарядки(который может прокачать герой)
   int clip_size_{}; // базовый размер обоймы(который может прокачать герой)
   int current_bullets_in_clip_{}; // текущее кол-во патронов в обойме
 

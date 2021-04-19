@@ -94,7 +94,7 @@ class ClientController : public BaseController {
   void KeyPressEvent(QKeyEvent* key_event);
   void KeyReleaseEvent(QKeyEvent* key_event);
   void MouseMoveEvent(QMouseEvent* mouse_event);
-  void MousePressEvent(QMouseEvent* mouse_event);
+  void MousePressEvent(QMouseEvent*);
 
   // --------------------------------------------------
 

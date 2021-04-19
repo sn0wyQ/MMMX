@@ -3,12 +3,14 @@
 MachineGun::MachineGun(const MachineGun& machine_gun) : Weapon(machine_gun) {}
 
 MachineGun::MachineGun() {
-  SetBulletDamage(kDefaultMachineGunBaseBulletDamage);
-  SetBulletSpeed(kDefaultMachineGunBulletSpeed);
-  SetBulletRange(kDefaultMachineGunBulletRange);
-  SetRateOfFire(kDefaultMachineGunRateOfFire);
-  SetReloadingTime(kDefaultMachineGunBaseReloadingTime);
-  SetClipSize(kDefaultMachineGunBaseClipSize);
+  SetBulletDamage(kDefaultBaseBulletDamage);
+  SetBulletSpeed(kDefaultBulletSpeed);
+  SetBulletRange(kDefaultBulletRange);
+  SetRateOfFire(kDefaultRateOfFire);
+  SetReloadingTime(kDefaultReloadingTime);
+  SetClipSize(kDefaultClipSize);
+
+  SetCurrentBulletsInClip(kDefaultClipSize);
 }
 
 void MachineGun::DrawWeapon(Painter* painter) {

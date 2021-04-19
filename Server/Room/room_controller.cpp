@@ -257,6 +257,25 @@ void RoomController::AddTree(float x, float y, float radius) {
                          static_cast<int>(RigidBodyType::kCircle)});
 }
 
+
+GameObjectId RoomController::AddBullet(GameObjectId parent_id,
+                               float x, float y, float rotation,
+                               const std::shared_ptr<Weapon>& weapon) {
+  QVector2D velocity(std::cos(rotation), std::sin(rotation));
+  velocity *= weapon->GetBulletSpeed();
+  return model_->AddGameObject(GameObjectType::kBullet,
+                          {x, y, 0.f,
+                               Constants::Weapon::kDefaultBulletRadius * 2.f,
+                               Constants::Weapon::kDefaultBulletRadius * 2.f,
+                               static_cast<int>(RigidBodyType::kCircle),
+                               static_cast<float>(velocity.x()),
+                               static_cast<float>(velocity.y()),
+                               parent_id, x, y,
+                               weapon->GetBulletDamage(),
+                               weapon->GetBulletSpeed(),
+                               weapon->GetBulletRange()});
+}
+
 void RoomController::AddConstantObjects() {
   this->AddBox(-5.f, -15.f, 45.f, 20.f, 10.f);
   this->AddBox(12.f, -10.f, 120.f, 20.f, 10.f);
@@ -271,23 +290,25 @@ void RoomController::AddConstantObjects() {
   this->AddTree(30.f, 30.f, 1.f);
 }
 
+int RoomController::ParseIdOfModelFromTimestamp(int64_t timestamp) const {
+  int64_t latency = GetCurrentServerTime() - timestamp;
+  latency = std::max(static_cast<int64_t>(0), latency);
+  int latency_in_ticks = latency / Constants::kTimeToTick;
+  return static_cast<int>(models_cache_.size()) - 1 - latency_in_ticks;
+}
+
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
-  // Узнаем в какой модели в прошлом мы передвинулись
   auto timestamp = event.GetArg<int64_t>(0);
-  int64_t latency = GetCurrentServerTime() - timestamp;
-  latency = std::max(static_cast<int64_t>(0), latency);
-  int64_t latency_in_ticks = latency / Constants::kTimeToTick;
-  int64_t id_of_model =
-      static_cast<int64_t>(models_cache_.size()) - 1 - latency_in_ticks;
+  auto id_of_model = ParseIdOfModelFromTimestamp(timestamp);
   // Проигнорим, если чел нам прислал то, что он сделал очень давно
   if (id_of_model < 0) {
     return;
   }
-  auto current_model = models_cache_[id_of_model];
+  auto current_model_data = models_cache_[id_of_model];
   auto player_id = event.GetArg<GameObjectId>(1);
-  if (!current_model.model->IsGameObjectIdTaken(player_id)) {
+  if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
   // Мы перемещаем человека в той самой модели из прошлого
@@ -297,7 +318,7 @@ void RoomController::SendControlsEvent(const Event& event) {
   auto rotation = event.GetArg<float>(5);
   // А теперь с учетом этого проталкиваем его пересечение на будущее
   // учитывая velocity и rotation
-  while (id_of_model != static_cast<int64_t>(models_cache_.size())) {
+  while (id_of_model != static_cast<int>(models_cache_.size())) {
     auto cur_model = models_cache_[id_of_model].model;
     if (!cur_model->IsGameObjectIdTaken(player_id)) {
       break;
@@ -311,4 +332,46 @@ void RoomController::SendControlsEvent(const Event& event) {
     position_to_set = player_in_model->GetPosition();
     id_of_model++;
   }
+}
+
+void RoomController::SendPlayerShootingEvent(const Event& event) {
+  auto timestamp = event.GetArg<int64_t>(0);
+  auto id_of_model = ParseIdOfModelFromTimestamp(timestamp);
+  // Проигнорим, если чел нам прислал то, что он сделал очень давно
+  if (id_of_model < 0) {
+    return;
+  }
+  auto current_model_data = models_cache_[id_of_model];
+  auto player_id = event.GetArg<GameObjectId>(1);
+  if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  auto player_in_model =
+      current_model_data.model->GetPlayerByPlayerId(player_id);
+
+  if (!player_in_model->GetWeapon()->IsPossibleToShoot(timestamp)) {
+    return;
+  }
+  GameObjectId bullet_id =
+      AddBullet(player_id, player_in_model->GetX(), player_in_model->GetY(),
+                player_in_model->GetRotation(), player_in_model->GetWeapon());
+  QPointF position_to_set =
+      {player_in_model->GetX(), player_in_model->GetY()};
+  while (id_of_model != static_cast<int>(models_cache_.size())) {
+    auto cur_model = models_cache_[id_of_model].model;
+    if (!cur_model->IsGameObjectIdTaken(bullet_id)) {
+      break;
+    }
+    auto bullet_in_model = cur_model->GetGameObjectByGameObjectId(bullet_id);
+    bullet_in_model->SetPosition(position_to_set);
+    bullet_in_model->OnTick(models_cache_[id_of_model].delta_time);
+    position_to_set = bullet_in_model->GetPosition();
+    id_of_model++;
+  }
+  auto last_model = models_cache_.back().model;
+  if (!last_model->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  auto last_player = last_model->GetPlayerByPlayerId(player_id);
+  last_player->GetWeapon()->SetLastTimeShooted(timestamp);
 }

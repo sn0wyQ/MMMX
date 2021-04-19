@@ -86,14 +86,16 @@ enum class EventType {
   // [5] - <float> rotation
   kSendControls,
 
+  // [0] - <int64> timestamp
+  // [1] - <GameObjectId> sender_player_id
+  kSendPlayerShooting,
+
   // [0] - <GameObjectId> player_id
   // [1] - player_args
   kAddLocalPlayerGameObject,
 
   // [0] - <GameObjectId> player_id
   kPlayerDisconnected,
-
-  kPlayerPressShoot,
 
   SIZE
 };

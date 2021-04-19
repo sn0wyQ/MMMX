@@ -286,11 +286,12 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   }
 }
 
-void ClientController::MousePressEvent(QMouseEvent* mouse_event) {
+void ClientController::MousePressEvent(QMouseEvent*) {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
-    // this->AddEventToSend(Event(EventType::kPlayerPressShoot,
-    //                            local_player->GetId()));
+    this->AddEventToSend(Event(EventType::kSendPlayerShooting,
+                               GetCurrentServerTime(),
+                               local_player->GetId()));
   }
 }
 // ------------------- GAME EVENTS -------------------
@@ -337,7 +338,7 @@ void ClientController::GameObjectLeftFovEvent(const Event& event) {
 void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   auto game_object_id = event.GetArg<GameObjectId>(0);
   auto game_object_type = event.GetArg<GameObjectType>(1);
-  auto sent_time = event.GetArg<int64_t>(2);
+  auto sent_time = static_cast<int64_t>(event.GetArg<qint64>(2));
   auto event_type = event.GetArg<EventType>(3);
   if (model_->IsLocalPlayerSet() &&
       game_object_id == model_->GetLocalPlayer()->GetId()) {
