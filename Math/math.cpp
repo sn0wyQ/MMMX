@@ -21,3 +21,11 @@ bool Math::IsPointOnSegment(QPointF first, QPointF second, QPointF point) {
   return (min_x - eps <= point.x() && point.x() <= max_x + eps
       && min_y - eps <= point.y() && point.y() <= max_y + eps);
 }
+
+float Math::GetRotationInOtherAxis(float rotation) {
+  float new_rotation = 540.f - rotation;
+  if (new_rotation >= 360.f) {
+    new_rotation -= 360.f;
+  }
+  return new_rotation;
+}

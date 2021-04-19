@@ -3,6 +3,11 @@
 MovableObject::MovableObject(GameObjectId game_object_id)
     : GameObject(game_object_id) {}
 
+MovableObject::MovableObject(const MovableObject& other)
+  : GameObject(other) {
+  velocity_ = other.velocity_;
+}
+
 void MovableObject::SetParams(std::vector<QVariant> params) {
   float vel_y = params.back().toFloat();
   params.pop_back();
@@ -100,4 +105,8 @@ float MovableObject::GetShortestDistance(
     }
   }
   return min_distance;
+}
+
+std::shared_ptr<GameObject> MovableObject::Clone() const {
+  return std::make_shared<MovableObject>(*this);
 }

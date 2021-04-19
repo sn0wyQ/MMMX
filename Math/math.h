@@ -27,6 +27,8 @@ namespace Math {
   float DegreesToRadians(float degrees);
   float RadiansToDegrees(float radians);
 
+  float GetRotationInOtherAxis(float rotation);
+
   bool IsPointOnSegment(QPointF first, QPointF second, QPointF point);
 
   template <typename T>

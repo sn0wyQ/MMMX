@@ -1,19 +1,11 @@
 #include "weapon.h"
 
-float Weapon::GetBaseBulletDamage() const {
-  return base_bullet_damage_;
+float Weapon::GetBulletDamage() const {
+  return bullet_damage_;
 }
 
-void Weapon::SetBaseBulletDamage(float base_bullet_damage) {
-  base_bullet_damage_ = base_bullet_damage;
-}
-
-float Weapon::GetCurrentBulletDamage() const {
-  return current_bullet_damage_;
-}
-
-void Weapon::SetCurrentBulletDamage(float current_bullet_damage) {
-  current_bullet_damage_ = current_bullet_damage;
+void Weapon::SetBulletDamage(float bullet_damage) {
+  bullet_damage_ = bullet_damage;
 }
 
 float Weapon::GetBulletSpeed() const {
@@ -40,85 +32,45 @@ void Weapon::SetRateOfFire(int rate_of_fire) {
   rate_of_fire_ = rate_of_fire;
 }
 
-float Weapon::GetBaseReloadingTime() const {
-  return base_reloading_time_;
+float Weapon::GetReloadingTime() const {
+  return reloading_time_;
 }
 
-void Weapon::SetBaseReloadingTime(float base_reloading_time) {
-  base_reloading_time_ = base_reloading_time;
+void Weapon::SetReloadingTime(float reloading_time) {
+  reloading_time_ = reloading_time;
 }
 
-float Weapon::GetCurrentReloadingTime() const {
-  return current_reloading_time_;
+int Weapon::GetClipSize() const {
+  return clip_size_;
 }
 
-void Weapon::SetCurrentReloadingTime(float current_reloading_time) {
-  current_reloading_time_ = current_reloading_time;
+void Weapon::SetClipSize(int clip_size) {
+  clip_size_ = clip_size;
 }
 
-int Weapon::GetBaseClipSize() const {
-  return base_clip_size_;
+int Weapon::GetCurrentBulletsInClip() const {
+  return current_bullets_in_clip_;
 }
 
-void Weapon::SetBaseClipSize(int base_clip_size) {
-  base_clip_size_ = base_clip_size;
+void Weapon::SetCurrentBulletsInClip(int current_bullets_in_clip) {
+  current_bullets_in_clip_ = current_bullets_in_clip;
 }
 
-int Weapon::GetCurrentClipSize() const {
-  return current_clip_size_;
-}
-
-void Weapon::SetCurrentClipSize(int current_clip_size) {
-  current_clip_size_ = current_clip_size;
-}
-
-float Weapon::GetCurrentTimeToShoot() const {
-  return current_time_to_shoot_;
-}
-
-void Weapon::SetCurrentTimeToShoot(float current_time_to_shoot) {
-  current_time_to_shoot_ = current_time_to_shoot;
-}
-bool Weapon::GetIsReloadingNow() const {
-  return is_reloading_now_;
-}
-
-void Weapon::SetIsReloadingNow(bool is_reloading_now) {
-  is_reloading_now_ = is_reloading_now;
-}
-
-
-bool Weapon::IsPossibleToShoot() {
-  if (GetCurrentTimeToShoot() > 0.f
-      || GetCurrentClipSize() <= 0
-      || GetIsReloadingNow()) {
+bool Weapon::IsPossibleToShoot(int64_t cur_time) {
+  if (cur_time - last_time_shooted_ > GetTimeBetweenShoots()
+      || GetCurrentBulletsInClip() <= 0
+      || cur_time - last_time_pressed_reload_ >= reloading_time_) {
     return false;
   }
   return true;
 }
 
-void Weapon::CreateBulletAndAddToModel() {
-  // Bullet new_bullet = Bullet(bullet_id, parent_id, start_position);
-
+void Weapon::Reload(int64_t cur_time) {
+  last_time_pressed_reload_ = cur_time;
+  SetCurrentBulletsInClip(GetClipSize());
 }
 
-void Weapon::Shoot() {
-  if (IsPossibleToShoot()) {
-    QTimer::singleShot(60'000 / GetRateOfFire(), this, &Weapon::Shoot);
-
-    CreateBulletAndAddToModel();
-    SetCurrentClipSize(GetCurrentClipSize() - 1);
-  }
+int64_t Weapon::GetTimeBetweenShoots() const {
+  return 60'000 / rate_of_fire_;
 }
-
-void Weapon::Reload() {
-
-  SetCurrentClipSize(GetBaseClipSize());
-}
-
-
-
-
-
-
 

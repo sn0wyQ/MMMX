@@ -79,6 +79,7 @@ set(SOURCES
         GameObject/RigidBody/rigid_body_circle.cpp
         GameObject/RigidBody/rigid_body_rectangle.cpp
         GameObject/game_object.cpp
+        Interpolator/interpolator.cpp
         Math/math.cpp
         Model/client_game_model.cpp
         Model/game_model.cpp

@@ -7,6 +7,9 @@
 
 class RoomGameModel : public GameModel {
  public:
+  RoomGameModel() = default;
+  RoomGameModel(const RoomGameModel& model);
+
   GameObjectId GetNextUnusedGameObjectId() const;
 
   GameObjectId AddGameObject(GameObjectType type,
