@@ -25,7 +25,6 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 
 void ClientView::Update() {
   this->update();
-  game_view_->update();
 }
 
 std::shared_ptr<Converter> ClientView::GetConverter() {

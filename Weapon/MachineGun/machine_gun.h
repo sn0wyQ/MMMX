@@ -13,8 +13,8 @@ using Constants::Weapon::MachineGun::kDefaultMachineGunBaseClipSize;
 class MachineGun : public Weapon {
  public:
   MachineGun();
+  MachineGun(const MachineGun& machine_gun);
 
   void DrawWeapon(Painter *painter) override;
- private:
 };
 #endif  // WEAPON_MACHINE_GUN_MACHINE_GUN_H_

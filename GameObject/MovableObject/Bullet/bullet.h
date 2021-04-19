@@ -19,6 +19,8 @@ class Bullet : public MovableObject {
   void SetStartPosition(QPointF start_position);
   QPointF GetStartPosition() const;
 
+  std::shared_ptr<GameObject> Clone() const override;
+
  private:
   GameObjectId parent_id_{Constants::kNullGameObjectId};
   QPointF start_position_{0.f, 0.f};

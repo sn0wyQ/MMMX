@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <unordered_map>
 #include <vector>
 
 #include <QMetaEnum>
@@ -14,6 +15,8 @@
 
 class GameModel {
  public:
+  GameModel() = default;
+  GameModel(const GameModel& other);
   std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
   std::shared_ptr<GameObject> GetGameObjectByGameObjectId(
       GameObjectId game_object_id) const;
@@ -29,10 +32,15 @@ class GameModel {
 
   void AddGameObject(GameObjectId game_object_id, GameObjectType type,
                      const std::vector<QVariant>& params);
+
+  std::shared_ptr<GameObject>
+    GetNewEmptyGameObject(GameObjectId game_object_id, GameObjectType type);
   void DeleteGameObject(GameObjectId game_object_id);
+  void AttachGameObject(GameObjectId game_object_id,
+                        const std::shared_ptr<GameObject>& game_object);
 
  private:
-  std::map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
+  std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
 };
 
 #endif  // MODEL_GAME_MODEL_H_

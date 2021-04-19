@@ -2,6 +2,18 @@
 
 Player::Player(GameObjectId player_id) : Entity(player_id) {}
 
+Player::Player(const Player& other) : Entity(other) {
+  is_local_player_ = other.is_local_player_;
+  weapon_type_ = other.weapon_type_;
+  switch (weapon_type_) {
+    case WeaponType::kMachineGun: {
+      weapon_ = std::make_shared<MachineGun>(
+          *(std::dynamic_pointer_cast<MachineGun>(other.weapon_)));
+      break;
+    }
+  }
+}
+
 void Player::SetParams(std::vector<QVariant> params) {
   auto weapon_type = static_cast<WeaponType>(params.back().toInt());
   weapon_type_ = weapon_type;
@@ -62,4 +74,8 @@ void Player::SetRadius(float radius) {
 
 float Player::GetRadius() const {
   return GetWidth() / 2.f;
+}
+
+std::shared_ptr<GameObject> Player::Clone() const {
+  return std::make_shared<Player>(*this);
 }

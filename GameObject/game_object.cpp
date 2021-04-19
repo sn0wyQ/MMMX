@@ -3,6 +3,29 @@
 GameObject::GameObject(GameObjectId id)
   : id_(id) {}
 
+GameObject::GameObject(const GameObject& other) {
+  id_ = other.id_;
+  if (rigid_body_ == nullptr) {
+    switch (other.GetRigidBody()->GetType()) {
+      case RigidBodyType::kCircle:
+        rigid_body_ = std::make_shared<RigidBodyCircle>();
+        break;
+      case RigidBodyType::kRectangle:
+        rigid_body_ = std::make_shared<RigidBodyRectangle>();
+        break;
+    }
+  }
+  SetHeight(other.GetHeight());
+  SetWidth(other.GetWidth());
+  SetRotation(other.GetRotation());
+  SetY(other.GetY());
+  SetX(other.GetX());
+  rigid_body_->SetWidth(GetWidth());
+  rigid_body_->SetHeight(GetHeight());
+  is_in_fov_ = other.is_in_fov_;
+  updated_time_ = other.updated_time_;
+}
+
 void GameObject::SetParams(std::vector<QVariant> params) {
   auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
   if (rigid_body_ == nullptr) {
@@ -132,4 +155,16 @@ GameObjectType GameObject::GetType() const {
 bool GameObject::IsFilteredByFov() const {
   // Temporarily. For testing FOV
   return true;
+}
+
+std::shared_ptr<GameObject> GameObject::Clone() const {
+  return std::make_shared<GameObject>(*this);
+}
+
+void GameObject::SetUpdatedTime(int64_t updated_time) {
+  updated_time_ = updated_time;
+}
+
+int64_t GameObject::GetUpdatedTime() const {
+  return updated_time_;
 }

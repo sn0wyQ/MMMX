@@ -6,6 +6,7 @@
 #include <memory>
 #include <queue>
 
+#include <QDateTime>
 #include <QDebug>
 #include <QElapsedTimer>
 #include <QString>
@@ -43,6 +44,7 @@ class BaseController : public QObject {
   void StartTicking();
 
   int GetVar() const;
+  virtual int64_t GetCurrentServerTime() const;
 
  protected:
   BaseController();
@@ -71,11 +73,15 @@ class BaseController : public QObject {
   virtual void SetPlayerIdToClient(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
   virtual void UpdateVarsEvent(const Event& event) {}
+  virtual void SetTimeDifferenceEvent(const Event& event) {}
+
   // ------------------- GAME EVENTS -------------------
 
-  virtual void SendControlsEvent(const Event& event) {}
+  virtual void AddLocalPlayerGameObjectEvent(const Event& event) {}
+  virtual void SendGameInfoToInterpolateEvent(const Event& event) {}
   virtual void UpdateGameObjectDataEvent(const Event& event) {}
   virtual void GameObjectLeftFovEvent(const Event& event) {}
+  virtual void SendControlsEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

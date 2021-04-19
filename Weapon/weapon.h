@@ -7,12 +7,10 @@
 #include <vector>
 
 #include <QDebug>
-#include <QTimer>
 
 #include "GameObject/game_object.h"
 #include "GameObject/MovableObject/Bullet/bullet.h"
 #include "Weapon/WeaponConstants/weapon_constants.h"
-#include "Model/game_model.h"
 
 enum class WeaponType {
   kMachineGun
@@ -20,6 +18,9 @@ enum class WeaponType {
 
 class Weapon {
  public:
+  Weapon() = default;
+  Weapon(const Weapon& weapon) = default;
+
   void Reload(int64_t cur_time);
   bool IsPossibleToShoot(int64_t cur_time);
   int64_t GetTimeBetweenShoots() const;
