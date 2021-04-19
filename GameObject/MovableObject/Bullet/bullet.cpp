@@ -1,5 +1,5 @@
 #include "bullet.h"
-
+#include <iostream>
 Bullet::Bullet(GameObjectId bullet_id) : MovableObject(bullet_id) {}
 
 void Bullet::SetParams(std::vector<QVariant> params) {
@@ -35,8 +35,14 @@ std::vector<QVariant> Bullet::GetParams() const {
 }
 
 void Bullet::OnTick(int delta_time) {
-  // need_to_delete ставить
   MovableObject::OnTick(delta_time);
+  CheckRange();
+}
+
+void Bullet::CheckRange() {
+  if (Math::DistanceBetweenPoints(GetStartPosition(), GetPosition()) > GetBulletRange()) {
+    SetIsNeedToDelete(true);
+  }
 }
 
 GameObjectType Bullet::GetType() const {

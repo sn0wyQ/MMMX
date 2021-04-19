@@ -36,3 +36,9 @@ QVector2D Math::GetVectorByAngle(float rotation) {
   result.setY(-result.y());
   return result.normalized();
 }
+
+float Math::DistanceBetweenPoints(QPointF first, QPointF second) {
+  float distance = sqrt((first.x() - second.x()) * ((first.x() - second.x())) +
+      (first.y() - second.y()) * ((first.y() - second.y())));
+  return distance;
+}

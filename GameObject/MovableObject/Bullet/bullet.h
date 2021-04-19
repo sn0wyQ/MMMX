@@ -18,6 +18,8 @@ class Bullet : public MovableObject {
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
 
+  void CheckRange();
+
   void SetParentId(GameObjectId parent_id);
   GameObjectId GetParentId() const;
 
