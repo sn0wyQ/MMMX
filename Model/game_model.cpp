@@ -60,7 +60,6 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
 void GameModel::DeleteGameObject(GameObjectId game_object_id) {
   auto iter = game_objects_.find(game_object_id);
   if (iter == game_objects_.end()) {
-    qInfo() << "gay";
     return;
   }
   GameObjectType type = iter->second->GetType();

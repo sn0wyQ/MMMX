@@ -344,7 +344,7 @@ void ClientController::GameObjectLeftFovEvent(const Event& event) {
 void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   auto game_object_id = event.GetArg<GameObjectId>(0);
   auto game_object_type = event.GetArg<GameObjectType>(1);
-  auto sent_time = static_cast<int64_t>(event.GetArg<qint64>(2));
+  auto sent_time = event.GetArg<int64_t>(2);
   auto event_type = event.GetArg<EventType>(3);
   sent_time = std::max(
       GetCurrentServerTime() - Constants::kInterpolationMSecs, sent_time);
