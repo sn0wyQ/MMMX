@@ -7,8 +7,6 @@ class Bullet : public MovableObject {
  public:
   explicit Bullet(GameObjectId bullet_id);
 
-  Bullet(GameObjectId bullet_id, GameObjectId parent_id, QPointF start_position);
-
   virtual GameObjectType GetType() const;
 
   void DrawRelatively(Painter* painter) override;

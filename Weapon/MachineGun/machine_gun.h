@@ -12,17 +12,9 @@ using Constants::Weapon::MachineGun::kDefaultMachineGunBaseClipSize;
 
 class MachineGun : public Weapon {
  public:
-  MachineGun(float base_bullet_damage = kDefaultMachineGunBaseBulletDamage,
-             float bullet_speed = kDefaultMachineGunBulletSpeed,
-             float bullet_range = kDefaultMachineGunBulletRange,
-             int rate_of_fire = kDefaultMachineGunRateOfFire,
-             float base_reloading_time = kDefaultMachineGunBaseReloadingTime,
-             int base_clip_size = kDefaultMachineGunBaseClipSize
-             );
+  MachineGun();
 
-  void DrawWeapon(Painter *painter);
-
+  void DrawWeapon(Painter *painter) override;
  private:
-
 };
 #endif  // WEAPON_MACHINE_GUN_MACHINE_GUN_H_

@@ -169,21 +169,6 @@ void ClientController::UpdateVarsEvent(const Event& event) {
   view_->Update();
 }
 
-void ClientController::CreateBullet(const Event& event) {
-  auto game_object_id = event.GetArg<GameObjectId>(0);
-  auto game_object_type
-      = static_cast<GameObjectType>(event.GetArg<int>(1));
-  auto params = event.GetArgsSubVector(2);
-  model_->AddGameObject(game_object_id, game_object_type, params);
-  view_->Update();
-}
-
-void ClientController::DeleteBullet(const Event& event) {
-  model_->DeleteGameObject(event.GetArg<GameObjectId>(0));
-  view_->Update();
-  ???
-}
-
 QVector2D ClientController::GetKeyForce() const {
   bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
   bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
@@ -257,10 +242,8 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
 void ClientController::MousePressEvent(QMouseEvent* mouse_event) {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
-    local_player->GetParams();
-    model_->AddGameObject(?, GameObjectTypeWrapper::GameObjectType::kBullet, );
-    auto new_bullet = Bullet(?, local_player, local_player->GetPosition()));
-    this->AddEventToHandle(Event(EventType::kCreateBullet, Bullet(new_bullet);
+    this->AddEventToSend(Event(EventType::kPlayerPressShoot,
+                               local_player->GetId()));
   }
 }
 // ------------------- GAME EVENTS -------------------

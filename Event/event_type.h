@@ -15,12 +15,6 @@ enum class EventType {
   // [0] - <ClientId> client_id
   kClientDisconnected,
 
-  // [0] - <Bullet> bullet
-  kCreateBullet,
-
-  // [0] - <Bullet> bullet
-  kDeleteBullet,
-
   // No arguments
   kEndGame,
 
@@ -66,6 +60,8 @@ enum class EventType {
   // [1] - <int> game_object_type [game_object.h]
   // [2+] - game_object_args : relative constructor args
   kUpdateGameObjectData,
+
+  kPlayerPressShoot,
 
   SIZE
 };

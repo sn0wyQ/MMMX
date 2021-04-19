@@ -3,14 +3,21 @@
 Player::Player(GameObjectId player_id) : Entity(player_id) {}
 
 void Player::SetParams(std::vector<QVariant> params) {
-  weapon_ = params.back();
+  auto weapon_type = static_cast<WeaponType>(params.back().toInt());
+  weapon_type_ = weapon_type;
+  switch (weapon_type) {
+    case WeaponType::kMachineGun: {
+      weapon_ = std::make_shared<MachineGun>();
+      break;
+    }
+  }
   params.pop_back();
   Entity::SetParams(params);
 }
 
 std::vector<QVariant> Player::GetParams() const {
   std::vector<QVariant> result = Entity::GetParams();
-  result.emplace_back(weapon_);
+  result.emplace_back(static_cast<int>(weapon_type_));
   return result;
 }
 

@@ -20,10 +20,6 @@ BaseController::BaseController() {
     std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateVars,
     std::bind(&BaseController::UpdateVarsEvent, this, _1));
-  SetFunctionForEventType(EventType::kCreateBullet,
-    std::bind(&BaseController::CreateBullet, this, _1));
-  SetFunctionForEventType(EventType::kDeleteBullet,
-    std::bind(&BaseController::DeleteBullet, this, _1));
 
   // ------------------- GAME EVENTS -------------------
 

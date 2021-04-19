@@ -14,52 +14,49 @@
 #include "Weapon/WeaponConstants/weapon_constants.h"
 #include "Model/game_model.h"
 
+enum class WeaponType {
+  kMachineGun
+};
+
 class Weapon {
  public:
+  void Reload(int64_t cur_time);
+  bool IsPossibleToShoot(int64_t cur_time);
+  int64_t GetTimeBetweenShoots() const;
 
-  void Shoot();
-  void Reload();
-  bool IsPossibleToShoot();
-  void CreateBulletAndAddToModel();
+  virtual void DrawWeapon(Painter* painter) = 0;
 
-  virtual void DrawWeapon(Painter* painter);
+  void SetBulletDamage(float base_bullet_damage);
+  float GetBulletDamage() const;
 
-  float GetBaseBulletDamage() const;
-  void SetBaseBulletDamage(float base_bullet_damage);
-  float GetCurrentBulletDamage() const;
-  void SetCurrentBulletDamage(float current_bullet_damage);
   void SetBulletSpeed(float bullet_speed);
   float GetBulletSpeed() const;
+
   void SetBulletRange(float bullet_range);
   float GetBulletRange() const;
-  int GetRateOfFire() const;
+
   void SetRateOfFire(int rate_of_fire);
-  float GetBaseReloadingTime() const;
-  void SetBaseReloadingTime(float base_reloading_time);
-  float GetCurrentReloadingTime() const;
-  void SetCurrentReloadingTime(float current_reloading_time);
-  int GetBaseClipSize() const;
-  void SetBaseClipSize(int base_clip_size);
-  int GetCurrentClipSize() const;
-  void SetCurrentClipSize(int current_clip_size);
-  float GetCurrentTimeToShoot() const;
-  void SetCurrentTimeToShoot(float current_time_to_shoot);
-  bool GetIsReloadingNow() const;
-  void SetIsReloadingNow(bool is_reload_now);
+  int GetRateOfFire() const;
+
+  float GetReloadingTime() const;
+  void SetReloadingTime(float base_reloading_time);
+
+  int GetClipSize() const;
+  void SetClipSize(int clip_size);
+
+  int GetCurrentBulletsInClip() const;
+  void SetCurrentBulletsInClip(int current_bullets_in_clip);
 
  private:
-  float base_bullet_damage_{}; // базовый дамаг(который может прокачать герой)
-  float current_bullet_damage_{}; // текущий дамаг под всеми бонусами
+  float bullet_damage_{}; // базовый дамаг(который может прокачать герой)
   float bullet_speed_{}; // скорость полета пули
   float bullet_range_{}; // расстояние полета пули
   int rate_of_fire_{}; // скорострельность пушки (кол-во выстрелов в минуту)
-  float base_reloading_time_{}; // базовое время перезарядки(который может прокачать герой)
-  float current_reloading_time_{}; // текущее время до конца перезарядки
-  int base_clip_size_{}; // базовый размер обоймы(который может прокачать герой)
-  int current_clip_size_{}; // текущее кол-во патронов в обойме
-  float current_time_to_shoot_{}; // время до следующего выстрела
+  float reloading_time_{}; // базовое время перезарядки(который может прокачать герой)
+  int clip_size_{}; // базовый размер обоймы(который может прокачать герой)
+  int current_bullets_in_clip_{}; // текущее кол-во патронов в обойме
 
-  bool is_reloading_now_{false}; // перезаряжаемся сейчас?
-
+  int64_t last_time_shooted_{};
+  int64_t last_time_pressed_reload_{};
 };
 #endif  // WEAPON_WEAPON_H_
