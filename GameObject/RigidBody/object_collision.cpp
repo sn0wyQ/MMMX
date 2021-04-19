@@ -162,10 +162,10 @@ std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
     const std::shared_ptr<Bullet>& main,
     const std::vector<std::shared_ptr<GameObject>>& objects) {
   for (const auto& object : objects) {
-    if(object->GetId() == main->GetId()) {
+    if (object->GetId() == main->GetId()) {
       continue;
     }
-    if(object->GetId() == main->GetParentId()) {
+    if (object->GetId() == main->GetParentId()) {
       continue;
     }
 

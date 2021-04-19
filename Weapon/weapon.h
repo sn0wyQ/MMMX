@@ -50,13 +50,13 @@ class Weapon {
   void SetCurrentBulletsInClip(int current_bullets_in_clip);
 
  private:
-  float bullet_damage_{}; // базовый дамаг(который может прокачать герой)
-  float bullet_speed_{}; // скорость полета пули
-  float bullet_range_{}; // расстояние полета пули
-  int rate_of_fire_{}; // скорострельность пушки (кол-во выстрелов в минуту)
-  int64_t reloading_time_{}; // базовое время перезарядки(который может прокачать герой)
-  int clip_size_{}; // базовый размер обоймы(который может прокачать герой)
-  int current_bullets_in_clip_{}; // текущее кол-во патронов в обойме
+  float bullet_damage_{};  // дамаг (может прокачать герой)
+  float bullet_speed_{};  // скорость полета пули
+  float bullet_range_{};  // расстояние полета пули
+  int rate_of_fire_{};  // скорострельность пушки (кол-во выстрелов в минуту)
+  int64_t reloading_time_{};  // время перезарядки (может прокачать герой)
+  int clip_size_{};  // размер обоймы (может прокачать герой)
+  int current_bullets_in_clip_{};  // текущее кол-во патронов в обойме
 
   int64_t last_time_shooted_{};
   int64_t last_time_pressed_reload_{};

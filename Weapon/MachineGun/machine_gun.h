@@ -1,5 +1,5 @@
-#ifndef WEAPON_MACHINE_GUN_MACHINE_GUN_H_
-#define WEAPON_MACHINE_GUN_MACHINE_GUN_H_
+#ifndef WEAPON_MACHINEGUN_MACHINE_GUN_H_
+#define WEAPON_MACHINEGUN_MACHINE_GUN_H_
 
 #include "Weapon/weapon.h"
 
@@ -17,4 +17,4 @@ class MachineGun : public Weapon {
 
   void DrawWeapon(Painter *painter) override;
 };
-#endif  // WEAPON_MACHINE_GUN_MACHINE_GUN_H_
+#endif  // WEAPON_MACHINEGUN_MACHINE_GUN_H_

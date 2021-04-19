@@ -88,8 +88,9 @@ class RoomController : public BaseController {
   GameObjectId AddDefaultPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);
   void AddTree(float x, float y, float radius);
-  GameObjectId AddBullet(GameObjectId parent_id, float x, float y, float rotation,
-                 const std::shared_ptr<Weapon>& weapon);
+  GameObjectId AddBullet(GameObjectId parent_id, float x, float y,
+                         float rotation,
+                         const std::shared_ptr<Weapon>& weapon);
   void AddConstantObjects();
 
   Event GetEventOfGameObjectData(GameObjectId game_object_id) const;

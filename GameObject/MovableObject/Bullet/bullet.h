@@ -1,6 +1,9 @@
 #ifndef GAMEOBJECT_MOVABLEOBJECT_BULLET_BULLET_H_
 #define GAMEOBJECT_MOVABLEOBJECT_BULLET_BULLET_H_
 
+#include <vector>
+#include <memory>
+
 #include "GameObject/MovableObject/movable_object.h"
 
 class Bullet : public MovableObject {

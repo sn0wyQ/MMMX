@@ -57,7 +57,6 @@ QPointF Bullet::GetStartPosition() const {
 
 void Bullet::SetStartPosition(QPointF start_position) {
   start_position_ = start_position;
-
 }
 
 void Bullet::DrawRelatively(Painter* painter) {
