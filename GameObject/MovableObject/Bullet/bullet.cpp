@@ -60,7 +60,8 @@ void Bullet::SetStartPosition(QPointF start_position) {
 }
 
 void Bullet::DrawRelatively(Painter* painter) {
-  painter->DrawEllipse(QPointF(), 0.2f, 0.2f);
+  painter->DrawEllipse(QPointF(),
+                       GetWidth() / 2.f, GetHeight() / 2.f);
 }
 
 std::shared_ptr<GameObject> Bullet::Clone() const {

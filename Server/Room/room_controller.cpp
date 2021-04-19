@@ -293,17 +293,15 @@ GameObjectId RoomController::AddBullet(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
   QVector2D velocity = Math::GetVectorByAngle(rotation);
-  float start_x = x + velocity.x();
-  float start_y = y + velocity.y();
   velocity *= weapon->GetBulletSpeed();
   return model_->AddGameObject(GameObjectType::kBullet,
-                          {start_x, start_y, 0.f,
+                          {x, y, 0.f,
                                Constants::Weapon::kDefaultBulletRadius * 2.f,
                                Constants::Weapon::kDefaultBulletRadius * 2.f,
                                static_cast<int>(RigidBodyType::kCircle),
                                static_cast<float>(velocity.x()),
                                static_cast<float>(velocity.y()),
-                               parent_id, start_x, start_y,
+                               parent_id, x, y,
                                weapon->GetBulletDamage(),
                                weapon->GetBulletSpeed(),
                                weapon->GetBulletRange()});
@@ -326,7 +324,7 @@ void RoomController::AddConstantObjects() {
 int RoomController::ParseIdOfModelFromTimestamp(int64_t timestamp) const {
   int64_t latency = GetCurrentServerTime() - timestamp;
   latency = std::max(static_cast<int64_t>(0), latency);
-  int latency_in_ticks = latency / Constants::kTimeToTick;
+  int latency_in_ticks = static_cast<int>(latency / Constants::kTimeToTick);
   return static_cast<int>(models_cache_.size()) - 1 - latency_in_ticks;
 }
 
