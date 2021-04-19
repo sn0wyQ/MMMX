@@ -60,6 +60,7 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
 void GameModel::DeleteGameObject(GameObjectId game_object_id) {
   auto iter = game_objects_.find(game_object_id);
   if (iter == game_objects_.end()) {
+    qInfo() << "gay";
     return;
   }
   GameObjectType type = iter->second->GetType();
@@ -86,6 +87,16 @@ std::vector<std::shared_ptr<GameObject>>
   std::vector<std::shared_ptr<GameObject>> result;
   for (const auto& object : game_objects_) {
     result.push_back(object.second);
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<Bullet>> GameModel::GetAllBullets() const {
+  std::vector<std::shared_ptr<Bullet>> result;
+  for (const auto& object : game_objects_) {
+    if (object.second->GetType() == GameObjectType::kBullet) {
+      result.push_back(std::dynamic_pointer_cast<Bullet>(object.second));
+    }
   }
   return result;
 }

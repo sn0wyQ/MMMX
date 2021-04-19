@@ -114,10 +114,12 @@ class ClientController : public BaseController {
   void SetTimeDifferenceEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
+
   void SendGameInfoToInterpolateEvent(const Event& event) override;
-  void AddLocalPlayerGameObjectEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void GameObjectLeftFovEvent(const Event& event) override;
+  void AddLocalPlayerGameObjectEvent(const Event& event) override;
+  void UpdateLocalPlayerSizeEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;

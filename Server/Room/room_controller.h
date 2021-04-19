@@ -15,6 +15,7 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
+#include "GameObject/RigidBody/object_collision.h"
 #include "Model/room_game_model.h"
 #include "Server/Room/room_settings.h"
 #include "constants.h"
@@ -82,6 +83,7 @@ class RoomController : public BaseController {
 
   void RecalculateModel(const ModelData& model_data);
   void TickObjectsInModel(const ModelData& model_data);
+  void ProcessBulletsHits(const ModelData& model_data);
 
   GameObjectId AddDefaultPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);

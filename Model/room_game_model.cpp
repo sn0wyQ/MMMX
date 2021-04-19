@@ -1,13 +1,11 @@
 #include "room_game_model.h"
 
-RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {}
+RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {
+  next_game_object_id_ = model.next_game_object_id_;
+}
 
-GameObjectId RoomGameModel::GetNextUnusedGameObjectId() const {
-  GameObjectId game_object_id = 1;
-  while (GameModel::IsGameObjectIdTaken(game_object_id)) {
-    game_object_id++;
-  }
-  return game_object_id;
+GameObjectId RoomGameModel::GetNextUnusedGameObjectId() {
+  return next_game_object_id_++;
 }
 
 GameObjectId RoomGameModel::AddGameObject(GameObjectType type,

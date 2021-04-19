@@ -346,10 +346,6 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   auto game_object_type = event.GetArg<GameObjectType>(1);
   auto sent_time = static_cast<int64_t>(event.GetArg<qint64>(2));
   auto event_type = event.GetArg<EventType>(3);
-  if (model_->IsLocalPlayerSet() &&
-      game_object_id == model_->GetLocalPlayer()->GetId()) {
-    return;
-  }
   sent_time = std::max(
       GetCurrentServerTime() - Constants::kInterpolationMSecs, sent_time);
   if (event_type == EventType::kUpdateGameObjectData) {
@@ -365,4 +361,10 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_->RemoveScheduled(player_id);
   game_state_ = GameState::kGameNotStarted;
   view_->Update();
+}
+
+void ClientController::UpdateLocalPlayerSizeEvent(const Event& event) {
+  auto local_player = model_->GetLocalPlayer();
+  local_player->SetWidth(event.GetArg<float>(0));
+  local_player->SetHeight(event.GetArg<float>(1));
 }

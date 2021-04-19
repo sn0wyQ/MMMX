@@ -49,7 +49,8 @@ void ClientGameModel::AddScheduledUpdate(
     GameObjectId game_object_id, Variable variable,
     const ClientGameModel::UpdateVariable& update) {
   auto map = &scheduled_updates_[static_cast<uint32_t>(variable)];
-  if (map->find(game_object_id) != map->end()) {
+  if (map->find(game_object_id) != map->end()
+    && !map->at(game_object_id).empty()) {
     auto last_update = map->at(game_object_id).back();
     auto last_update_value = last_update.value;
     if (this->IsGameObjectIdTaken(game_object_id)) {

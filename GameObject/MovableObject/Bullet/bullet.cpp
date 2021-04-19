@@ -34,6 +34,11 @@ std::vector<QVariant> Bullet::GetParams() const {
   return result;
 }
 
+void Bullet::OnTick(int delta_time) {
+  // need_to_delete ставить
+  MovableObject::OnTick(delta_time);
+}
+
 GameObjectType Bullet::GetType() const {
   return GameObjectType::kBullet;
 }

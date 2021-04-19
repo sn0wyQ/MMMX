@@ -57,8 +57,8 @@ void RoomController::SendEvent(const Event& event) {
 void RoomController::OnTick(int delta_time) {
   models_cache_.push_back({delta_time,
     std::make_shared<RoomGameModel>(*model_)});
-  this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
+  this->RecalculateModel(models_cache_.back());
   for (const auto& player_id : this->GetAllPlayerIds()) {
     // Рассказываем НАМ о других с учетом FOV
     SendGameObjectsDataToPlayer(player_id);
@@ -70,12 +70,42 @@ void RoomController::OnTick(int delta_time) {
 
 void RoomController::RecalculateModel(const ModelData& model_data) {
   this->TickObjectsInModel(model_data);
+  this->ProcessBulletsHits(model_data);
 }
 
 void RoomController::TickObjectsInModel(const ModelData& model_data) {
   auto game_objects = model_data.model->GetAllGameObjects();
   for (const auto& game_object : game_objects) {
     game_object->OnTick(model_data.delta_time);
+  }
+}
+
+void RoomController::ProcessBulletsHits(const ModelData& model_data) {
+  auto game_objects = model_data.model->GetAllGameObjects();
+  auto bullets = model_data.model->GetAllBullets();
+  std::vector<GameObjectId> objects_to_delete;
+  for (const auto& bullet : bullets) {
+    auto object_collided =
+        ObjectCollision::GetObjectBulletCollidedWith(bullet, game_objects);
+    if (object_collided != nullptr) {
+      this->AddEventToSendToAllPlayers(
+          GetEventOfGameObjectLeftFov(bullet->GetId()));
+      objects_to_delete.push_back(bullet->GetId());
+
+      // Temporarily
+      if (object_collided->GetType() == GameObjectType::kPlayer) {
+        object_collided->SetWidth(object_collided->GetWidth() * 0.9f);
+        object_collided->SetHeight(object_collided->GetHeight() * 0.9f);
+        auto object_id = object_collided->GetId();
+        this->AddEventToSendToSinglePlayer(
+            Event(EventType::kUpdateLocalPlayerSize,
+                  object_collided->GetWidth(), object_collided->GetHeight()),
+                  object_id);
+      }
+    }
+  }
+  for (const auto& game_object_id : objects_to_delete) {
+    model_data.model->DeleteGameObject(game_object_id);
   }
 }
 
@@ -208,6 +238,9 @@ Event RoomController::GetEventOfGameObjectLeftFov(
 void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
   for (const auto& object : model_->GetAllGameObjects()) {
     auto sender_receiver_pair = std::make_pair(object->GetId(), player_id);
+    if (object->GetId() == player_id) {
+      continue;
+    }
     if (this->IsGameObjectInFov(object->GetId(), player_id)) {
       is_first_in_fov_of_second_.insert(sender_receiver_pair);
       this->AddEventToSendToSinglePlayer(
@@ -221,6 +254,7 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
   }
 }
 
+
 bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
                                        GameObjectId player_id) {
   auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
@@ -231,17 +265,15 @@ bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
   return player->GetShortestDistance(game_object) < player->GetFovRadius();
 }
 
-
 GameObjectId RoomController::AddDefaultPlayer() {
-  float new_fov = Constants::kDefaultEntityFov * (GetPlayersCount() + 1);
-  float new_radius = Constants::kDefaultPlayerRadius;
   return model_->AddGameObject(
       GameObjectType::kPlayer,
       {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
-       Constants::kDefaultPlayerRotation, new_radius * 2,
-       new_radius * 2,
+       Constants::kDefaultPlayerRotation, Constants::kDefaultPlayerRadius * 2,
+       Constants::kDefaultPlayerRadius * 2,
        static_cast<int>(RigidBodyType::kCircle),
-       0.f, 0.f, new_fov, static_cast<int>(WeaponType::kMachineGun)});
+       0.f, 0.f, Constants::kDefaultEntityFov * 2.f,
+       static_cast<int>(WeaponType::kMachineGun)});
 }
 
 void RoomController::AddBox(float x, float y, float rotation,

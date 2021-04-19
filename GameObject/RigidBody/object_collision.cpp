@@ -158,4 +158,27 @@ void MoveWithSlidingCollision(
   ObjectCollision::MoveAlongTangents(main, objects, force, tangents);
 }
 
+std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
+    const std::shared_ptr<Bullet>& main,
+    const std::vector<std::shared_ptr<GameObject>>& objects) {
+  for (const auto& object : objects) {
+    if(object->GetId() == main->GetId()) {
+      continue;
+    }
+    if(object->GetId() == main->GetParentId()) {
+      continue;
+    }
+
+    QVector2D offset = QVector2D(object->GetX() - main->GetX(),
+                                 object->GetY() - main->GetY());
+    float rotation = object->GetRotation();
+    if (!IntersectChecker::GetIntersectPointsBodies(
+        main->GetRigidBody(), object->GetRigidBody(),
+        offset, rotation).empty()) {
+      return object;
+    }
+  }
+  return nullptr;
+}
+
 }  // namespace ObjectCollision

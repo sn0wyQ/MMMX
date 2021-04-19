@@ -130,10 +130,12 @@ float GameObject::GetHeight() const {
 
 void GameObject::SetWidth(float width) {
   width_ = width;
+  rigid_body_->SetWidth(width_);
 }
 
 void GameObject::SetHeight(float height) {
   height_ = height;
+  rigid_body_->SetHeight(width_);
 }
 
 bool GameObject::IsMovable() const {

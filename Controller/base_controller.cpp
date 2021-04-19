@@ -24,19 +24,22 @@ BaseController::BaseController() {
     std::bind(&BaseController::SetTimeDifferenceEvent, this, _1));
 
   // ------------------- GAME EVENTS -------------------
-
-  SetFunctionForEventType(EventType::kSendPlayerShooting,
-    std::bind(&BaseController::SendPlayerShootingEvent, this, _1));
-  SetFunctionForEventType(EventType::kAddLocalPlayerGameObject,
-    std::bind(&BaseController::AddLocalPlayerGameObjectEvent, this, _1));
   SetFunctionForEventType(EventType::kSendGameInfoToInterpolate,
-    std::bind(&BaseController::SendGameInfoToInterpolateEvent, this, _1));
+    std::bind(&BaseController::SendGameInfoToInterpolateEvent,
+              this, _1));
   SetFunctionForEventType(EventType::kUpdateGameObjectData,
     std::bind(&BaseController::UpdateGameObjectDataEvent, this, _1));
   SetFunctionForEventType(EventType::kGameObjectLeftFov,
     std::bind(&BaseController::GameObjectLeftFovEvent, this, _1));
   SetFunctionForEventType(EventType::kSendControls,
     std::bind(&BaseController::SendControlsEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendPlayerShooting,
+    std::bind(&BaseController::SendPlayerShootingEvent, this, _1));
+  SetFunctionForEventType(EventType::kAddLocalPlayerGameObject,
+    std::bind(&BaseController::AddLocalPlayerGameObjectEvent,
+              this, _1));
+  SetFunctionForEventType(EventType::kUpdateLocalPlayerSize,
+    std::bind(&BaseController::UpdateLocalPlayerSizeEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }
