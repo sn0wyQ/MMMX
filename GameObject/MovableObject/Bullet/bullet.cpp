@@ -1,5 +1,5 @@
 #include "bullet.h"
-#include <iostream>
+
 Bullet::Bullet(GameObjectId bullet_id) : MovableObject(bullet_id) {}
 
 void Bullet::SetParams(std::vector<QVariant> params) {
