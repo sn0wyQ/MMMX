@@ -29,3 +29,10 @@ float Math::GetRotationInOtherAxis(float rotation) {
   }
   return new_rotation;
 }
+
+QVector2D Math::GetVectorByAngle(float rotation) {
+  float radians = Math::DegreesToRadians(rotation);
+  QVector2D result(std::cos(radians), std::sin(radians));
+  result.setY(-result.y());
+  return result.normalized();
+}

@@ -81,7 +81,8 @@ class RoomController : public BaseController {
   std::vector<Event> events_for_server_;
 
   void RecalculateModel(const ModelData& model_data);
-  void TickPlayersInModel(const ModelData& model_data);
+  void TickObjectsInModel(const ModelData& model_data);
+
   GameObjectId AddDefaultPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);
   void AddTree(float x, float y, float radius);

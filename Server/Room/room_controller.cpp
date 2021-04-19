@@ -69,13 +69,13 @@ void RoomController::OnTick(int delta_time) {
 }
 
 void RoomController::RecalculateModel(const ModelData& model_data) {
-  this->TickPlayersInModel(model_data);
+  this->TickObjectsInModel(model_data);
 }
 
-void RoomController::TickPlayersInModel(const ModelData& model_data) {
-  auto players = model_data.model->GetPlayers();
-  for (const auto& player : players) {
-    player->OnTick(model_data.delta_time);
+void RoomController::TickObjectsInModel(const ModelData& model_data) {
+  auto game_objects = model_data.model->GetAllGameObjects();
+  for (const auto& game_object : game_objects) {
+    game_object->OnTick(model_data.delta_time);
   }
 }
 
@@ -257,20 +257,21 @@ void RoomController::AddTree(float x, float y, float radius) {
                          static_cast<int>(RigidBodyType::kCircle)});
 }
 
-
 GameObjectId RoomController::AddBullet(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
-  QVector2D velocity(std::cos(rotation), std::sin(rotation));
+  QVector2D velocity = Math::GetVectorByAngle(rotation);
+  float start_x = x + velocity.x();
+  float start_y = y + velocity.y();
   velocity *= weapon->GetBulletSpeed();
   return model_->AddGameObject(GameObjectType::kBullet,
-                          {x, y, 0.f,
+                          {start_x, start_y, 0.f,
                                Constants::Weapon::kDefaultBulletRadius * 2.f,
                                Constants::Weapon::kDefaultBulletRadius * 2.f,
                                static_cast<int>(RigidBodyType::kCircle),
                                static_cast<float>(velocity.x()),
                                static_cast<float>(velocity.y()),
-                               parent_id, x, y,
+                               parent_id, start_x, start_y,
                                weapon->GetBulletDamage(),
                                weapon->GetBulletSpeed(),
                                weapon->GetBulletRange()});

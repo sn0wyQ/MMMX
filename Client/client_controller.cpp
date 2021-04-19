@@ -144,8 +144,14 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   auto local_player = model_->GetLocalPlayer();
 
+  std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding;
+  for (const auto& game_object : model_->GetAllGameObjects()) {
+    if (game_object->GetType() != GameObjectType::kBullet) {
+      game_objects_to_move_with_sliding.push_back(game_object);
+    }
+  }
   ObjectCollision::MoveWithSlidingCollision(
-      local_player, model_->GetAllGameObjects(),
+      local_player, game_objects_to_move_with_sliding,
       this->GetKeyForce(), delta_time);
 
   local_player->OnTick(delta_time);
