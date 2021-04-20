@@ -2,7 +2,7 @@
 
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), model_(std::make_shared<RoomGameModel>()),
-    room_settings_(room_settings) {
+      room_settings_(room_settings) {
   this->StartTicking();
   this->AddConstantObjects();
 }
@@ -56,13 +56,15 @@ void RoomController::SendEvent(const Event& event) {
 
 void RoomController::OnTick(int delta_time) {
   models_cache_.push_back({delta_time,
-    std::make_shared<RoomGameModel>(*model_)});
+                           std::make_shared<RoomGameModel>(*model_)});
+  this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
   this->RecalculateModel(models_cache_.back());
   for (const auto& player_id : this->GetAllPlayerIds()) {
     // Рассказываем НАМ о других с учетом FOV
     SendGameObjectsDataToPlayer(player_id);
   }
+  model_->UpdateGameObjectHashes();
   if (models_cache_.size() > Constants::kTicksToStore) {
     models_cache_.pop_front();
   }
@@ -134,7 +136,7 @@ void RoomController::AddClient(ClientId client_id) {
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
-          << "] Connected client (ID: " << client_id << ")";
+                              << "] Connected client (ID: " << client_id << ")";
   if (!this->HasFreeSpot()) {
     this->AddEventToSendToAllClients(Event(EventType::kStartGame));
     room_state_ = RoomState::kGameInProgress;
@@ -153,9 +155,9 @@ void RoomController::RemoveClient(ClientId client_id) {
                                          player_id));
   player_ids_.erase(client_id);
   room_state_ = (this->GetPlayersCount()
-      ? RoomState::kWaitingForClients : RoomState::kGameFinished);
+                 ? RoomState::kWaitingForClients : RoomState::kGameFinished);
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
-                    << "] Removed Player ID: " << player_id;
+                              << "] Removed Player ID: " << player_id;
 }
 
 bool RoomController::HasFreeSpot() const {
@@ -180,7 +182,7 @@ int RoomController::GetPlayersCount() const {
 
 std::vector<ClientId> RoomController::GetAllClientsIds() const {
   std::vector<ClientId> result;
-  for (auto [client_id, player_id] : player_ids_) {
+  for (auto[client_id, player_id] : player_ids_) {
     result.push_back(client_id);
   }
   return result;
@@ -188,7 +190,7 @@ std::vector<ClientId> RoomController::GetAllClientsIds() const {
 
 std::vector<GameObjectId> RoomController::GetAllPlayerIds() const {
   std::vector<GameObjectId> result;
-  for (auto [client_id, player_id] : player_ids_) {
+  for (auto[client_id, player_id] : player_ids_) {
     result.push_back(player_id);
   }
   return result;
@@ -211,7 +213,7 @@ QString RoomController::GetControllerName() const {
 }
 
 ClientId RoomController::PlayerIdToClientId(GameObjectId player_id) const {
-  for (auto [client_id, player_id_in] : player_ids_) {
+  for (auto[client_id, player_id_in] : player_ids_) {
     if (player_id == player_id_in) {
       return client_id;
     }
@@ -255,9 +257,13 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
       continue;
     }
     if (this->IsGameObjectInFov(object->GetId(), player_id)) {
+      if (is_first_in_fov_of_second_.find(sender_receiver_pair)
+          == is_first_in_fov_of_second_.end() ||
+          model_->IsNeededToSendGameObjectData(object->GetId())) {
+        this->AddEventToSendToSinglePlayer(
+            GetEventOfGameObjectData(object->GetId()), player_id);
+      }
       is_first_in_fov_of_second_.insert(sender_receiver_pair);
-      this->AddEventToSendToSinglePlayer(
-          GetEventOfGameObjectData(object->GetId()), player_id);
     } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
         != is_first_in_fov_of_second_.end()) {
       is_first_in_fov_of_second_.erase(sender_receiver_pair);
@@ -368,7 +374,7 @@ void RoomController::SendControlsEvent(const Event& event) {
       break;
     }
     auto player_in_model
-      = cur_model->GetPlayerByPlayerId(player_id);
+        = cur_model->GetPlayerByPlayerId(player_id);
     player_in_model->SetPosition(position_to_set);
     player_in_model->SetVelocity(velocity);
     player_in_model->SetRotation(rotation);
