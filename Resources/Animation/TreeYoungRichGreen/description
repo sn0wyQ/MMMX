@@ -1,0 +1,12 @@
+# TreeYoungRichGreen
+
+idle:
+	waitrand	5000	10000
+	playframes	166 50  # was recorded in 25 fps, so %wait_time% is 50ms
+loop
+
+move:
+end
+
+shoot:
+end

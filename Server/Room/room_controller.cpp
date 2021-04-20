@@ -132,7 +132,7 @@ bool RoomController::IsWaitingForClients() const {
 }
 
 int RoomController::GetPlayersCount() const {
-  return player_ids_.size();
+  return static_cast<int>(player_ids_.size());
 }
 
 std::vector<ClientId> RoomController::GetAllClientsIds() const {
@@ -168,7 +168,7 @@ QString RoomController::GetControllerName() const {
 }
 
 ClientId RoomController::PlayerIdToClientId(GameObjectId player_id) const {
-  for (auto [client_id, player_id_in] : player_ids_) {
+  for (auto& [client_id, player_id_in] : player_ids_) {
     if (player_id == player_id_in) {
       return client_id;
     }
@@ -233,29 +233,30 @@ bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
 
 
 GameObjectId RoomController::AddDefaultPlayer() {
-  float new_fov = Constants::kDefaultEntityFov * (GetPlayersCount() + 1);
-  float new_radius = Constants::kDefaultPlayerRadius;
   return model_->AddGameObject(
       GameObjectType::kPlayer,
       {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
-       Constants::kDefaultPlayerRotation, new_radius * 2,
-       new_radius * 2,
+       Constants::kDefaultPlayerRotation,
+       Constants::kDefaultPlayerRadius * 2,
+       Constants::kDefaultPlayerRadius * 2,
        static_cast<int>(RigidBodyType::kCircle),
        0.f, 0.f,
-       new_fov});
+       Constants::kDefaultEntityFov});
 }
 
 void RoomController::AddBox(float x, float y, float rotation,
                             float width, float height) {
   model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, rotation, width, height,
-                         static_cast<int>(RigidBodyType::kRectangle)});
+                         static_cast<int>(RigidBodyType::kRectangle),
+                         static_cast<int>(AnimationType::kNone)});
 }
 
 void RoomController::AddTree(float x, float y, float radius) {
   model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, 0.f, radius * 2.f, radius * 2.f,
-                         static_cast<int>(RigidBodyType::kCircle)});
+                         static_cast<int>(RigidBodyType::kCircle),
+                         static_cast<int>(AnimationType::kTreeYoungRichGreen)});
 }
 
 void RoomController::AddConstantObjects() {

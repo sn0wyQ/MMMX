@@ -1,30 +1,33 @@
 #ifndef GAMEOBJECT_GAME_OBJECT_H_
 #define GAMEOBJECT_GAME_OBJECT_H_
 
-#include <vector>
-#include <utility>
-#include <memory>
 #include <deque>
+#include <memory>
+#include <utility>
+#include <vector>
 
-#include <QPoint>
 #include <QDebug>
+#include <QPoint>
+#include <QString>
 
-#include "constants.h"
+#include "Animation/animation.h"
 #include "Painter/painter.h"
 #include "Math/math.h"
 #include "GameObject/RigidBody/intersect_constants.h"
 #include "GameObject/RigidBody/rigid_body.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
+#include "constants.h"
 
 namespace GameObjectTypeWrapper {
 
 Q_NAMESPACE
 
 // enum for sending events
+// MUST be sorted in alphabet order
 enum class GameObjectType {
-  kPlayer,
-  kGameObject
+  kGameObject,
+  kPlayer
 };
 
 Q_ENUM_NS(GameObjectType)
@@ -39,7 +42,7 @@ class GameObject {
   explicit GameObject(GameObjectId id);
   GameObject(const GameObject& other);
 
-  virtual void OnTick(int delta_time) {}
+  virtual void OnTick(int delta_time);
   void Draw(Painter* painter);
   virtual void DrawRelatively(Painter* painter) {}
   virtual bool IsMovable() const;
@@ -72,6 +75,8 @@ class GameObject {
   void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
 
+  void SetAnimation(AnimationType animation_type);
+
   virtual std::shared_ptr<GameObject> Clone() const;
 
   void SetUpdatedTime(int64_t updated_time);
@@ -79,6 +84,7 @@ class GameObject {
 
  private:
   GameObjectId id_{Constants::kNullGameObjectId};
+  std::shared_ptr<Animation> animation_;
   QPointF position_{0.f, 0.f};
   // 0 is direction from left to right
   // Increasing counterclockwise

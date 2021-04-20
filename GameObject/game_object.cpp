@@ -26,7 +26,14 @@ GameObject::GameObject(const GameObject& other) {
   updated_time_ = other.updated_time_;
 }
 
+void GameObject::OnTick(int delta_time) {
+  animation_->UpdateAnimation(delta_time);
+}
+
 void GameObject::SetParams(std::vector<QVariant> params) {
+  auto animation_type = static_cast<AnimationType>(params.back().toInt());
+  SetAnimation(animation_type);
+  params.pop_back();
   auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
   if (rigid_body_ == nullptr) {
     switch (rigid_body_type) {
@@ -61,6 +68,7 @@ std::vector<QVariant> GameObject::GetParams() const {
   result.emplace_back(GetWidth());
   result.emplace_back(GetHeight());
   result.emplace_back(static_cast<int>(rigid_body_->GetType()));
+  result.emplace_back(static_cast<int>(animation_->GetType()));
   return result;
 }
 
@@ -97,11 +105,11 @@ void GameObject::SetY(float y) {
 }
 
 float GameObject::GetX() const {
-  return position_.x();
+  return static_cast<float>(position_.x());
 }
 
 float GameObject::GetY() const {
-  return position_.y();
+  return static_cast<float>(position_.y());
 }
 
 float GameObject::GetRotation() const {
@@ -155,6 +163,12 @@ GameObjectType GameObject::GetType() const {
 bool GameObject::IsFilteredByFov() const {
   // Temporarily. For testing FOV
   return true;
+}
+
+void GameObject::SetAnimation(AnimationType animation_type) {
+  if (!animation_) {
+    animation_ = std::make_shared<Animation>(animation_type);
+  }
 }
 
 std::shared_ptr<GameObject> GameObject::Clone() const {

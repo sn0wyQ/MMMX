@@ -26,6 +26,7 @@ std::vector<QVariant> MovableObject::GetParams() const {
 
 void MovableObject::OnTick(int delta_time) {
   ApplyVelocity(delta_time);
+  GameObject::OnTick(delta_time);
 }
 
 void MovableObject::ApplyVelocity(int delta_time) {

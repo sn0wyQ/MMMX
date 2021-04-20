@@ -1,7 +1,7 @@
 #include "game_model.h"
 
 GameModel::GameModel(const GameModel& other) {
-  for (const auto& [game_object_id, game_object] : other.game_objects_) {
+  for (const auto&[game_object_id, game_object] : other.game_objects_) {
     game_objects_.emplace(game_object_id, game_object->Clone());
   }
 }
@@ -51,7 +51,7 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
   game_objects_.emplace(std::make_pair(game_object_id, object));
   qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
                     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
-                        .valueToKey(static_cast<uint32_t>(type)));
+                        .valueToKey(static_cast<int>(type)));
 }
 
 void GameModel::DeleteGameObject(GameObjectId game_object_id) {
@@ -63,7 +63,7 @@ void GameModel::DeleteGameObject(GameObjectId game_object_id) {
   game_objects_.erase(iter);
   qInfo().noquote() << "[MODEL] Removed GameObject:" << game_object_id
     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
-        .valueToKey(static_cast<uint32_t>(type)));
+        .valueToKey(static_cast<int>(type)));
 }
 
 std::vector<std::shared_ptr<Player>> GameModel::GetPlayers() const {
@@ -115,5 +115,5 @@ void GameModel::AttachGameObject(
   game_objects_[game_object_id] = game_object;
   qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
      << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
-         .valueToKey(static_cast<uint32_t>(game_object->GetType())));
+         .valueToKey(static_cast<int>(game_object->GetType())));
 }
