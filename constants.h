@@ -1,6 +1,7 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
+#include <QCryptographicHash>
 #include <QString>
 #include <QUrl>
 
@@ -34,6 +35,7 @@ const QUrl kServerUrl =
     QUrl(QString("ws://") + kServerIp + ":" + QString::number(kServerPort));
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
+const auto kHashAlgorithm = QCryptographicHash::Algorithm::Md5;
 constexpr int kMSecsToStore = 1000;
 constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
 constexpr int64_t kInterpolationMSecs = 200;
