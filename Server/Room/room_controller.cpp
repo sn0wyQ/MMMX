@@ -59,7 +59,6 @@ void RoomController::OnTick(int delta_time) {
                            std::make_shared<RoomGameModel>(*model_)});
   this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
-  this->RecalculateModel(models_cache_.back());
   for (const auto& player_id : this->GetAllPlayerIds()) {
     // Рассказываем НАМ о других с учетом FOV
     SendGameObjectsDataToPlayer(player_id);
