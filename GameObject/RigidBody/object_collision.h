@@ -33,7 +33,8 @@ void MoveAlongTangents(
 
 std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
     const std::shared_ptr<Bullet>& main,
-    const std::vector<std::shared_ptr<GameObject>>& objects);
+    const std::vector<std::shared_ptr<GameObject>>& objects,
+    int delta_time, bool on_local);
 
 }  // namespace ObjectCollision
 

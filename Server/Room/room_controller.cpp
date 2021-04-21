@@ -70,8 +70,8 @@ void RoomController::OnTick(int delta_time) {
 }
 
 void RoomController::RecalculateModel(const ModelData& model_data) {
-  this->TickObjectsInModel(model_data);
   this->ProcessBulletsHits(model_data);
+  this->TickObjectsInModel(model_data);
   this->DeleteObjectsThatAreReadyToBeDeleted(model_data);
 }
 
@@ -100,7 +100,8 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
   std::vector<GameObjectId> objects_to_delete;
   for (const auto& bullet : bullets) {
     auto object_collided =
-        ObjectCollision::GetObjectBulletCollidedWith(bullet, game_objects);
+        ObjectCollision::GetObjectBulletCollidedWith(
+            bullet, game_objects, model_data.delta_time, false);
     if (object_collided != nullptr) {
       this->AddEventToSendToAllPlayers(
           GetEventOfGameObjectLeftFov(bullet->GetId()));

@@ -70,6 +70,9 @@ constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
+
+// Bullet collision
+constexpr int kAccuracy = 10;
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

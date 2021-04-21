@@ -172,15 +172,15 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 void ClientController::UpdateLocalBullets(int delta_time) {
   std::vector<GameObjectId> is_need_to_delete;
   for (const auto& bullet : model_->GetLocalBullets()) {
-    bullet->OnTick(delta_time);
     auto object_collided = ObjectCollision::GetObjectBulletCollidedWith(
-            bullet, model_->GetAllGameObjects());
+            bullet, model_->GetAllGameObjects(), delta_time, true);
     if (object_collided != nullptr) {
       bullet->SetIsNeedToDelete(true);
     }
     if (bullet->IsNeedToDelete()) {
       is_need_to_delete.push_back(bullet->GetId());
     }
+    bullet->OnTick(delta_time);
   }
 
   for (const auto& bullet_id : is_need_to_delete) {

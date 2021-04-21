@@ -160,29 +160,37 @@ void MoveWithSlidingCollision(
 
 std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
     const std::shared_ptr<Bullet>& main,
-    const std::vector<std::shared_ptr<GameObject>>& objects) {
-  for (const auto& object : objects) {
-    if (object->GetId() == main->GetId()) {
-      continue;
-    }
-    if (object->GetId() == main->GetParentId()) {
-      continue;
-    }
-    if (object->GetType() == GameObjectType::kBullet) {
-      auto bullet = std::dynamic_pointer_cast<Bullet>(object);
-      if (bullet->GetParentId() == main->GetParentId()) {
+    const std::vector<std::shared_ptr<GameObject>>& objects,
+    int delta_time, bool on_local) {
+  // Запускать функцию до тика пули
+  auto bullet_clone = std::dynamic_pointer_cast<Bullet>(main->Clone());
+  auto velocity = bullet_clone->GetVelocity();
+  auto velocity_part = velocity / Constants::kAccuracy;
+  bullet_clone->SetVelocity(velocity_part);
+  for (int i = 0; i < Constants::kAccuracy; i++) {
+    for (const auto& object : objects) {
+      if (!on_local && object->GetId() == bullet_clone->GetId()) {
         continue;
       }
+      if (object->GetId() == bullet_clone->GetParentId()) {
+        continue;
+      }
+      if (object->GetType() == GameObjectType::kBullet) {
+        auto bullet = std::dynamic_pointer_cast<Bullet>(object);
+        if (bullet->GetParentId() == bullet_clone->GetParentId()) {
+          continue;
+        }
+      }
+      QVector2D offset = QVector2D(object->GetX() - bullet_clone->GetX(),
+                                   object->GetY() - bullet_clone->GetY());
+      float rotation = object->GetRotation();
+      if (!IntersectChecker::GetIntersectPointsBodies(
+          bullet_clone->GetRigidBody(), object->GetRigidBody(),
+          offset, rotation).empty()) {
+        return object;
+      }
     }
-
-    QVector2D offset = QVector2D(object->GetX() - main->GetX(),
-                                 object->GetY() - main->GetY());
-    float rotation = object->GetRotation();
-    if (!IntersectChecker::GetIntersectPointsBodies(
-        main->GetRigidBody(), object->GetRigidBody(),
-        offset, rotation).empty()) {
-      return object;
-    }
+    bullet_clone->OnTick(delta_time);
   }
   return nullptr;
 }
