@@ -104,6 +104,7 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
 void ClientController::OnTickGameInProgress(int delta_time) {
   this->UpdateInterpolationInfo();
   this->UpdateLocalPlayer(delta_time);
+  this->UpdateAnimations(delta_time);
 }
 
 void ClientController::UpdateInterpolationInfo() {
@@ -123,7 +124,7 @@ void ClientController::UpdateInterpolationInfo() {
   }
 
   // Интерполируем все, о чем есть информация
-  for (const auto& [game_object_id, game_object_to_be_interpolated]
+  for (const auto&[game_object_id, game_object_to_be_interpolated]
     : model_->GetInterpolatorMap()) {
     if (!model_->IsGameObjectIdTaken(game_object_id)) {
       model_->AttachGameObject(game_object_id,
@@ -159,6 +160,12 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
                         local_player->GetY(),
                         local_player->GetVelocity(),
                         local_player->GetRotation()));
+}
+
+void ClientController::UpdateAnimations(int delta_time) {
+  for (const auto& object : model_->GetAllGameObjects()) {
+    object->UpdateAnimation(delta_time);
+  }
 }
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {

@@ -45,6 +45,24 @@ void Painter::DrawEllipse(const QPointF& center, float rx, float ry) {
               converter_->ScaleFromGameToScreen(ry));
 }
 
+void Painter::DrawImage(const QString& file_path,
+                        QPointF point,
+                        float w,
+                        float h,
+                        DrawImageType draw_image_type) {
+  converter_->ScaleFromGameToScreen(&point);
+  converter_->ScaleFromGameToScreen(&w);
+  converter_->ScaleFromGameToScreen(&h);
+
+  if (draw_image_type == DrawImageType::kUsePointAsCenter) {
+    point.rx() -= (w / 2.f);
+    point.ry() -= (h / 2.f);
+  }
+
+  QRectF image_frame(point, QSize(static_cast<int>(w), static_cast<int>(h)));
+  drawImage(image_frame, QImage(file_path));
+}
+
 void Painter::DrawTriangle(const QPointF& p1,
                            const QPointF& p2,
                            const QPointF& p3) {
@@ -56,8 +74,8 @@ void Painter::DrawTriangle(const QPointF& p1,
 }
 
 void Painter::DrawRect(float x, float y, float width, float height) {
-  drawRect(converter_->ScaleFromGameToScreen(x),
-           converter_->ScaleFromGameToScreen(y),
-           converter_->ScaleFromGameToScreen(width),
-           converter_->ScaleFromGameToScreen(height));
+  drawRect(QRectF(converter_->ScaleFromGameToScreen(x),
+                  converter_->ScaleFromGameToScreen(y),
+                  converter_->ScaleFromGameToScreen(width),
+                  converter_->ScaleFromGameToScreen(height)));
 }

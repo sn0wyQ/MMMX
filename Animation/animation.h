@@ -3,13 +3,16 @@
 
 #include <exception>
 #include <limits>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include <QDebug>
 #include <QFile>
 #include <QMetaObject>
 #include <QMetaType>
 #include <QRandomGenerator>
+#include <QRegExp>
 #include <QString>
 #include <QStringList>
 
@@ -75,11 +78,13 @@ Q_ENUM_NS(AnimationState)
 
 enum class AnimationType {
   // MUST stay -1, so first "real" animation type would be 0
-  // Used for objects without images (just drawn for example)
+  // Used for objects without images (that are just drawn for example)
   kNone = -1,
 
   kTree,
-  kTreeYoungRichGreen
+  kTreeYoungRichGreen,
+
+  SIZE
 };
 
 Q_ENUM_NS(AnimationType)
@@ -104,7 +109,7 @@ class Animation {
   Animation() = default;
   explicit Animation(AnimationType animation_type);
 
-  void UpdateAnimation(int delta_time);
+  void Update(int delta_time);
   void SetAnimationState(AnimationState animation_state, bool forced = false);
 
   QString GetCurrentFramePath() const;
@@ -112,17 +117,25 @@ class Animation {
   AnimationType GetType() const;
 
  private:
-  void ParseAnimation(AnimationType animation_type);
+  void ParseAnimation();
   void ParseAnimationDescription(const QString& description_path);
+
+  // These are static so we parse each type of animation not more than one time.
+  // Even if we have multiple objects using same AnimationType,
+  // or if object was deleted and then restored
+  static std::vector<std::vector<std::vector<QString>>>
+      global_animation_frames_;
+  static std::vector<std::vector<InstructionList>>
+      global_animation_instructions_;
 
   AnimationState animation_state_ = AnimationState::kIdle;
   AnimationType animation_type_ = AnimationType::kNone;
 
   size_t animation_frame_index_ = 0;
-  std::vector<std::vector<QString>> animation_frames_;
+  std::vector<std::vector<QString>>* animation_frames_ = nullptr;
 
   size_t animation_instruction_index_ = 0;
-  std::vector<InstructionList> animation_instructions_;
+  std::vector<InstructionList>* animation_instructions_ = nullptr;
 
   size_t current_animation_time_ = 0;
   size_t go_to_next_instruction_time_ = 0;

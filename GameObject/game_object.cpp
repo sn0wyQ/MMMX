@@ -5,34 +5,36 @@ GameObject::GameObject(GameObjectId id)
 
 GameObject::GameObject(const GameObject& other) {
   id_ = other.id_;
+  SetAnimation(other.animation_->GetType(), true);
   if (rigid_body_ == nullptr) {
     switch (other.GetRigidBody()->GetType()) {
       case RigidBodyType::kCircle:
-        rigid_body_ = std::make_shared<RigidBodyCircle>();
+        rigid_body_ =
+            std::make_shared<RigidBodyCircle>();
         break;
       case RigidBodyType::kRectangle:
         rigid_body_ = std::make_shared<RigidBodyRectangle>();
         break;
     }
   }
+  rigid_body_->SetHeight(other.rigid_body_->GetHeight());
+  rigid_body_->SetWidth(other.rigid_body_->GetWidth());
   SetHeight(other.GetHeight());
   SetWidth(other.GetWidth());
   SetRotation(other.GetRotation());
   SetY(other.GetY());
   SetX(other.GetX());
-  rigid_body_->SetWidth(GetWidth());
-  rigid_body_->SetHeight(GetHeight());
   is_in_fov_ = other.is_in_fov_;
   updated_time_ = other.updated_time_;
-}
-
-void GameObject::OnTick(int delta_time) {
-  animation_->UpdateAnimation(delta_time);
 }
 
 void GameObject::SetParams(std::vector<QVariant> params) {
   auto animation_type = static_cast<AnimationType>(params.back().toInt());
   SetAnimation(animation_type);
+  params.pop_back();
+  float rigid_body_height = params.back().toFloat();
+  params.pop_back();
+  float rigid_body_width = params.back().toFloat();
   params.pop_back();
   auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
   if (rigid_body_ == nullptr) {
@@ -45,6 +47,8 @@ void GameObject::SetParams(std::vector<QVariant> params) {
         break;
     }
   }
+  rigid_body_->SetHeight(rigid_body_height);
+  rigid_body_->SetWidth(rigid_body_width);
   params.pop_back();
   SetHeight(params.back().toFloat());
   params.pop_back();
@@ -56,8 +60,6 @@ void GameObject::SetParams(std::vector<QVariant> params) {
   params.pop_back();
   SetX(params.back().toFloat());
   params.pop_back();
-  rigid_body_->SetWidth(GetWidth());
-  rigid_body_->SetHeight(GetHeight());
 }
 
 std::vector<QVariant> GameObject::GetParams() const {
@@ -68,6 +70,8 @@ std::vector<QVariant> GameObject::GetParams() const {
   result.emplace_back(GetWidth());
   result.emplace_back(GetHeight());
   result.emplace_back(static_cast<int>(rigid_body_->GetType()));
+  result.emplace_back(rigid_body_->GetWidth());
+  result.emplace_back(rigid_body_->GetHeight());
   result.emplace_back(static_cast<int>(animation_->GetType()));
   return result;
 }
@@ -76,7 +80,14 @@ void GameObject::Draw(Painter* painter) {
   painter->save();
   painter->Translate(position_);
   painter->RotateCounterClockWise(rotation_);
-  this->DrawRelatively(painter);
+  if (!animation_ || animation_->GetType() == AnimationType::kNone) {
+    this->DrawRelatively(painter);
+  } else {
+    painter->DrawImage(animation_->GetCurrentFramePath(),
+                       QPointF(),
+                       GetWidth(),
+                       GetHeight());
+  }
   if (Constants::kRigidBodyShow) {
     painter->setPen(Qt::red);
     rigid_body_->Draw(painter);
@@ -165,10 +176,14 @@ bool GameObject::IsFilteredByFov() const {
   return true;
 }
 
-void GameObject::SetAnimation(AnimationType animation_type) {
-  if (!animation_) {
+void GameObject::SetAnimation(AnimationType animation_type, bool forced) {
+  if (forced || !animation_) {
     animation_ = std::make_shared<Animation>(animation_type);
   }
+}
+
+void GameObject::UpdateAnimation(int delta_time) {
+  animation_->Update(delta_time);
 }
 
 std::shared_ptr<GameObject> GameObject::Clone() const {

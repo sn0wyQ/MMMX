@@ -240,6 +240,9 @@ GameObjectId RoomController::AddDefaultPlayer() {
        Constants::kDefaultPlayerRadius * 2,
        Constants::kDefaultPlayerRadius * 2,
        static_cast<int>(RigidBodyType::kCircle),
+       Constants::kDefaultPlayerRadius * 2,
+       Constants::kDefaultPlayerRadius * 2,
+       static_cast<int>(AnimationType::kNone),
        0.f, 0.f,
        Constants::kDefaultEntityFov});
 }
@@ -249,6 +252,7 @@ void RoomController::AddBox(float x, float y, float rotation,
   model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, rotation, width, height,
                          static_cast<int>(RigidBodyType::kRectangle),
+                         width, height,
                          static_cast<int>(AnimationType::kNone)});
 }
 
@@ -256,6 +260,7 @@ void RoomController::AddTree(float x, float y, float radius) {
   model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, 0.f, radius * 2.f, radius * 2.f,
                          static_cast<int>(RigidBodyType::kCircle),
+                         radius * 1.25f, radius * 1.25f,
                          static_cast<int>(AnimationType::kTreeYoungRichGreen)});
 }
 

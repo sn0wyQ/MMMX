@@ -42,7 +42,7 @@ class GameObject {
   explicit GameObject(GameObjectId id);
   GameObject(const GameObject& other);
 
-  virtual void OnTick(int delta_time);
+  virtual void OnTick(int delta_time) {}
   void Draw(Painter* painter);
   virtual void DrawRelatively(Painter* painter) {}
   virtual bool IsMovable() const;
@@ -75,7 +75,8 @@ class GameObject {
   void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
 
-  void SetAnimation(AnimationType animation_type);
+  void SetAnimation(AnimationType animation_type, bool forced = false);
+  void UpdateAnimation(int delta_time);
 
   virtual std::shared_ptr<GameObject> Clone() const;
 
