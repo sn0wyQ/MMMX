@@ -77,3 +77,19 @@ int Weapon::GetCurrentBulletsInClip() const {
 void Weapon::SetLastTimeShooted(int64_t cur_time) {
   last_time_shooted_ = cur_time;
 }
+
+std::vector<QVariant> Weapon::GetBulletParams(
+    GameObjectId parent_id, float x, float y, float rotation) const {
+  QVector2D velocity = Math::GetVectorByAngle(rotation);
+  velocity *= this->GetBulletSpeed();
+  return {x, y, 0.f,
+          Constants::Weapon::kDefaultBulletRadius * 2.f,
+          Constants::Weapon::kDefaultBulletRadius * 2.f,
+          static_cast<int>(RigidBodyType::kCircle),
+          static_cast<float>(velocity.x()),
+          static_cast<float>(velocity.y()),
+          parent_id, x, y,
+          this->GetBulletDamage(),
+          this->GetBulletSpeed(),
+          this->GetBulletRange()};
+}

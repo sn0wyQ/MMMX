@@ -83,6 +83,7 @@ class ClientController : public BaseController {
   void SetView(std::shared_ptr<AbstractClientView> view);
 
   void UpdateLocalPlayer(int delta_time);
+  void UpdateLocalBullets(int delta_time);
   void UpdateInterpolationInfo();
   int64_t GetCurrentServerTime() const override;
 

@@ -30,13 +30,13 @@ std::shared_ptr<GameObject> GameModel::GetNewEmptyGameObject(
   std::shared_ptr<GameObject> object;
   switch (type) {
     case GameObjectType::kPlayer:
-      object = std::make_unique<Player>(game_object_id);
+      object = std::make_shared<Player>(game_object_id);
       break;
     case GameObjectType::kGameObject:
-      object = std::make_unique<GameObject>(game_object_id);
+      object = std::make_shared<GameObject>(game_object_id);
       break;
     case GameObjectType::kBullet:
-      object = std::make_unique<Bullet>(game_object_id);
+      object = std::make_shared<Bullet>(game_object_id);
       break;
   }
   return object;

@@ -49,6 +49,9 @@ class Weapon {
   int GetCurrentBulletsInClip() const;
   void SetCurrentBulletsInClip(int current_bullets_in_clip);
 
+  std::vector<QVariant> GetBulletParams(
+      GameObjectId parent_id, float x, float y, float rotation) const;
+
  private:
   float bullet_damage_{};  // дамаг (может прокачать герой)
   float bullet_speed_{};  // скорость полета пули

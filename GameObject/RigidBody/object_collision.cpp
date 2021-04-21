@@ -168,6 +168,12 @@ std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
     if (object->GetId() == main->GetParentId()) {
       continue;
     }
+    if (object->GetType() == GameObjectType::kBullet) {
+      auto bullet = std::dynamic_pointer_cast<Bullet>(object);
+      if (bullet->GetParentId() == main->GetParentId()) {
+        continue;
+      }
+    }
 
     QVector2D offset = QVector2D(object->GetX() - main->GetX(),
                                  object->GetY() - main->GetY());

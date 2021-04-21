@@ -255,6 +255,14 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
     if (object->GetId() == player_id) {
       continue;
     }
+
+    if (object->GetType() == GameObjectType::kBullet) {
+      auto bullet = std::dynamic_pointer_cast<Bullet>(object);
+      if (bullet->GetParentId() == player_id) {
+        continue;
+      }
+    }
+
     if (this->IsGameObjectInFov(object->GetId(), player_id)) {
       if (is_first_in_fov_of_second_.find(sender_receiver_pair)
           == is_first_in_fov_of_second_.end() ||
@@ -310,19 +318,10 @@ void RoomController::AddTree(float x, float y, float radius) {
 GameObjectId RoomController::AddBullet(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
-  QVector2D velocity = Math::GetVectorByAngle(rotation);
-  velocity *= weapon->GetBulletSpeed();
-  return model_->AddGameObject(GameObjectType::kBullet,
-                          {x, y, 0.f,
-                               Constants::Weapon::kDefaultBulletRadius * 2.f,
-                               Constants::Weapon::kDefaultBulletRadius * 2.f,
-                               static_cast<int>(RigidBodyType::kCircle),
-                               static_cast<float>(velocity.x()),
-                               static_cast<float>(velocity.y()),
-                               parent_id, x, y,
-                               weapon->GetBulletDamage(),
-                               weapon->GetBulletSpeed(),
-                               weapon->GetBulletRange()});
+
+  return model_->AddGameObject(
+      GameObjectType::kBullet,
+      weapon->GetBulletParams(parent_id, x, y, rotation));
 }
 
 void RoomController::AddConstantObjects() {
@@ -406,21 +405,26 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
                 player_in_model->GetRotation(), player_in_model->GetWeapon());
   QPointF position_to_set =
       {player_in_model->GetX(), player_in_model->GetY()};
+  bool break_bullet = false;
+  bool break_player = false;
   while (id_of_model != static_cast<int>(models_cache_.size())) {
     auto cur_model = models_cache_[id_of_model].model;
-    if (!cur_model->IsGameObjectIdTaken(bullet_id)) {
-      break;
+    if (!break_bullet && cur_model->IsGameObjectIdTaken(bullet_id)) {
+      auto bullet_in_model = cur_model->GetGameObjectByGameObjectId(bullet_id);
+      bullet_in_model->SetPosition(position_to_set);
+      bullet_in_model->OnTick(models_cache_[id_of_model].delta_time);
+      position_to_set = bullet_in_model->GetPosition();
+    } else {
+      break_bullet = true;
     }
-    auto bullet_in_model = cur_model->GetGameObjectByGameObjectId(bullet_id);
-    bullet_in_model->SetPosition(position_to_set);
-    bullet_in_model->OnTick(models_cache_[id_of_model].delta_time);
-    position_to_set = bullet_in_model->GetPosition();
+
+    if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
+      auto player = cur_model->GetPlayerByPlayerId(player_id);
+      player->GetWeapon()->SetLastTimeShooted(timestamp);
+    } else {
+      break_player = true;
+    }
+
     id_of_model++;
   }
-  auto last_model = models_cache_.back().model;
-  if (!last_model->IsGameObjectIdTaken(player_id)) {
-    return;
-  }
-  auto last_player = last_model->GetPlayerByPlayerId(player_id);
-  last_player->GetWeapon()->SetLastTimeShooted(timestamp);
 }
