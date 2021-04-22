@@ -72,10 +72,10 @@ void RoomController::OnTick(int delta_time) {
 void RoomController::RecalculateModel(const ModelData& model_data) {
   this->ProcessBulletsHits(model_data);
   this->TickObjectsInModel(model_data);
-  this->DeleteObjectsThatAreReadyToBeDeleted(model_data);
+  this->DeleteReadyToBeDeletedObjects(model_data);
 }
 
-void RoomController::DeleteObjectsThatAreReadyToBeDeleted(
+void RoomController::DeleteReadyToBeDeletedObjects(
     const ModelData& model_data) {
   auto game_objects = model_data.model->GetAllGameObjects();
   for (const auto& game_object : game_objects) {
@@ -349,12 +349,12 @@ int RoomController::ParseIdOfModelFromTimestamp(int64_t timestamp) const {
 
 void RoomController::SendControlsEvent(const Event& event) {
   auto timestamp = event.GetArg<int64_t>(0);
-  auto id_of_model = ParseIdOfModelFromTimestamp(timestamp);
+  auto model_id = ParseIdOfModelFromTimestamp(timestamp);
   // Проигнорим, если чел нам прислал то, что он сделал очень давно
-  if (id_of_model < 0) {
+  if (model_id < 0) {
     return;
   }
-  auto current_model_data = models_cache_[id_of_model];
+  auto current_model_data = models_cache_[model_id];
   auto player_id = event.GetArg<GameObjectId>(1);
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
@@ -366,8 +366,8 @@ void RoomController::SendControlsEvent(const Event& event) {
   auto rotation = event.GetArg<float>(5);
   // А теперь с учетом этого проталкиваем его пересечение на будущее
   // учитывая velocity и rotation
-  while (id_of_model != static_cast<int>(models_cache_.size())) {
-    auto cur_model = models_cache_[id_of_model].model;
+  while (model_id != static_cast<int>(models_cache_.size())) {
+    auto cur_model = models_cache_[model_id].model;
     if (!cur_model->IsGameObjectIdTaken(player_id)) {
       break;
     }
@@ -376,20 +376,20 @@ void RoomController::SendControlsEvent(const Event& event) {
     player_in_model->SetPosition(position_to_set);
     player_in_model->SetVelocity(velocity);
     player_in_model->SetRotation(rotation);
-    player_in_model->OnTick(models_cache_[id_of_model].delta_time);
+    player_in_model->OnTick(models_cache_[model_id].delta_time);
     position_to_set = player_in_model->GetPosition();
-    id_of_model++;
+    model_id++;
   }
 }
 
 void RoomController::SendPlayerShootingEvent(const Event& event) {
   auto timestamp = event.GetArg<int64_t>(0);
-  auto id_of_model = ParseIdOfModelFromTimestamp(timestamp);
+  auto model_id = ParseIdOfModelFromTimestamp(timestamp);
   // Проигнорим, если чел нам прислал то, что он сделал очень давно
-  if (id_of_model < 0) {
+  if (model_id < 0) {
     return;
   }
-  auto current_model_data = models_cache_[id_of_model];
+  auto current_model_data = models_cache_[model_id];
   auto player_id = event.GetArg<GameObjectId>(1);
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
@@ -407,12 +407,12 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
       {player_in_model->GetX(), player_in_model->GetY()};
   bool break_bullet = false;
   bool break_player = false;
-  while (id_of_model != static_cast<int>(models_cache_.size())) {
-    auto cur_model = models_cache_[id_of_model].model;
+  while (model_id != static_cast<int>(models_cache_.size())) {
+    auto cur_model = models_cache_[model_id].model;
     if (!break_bullet && cur_model->IsGameObjectIdTaken(bullet_id)) {
       auto bullet_in_model = cur_model->GetGameObjectByGameObjectId(bullet_id);
       bullet_in_model->SetPosition(position_to_set);
-      bullet_in_model->OnTick(models_cache_[id_of_model].delta_time);
+      bullet_in_model->OnTick(models_cache_[model_id].delta_time);
       position_to_set = bullet_in_model->GetPosition();
     } else {
       break_bullet = true;
@@ -425,6 +425,6 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
       break_player = true;
     }
 
-    id_of_model++;
+    model_id++;
   }
 }

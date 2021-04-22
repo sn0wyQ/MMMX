@@ -159,11 +159,11 @@ void MoveWithSlidingCollision(
 }
 
 std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
-    const std::shared_ptr<Bullet>& main,
+    const std::shared_ptr<Bullet>& bullet,
     const std::vector<std::shared_ptr<GameObject>>& objects,
     int delta_time, bool on_local) {
   // Запускать функцию до тика пули
-  auto bullet_clone = std::dynamic_pointer_cast<Bullet>(main->Clone());
+  auto bullet_clone = std::dynamic_pointer_cast<Bullet>(bullet->Clone());
   auto velocity = bullet_clone->GetVelocity();
   auto velocity_part = velocity / Constants::kAccuracy;
   bullet_clone->SetVelocity(velocity_part);

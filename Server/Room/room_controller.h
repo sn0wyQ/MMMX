@@ -84,7 +84,7 @@ class RoomController : public BaseController {
   void RecalculateModel(const ModelData& model_data);
   void TickObjectsInModel(const ModelData& model_data);
   void ProcessBulletsHits(const ModelData& model_data);
-  void DeleteObjectsThatAreReadyToBeDeleted(const ModelData& model_data);
+  void DeleteReadyToBeDeletedObjects(const ModelData& model_data);
 
   GameObjectId AddDefaultPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);
