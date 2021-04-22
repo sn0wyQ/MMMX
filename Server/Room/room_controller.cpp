@@ -319,7 +319,6 @@ void RoomController::AddTree(float x, float y, float radius) {
 GameObjectId RoomController::AddBullet(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
-
   return model_->AddGameObject(
       GameObjectType::kBullet,
       weapon->GetBulletParams(parent_id, x, y, rotation));
