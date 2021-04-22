@@ -61,7 +61,7 @@ class Weapon {
   int clip_size_{};  // размер обоймы (может прокачать герой)
   int current_bullets_in_clip_{};  // текущее кол-во патронов в обойме
 
-  int64_t last_time_shooted_{};
+  int64_t last_time_shot_{};
   int64_t last_time_pressed_reload_{};
 };
 #endif  // WEAPON_WEAPON_H_
