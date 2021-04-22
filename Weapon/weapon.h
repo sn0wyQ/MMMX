@@ -23,7 +23,7 @@ class Weapon {
 
   void Reload(int64_t cur_time);
   bool IsPossibleToShoot(int64_t cur_time) const;
-  void SetLastTimeShooted(int64_t cur_time);
+  void SetLastTimeShot(int64_t cur_time);
   int64_t GetTimeBetweenShoots() const;
 
   virtual void DrawWeapon(Painter* painter) = 0;

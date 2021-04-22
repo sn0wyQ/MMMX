@@ -421,7 +421,7 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
 
     if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
       auto player = cur_model->GetPlayerByPlayerId(player_id);
-      player->GetWeapon()->SetLastTimeShooted(timestamp);
+      player->GetWeapon()->SetLastTimeShot(timestamp);
     } else {
       break_player = true;
     }

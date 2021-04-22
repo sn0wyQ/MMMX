@@ -74,7 +74,7 @@ int Weapon::GetCurrentBulletsInClip() const {
   return current_bullets_in_clip_;
 }
 
-void Weapon::SetLastTimeShooted(int64_t cur_time) {
+void Weapon::SetLastTimeShot(int64_t cur_time) {
   last_time_shot_ = cur_time;
 }
 
