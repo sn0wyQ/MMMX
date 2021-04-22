@@ -11,6 +11,7 @@
 #include <QRectF>
 #include <QRegion>
 #include <QSize>
+#include <QtSvg/QtSvg>
 
 #include "Converter/converter.h"
 
@@ -18,17 +19,17 @@ namespace PainterEnumsWrapper {
 
 Q_NAMESPACE
 
-enum class DrawImageType {
+enum class DrawPixmapType {
   kUsePointAsCenter,
   kUsePointAsTopLeftCorner
 };
 
-Q_ENUM_NS(DrawImageType)
+Q_ENUM_NS(DrawPixmapType)
 
 }  // namespace PainterEnumsWrapper
 
-using DrawImageType = PainterEnumsWrapper::DrawImageType;
-Q_DECLARE_METATYPE(DrawImageType)
+using DrawPixmapType = PainterEnumsWrapper::DrawPixmapType;
+Q_DECLARE_METATYPE(DrawPixmapType)
 
 class Painter : public QPainter {
  public:
@@ -39,7 +40,7 @@ class Painter : public QPainter {
   void SetClipCircle(float x,
                      float y,
                      float r,
-                     Qt::ClipOperation clip_operation = Qt::IntersectClip);
+                     Qt::ClipOperation clip_operation = Qt::ReplaceClip);
 
   void RotateClockWise(float degree);
   void RotateCounterClockWise(float degree);
@@ -51,10 +52,16 @@ class Painter : public QPainter {
                  QPointF point,
                  float w,
                  float h,
-                 DrawImageType draw_image_type =
-                     DrawImageType::kUsePointAsCenter);
-  void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
+                 DrawPixmapType draw_image_type =
+                     DrawPixmapType::kUsePointAsCenter);
+  void DrawPixmap(QPointF point,
+                  float w,
+                  float h,
+                  const QPixmap& pixmap,
+                  DrawPixmapType draw_image_type =
+                      DrawPixmapType::kUsePointAsCenter);
   void DrawRect(float x, float y, float width, float height);
+  void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
 
  private:
   std::shared_ptr<Converter> converter_;

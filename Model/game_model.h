@@ -4,7 +4,6 @@
 #include <map>
 #include <memory>
 #include <utility>
-#include <unordered_map>
 #include <vector>
 
 #include <QMetaEnum>
@@ -40,7 +39,7 @@ class GameModel {
                         const std::shared_ptr<GameObject>& game_object);
 
  private:
-  std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
+  std::map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
 };
 
 #endif  // MODEL_GAME_MODEL_H_

@@ -59,6 +59,9 @@ constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
 constexpr bool kRigidBodyShow = true;
 
+// GameObject
+constexpr float kMaximumDistanceToFovMultiplier = 1.25f;
+
 // MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
@@ -68,6 +71,7 @@ constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
+
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

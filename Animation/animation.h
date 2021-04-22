@@ -11,10 +11,13 @@
 #include <QFile>
 #include <QMetaObject>
 #include <QMetaType>
+#include <QPixmap>
 #include <QRandomGenerator>
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
+
+#include "Painter/painter.h"
 
 namespace AnimationEnumsWrapper {
 
@@ -112,7 +115,7 @@ class Animation {
   void Update(int delta_time);
   void SetAnimationState(AnimationState animation_state, bool forced = false);
 
-  QString GetCurrentFramePath() const;
+  void RenderFrame(Painter* painter, float w, float h) const;
 
   AnimationType GetType() const;
 
@@ -123,7 +126,7 @@ class Animation {
   // These are static so we parse each type of animation not more than one time.
   // Even if we have multiple objects using same AnimationType,
   // or if object was deleted and then restored
-  static std::vector<std::vector<std::vector<QString>>>
+  static std::vector<std::vector<std::vector<QPixmap>>>
       global_animation_frames_;
   static std::vector<std::vector<InstructionList>>
       global_animation_instructions_;
@@ -132,7 +135,7 @@ class Animation {
   AnimationType animation_type_ = AnimationType::kNone;
 
   size_t animation_frame_index_ = 0;
-  std::vector<std::vector<QString>>* animation_frames_ = nullptr;
+  std::vector<std::vector<QPixmap>>* animation_frames_ = nullptr;
 
   size_t animation_instruction_index_ = 0;
   std::vector<InstructionList>* animation_instructions_ = nullptr;

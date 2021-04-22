@@ -1,6 +1,6 @@
 #include "animation.h"
 
-std::vector<std::vector<std::vector<QString>>>
+std::vector<std::vector<std::vector<QPixmap>>>
     Animation::global_animation_frames_(static_cast<int>(AnimationType::SIZE));
 std::vector<std::vector<InstructionList>>
     Animation::global_animation_instructions_
@@ -64,7 +64,7 @@ void Animation::ParseAnimation() {
     QString full_path;
     while (full_path = current_path_prefix + CalcLeadingZeros(image_index)
         + QString::number(image_index) + ".png", QFile::exists(full_path)) {
-      animation_frames_->at(animation_state_index).push_back(full_path);
+      animation_frames_->at(animation_state_index).emplace_back(full_path);
       ++image_index;
     }
   }
@@ -240,10 +240,12 @@ void Animation::SetAnimationState(AnimationState animation_state, bool forced) {
   go_to_next_instruction_time_ = current_animation_time_;
 }
 
-QString Animation::GetCurrentFramePath() const {
-  return animation_frames_
-            ->at(static_cast<int>(animation_state_))
-                .at(animation_frame_index_);
+void Animation::RenderFrame(Painter* painter, float w, float h) const {
+  painter->DrawPixmap(QPointF(),
+                      w,
+                      h,
+                      animation_frames_->at(static_cast<int>(animation_state_))
+                        .at(animation_frame_index_));
 }
 
 AnimationType Animation::GetType() const {

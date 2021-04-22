@@ -83,10 +83,7 @@ void GameObject::Draw(Painter* painter) {
   if (!animation_ || animation_->GetType() == AnimationType::kNone) {
     this->DrawRelatively(painter);
   } else {
-    painter->DrawImage(animation_->GetCurrentFramePath(),
-                       QPointF(),
-                       GetWidth(),
-                       GetHeight());
+    animation_->RenderFrame(painter, GetWidth(), GetHeight());
   }
   if (Constants::kRigidBodyShow) {
     painter->setPen(Qt::red);
