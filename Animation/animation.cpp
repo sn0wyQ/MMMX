@@ -1,6 +1,6 @@
 #include "animation.h"
 
-std::vector<std::vector<std::vector<QPixmap>>>
+std::vector<std::vector<std::vector<std::shared_ptr<QSvgRenderer>>>>
     Animation::global_animation_frames_(static_cast<int>(AnimationType::SIZE));
 std::vector<std::vector<InstructionList>>
     Animation::global_animation_instructions_
@@ -40,12 +40,8 @@ QString CalcLeadingZeros(int x) {
 void Animation::ParseAnimation() {
   QString animation_name;
   switch (animation_type_) {
-    case AnimationType::kTree:
-      animation_name = "Tree";
-      break;
-
-    case AnimationType::kTreeYoungRichGreen:
-      animation_name = "TreeYoungRichGreen";
+    case AnimationType::kTreeGreen:
+      animation_name = "TreeGreen";
       break;
 
     default:
@@ -63,8 +59,9 @@ void Animation::ParseAnimation() {
     int image_index = 0;
     QString full_path;
     while (full_path = current_path_prefix + CalcLeadingZeros(image_index)
-        + QString::number(image_index) + ".png", QFile::exists(full_path)) {
-      animation_frames_->at(animation_state_index).emplace_back(full_path);
+        + QString::number(image_index) + ".svg", QFile::exists(full_path)) {
+      animation_frames_->at(animation_state_index).push_back(
+          std::make_shared<QSvgRenderer>(full_path));
       ++image_index;
     }
   }
@@ -241,11 +238,11 @@ void Animation::SetAnimationState(AnimationState animation_state, bool forced) {
 }
 
 void Animation::RenderFrame(Painter* painter, float w, float h) const {
-  painter->DrawPixmap(QPointF(),
-                      w,
-                      h,
-                      animation_frames_->at(static_cast<int>(animation_state_))
-                        .at(animation_frame_index_));
+  painter->RenderSvg(QPointF(),
+                     w,
+                     h,
+                     animation_frames_->at(static_cast<int>(animation_state_))
+                         .at(animation_frame_index_));
 }
 
 AnimationType Animation::GetType() const {

@@ -1,9 +1,9 @@
-#ifndef ANIMATION_H_
-#define ANIMATION_H_
+#ifndef ANIMATION_ANIMATION_H_
+#define ANIMATION_ANIMATION_H_
 
 #include <exception>
 #include <limits>
-#include <unordered_map>
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -16,6 +16,7 @@
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
+#include <QtSvg/QtSvg>
 
 #include "Painter/painter.h"
 
@@ -84,8 +85,7 @@ enum class AnimationType {
   // Used for objects without images (that are just drawn for example)
   kNone = -1,
 
-  kTree,
-  kTreeYoungRichGreen,
+  kTreeGreen,
 
   SIZE
 };
@@ -126,7 +126,7 @@ class Animation {
   // These are static so we parse each type of animation not more than one time.
   // Even if we have multiple objects using same AnimationType,
   // or if object was deleted and then restored
-  static std::vector<std::vector<std::vector<QPixmap>>>
+  static std::vector<std::vector<std::vector<std::shared_ptr<QSvgRenderer>>>>
       global_animation_frames_;
   static std::vector<std::vector<InstructionList>>
       global_animation_instructions_;
@@ -135,7 +135,8 @@ class Animation {
   AnimationType animation_type_ = AnimationType::kNone;
 
   size_t animation_frame_index_ = 0;
-  std::vector<std::vector<QPixmap>>* animation_frames_ = nullptr;
+  std::vector<std::vector<std::shared_ptr<QSvgRenderer>>>*
+      animation_frames_ = nullptr;
 
   size_t animation_instruction_index_ = 0;
   std::vector<InstructionList>* animation_instructions_ = nullptr;
@@ -144,4 +145,4 @@ class Animation {
   size_t go_to_next_instruction_time_ = 0;
 };
 
-#endif  // ANIMATION_H_
+#endif  // ANIMATION_ANIMATION_H_

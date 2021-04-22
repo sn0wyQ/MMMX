@@ -45,24 +45,6 @@ void Painter::DrawEllipse(const QPointF& center, float rx, float ry) {
               converter_->ScaleFromGameToScreen(ry));
 }
 
-void Painter::DrawImage(const QString& file_path,
-                        QPointF point,
-                        float w,
-                        float h,
-                        DrawPixmapType draw_image_type) {
-  converter_->ScaleFromGameToScreen(&point);
-  converter_->ScaleFromGameToScreen(&w);
-  converter_->ScaleFromGameToScreen(&h);
-
-  if (draw_image_type == DrawPixmapType::kUsePointAsCenter) {
-    point.rx() -= (w / 2.f);
-    point.ry() -= (h / 2.f);
-  }
-
-  QRectF image_frame(point, QSize(static_cast<int>(w), static_cast<int>(h)));
-  drawImage(image_frame, QImage(file_path));
-}
-
 void Painter::DrawPixmap(QPointF point,
                          float w,
                          float h,
@@ -97,4 +79,23 @@ void Painter::DrawTriangle(const QPointF& p1,
           << converter_->ScaleFromGameToScreen(p2)
           << converter_->ScaleFromGameToScreen(p3);
   drawPolygon(polygon);
+}
+
+void Painter::RenderSvg(QPointF point,
+                        float w,
+                        float h,
+                        const std::shared_ptr<QSvgRenderer>& svg_renderer,
+                        DrawPixmapType draw_pixmap_type) {
+  converter_->ScaleFromGameToScreen(&point);
+  converter_->ScaleFromGameToScreen(&w);
+  converter_->ScaleFromGameToScreen(&h);
+
+  if (draw_pixmap_type == DrawPixmapType::kUsePointAsCenter) {
+    point.rx() -= (w / 2.f);
+    point.ry() -= (h / 2.f);
+  }
+
+  QRectF pixmap_frame
+      (point, QSize(static_cast<int>(w), static_cast<int>(h)));
+  svg_renderer->render(this, pixmap_frame);
 }

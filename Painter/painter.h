@@ -48,12 +48,6 @@ class Painter : public QPainter {
   void Translate(const QPointF& delta);
 
   void DrawEllipse(const QPointF& center, float rx, float ry);
-  void DrawImage(const QString& file_path,
-                 QPointF point,
-                 float w,
-                 float h,
-                 DrawPixmapType draw_image_type =
-                     DrawPixmapType::kUsePointAsCenter);
   void DrawPixmap(QPointF point,
                   float w,
                   float h,
@@ -62,6 +56,13 @@ class Painter : public QPainter {
                       DrawPixmapType::kUsePointAsCenter);
   void DrawRect(float x, float y, float width, float height);
   void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
+
+  void RenderSvg(QPointF point,
+                 float w,
+                 float h,
+                 const std::shared_ptr<QSvgRenderer>& svg_renderer,
+                 DrawPixmapType draw_pixmap_type =
+                     DrawPixmapType::kUsePointAsCenter);
 
  private:
   std::shared_ptr<Converter> converter_;
