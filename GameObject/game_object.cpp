@@ -131,14 +131,24 @@ float GameObject::GetHeight() const {
 
 void GameObject::SetWidth(float width) {
   width_ = width;
+  rigid_body_->SetWidth(width_);
 }
 
 void GameObject::SetHeight(float height) {
   height_ = height;
+  rigid_body_->SetHeight(width_);
 }
 
 bool GameObject::IsMovable() const {
   return false;
+}
+
+bool GameObject::IsNeedToDelete() const {
+  return is_need_to_delete_;
+}
+
+void GameObject::SetIsNeedToDelete(bool is_need_to_delete) {
+  is_need_to_delete_ = is_need_to_delete;
 }
 
 bool GameObject::IsInFov() const {

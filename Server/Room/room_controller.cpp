@@ -2,7 +2,7 @@
 
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), model_(std::make_shared<RoomGameModel>()),
-    room_settings_(room_settings) {
+      room_settings_(room_settings) {
   this->StartTicking();
   this->AddConstantObjects();
 }
@@ -56,26 +56,71 @@ void RoomController::SendEvent(const Event& event) {
 
 void RoomController::OnTick(int delta_time) {
   models_cache_.push_back({delta_time,
-    std::make_shared<RoomGameModel>(*model_)});
+                           std::make_shared<RoomGameModel>(*model_)});
   this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
   for (const auto& player_id : this->GetAllPlayerIds()) {
     // Рассказываем НАМ о других с учетом FOV
     SendGameObjectsDataToPlayer(player_id);
   }
+  model_->UpdateGameObjectHashes();
   if (models_cache_.size() > Constants::kTicksToStore) {
     models_cache_.pop_front();
   }
 }
 
 void RoomController::RecalculateModel(const ModelData& model_data) {
-  this->TickPlayersInModel(model_data);
+  this->ProcessBulletsHits(model_data);
+  this->TickObjectsInModel(model_data);
+  this->DeleteReadyToBeDeletedObjects(model_data);
 }
 
-void RoomController::TickPlayersInModel(const ModelData& model_data) {
-  auto players = model_data.model->GetPlayers();
-  for (const auto& player : players) {
-    player->OnTick(model_data.delta_time);
+void RoomController::DeleteReadyToBeDeletedObjects(
+    const ModelData& model_data) {
+  auto game_objects = model_data.model->GetAllGameObjects();
+  for (const auto& game_object : game_objects) {
+    if (game_object->IsNeedToDelete()) {
+      this->AddEventToSendToAllPlayers(
+          GetEventOfGameObjectLeftFov(game_object->GetId()));
+      model_data.model->DeleteGameObject(game_object->GetId());
+    }
+  }
+}
+
+void RoomController::TickObjectsInModel(const ModelData& model_data) {
+  auto game_objects = model_data.model->GetAllGameObjects();
+  for (const auto& game_object : game_objects) {
+    game_object->OnTick(model_data.delta_time);
+  }
+}
+
+void RoomController::ProcessBulletsHits(const ModelData& model_data) {
+  auto game_objects = model_data.model->GetAllGameObjects();
+  auto bullets = model_data.model->GetAllBullets();
+  std::vector<GameObjectId> objects_to_delete;
+  for (const auto& bullet : bullets) {
+    auto object_collided =
+        ObjectCollision::GetObjectBulletCollidedWith(
+            bullet, game_objects, model_data.delta_time, false);
+    if (object_collided != nullptr) {
+      objects_to_delete.push_back(bullet->GetId());
+
+      // Temporarily
+      if (object_collided->GetType() == GameObjectType::kPlayer) {
+        object_collided->SetWidth(object_collided->GetWidth() * 0.9f);
+        object_collided->SetHeight(object_collided->GetHeight() * 0.9f);
+        auto object_id = object_collided->GetId();
+        this->AddEventToSendToSinglePlayer(
+            Event(EventType::kUpdateLocalPlayerSize,
+                  object_collided->GetWidth(), object_collided->GetHeight()),
+                  object_id);
+      }
+    }
+  }
+  for (const auto& game_object_id : objects_to_delete) {
+    this->AddEventToSendToAllPlayers(
+        GetEventOfGameObjectLeftFov(game_object_id));
+    model_data.model->DeleteGameObject(game_object_id);
   }
 }
 
@@ -91,7 +136,7 @@ void RoomController::AddClient(ClientId client_id) {
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
-          << "] Connected client (ID: " << client_id << ")";
+                              << "] Connected client (ID: " << client_id << ")";
   if (!this->HasFreeSpot()) {
     this->AddEventToSendToAllClients(Event(EventType::kStartGame));
     room_state_ = RoomState::kGameInProgress;
@@ -110,9 +155,9 @@ void RoomController::RemoveClient(ClientId client_id) {
                                          player_id));
   player_ids_.erase(client_id);
   room_state_ = (this->GetPlayersCount()
-      ? RoomState::kWaitingForClients : RoomState::kGameFinished);
+                 ? RoomState::kWaitingForClients : RoomState::kGameFinished);
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
-                    << "] Removed Player ID: " << player_id;
+                              << "] Removed Player ID: " << player_id;
 }
 
 bool RoomController::HasFreeSpot() const {
@@ -137,7 +182,7 @@ int RoomController::GetPlayersCount() const {
 
 std::vector<ClientId> RoomController::GetAllClientsIds() const {
   std::vector<ClientId> result;
-  for (auto [client_id, player_id] : player_ids_) {
+  for (auto[client_id, player_id] : player_ids_) {
     result.push_back(client_id);
   }
   return result;
@@ -145,7 +190,7 @@ std::vector<ClientId> RoomController::GetAllClientsIds() const {
 
 std::vector<GameObjectId> RoomController::GetAllPlayerIds() const {
   std::vector<GameObjectId> result;
-  for (auto [client_id, player_id] : player_ids_) {
+  for (auto[client_id, player_id] : player_ids_) {
     result.push_back(player_id);
   }
   return result;
@@ -168,7 +213,7 @@ QString RoomController::GetControllerName() const {
 }
 
 ClientId RoomController::PlayerIdToClientId(GameObjectId player_id) const {
-  for (auto [client_id, player_id_in] : player_ids_) {
+  for (auto[client_id, player_id_in] : player_ids_) {
     if (player_id == player_id_in) {
       return client_id;
     }
@@ -208,10 +253,25 @@ Event RoomController::GetEventOfGameObjectLeftFov(
 void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
   for (const auto& object : model_->GetAllGameObjects()) {
     auto sender_receiver_pair = std::make_pair(object->GetId(), player_id);
+    if (object->GetId() == player_id) {
+      continue;
+    }
+
+    if (object->GetType() == GameObjectType::kBullet) {
+      auto bullet = std::dynamic_pointer_cast<Bullet>(object);
+      if (bullet->GetParentId() == player_id) {
+        continue;
+      }
+    }
+
     if (this->IsGameObjectInFov(object->GetId(), player_id)) {
+      if (is_first_in_fov_of_second_.find(sender_receiver_pair)
+          == is_first_in_fov_of_second_.end() ||
+          model_->IsNeededToSendGameObjectData(object->GetId())) {
+        this->AddEventToSendToSinglePlayer(
+            GetEventOfGameObjectData(object->GetId()), player_id);
+      }
       is_first_in_fov_of_second_.insert(sender_receiver_pair);
-      this->AddEventToSendToSinglePlayer(
-          GetEventOfGameObjectData(object->GetId()), player_id);
     } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
         != is_first_in_fov_of_second_.end()) {
       is_first_in_fov_of_second_.erase(sender_receiver_pair);
@@ -221,6 +281,7 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
   }
 }
 
+
 bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
                                        GameObjectId player_id) {
   auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
@@ -228,24 +289,22 @@ bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
   if (!game_object->IsFilteredByFov()) {
     return true;
   }
-  return player->GetShortestDistance(game_object) < player->GetFovRadius();
+  return player->GetShortestDistance(game_object) <
+    player->GetFovRadius() * Constants::kFovMultiplier;
 }
 
-
 GameObjectId RoomController::AddDefaultPlayer() {
-  float new_fov = Constants::kDefaultEntityFov * (GetPlayersCount() + 1);
-  float new_radius = Constants::kDefaultPlayerRadius;
   return model_->AddGameObject(
       GameObjectType::kPlayer,
       {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
-       Constants::kDefaultPlayerRotation, new_radius * 2,
-       new_radius * 2,
+       Constants::kDefaultPlayerRotation, Constants::kDefaultPlayerRadius * 2,
+       Constants::kDefaultPlayerRadius * 2,
        static_cast<int>(RigidBodyType::kCircle),
-       0.f, 0.f,
-       new_fov,
+       0.f, 0.f, Constants::kDefaultEntityFov * 2.f,
        Constants::kDefaultMaxHealthPoints * 0.733f,
        Constants::kDefaultHealthRegenSpeed,
-       Constants::kDefaultMaxHealthPoints});
+       Constants::kDefaultMaxHealthPoints,
+       static_cast<int>(WeaponType::kMachineGun)});
 }
 
 void RoomController::AddBox(float x, float y, float rotation,
@@ -259,6 +318,14 @@ void RoomController::AddTree(float x, float y, float radius) {
   model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, 0.f, radius * 2.f, radius * 2.f,
                          static_cast<int>(RigidBodyType::kCircle)});
+}
+
+GameObjectId RoomController::AddBullet(GameObjectId parent_id,
+                               float x, float y, float rotation,
+                               const std::shared_ptr<Weapon>& weapon) {
+  return model_->AddGameObject(
+      GameObjectType::kBullet,
+      weapon->GetBulletParams(parent_id, x, y, rotation));
 }
 
 void RoomController::AddConstantObjects() {
@@ -275,23 +342,25 @@ void RoomController::AddConstantObjects() {
   this->AddTree(30.f, 30.f, 1.f);
 }
 
+int RoomController::GetModelIdByTimestamp(int64_t timestamp) const {
+  int64_t latency = GetCurrentServerTime() - timestamp;
+  latency = std::max(static_cast<int64_t>(0), latency);
+  int latency_in_ticks = static_cast<int>(latency / Constants::kTimeToTick);
+  return static_cast<int>(models_cache_.size()) - 1 - latency_in_ticks;
+}
+
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
-  // Узнаем в какой модели в прошлом мы передвинулись
   auto timestamp = event.GetArg<int64_t>(0);
-  int64_t latency = GetCurrentServerTime() - timestamp;
-  latency = std::max(static_cast<int64_t>(0), latency);
-  int64_t latency_in_ticks = latency / Constants::kTimeToTick;
-  int64_t id_of_model =
-      static_cast<int64_t>(models_cache_.size()) - 1 - latency_in_ticks;
+  auto model_id = GetModelIdByTimestamp(timestamp);
   // Проигнорим, если чел нам прислал то, что он сделал очень давно
-  if (id_of_model < 0) {
+  if (model_id < 0) {
     return;
   }
-  auto current_model = models_cache_[id_of_model];
+  auto current_model_data = models_cache_[model_id];
   auto player_id = event.GetArg<GameObjectId>(1);
-  if (!current_model.model->IsGameObjectIdTaken(player_id)) {
+  if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
   // Мы перемещаем человека в той самой модели из прошлого
@@ -301,18 +370,65 @@ void RoomController::SendControlsEvent(const Event& event) {
   auto rotation = event.GetArg<float>(5);
   // А теперь с учетом этого проталкиваем его пересечение на будущее
   // учитывая velocity и rotation
-  while (id_of_model != static_cast<int64_t>(models_cache_.size())) {
-    auto cur_model = models_cache_[id_of_model].model;
+  while (model_id != static_cast<int>(models_cache_.size())) {
+    auto cur_model = models_cache_[model_id].model;
     if (!cur_model->IsGameObjectIdTaken(player_id)) {
       break;
     }
     auto player_in_model
-      = cur_model->GetPlayerByPlayerId(player_id);
+        = cur_model->GetPlayerByPlayerId(player_id);
     player_in_model->SetPosition(position_to_set);
     player_in_model->SetVelocity(velocity);
     player_in_model->SetRotation(rotation);
-    player_in_model->OnTick(models_cache_[id_of_model].delta_time);
+    player_in_model->OnTick(models_cache_[model_id].delta_time);
     position_to_set = player_in_model->GetPosition();
-    id_of_model++;
+    model_id++;
+  }
+}
+
+void RoomController::SendPlayerShootingEvent(const Event& event) {
+  auto timestamp = event.GetArg<int64_t>(0);
+  auto model_id = GetModelIdByTimestamp(timestamp);
+  // Проигнорим, если чел нам прислал то, что он сделал очень давно
+  if (model_id < 0) {
+    return;
+  }
+  auto current_model_data = models_cache_[model_id];
+  auto player_id = event.GetArg<GameObjectId>(1);
+  if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  auto player_in_model =
+      current_model_data.model->GetPlayerByPlayerId(player_id);
+
+  if (!player_in_model->GetWeapon()->IsPossibleToShoot(timestamp)) {
+    return;
+  }
+  GameObjectId bullet_id =
+      AddBullet(player_id, player_in_model->GetX(), player_in_model->GetY(),
+                player_in_model->GetRotation(), player_in_model->GetWeapon());
+  QPointF position_to_set =
+      {player_in_model->GetX(), player_in_model->GetY()};
+  bool break_bullet = false;
+  bool break_player = false;
+  while (model_id != static_cast<int>(models_cache_.size())) {
+    auto cur_model = models_cache_[model_id].model;
+    if (!break_bullet && cur_model->IsGameObjectIdTaken(bullet_id)) {
+      auto bullet_in_model = cur_model->GetGameObjectByGameObjectId(bullet_id);
+      bullet_in_model->SetPosition(position_to_set);
+      bullet_in_model->OnTick(models_cache_[model_id].delta_time);
+      position_to_set = bullet_in_model->GetPosition();
+    } else {
+      break_bullet = true;
+    }
+
+    if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
+      auto player = cur_model->GetPlayerByPlayerId(player_id);
+      player->GetWeapon()->SetLastTimeShot(timestamp);
+    } else {
+      break_player = true;
+    }
+
+    model_id++;
   }
 }

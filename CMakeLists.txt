@@ -69,6 +69,7 @@ set(SOURCES
         Event/event_type.h
         GUI/GameView/game_view.cpp
         GUI/GameView/player_bar.cpp
+        GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
@@ -79,6 +80,7 @@ set(SOURCES
         GameObject/RigidBody/rigid_body_circle.cpp
         GameObject/RigidBody/rigid_body_rectangle.cpp
         GameObject/game_object.cpp
+        Hash/hash_calculator.cpp
         Interpolator/interpolator.cpp
         Math/math.cpp
         Model/client_game_model.cpp
@@ -89,6 +91,8 @@ set(SOURCES
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
+        Weapon/MachineGun/machine_gun.cpp
+        Weapon/weapon.cpp
         )
 
 # If necessary, add resources files

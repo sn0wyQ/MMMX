@@ -50,6 +50,10 @@ void ClientView::mouseMoveEvent(QMouseEvent* mouse_event) {
   controller_->MouseMoveEvent(mouse_event);
 }
 
+void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
+  controller_->MousePressEvent(mouse_event);
+}
+
 void ClientView::paintEvent(QPaintEvent* paint_event) {
   auto local_player_position = model_->IsLocalPlayerSet()
                       ? model_->GetLocalPlayer()->GetPosition()

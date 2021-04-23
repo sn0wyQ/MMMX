@@ -30,10 +30,13 @@ std::shared_ptr<GameObject> GameModel::GetNewEmptyGameObject(
   std::shared_ptr<GameObject> object;
   switch (type) {
     case GameObjectType::kPlayer:
-      object = std::make_unique<Player>(game_object_id);
+      object = std::make_shared<Player>(game_object_id);
       break;
     case GameObjectType::kGameObject:
-      object = std::make_unique<GameObject>(game_object_id);
+      object = std::make_shared<GameObject>(game_object_id);
+      break;
+    case GameObjectType::kBullet:
+      object = std::make_shared<Bullet>(game_object_id);
       break;
   }
   return object;
@@ -83,6 +86,16 @@ std::vector<std::shared_ptr<GameObject>>
   std::vector<std::shared_ptr<GameObject>> result;
   for (const auto& object : game_objects_) {
     result.push_back(object.second);
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<Bullet>> GameModel::GetAllBullets() const {
+  std::vector<std::shared_ptr<Bullet>> result;
+  for (const auto& object : game_objects_) {
+    if (object.second->GetType() == GameObjectType::kBullet) {
+      result.push_back(std::dynamic_pointer_cast<Bullet>(object.second));
+    }
   }
   return result;
 }

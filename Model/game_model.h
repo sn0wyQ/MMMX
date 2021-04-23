@@ -22,6 +22,7 @@ class GameModel {
       GameObjectId game_object_id) const;
 
   std::vector<std::shared_ptr<GameObject>> GetAllGameObjects() const;
+  std::vector<std::shared_ptr<Bullet>> GetAllBullets() const;
 
   std::vector<std::shared_ptr<GameObject>> GetFilteredByFovObjects() const;
   std::vector<std::shared_ptr<GameObject>> GetNotFilteredByFovObjects() const;

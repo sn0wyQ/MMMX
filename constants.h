@@ -1,6 +1,7 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
+#include <QCryptographicHash>
 #include <QString>
 #include <QUrl>
 
@@ -34,9 +35,10 @@ const QUrl kServerUrl =
     QUrl(QString("ws://") + kServerIp + ":" + QString::number(kServerPort));
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
+const auto kHashAlgorithm = QCryptographicHash::Algorithm::Md5;
 constexpr int kMSecsToStore = 1000;
 constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
-constexpr int64_t kInterpolationMSecs = 200;
+constexpr float kFovMultiplier = 1.7f;
 
 // Map
 constexpr float kDefaultMapWidth = 50.f;
@@ -53,6 +55,7 @@ constexpr RoomId kNullRoomId = -1;
 // Client
 const QString kWindowTitle = "MMMX | Version " + kVersionString;
 constexpr int kTimeToUpdateVarsAndPing = 1000;
+constexpr int64_t kInterpolationMSecs = 200;
 
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
@@ -66,12 +69,15 @@ constexpr float kDefaultMaxHealthPoints = 100.f;
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
-constexpr float kDefaultEntityFov = 10.5f;
+constexpr float kDefaultEntityFov = 12.f;
 constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
 constexpr float kDefaultHealthRegenSpeed = 0.001f;
+
+// Bullet collision
+constexpr int kAccuracy = 10;
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

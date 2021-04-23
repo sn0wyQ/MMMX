@@ -5,6 +5,7 @@ Entity::Entity(GameObjectId id) : MovableObject(id) {}
 Entity::Entity(const Entity& other) : MovableObject(other) {
   fov_radius_ = other.fov_radius_;
   health_points_ = other.health_points_;
+  health_regen_speed_ = other.health_regen_speed_;
   max_health_points_ = other.max_health_points_;
 }
 
@@ -15,14 +16,14 @@ void Entity::SetParams(std::vector<QVariant> params) {
   params.pop_back();
   SetHealthPoints(params.back().toFloat());
   params.pop_back();
-  fov_radius_ = params.back().toFloat();
+  SetFovRadius(params.back().toFloat());
   params.pop_back();
   MovableObject::SetParams(params);
 }
 
 std::vector<QVariant> Entity::GetParams() const {
   std::vector<QVariant> result = MovableObject::GetParams();
-  result.emplace_back(fov_radius_);
+  result.emplace_back(GetFovRadius());
   result.emplace_back(GetHealthPoints());
   result.emplace_back(GetHealthRegenSpeed());
   result.emplace_back(GetMaxHealthPoints());
@@ -123,4 +124,3 @@ void Entity::OnTick(int delta_tick) {
       max_health_points_);
   MovableObject::OnTick(delta_tick);
 }
-
