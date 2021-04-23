@@ -71,18 +71,18 @@ class BaseController : public QObject {
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
   virtual void SetPlayerIdToClient(const Event& event) {}
+  virtual void SetTimeDifferenceEvent(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
   virtual void UpdateVarsEvent(const Event& event) {}
-  virtual void SetTimeDifferenceEvent(const Event& event) {}
 
   // ------------------- GAME EVENTS -------------------
 
-  virtual void SendGameInfoToInterpolateEvent(const Event& event) {}
-  virtual void UpdateGameObjectDataEvent(const Event& event) {}
+  virtual void AddLocalPlayerGameObjectEvent(const Event& event) {}
   virtual void GameObjectLeftFovEvent(const Event& event) {}
   virtual void SendControlsEvent(const Event& event) {}
+  virtual void SendGameInfoToInterpolateEvent(const Event& event) {}
   virtual void SendPlayerShootingEvent(const Event& event) {}
-  virtual void AddLocalPlayerGameObjectEvent(const Event& event) {}
+  virtual void UpdateGameObjectDataEvent(const Event& event) {}
   virtual void UpdateLocalPlayerSizeEvent(const Event& event) {}
 };
 

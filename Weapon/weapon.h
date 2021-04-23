@@ -23,7 +23,7 @@ class Weapon {
 
   void Reload(int64_t cur_time);
   bool IsPossibleToShoot(int64_t cur_time) const;
-  void SetLastTimeShooted(int64_t cur_time);
+  void SetLastTimeShot(int64_t cur_time);
   int64_t GetTimeBetweenShoots() const;
 
   virtual void DrawWeapon(Painter* painter) = 0;
@@ -61,7 +61,7 @@ class Weapon {
   int clip_size_{};  // размер обоймы (может прокачать герой)
   int current_bullets_in_clip_{};  // текущее кол-во патронов в обойме
 
-  int64_t last_time_shooted_{};
+  int64_t last_time_shot_{};
   int64_t last_time_pressed_reload_{};
 };
 #endif  // WEAPON_WEAPON_H_

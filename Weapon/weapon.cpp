@@ -5,7 +5,7 @@ void Weapon::SetCurrentBulletsInClip(int current_bullets_in_clip) {
 }
 
 bool Weapon::IsPossibleToShoot(int64_t cur_time) const {
-  if (cur_time - last_time_shooted_ < GetTimeBetweenShoots()
+  if (cur_time - last_time_shot_ < GetTimeBetweenShoots()
       || GetCurrentBulletsInClip() <= 0
       || cur_time - last_time_pressed_reload_ < reloading_time_) {
     return false;
@@ -74,8 +74,8 @@ int Weapon::GetCurrentBulletsInClip() const {
   return current_bullets_in_clip_;
 }
 
-void Weapon::SetLastTimeShooted(int64_t cur_time) {
-  last_time_shooted_ = cur_time;
+void Weapon::SetLastTimeShot(int64_t cur_time) {
+  last_time_shot_ = cur_time;
 }
 
 std::vector<QVariant> Weapon::GetBulletParams(

@@ -319,7 +319,7 @@ void ClientController::MousePressEvent(QMouseEvent*) {
     if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
       return;
     }
-    local_player->GetWeapon()->SetLastTimeShooted(timestamp);
+    local_player->GetWeapon()->SetLastTimeShot(timestamp);
     model_->AddLocalBullet();
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
                                static_cast<qint64>(GetCurrentServerTime()),

@@ -4,6 +4,8 @@
 #include <deque>
 #include <memory>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "Model/game_model.h"
 
