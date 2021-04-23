@@ -390,9 +390,17 @@ void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
   model_->GetLocalPlayer()->SetHealthPoints(health_points);
 }
 
-void ClientController::LocalPlayerDied(const Event& event) {
+void ClientController::LocalPlayerDiedEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
   model_->GetLocalPlayer()->Revive();
+}
+
+void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto experience_to_add = event.GetArg<float>(0);
+  model_->GetLocalPlayer()->IncreaseExperience(experience_to_add);
 }

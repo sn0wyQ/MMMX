@@ -78,6 +78,11 @@ constexpr float kDefaultHealthRegenSpeed = 0.001f;
 
 // Bullet collision
 constexpr int kAccuracy = 10;
+
+constexpr float kExpForLevel[] = {
+    10, 15, 20, 25, 30, 35, 40, 45, 50, 55
+};
+constexpr float kExpMultiplier = 5.f;
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

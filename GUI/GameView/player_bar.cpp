@@ -49,6 +49,9 @@ void PlayerBar::paintEvent(QPaintEvent* paint_event) {
                    + QString::number(max_hp) + " (+"
                    + QString::number(regen_hp_in_sec_int) + ")");
 
+  int cur_level = local_player->GetLevel();
+  auto cur_exp = static_cast<int>(local_player->GetCurrentExp());
+  float exp_for_level = Constants::kExpForLevel[cur_level - 1];
   float exp_bar_x = 25.f;
   float exp_bar_y = 45.f;
   float exp_bar_width = 50.f;
@@ -58,14 +61,17 @@ void PlayerBar::paintEvent(QPaintEvent* paint_event) {
                                     exp_bar_width,
                                     exp_bar_height));
   painter.setBrush(Qt::darkYellow);
-  float exp_ratio = 0.05f;
+  float exp_ratio = local_player->GetCurrentExp()
+      / exp_for_level;
   painter.drawRect(RectWithPercents(
       exp_bar_x, exp_bar_y,
       exp_bar_width * exp_ratio, exp_bar_height));
   painter.drawText(RectWithPercents(exp_bar_x, exp_bar_y,
                                     exp_bar_width,
                                     exp_bar_height), Qt::AlignCenter,
-                   "Level 0 : (0 / 0)");
+                   "Level " + QString::number(cur_level) + " : ("
+                   + QString::number(cur_exp) + " / "
+                   + QString::number(exp_for_level) + ")");
 }
 
 QRectF PlayerBar::RectWithPercents(

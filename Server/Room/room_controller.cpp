@@ -110,12 +110,28 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
         float cur_entity_hp = entity->GetHealthPoints();
         float hp_to_set = std::max(0.f,
                                    cur_entity_hp - bullet->GetBulletDamage());
+
         if (hp_to_set == 0) {
           entity->Revive();
           if (entity->GetType() == GameObjectType::kPlayer) {
             this->AddEventToSendToSinglePlayer(
                 Event(EventType::kLocalPlayerDied),
                 entity->GetId());
+            auto killer_id = bullet->GetParentId();
+            qInfo() << killer_id;
+            if (model_data.model->IsGameObjectIdTaken(killer_id)) {
+              auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
+              float receive_exp = static_cast<float>(
+                  std::dynamic_pointer_cast<Player>(entity)->GetLevel())
+                  * Constants::kExpMultiplier;
+              qInfo() << std::dynamic_pointer_cast<Player>(entity)->GetLevel();
+              qInfo() << receive_exp;
+              killer->IncreaseExperience(receive_exp);
+              this->AddEventToSendToSinglePlayer(
+                  Event(EventType::kIncreaseLocalPlayerExperience,
+                        receive_exp),
+                  bullet->GetParentId());
+            }
           }
         } else {
           entity->SetHealthPoints(hp_to_set);
@@ -315,7 +331,8 @@ GameObjectId RoomController::AddDefaultPlayer() {
        Constants::kDefaultMaxHealthPoints * 0.733f,
        Constants::kDefaultHealthRegenSpeed,
        Constants::kDefaultMaxHealthPoints,
-       static_cast<int>(WeaponType::kMachineGun)});
+       static_cast<int>(WeaponType::kMachineGun),
+       1, 0.f});
 }
 
 void RoomController::AddBox(float x, float y, float rotation,

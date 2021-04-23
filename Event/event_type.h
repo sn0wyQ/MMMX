@@ -102,6 +102,9 @@ enum class EventType {
 
   kLocalPlayerDied,
 
+  // [0] - <float> experience_to_add
+  kIncreaseLocalPlayerExperience,
+
   SIZE
 };
 
