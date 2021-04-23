@@ -244,6 +244,7 @@ GameObjectId RoomController::AddDefaultPlayer() {
        0.f, 0.f,
        new_fov,
        Constants::kDefaultMaxHealthPoints * 0.733f,
+       Constants::kDefaultHealthRegenSpeed,
        Constants::kDefaultMaxHealthPoints});
 }
 

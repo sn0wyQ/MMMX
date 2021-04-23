@@ -68,6 +68,7 @@ set(SOURCES
         Event/event.cpp
         Event/event_type.h
         GUI/GameView/game_view.cpp
+        GUI/GameView/player_bar.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp

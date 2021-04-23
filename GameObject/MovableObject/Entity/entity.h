@@ -12,6 +12,8 @@ class Entity : public MovableObject {
   explicit Entity(GameObjectId id);
   Entity(const Entity& other);
 
+  void OnTick(int delta_tick) override;
+
   void DrawHealthBar(Painter* painter) override;
 
   float GetFovRadius() const;
@@ -33,11 +35,14 @@ class Entity : public MovableObject {
   void SetSpawnPosition(QPointF spawn_position);
   QPointF GetSpawnPosition() const;
 
-  std::shared_ptr<GameObject> Clone() const override;
+  void SetHealthRegenSpeed(float health_regen_speed);
+  float GetHealthRegenSpeed() const;
 
+  std::shared_ptr<GameObject> Clone() const override;
  private:
   float fov_radius_{Constants::kDefaultEntityFov};
   float health_points_{};
+  float health_regen_speed_{};
   float max_health_points_{};
   QPointF spawn_position_;
 };
