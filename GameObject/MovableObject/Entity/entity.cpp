@@ -64,25 +64,25 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 }
 
 void Entity::DrawHealthBar(Painter* painter) {
-  QPointF translation(0.f, -GetHeight() * 0.7f);
+  QPointF translation(0.f, -GetHeight() * 1.1f);
   painter->Translate(translation);
-  float rect_width = 2.5f;
-  float rect_height = 0.6f;
+  float rect_width = 75.f;
+  float rect_height = 14.f;
   QFont font{};
-  font.setPointSizeF(painter->GetScaledFloat(0.3f));
+  font.setPointSizeF(7.f);
   painter->setFont(font);
   QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
                    rect_width, rect_height);
   auto cur_hp = static_cast<int>(this->GetHealthPoints());
   auto max_hp = static_cast<int>(this->GetMaxHealthPoints());
-  painter->DrawText(text_rect, Qt::AlignCenter,
+  painter->drawText(text_rect, Qt::AlignCenter,
                     QString::number(cur_hp) + " / " +
                     QString::number(max_hp));
   auto pen = painter->pen();
   QColor clr_back = Qt::gray;
   clr_back.setAlphaF(0.4f);
   painter->setPen(clr_back);
-  painter->DrawRect(-rect_width / 2.f, -rect_height / 2.f,
+  painter->drawRect(-rect_width / 2.f, -rect_height / 2.f,
                     rect_width, rect_height);
   auto brush = painter->brush();
   QColor clr_main = Qt::darkGreen;
@@ -90,7 +90,7 @@ void Entity::DrawHealthBar(Painter* painter) {
   painter->setBrush(clr_main);
   float part = this->GetHealthPoints() / this->GetMaxHealthPoints();
   float width = part * rect_width;
-  painter->DrawRect(-rect_width / 2.f, -rect_height / 2.f,
+  painter->drawRect(-rect_width / 2.f, -rect_height / 2.f,
                     width, rect_height);
   painter->setBrush(brush);
   painter->setPen(pen);

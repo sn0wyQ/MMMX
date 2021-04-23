@@ -1,7 +1,8 @@
-#ifndef PLAYER_BAR_H
-#define PLAYER_BAR_H
+#ifndef GUI_GAMEVIEW_PLAYER_BAR_H_
+#define GUI_GAMEVIEW_PLAYER_BAR_H_
 
 #include <memory>
+#include <utility>
 
 #include <QPaintEvent>
 #include <QWidget>
@@ -24,4 +25,4 @@ class PlayerBar : public QWidget {
   std::shared_ptr<ClientGameModel> model_;
 };
 
-#endif //PLAYER_BAR_H
+#endif  // GUI_GAMEVIEW_PLAYER_BAR_H_

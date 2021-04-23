@@ -39,6 +39,7 @@ class Entity : public MovableObject {
   float GetHealthRegenSpeed() const;
 
   std::shared_ptr<GameObject> Clone() const override;
+
  private:
   float fov_radius_{Constants::kDefaultEntityFov};
   float health_points_{};
