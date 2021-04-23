@@ -83,6 +83,7 @@ class ClientController : public BaseController {
   void SetView(std::shared_ptr<AbstractClientView> view);
 
   void UpdateLocalPlayer(int delta_time);
+  void UpdateLocalBullets(int delta_time);
   void UpdateInterpolationInfo();
   int64_t GetCurrentServerTime() const override;
 
@@ -94,6 +95,7 @@ class ClientController : public BaseController {
   void KeyPressEvent(QKeyEvent* key_event);
   void KeyReleaseEvent(QKeyEvent* key_event);
   void MouseMoveEvent(QMouseEvent* mouse_event);
+  void MousePressEvent(QMouseEvent* mouse_event);
 
   // --------------------------------------------------
 
@@ -108,15 +110,17 @@ class ClientController : public BaseController {
   void EndGameEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
   void SetPlayerIdToClient(const Event& event) override;
+  void SetTimeDifferenceEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateVarsEvent(const Event& event) override;
-  void SetTimeDifferenceEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
-  void SendGameInfoToInterpolateEvent(const Event& event) override;
+
   void AddLocalPlayerGameObjectEvent(const Event& event) override;
-  void UpdateGameObjectDataEvent(const Event& event) override;
   void GameObjectLeftFovEvent(const Event& event) override;
+  void SendGameInfoToInterpolateEvent(const Event& event) override;
+  void UpdateGameObjectDataEvent(const Event& event) override;
+  void UpdateLocalPlayerSizeEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;

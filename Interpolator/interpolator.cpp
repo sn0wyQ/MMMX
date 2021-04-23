@@ -97,7 +97,7 @@ QVariant GetInterpolatedParam(const QVariant& object_param,
     case QMetaType::Type::QPointF:
     case QMetaType::Type::QVector2D: {
       QPointF first_value = object_param.toPointF();
-      QPointF second_value = object_param.toPointF();
+      QPointF second_value = future_object_param.toPointF();
       auto first_x = static_cast<float>(first_value.x());
       auto second_x = static_cast<float>(second_value.x());
       auto first_y = static_cast<float>(first_value.y());

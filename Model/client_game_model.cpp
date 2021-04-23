@@ -45,23 +45,34 @@ const std::unordered_map<GameObjectId, std::shared_ptr<GameObject>>&
   return interpolator_;
 }
 
-void ClientGameModel::AddScheduledUpdate(
-    GameObjectId game_object_id, Variable variable,
-    const ClientGameModel::UpdateVariable& update) {
+QVariant ClientGameModel::GetScheduledVariableValue(
+    GameObjectId game_object_id, Variable variable) const {
+  QVariant variable_value;
+  if (this->IsGameObjectIdTaken(game_object_id)) {
+    variable_value = GetValueAccordingVariable(game_object_id, variable);
+  }
   auto map = &scheduled_updates_[static_cast<uint32_t>(variable)];
-  if (map->find(game_object_id) != map->end()) {
+  if (map->find(game_object_id) != map->end()
+      && !map->at(game_object_id).empty()) {
     auto last_update = map->at(game_object_id).back();
     auto last_update_value = last_update.value;
     if (this->IsGameObjectIdTaken(game_object_id)) {
       auto game_object = this->GetGameObjectByGameObjectId(game_object_id);
-      if (game_object->GetUpdatedTime() > last_update.update_time) {
-        last_update_value = GetValueAccordingVariable(game_object_id,
-                                                      variable);
+      if (game_object->GetUpdatedTime() <= last_update.update_time) {
+        variable_value = last_update_value;
       }
     }
-    if (last_update_value == update.value) {
-      return;
-    }
+  }
+  return variable_value;
+}
+
+void ClientGameModel::AddScheduledUpdate(
+    GameObjectId game_object_id, Variable variable,
+    const ClientGameModel::UpdateVariable& update) {
+  auto map = &scheduled_updates_[static_cast<uint32_t>(variable)];
+  auto scheduled = GetScheduledVariableValue(game_object_id, variable);
+  if (scheduled.isValid() && scheduled == update.value) {
+    return;
   }
   (*map)[game_object_id].push_back(update);
 }
@@ -77,8 +88,10 @@ void ClientGameModel::UpdateScheduled(int64_t current_time) {
           if (this->IsGameObjectIdTaken(game_object_id)) {
             SetValueAccordingVariable(game_object_id, variable,
                                       update.value);
+            deque_update.pop_front();
+          } else {
+            break;
           }
-          deque_update.pop_front();
         } else {
           break;
         }
@@ -88,13 +101,10 @@ void ClientGameModel::UpdateScheduled(int64_t current_time) {
 }
 
 QVariant ClientGameModel::GetValueAccordingVariable(
-    GameObjectId game_object_id, Variable variable) {
+    GameObjectId game_object_id, Variable variable) const {
   switch (variable) {
     case Variable::kIsInFov:
       return GetGameObjectByGameObjectId(game_object_id)->IsInFov();
-    case Variable::kVelocity:
-      return std::dynamic_pointer_cast<MovableObject>(
-          GetGameObjectByGameObjectId(game_object_id))->GetVelocity();
     default:
       return false;
   }
@@ -108,12 +118,6 @@ void ClientGameModel::SetValueAccordingVariable(
       GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(value.toBool());
       break;
     }
-    case Variable::kVelocity: {
-      QVector2D vec(value.toPointF());
-      std::dynamic_pointer_cast<MovableObject>(
-          GetGameObjectByGameObjectId(game_object_id))->SetVelocity(vec);
-      break;
-    }
     default:
       break;
   }
@@ -124,6 +128,39 @@ bool ClientGameModel::IsGameObjectInInterpolation(
   return interpolator_.find(game_object_id) != interpolator_.end();
 }
 
-void ClientGameModel::RemoveScheduled(GameObjectId game_object_id) {
+void ClientGameModel::RemoveFromInterpolator(GameObjectId game_object_id) {
   interpolator_.erase(game_object_id);
+}
+
+void ClientGameModel::AddLocalBullet() {
+  static int bullet_id_to_set = 1;
+  auto bullet = std::make_shared<Bullet>(bullet_id_to_set);
+  auto local_player = this->GetLocalPlayer();
+  bullet->SetParams(
+      local_player->GetWeapon()->GetBulletParams(
+      local_player_id_,
+      local_player->GetX(),
+      local_player->GetY(),
+      local_player->GetRotation()));
+  bullet->SetIsInFov(true);
+  local_bullets_.emplace(std::make_pair(bullet_id_to_set, bullet));
+  qInfo().noquote() << "[MODEL] Added new local bullet:" << bullet_id_to_set;
+  bullet_id_to_set++;
+}
+
+std::vector<std::shared_ptr<Bullet>> ClientGameModel::GetLocalBullets() const {
+  std::vector<std::shared_ptr<Bullet>> result;
+  for (const auto& [bullet_id, bullet] : local_bullets_) {
+    result.push_back(bullet);
+  }
+  return result;
+}
+
+void ClientGameModel::DeleteLocalBullet(GameObjectId bullet_id) {
+  auto iter = local_bullets_.find(bullet_id);
+  if (iter == local_bullets_.end()) {
+    return;
+  }
+  local_bullets_.erase(iter);
+  qInfo().noquote() << "[MODEL] Removed local bullet:" << bullet_id;
 }

@@ -11,15 +11,15 @@ class RoomGameModel : public GameModel {
   RoomGameModel() = default;
   RoomGameModel(const RoomGameModel& model);
 
-  GameObjectId GetNextUnusedGameObjectId() const;
+  GameObjectId GenerateNextUnusedGameObjectId();
 
   GameObjectId AddGameObject(GameObjectType type,
                              const std::vector<QVariant>& params);
-
   bool IsNeededToSendGameObjectData(GameObjectId game_object_id) const;
   void UpdateGameObjectHashes();
 
  private:
+  GameObjectId next_game_object_id_{1};
   std::unordered_map<GameObjectId, QByteArray> last_object_hash_;
 };
 
