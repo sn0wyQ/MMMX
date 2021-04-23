@@ -118,14 +118,11 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                 Event(EventType::kLocalPlayerDied),
                 entity->GetId());
             auto killer_id = bullet->GetParentId();
-            qInfo() << killer_id;
             if (model_data.model->IsGameObjectIdTaken(killer_id)) {
               auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
               float receive_exp = static_cast<float>(
                   std::dynamic_pointer_cast<Player>(entity)->GetLevel())
                   * Constants::kExpMultiplier;
-              qInfo() << std::dynamic_pointer_cast<Player>(entity)->GetLevel();
-              qInfo() << receive_exp;
               killer->IncreaseExperience(receive_exp);
               this->AddEventToSendToSinglePlayer(
                   Event(EventType::kIncreaseLocalPlayerExperience,
