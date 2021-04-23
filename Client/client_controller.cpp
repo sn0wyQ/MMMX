@@ -175,9 +175,12 @@ void ClientController::UpdateLocalBullets(int delta_time) {
     auto object_collided = ObjectCollision::GetObjectBulletCollidedWith(
             bullet, model_->GetAllGameObjects(), delta_time, true);
     if (object_collided != nullptr) {
-      is_need_to_delete.push_back(bullet->GetId());
+      bullet->SetIsNeedToDelete(true);
     }
     bullet->OnTick(delta_time);
+    if (bullet->IsNeedToDelete()) {
+      is_need_to_delete.push_back(bullet->GetId());
+    }
   }
 
   for (const auto& bullet_id : is_need_to_delete) {
