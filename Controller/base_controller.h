@@ -83,7 +83,8 @@ class BaseController : public QObject {
   virtual void SendGameInfoToInterpolateEvent(const Event& event) {}
   virtual void SendPlayerShootingEvent(const Event& event) {}
   virtual void UpdateGameObjectDataEvent(const Event& event) {}
-  virtual void UpdateLocalPlayerSizeEvent(const Event& event) {}
+  virtual void UpdateLocalPlayerHealthPointsEvent(const Event& event) {}
+  virtual void LocalPlayerDied(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

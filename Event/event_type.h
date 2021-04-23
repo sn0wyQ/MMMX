@@ -90,16 +90,17 @@ enum class EventType {
   // [1] - <GameObjectId> sender_player_id
   kSendPlayerShooting,
 
-  // [0] - <float> width
-  // [1] - <float> height
-  kUpdateLocalPlayerSize,
-
   // [0] - <GameObjectId> player_id
   // [1] - player_args
   kAddLocalPlayerGameObject,
 
   // [0] - <GameObjectId> player_id
   kPlayerDisconnected,
+
+  // [0] - <float> health_points
+  kUpdateLocalPlayerHealthPoints,
+
+  kLocalPlayerDied,
 
   SIZE
 };

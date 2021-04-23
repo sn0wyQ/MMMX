@@ -118,9 +118,9 @@ void Entity::SetHealthRegenSpeed(float health_regen_speed) {
   health_regen_speed_ = health_regen_speed;
 }
 
-void Entity::OnTick(int delta_tick) {
+void Entity::OnTick(int delta_time) {
   health_points_ = std::min(
-      health_points_ + health_regen_speed_ * static_cast<float>(delta_tick),
+      health_points_ + health_regen_speed_ * static_cast<float>(delta_time),
       max_health_points_);
-  MovableObject::OnTick(delta_tick);
+  MovableObject::OnTick(delta_time);
 }

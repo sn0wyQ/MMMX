@@ -38,8 +38,11 @@ BaseController::BaseController() {
   SetFunctionForEventType(EventType::kAddLocalPlayerGameObject,
     std::bind(&BaseController::AddLocalPlayerGameObjectEvent,
               this, _1));
-  SetFunctionForEventType(EventType::kUpdateLocalPlayerSize,
-    std::bind(&BaseController::UpdateLocalPlayerSizeEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdateLocalPlayerHealthPoints,
+    std::bind(&BaseController::UpdateLocalPlayerHealthPointsEvent,
+              this, _1));
+  SetFunctionForEventType(EventType::kLocalPlayerDied,
+    std::bind(&BaseController::LocalPlayerDied,this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

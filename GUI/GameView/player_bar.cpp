@@ -41,7 +41,7 @@ void PlayerBar::paintEvent(QPaintEvent* paint_event) {
   auto max_hp = static_cast<int>(local_player->GetMaxHealthPoints());
   float regen_hp_in_sec = local_player->GetHealthRegenSpeed() * 1000.f;
   auto regen_hp_in_sec_int =
-      static_cast<int>(floor(regen_hp_in_sec * 100.f) / 100.f);
+      static_cast<int>(std::floor(regen_hp_in_sec * 100.f) / 100.f);
   painter.drawText(RectWithPercents(health_bar_x, health_bar_y,
                                     health_bar_width,
                                     health_bar_height), Qt::AlignCenter,

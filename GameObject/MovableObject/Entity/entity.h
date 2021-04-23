@@ -12,7 +12,7 @@ class Entity : public MovableObject {
   explicit Entity(GameObjectId id);
   Entity(const Entity& other);
 
-  void OnTick(int delta_tick) override;
+  void OnTick(int delta_time) override;
 
   void DrawHealthBar(Painter* painter) override;
 
