@@ -7,7 +7,7 @@ Entity::Entity(const Entity& other) : MovableObject(other) {
 }
 
 void Entity::SetParams(std::vector<QVariant> params) {
-  fov_radius_ = params.back().toFloat();
+  SetFovRadius(params.back().toFloat());
   params.pop_back();
   MovableObject::SetParams(params);
 }

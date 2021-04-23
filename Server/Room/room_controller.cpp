@@ -339,7 +339,7 @@ void RoomController::AddConstantObjects() {
   this->AddTree(30.f, 30.f, 1.f);
 }
 
-int RoomController::ParseIdOfModelFromTimestamp(int64_t timestamp) const {
+int RoomController::GetModelIdByTimestamp(int64_t timestamp) const {
   int64_t latency = GetCurrentServerTime() - timestamp;
   latency = std::max(static_cast<int64_t>(0), latency);
   int latency_in_ticks = static_cast<int>(latency / Constants::kTimeToTick);
@@ -350,7 +350,7 @@ int RoomController::ParseIdOfModelFromTimestamp(int64_t timestamp) const {
 
 void RoomController::SendControlsEvent(const Event& event) {
   auto timestamp = event.GetArg<int64_t>(0);
-  auto model_id = ParseIdOfModelFromTimestamp(timestamp);
+  auto model_id = GetModelIdByTimestamp(timestamp);
   // Проигнорим, если чел нам прислал то, что он сделал очень давно
   if (model_id < 0) {
     return;
@@ -385,7 +385,7 @@ void RoomController::SendControlsEvent(const Event& event) {
 
 void RoomController::SendPlayerShootingEvent(const Event& event) {
   auto timestamp = event.GetArg<int64_t>(0);
-  auto model_id = ParseIdOfModelFromTimestamp(timestamp);
+  auto model_id = GetModelIdByTimestamp(timestamp);
   // Проигнорим, если чел нам прислал то, что он сделал очень давно
   if (model_id < 0) {
     return;

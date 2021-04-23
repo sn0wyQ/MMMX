@@ -3,14 +3,11 @@
 Bullet::Bullet(GameObjectId bullet_id) : MovableObject(bullet_id) {}
 
 void Bullet::SetParams(std::vector<QVariant> params) {
-  auto bullet_range = params.back().toFloat();
-  SetBulletRange(bullet_range);
+  SetBulletRange(params.back().toFloat());
   params.pop_back();
-  auto bullet_speed = params.back().toFloat();
-  SetBulletSpeed(bullet_speed);
+  SetBulletSpeed(params.back().toFloat());
   params.pop_back();
-  auto bullet_damage = params.back().toFloat();
-  SetBulletDamage(bullet_damage);
+  SetBulletDamage(params.back().toFloat());
   params.pop_back();
   float start_position_y = params.back().toFloat();
   params.pop_back();
@@ -18,8 +15,8 @@ void Bullet::SetParams(std::vector<QVariant> params) {
   params.pop_back();
   SetStartPosition(QPointF(start_position_x, start_position_y));
   GameObjectId parent_id = params.back().toInt();
-  params.pop_back();
   SetParentId(parent_id);
+  params.pop_back();
   MovableObject::SetParams(params);
 }
 

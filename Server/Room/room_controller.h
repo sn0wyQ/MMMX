@@ -99,7 +99,7 @@ class RoomController : public BaseController {
   bool IsGameObjectInFov(GameObjectId game_object_id,
                          GameObjectId player_id);
   void SendGameObjectsDataToPlayer(GameObjectId player_id);
-  int ParseIdOfModelFromTimestamp(int64_t timestamp) const;
+  int GetModelIdByTimestamp(int64_t timestamp) const;
 
   // ------------------- GAME EVENTS -------------------
 
