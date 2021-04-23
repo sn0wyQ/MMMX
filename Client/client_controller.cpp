@@ -312,7 +312,7 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
     local_player->SetRotation(rotation);
   }
 }
-void ClientController::MousePressEvent(QMouseEvent* mouse_event) {
+void ClientController::MousePressEvent(QMouseEvent*) {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
     auto timestamp = GetCurrentServerTime();
