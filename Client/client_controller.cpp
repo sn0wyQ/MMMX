@@ -229,7 +229,6 @@ void ClientController::UpdateVarsEvent(const Event& event) {
   view_->Update();
 }
 
-
 QVector2D ClientController::GetKeyForce() const {
   bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
   bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
@@ -312,6 +311,7 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
     local_player->SetRotation(rotation);
   }
 }
+
 void ClientController::MousePressEvent(QMouseEvent*) {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
