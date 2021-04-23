@@ -11,7 +11,7 @@ class RoomGameModel : public GameModel {
   RoomGameModel() = default;
   RoomGameModel(const RoomGameModel& model);
 
-  GameObjectId GetNextUnusedGameObjectId();
+  GameObjectId GenerateNextUnusedGameObjectId();
 
   GameObjectId AddGameObject(GameObjectType type,
                              const std::vector<QVariant>& params);

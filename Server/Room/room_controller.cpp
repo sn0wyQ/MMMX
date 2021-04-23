@@ -103,8 +103,6 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
         ObjectCollision::GetObjectBulletCollidedWith(
             bullet, game_objects, model_data.delta_time, false);
     if (object_collided != nullptr) {
-      this->AddEventToSendToAllPlayers(
-          GetEventOfGameObjectLeftFov(bullet->GetId()));
       objects_to_delete.push_back(bullet->GetId());
 
       // Temporarily
@@ -120,6 +118,8 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
     }
   }
   for (const auto& game_object_id : objects_to_delete) {
+    this->AddEventToSendToAllPlayers(
+        GetEventOfGameObjectLeftFov(game_object_id));
     model_data.model->DeleteGameObject(game_object_id);
   }
 }

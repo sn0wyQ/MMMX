@@ -6,13 +6,13 @@ RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {
   last_object_hash_ = model.last_object_hash_;
 }
 
-GameObjectId RoomGameModel::GetNextUnusedGameObjectId() {
+GameObjectId RoomGameModel::GenerateNextUnusedGameObjectId() {
   return next_game_object_id_++;
 }
 
 GameObjectId RoomGameModel::AddGameObject(GameObjectType type,
                                           const std::vector<QVariant>& params) {
-  GameObjectId game_object_id = this->GetNextUnusedGameObjectId();
+  GameObjectId game_object_id = this->GenerateNextUnusedGameObjectId();
   GameModel::AddGameObject(game_object_id, type, params);
   return game_object_id;
 }
