@@ -12,7 +12,7 @@ constexpr float kDefaultBulletRadius = 0.5f;
 namespace Constants::Weapon::MachineGun {
 
 constexpr float kDefaultBaseBulletDamage = 5.f;
-constexpr float kDefaultBulletSpeed = 10.f;
+constexpr float kDefaultBulletSpeed = 2.f;
 constexpr float kDefaultBulletRange = 20.f;
 constexpr int kDefaultRateOfFire = 360;
 constexpr float kDefaultReloadingTime = 5.f;

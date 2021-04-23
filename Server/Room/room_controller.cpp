@@ -289,7 +289,8 @@ bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
   if (!game_object->IsFilteredByFov()) {
     return true;
   }
-  return player->GetShortestDistance(game_object) < player->GetFovRadius();
+  return player->GetShortestDistance(game_object) <
+    player->GetFovRadius() * Constants::kFovMultiplier;
 }
 
 GameObjectId RoomController::AddDefaultPlayer() {
