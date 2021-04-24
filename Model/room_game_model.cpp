@@ -14,6 +14,11 @@ GameObjectId RoomGameModel::AddGameObject(GameObjectType type,
                                           const std::vector<QVariant>& params) {
   GameObjectId game_object_id = this->GenerateNextUnusedGameObjectId();
   GameModel::AddGameObject(game_object_id, type, params);
+  auto object = this->GetGameObjectByGameObjectId(game_object_id);
+  if (object->IsEntity()) {
+    auto entity = std::dynamic_pointer_cast<Entity>(object);
+    entity->SetSpawnPosition(object->GetPosition());
+  }
   return game_object_id;
 }
 

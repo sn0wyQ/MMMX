@@ -27,9 +27,15 @@ Player::Player(const Player& other) : Entity(other) {
       break;
     }
   }
+  current_exp_ = other.current_exp_;
+  level_ = other.level_;
 }
 
 void Player::SetParams(std::vector<QVariant> params) {
+  SetCurrentExp(params.back().toFloat());
+  params.pop_back();
+  SetLevel(params.back().toInt());
+  params.pop_back();
   auto weapon_type = static_cast<WeaponType>(params.back().toInt());
   weapon_type_ = weapon_type;
   switch (weapon_type) {
@@ -57,6 +63,8 @@ void Player::SetParams(std::vector<QVariant> params) {
 std::vector<QVariant> Player::GetParams() const {
   std::vector<QVariant> result = Entity::GetParams();
   result.emplace_back(static_cast<int>(weapon_type_));
+  result.emplace_back(GetLevel());
+  result.emplace_back(GetCurrentExp());
   return result;
 }
 
@@ -109,4 +117,28 @@ std::shared_ptr<GameObject> Player::Clone() const {
 
 const std::shared_ptr<Weapon>& Player::GetWeapon() const {
   return weapon_;
+}
+
+int Player::GetLevel() const {
+  return level_;
+}
+
+float Player::GetCurrentExp() const {
+  return current_exp_;
+}
+
+void Player::SetLevel(int level) {
+  level_ = level;
+}
+
+void Player::SetCurrentExp(float current_exp) {
+  current_exp_ = current_exp;
+}
+
+void Player::IncreaseExperience(float experience_to_add) {
+  current_exp_ += experience_to_add;
+  while (current_exp_ >= Constants::kExpForLevel[level_ - 1]) {
+    current_exp_ -= Constants::kExpForLevel[level_ - 1];
+    level_++;
+  }
 }

@@ -397,8 +397,25 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
   view_->Update();
 }
 
-void ClientController::UpdateLocalPlayerSizeEvent(const Event& event) {
-  auto local_player = model_->GetLocalPlayer();
-  local_player->SetWidth(event.GetArg<float>(0));
-  local_player->SetHeight(event.GetArg<float>(1));
+void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto health_points = event.GetArg<float>(0);
+  model_->GetLocalPlayer()->SetHealthPoints(health_points);
+}
+
+void ClientController::LocalPlayerDiedEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  model_->GetLocalPlayer()->Revive();
+}
+
+void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto experience_to_add = event.GetArg<float>(0);
+  model_->GetLocalPlayer()->IncreaseExperience(experience_to_add);
 }

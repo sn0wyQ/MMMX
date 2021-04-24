@@ -105,15 +105,39 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
     if (object_collided != nullptr) {
       objects_to_delete.push_back(bullet->GetId());
 
-      // Temporarily
-      if (object_collided->GetType() == GameObjectType::kPlayer) {
-        object_collided->SetWidth(object_collided->GetWidth() * 0.9f);
-        object_collided->SetHeight(object_collided->GetHeight() * 0.9f);
-        auto object_id = object_collided->GetId();
-        this->AddEventToSendToSinglePlayer(
-            Event(EventType::kUpdateLocalPlayerSize,
-                  object_collided->GetWidth(), object_collided->GetHeight()),
-                  object_id);
+      if (object_collided->IsEntity()) {
+        auto entity = std::dynamic_pointer_cast<Entity>(object_collided);
+        float cur_entity_hp = entity->GetHealthPoints();
+        float hp_to_set = std::max(0.f,
+                                   cur_entity_hp - bullet->GetBulletDamage());
+
+        if (hp_to_set == 0) {
+          entity->Revive();
+          if (entity->GetType() == GameObjectType::kPlayer) {
+            this->AddEventToSendToSinglePlayer(
+                Event(EventType::kLocalPlayerDied),
+                entity->GetId());
+            auto killer_id = bullet->GetParentId();
+            if (model_data.model->IsGameObjectIdTaken(killer_id)) {
+              auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
+              float receive_exp = static_cast<float>(
+                  std::dynamic_pointer_cast<Player>(entity)->GetLevel())
+                  * Constants::kExpMultiplier;
+              killer->IncreaseExperience(receive_exp);
+              this->AddEventToSendToSinglePlayer(
+                  Event(EventType::kIncreaseLocalPlayerExperience,
+                        receive_exp),
+                  bullet->GetParentId());
+            }
+          }
+        } else {
+          entity->SetHealthPoints(hp_to_set);
+          if (entity->GetType() == GameObjectType::kPlayer) {
+            this->AddEventToSendToSinglePlayer(
+                Event(EventType::kUpdateLocalPlayerHealthPoints, hp_to_set),
+                entity->GetId());
+          }
+        }
       }
     }
   }
@@ -403,7 +427,7 @@ void RoomController::SendControlsEvent(const Event& event) {
     player_in_model->SetPosition(position_to_set);
     player_in_model->SetVelocity(velocity);
     player_in_model->SetRotation(rotation);
-    player_in_model->OnTick(models_cache_[model_id].delta_time);
+    player_in_model->MovableObject::OnTick(models_cache_[model_id].delta_time);
     position_to_set = player_in_model->GetPosition();
     model_id++;
   }
