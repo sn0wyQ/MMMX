@@ -8,6 +8,9 @@ ClientController::ClientController(const QUrl& url) : url_(url),
   connect(&web_socket_, &QWebSocket::disconnected, this,
           &ClientController::OnDisconnected);
   web_socket_.open(url);
+  connect(&timer_for_mouse_, &QTimer::timeout, this,
+          &ClientController::MouseHolding);
+  timer_for_mouse_.start(Constants::kMouseCheck);
   this->StartTicking();
 }
 
@@ -313,6 +316,17 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientController::MousePressEvent(QMouseEvent*) {
+  mouse_is_holding_ = true;
+}
+
+void ClientController::MouseReleaseEvent(QMouseEvent*) {
+  mouse_is_holding_ = false;
+}
+
+void ClientController::MouseHolding() {
+  if (!mouse_is_holding_) {
+    return;
+  }
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
     auto timestamp = GetCurrentServerTime();

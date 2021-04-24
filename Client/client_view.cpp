@@ -75,3 +75,7 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
   game_view_->resize(resize_event->size());
 }
+
+void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
+  controller_->MouseReleaseEvent(mouse_event);
+}

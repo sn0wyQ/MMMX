@@ -96,6 +96,7 @@ class ClientController : public BaseController {
   void KeyReleaseEvent(QKeyEvent* key_event);
   void MouseMoveEvent(QMouseEvent* mouse_event);
   void MousePressEvent(QMouseEvent* mouse_event);
+  void MouseReleaseEvent(QMouseEvent* mouse_event);
 
   // --------------------------------------------------
 
@@ -105,6 +106,7 @@ class ClientController : public BaseController {
   void OnByteArrayReceived(const QByteArray& message);
   void UpdateVarsAndPing();
   void SetPing(int elapsed_time);
+  void MouseHolding();
 
  private:
   void EndGameEvent(const Event& event) override;
@@ -147,6 +149,8 @@ class ClientController : public BaseController {
       {Direction::kDown, false},
       {Direction::kLeft, false}
   };
+  QTimer timer_for_mouse_;
+  bool mouse_is_holding_{false};
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_
