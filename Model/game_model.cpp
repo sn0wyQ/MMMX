@@ -4,9 +4,9 @@ GameModel::GameModel(const GameModel& other) {
   for (const auto& [game_object_id, game_object] : other.game_objects_) {
     game_objects_.emplace(game_object_id, game_object->Clone());
   }
-  for (const auto& [game_object_id, player_data] : other.players_data_) {
-    players_data_[game_object_id] =
-        std::make_shared<PlayerStats>(PlayerStats(*player_data));
+  for (const auto& [game_object_id, player_stats] : other.players_stats_) {
+    players_stats_[game_object_id] =
+        std::make_shared<PlayerStats>(PlayerStats(*player_stats));
   }
 }
 
@@ -62,16 +62,16 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
 }
 
 void GameModel::AddPlayerStats(GameObjectId player_id, QString nickname) {
-  players_data_[player_id] = std::make_shared<PlayerStats>(
+  players_stats_[player_id] = std::make_shared<PlayerStats>(
       PlayerStats(player_id, std::move(nickname)));
 }
 
 std::shared_ptr<PlayerStats> GameModel::GetPlayerStatsByPlayerId(
     GameObjectId player_id) {
-  if (players_data_.find(player_id) == players_data_.end()) {
-    players_data_[player_id] = std::make_shared<PlayerStats>(PlayerStats());
+  if (players_stats_.find(player_id) == players_stats_.end()) {
+    players_stats_[player_id] = std::make_shared<PlayerStats>(PlayerStats());
   }
-  return players_data_[player_id];
+  return players_stats_[player_id];
 }
 
 void GameModel::DeleteGameObject(GameObjectId game_object_id) {
@@ -150,7 +150,7 @@ void GameModel::AttachGameObject(
 
 std::vector<std::shared_ptr<PlayerStats>> GameModel::GetAllPlayersStats() {
   std::vector<std::shared_ptr<PlayerStats>> result;
-  for (auto& it : players_data_) {
+  for (auto& it : players_stats_) {
     result.emplace_back(it.second);
   }
   return result;

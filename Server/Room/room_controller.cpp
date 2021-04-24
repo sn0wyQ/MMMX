@@ -288,22 +288,22 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
 
 void RoomController::ForceSendPlayersStatsToPlayer(GameObjectId player_id) {
   for (auto player_stats_id : this->GetAllPlayerIds()) {
-    Event event_update_players_data = Event(EventType::kUpdatePlayersStats,
+    Event event_update_players_stats = Event(EventType::kUpdatePlayersStats,
                                             player_stats_id);
-    event_update_players_data.PushBackArgs(
+    event_update_players_stats.PushBackArgs(
         model_->GetPlayerStatsByPlayerId(player_stats_id)->GetParams());
-    this->AddEventToSendToSinglePlayer(event_update_players_data, player_id);
+    this->AddEventToSendToSinglePlayer(event_update_players_stats, player_id);
   }
 }
 
 void RoomController::SendPlayersStatsToPlayers() {
   for (auto player_id : this->GetAllPlayerIds()) {
     if (model_->IsNeededToSendPlayerStats(player_id)) {
-      Event event_update_players_data = Event(EventType::kUpdatePlayersStats,
+      Event event_update_players_stats = Event(EventType::kUpdatePlayersStats,
                                               player_id);
-      event_update_players_data.PushBackArgs(
+      event_update_players_stats.PushBackArgs(
           model_->GetPlayerStatsByPlayerId(player_id)->GetParams());
-      this->AddEventToSendToAllPlayers(event_update_players_data);
+      this->AddEventToSendToAllPlayers(event_update_players_stats);
     }
   }
 }

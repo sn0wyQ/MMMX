@@ -4,7 +4,7 @@
 RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {
   next_game_object_id_ = model.next_game_object_id_;
   last_object_hash_ = model.last_object_hash_;
-  last_player_data_hash_ = model.last_player_data_hash_;
+  last_player_stats_hash_ = model.last_player_stats_hash_;
 }
 
 GameObjectId RoomGameModel::GenerateNextUnusedGameObjectId() {
@@ -37,8 +37,8 @@ void RoomGameModel::UpdateGameObjectHashes() {
 }
 
 bool RoomGameModel::IsNeededToSendPlayerStats(GameObjectId player_id) {
-  auto data_iter = last_player_data_hash_.find(player_id);
-  if (data_iter == last_player_data_hash_.end()) {
+  auto data_iter = last_player_stats_hash_.find(player_id);
+  if (data_iter == last_player_stats_hash_.end()) {
     return true;
   }
   auto hash = HashCalculator::GetHash(
@@ -48,7 +48,7 @@ bool RoomGameModel::IsNeededToSendPlayerStats(GameObjectId player_id) {
 
 void RoomGameModel::UpdatePlayerStatsHashes() {
   for (const auto& data : this->GetAllPlayersStats()) {
-    last_player_data_hash_[data->GetPlayerId()] =
+    last_player_stats_hash_[data->GetPlayerId()] =
         HashCalculator::GetHash(data->GetParams());
   }
 }

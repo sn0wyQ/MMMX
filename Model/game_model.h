@@ -47,7 +47,7 @@ class GameModel {
 
  private:
   std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
-  std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_data_;
+  std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;
 };
 
 #endif  // MODEL_GAME_MODEL_H_

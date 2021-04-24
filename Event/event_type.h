@@ -78,7 +78,7 @@ enum class EventType {
   kUpdateGameObjectData,
 
   // [0] - <GameObjectId> player_id
-  // [1+] - player_data_args
+  // [1+] - player_stats_args
   kUpdatePlayersStats,
 
   // [0] - <GameObjectId> game_object_id that left receiver player FOV

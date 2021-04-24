@@ -23,7 +23,7 @@ class RoomGameModel : public GameModel {
  private:
   GameObjectId next_game_object_id_{1};
   std::unordered_map<GameObjectId, QByteArray> last_object_hash_;
-  std::unordered_map<GameObjectId, QByteArray> last_player_data_hash_;
+  std::unordered_map<GameObjectId, QByteArray> last_player_stats_hash_;
 };
 
 #endif  // MODEL_ROOM_GAME_MODEL_H_
