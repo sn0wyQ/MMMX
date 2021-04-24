@@ -4,6 +4,10 @@ GameModel::GameModel(const GameModel& other) {
   for (const auto& [game_object_id, game_object] : other.game_objects_) {
     game_objects_.emplace(game_object_id, game_object->Clone());
   }
+  for (const auto& [game_object_id, player_data] : other.players_data_) {
+    players_data_[game_object_id] =
+        std::make_shared<PlayerData>(PlayerData(*player_data));
+  }
 }
 
 std::shared_ptr<Player> GameModel::GetPlayerByPlayerId(
@@ -40,8 +44,8 @@ std::shared_ptr<GameObject> GameModel::GetNewEmptyGameObject(
 }
 
 void GameModel::AddGameObject(GameObjectId game_object_id,
-                                  GameObjectType type,
-                                  const std::vector<QVariant>& params) {
+                              GameObjectType type,
+                              const std::vector<QVariant>& params) {
   if (game_objects_.find(game_object_id) != game_objects_.end()) {
     throw std::runtime_error("[MODEL] This game_object_id already exists");
   }
@@ -52,6 +56,19 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
   qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
                     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
                         .valueToKey(static_cast<uint32_t>(type)));
+}
+
+void GameModel::AddPlayerData(GameObjectId player_id, QString nickname) {
+  players_data_[player_id] = std::make_shared<PlayerData>(
+      PlayerData(player_id, std::move(nickname)));
+}
+
+std::shared_ptr<PlayerData> GameModel::GetPlayerDataByPlayerId(
+    GameObjectId player_id) {
+  if (players_data_.find(player_id) == players_data_.end()) {
+    players_data_[player_id] = std::make_shared<PlayerData>(PlayerData());
+  }
+  return players_data_[player_id];
 }
 
 void GameModel::DeleteGameObject(GameObjectId game_object_id) {
@@ -116,4 +133,12 @@ void GameModel::AttachGameObject(
   qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
      << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
          .valueToKey(static_cast<uint32_t>(game_object->GetType())));
+}
+
+std::vector<std::shared_ptr<PlayerData>> GameModel::GetAllPlayersData() {
+  std::vector<std::shared_ptr<PlayerData>> result;
+  for (auto& it : players_data_) {
+    result.emplace_back(it.second);
+  }
+  return result;
 }

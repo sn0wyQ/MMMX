@@ -11,6 +11,7 @@
 #include <QDebug>
 
 #include "GameObject/MovableObject/Entity/Player/player.h"
+#include "PlayerData/player_data.h"
 #include "constants.h"
 
 class GameModel {
@@ -33,6 +34,10 @@ class GameModel {
   void AddGameObject(GameObjectId game_object_id, GameObjectType type,
                      const std::vector<QVariant>& params);
 
+  void AddPlayerData(GameObjectId player_id, QString nickname);
+  std::shared_ptr<PlayerData> GetPlayerDataByPlayerId(GameObjectId player_id);
+  std::vector<std::shared_ptr<PlayerData>> GetAllPlayersData();
+
   std::shared_ptr<GameObject>
     GetNewEmptyGameObject(GameObjectId game_object_id, GameObjectType type);
   void DeleteGameObject(GameObjectId game_object_id);
@@ -41,6 +46,7 @@ class GameModel {
 
  private:
   std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
+  std::unordered_map<GameObjectId, std::shared_ptr<PlayerData>> players_data_;
 };
 
 #endif  // MODEL_GAME_MODEL_H_

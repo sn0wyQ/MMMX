@@ -91,7 +91,10 @@ class RoomController : public BaseController {
   Event GetEventOfGameObjectLeftFov(GameObjectId game_object_id) const;
   bool IsGameObjectInFov(GameObjectId game_object_id,
                          GameObjectId player_id);
+  void SendPlayersDataToPlayers();
   void SendGameObjectsDataToPlayer(GameObjectId player_id);
+
+  void SendNicknameEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 

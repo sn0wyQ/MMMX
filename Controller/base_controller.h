@@ -70,6 +70,7 @@ class BaseController : public QObject {
   virtual void PlayerDisconnectedEvent(const Event& event) {}
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
+  virtual void SendNicknameEvent(const Event& event) {}
   virtual void SetPlayerIdToClient(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
   virtual void UpdateVarsEvent(const Event& event) {}
@@ -80,6 +81,7 @@ class BaseController : public QObject {
   virtual void AddLocalPlayerGameObjectEvent(const Event& event) {}
   virtual void SendGameInfoToInterpolateEvent(const Event& event) {}
   virtual void UpdateGameObjectDataEvent(const Event& event) {}
+  virtual void UpdatePlayersDataEvent(const Event& event) {}
   virtual void GameObjectLeftFovEvent(const Event& event) {}
   virtual void SendControlsEvent(const Event& event) {}
 };

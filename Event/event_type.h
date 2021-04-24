@@ -28,6 +28,10 @@ enum class EventType {
   // [2+] - event_args
   kSendEventToRoom,
 
+  // [0] - <GameObjectId> player_id,
+  // [1] - <QString> new_nickname
+  kSendNickname,
+
   // No arguments
   kSendGetVars,
 
@@ -72,6 +76,10 @@ enum class EventType {
   // [0] - <GameObjectId> game_object_id
   // [1+] - game_object_args : relative SetParams
   kUpdateGameObjectData,
+
+  // [0] - <GameObjectId> player_id
+  // [1+] - player_data_args
+  kUpdatePlayersData,
 
   // [0] - <GameObjectId> game_object_id that left receiver player FOV
   kGameObjectLeftFov,

@@ -17,6 +17,7 @@ class ClientGameModel : public GameModel {
  public:
   ClientGameModel() = default;
   std::shared_ptr<Player> GetLocalPlayer() const;
+  std::shared_ptr<PlayerData> GetLocalPlayerData();
   bool IsLocalPlayerSet() const;
   void SetLocalPlayerId(GameObjectId player_id);
 

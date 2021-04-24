@@ -255,6 +255,7 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
+  this->AddEventToSend(Event(EventType::kSendNickname, model_->GetLocalPlayer()->GetId(), "Gay"));
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
@@ -351,4 +352,9 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_->RemoveScheduled(player_id);
   game_state_ = GameState::kGameNotStarted;
   view_->Update();
+}
+
+void ClientController::UpdatePlayersDataEvent(const Event& event) {
+  model_->GetPlayerDataByPlayerId(event.GetArg<GameObjectId>(0))->SetParams(
+      event.GetArgsSubVector(1));
 }

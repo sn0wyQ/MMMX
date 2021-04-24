@@ -59,6 +59,8 @@ void RoomController::OnTick(int delta_time) {
                            std::make_shared<RoomGameModel>(*model_)});
   this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
+  this->SendPlayersDataToPlayers();
+  model_->UpdatePlayerDataHashes();
   for (const auto& player_id : this->GetAllPlayerIds()) {
     // Рассказываем НАМ о других с учетом FOV
     SendGameObjectsDataToPlayer(player_id);
@@ -90,6 +92,8 @@ void RoomController::AddClient(ClientId client_id) {
   this->AddEventToSendToSinglePlayer(event_add_local_player, player_id);
   this->AddEventToSendToSingleClient(
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
+  model_->AddPlayerData(player_id,
+                        QString("Player#") + QString::number(player_id));
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
                               << "] Connected client (ID: " << client_id << ")";
@@ -315,5 +319,23 @@ void RoomController::SendControlsEvent(const Event& event) {
     player_in_model->OnTick(models_cache_[id_of_model].delta_time);
     position_to_set = player_in_model->GetPosition();
     id_of_model++;
+  }
+}
+
+void RoomController::SendNicknameEvent(const Event& event) {
+  auto player_id = event.GetArg<GameObjectId>(0);
+  auto nickname = event.GetArg<QString>(1);
+  model_->GetPlayerDataByPlayerId(player_id)->SetNickname(nickname);
+}
+
+void RoomController::SendPlayersDataToPlayers() {
+  for (auto player_id : this->GetAllPlayerIds()) {
+    if (model_->IsNeededToSendPlayerData(player_id)) {
+      Event event_update_players_data = Event(EventType::kUpdatePlayersData,
+                                              player_id);
+      event_update_players_data.PushBackArgs(
+          model_->GetPlayerDataByPlayerId(player_id)->GetParams());
+      this->AddEventToSendToAllPlayers(event_update_players_data);
+    }
   }
 }
