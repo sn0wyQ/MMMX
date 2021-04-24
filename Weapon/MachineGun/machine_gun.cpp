@@ -15,3 +15,7 @@ MachineGun::MachineGun() {
 void MachineGun::DrawWeapon(Painter* painter) {
   painter->DrawRect(0.7f, -0.3f, 0.8f, 0.6f);
 }
+
+WeaponType MachineGun::GetWeaponType() {
+  return WeaponType::kMachineGun;
+}

@@ -42,3 +42,8 @@ float Math::DistanceBetweenPoints(QPointF first, QPointF second) {
       (first.y() - second.y()) * ((first.y() - second.y())));
   return distance;
 }
+
+float Math::GetRightAngle(float angle) {
+  return ((angle < 0.f) ? angle + 360.f : (angle > 360.f) ? angle - 360.f
+                                                          : angle);
+}

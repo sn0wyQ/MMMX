@@ -281,6 +281,7 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity({0, 0});
   }
+  mouse_is_holding_ = false;
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
@@ -334,7 +335,7 @@ void ClientController::MouseHolding() {
       return;
     }
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
-    model_->AddLocalBullet();
+    model_->AddLocalBullets();
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
                                static_cast<qint64>(GetCurrentServerTime()),
                                local_player->GetId()));

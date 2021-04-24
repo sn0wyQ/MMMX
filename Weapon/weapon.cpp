@@ -78,8 +78,10 @@ void Weapon::SetLastTimeShot(int64_t cur_time) {
   last_time_shot_ = cur_time;
 }
 
-std::vector<QVariant> Weapon::GetBulletParams(
-    GameObjectId parent_id, float x, float y, float rotation) const {
+std::vector<QVariant> Weapon::GetBulletParam(GameObjectId parent_id,
+                                              float x,
+                                              float y,
+                                              float rotation) {
   QVector2D velocity = Math::GetVectorByAngle(rotation);
   velocity *= this->GetBulletSpeed();
   return {x, y, 0.f,
@@ -92,4 +94,23 @@ std::vector<QVariant> Weapon::GetBulletParams(
           this->GetBulletDamage(),
           this->GetBulletSpeed(),
           this->GetBulletRange()};
+}
+
+std::vector<std::vector<QVariant>> Weapon::GetBulletParams(
+    GameObjectId parent_id, float x, float y, float rotation) {
+  std::vector<std::vector<QVariant>> bullets_params;
+  WeaponType weapon_type = GetWeaponType();
+  switch (weapon_type) {
+    case WeaponType::kCrossbow: {
+      bullets_params.emplace_back(GetBulletParam(parent_id, x, y, Math::GetRightAngle(rotation + 3.f)));
+      bullets_params.emplace_back(GetBulletParam(parent_id, x, y, rotation));
+      bullets_params.emplace_back(GetBulletParam(parent_id, x, y, Math::GetRightAngle(rotation - 3.f)));
+      break;
+    }
+    default: {
+      bullets_params.emplace_back(GetBulletParam(parent_id, x, y, rotation));
+      break;
+    }
+  }
+  return bullets_params;
 }

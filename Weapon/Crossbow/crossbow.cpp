@@ -21,3 +21,7 @@ void Crossbow::DrawWeapon(Painter* painter) {
                         QPointF(1.f, -0.4f),
                         QPointF(1.1f, -0.5f));
 }
+
+WeaponType Crossbow::GetWeaponType() {
+  return WeaponType::kCrossbow;
+}

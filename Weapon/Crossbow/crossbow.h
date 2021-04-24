@@ -18,5 +18,8 @@ class Crossbow : public Weapon {
   Crossbow(const Crossbow& crossbow);
 
   void DrawWeapon(Painter *painter) override;
+
+  WeaponType GetWeaponType() override;
+
 };
 #endif  // WEAPON_CROSSBOW_CROSSBOW_H_

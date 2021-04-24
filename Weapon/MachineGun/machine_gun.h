@@ -18,5 +18,8 @@ class MachineGun : public Weapon {
   MachineGun(const MachineGun& machine_gun);
 
   void DrawWeapon(Painter *painter) override;
+
+  WeaponType GetWeaponType() override;
+
 };
 #endif  // WEAPON_MACHINEGUN_MACHINE_GUN_H_
