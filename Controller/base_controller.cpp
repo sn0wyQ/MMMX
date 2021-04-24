@@ -32,8 +32,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendGameInfoToInterpolateEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateGameObjectData,
     std::bind(&BaseController::UpdateGameObjectDataEvent, this, _1));
-  SetFunctionForEventType(EventType::kUpdatePlayersData,
-    std::bind(&BaseController::UpdatePlayersDataEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdatePlayersStats,
+    std::bind(&BaseController::UpdatePlayersStatsEvent, this, _1));
   SetFunctionForEventType(EventType::kGameObjectLeftFov,
     std::bind(&BaseController::GameObjectLeftFovEvent, this, _1));
   SetFunctionForEventType(EventType::kSendControls,

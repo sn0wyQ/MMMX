@@ -1,12 +1,12 @@
 #include <utility>
 
-#include "player_data.h"
+#include "player_stats.h"
 
-PlayerData::PlayerData(GameObjectId player_id,
+PlayerStats::PlayerStats(GameObjectId player_id,
                        QString nickname) : player_id_{player_id},
                                            nickname_{std::move(nickname)} {}
 
-void PlayerData::SetParams(std::vector<QVariant> params) {
+void PlayerStats::SetParams(std::vector<QVariant> params) {
   player_id_ = params.back().toInt();
   params.pop_back();
   this->SetNickname(params.back().toString());
@@ -17,7 +17,7 @@ void PlayerData::SetParams(std::vector<QVariant> params) {
   params.pop_back();
 }
 
-std::vector<QVariant> PlayerData::GetParams() const {
+std::vector<QVariant> PlayerStats::GetParams() const {
   std::vector<QVariant> params;
   params.emplace_back(this->GetDeaths());
   params.emplace_back(this->GetKills());
@@ -26,30 +26,30 @@ std::vector<QVariant> PlayerData::GetParams() const {
   return params;
 }
 
-const QString& PlayerData::GetNickname() const {
+const QString& PlayerStats::GetNickname() const {
   return nickname_;
 }
 
-int PlayerData::GetKills() const {
+int PlayerStats::GetKills() const {
   return kills_;
 }
 
-int PlayerData::GetDeaths() const {
+int PlayerStats::GetDeaths() const {
   return deaths_;
 }
 
-void PlayerData::SetNickname(const QString& nickname) {
+void PlayerStats::SetNickname(const QString& nickname) {
   nickname_ = nickname;
 }
 
-void PlayerData::SetKills(int kills) {
+void PlayerStats::SetKills(int kills) {
   kills_ = kills;
 }
 
-void PlayerData::SetDeaths(int deaths) {
+void PlayerStats::SetDeaths(int deaths) {
   deaths_ = deaths;
 }
 
-GameObjectId PlayerData::GetPlayerId() const {
+GameObjectId PlayerStats::GetPlayerId() const {
   return player_id_;
 }

@@ -387,8 +387,8 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
   view_->Update();
 }
 
-void ClientController::UpdatePlayersDataEvent(const Event& event) {
-  model_->GetPlayerDataByPlayerId(event.GetArg<GameObjectId>(0))->SetParams(
+void ClientController::UpdatePlayersStatsEvent(const Event& event) {
+  model_->GetPlayerStatsByPlayerId(event.GetArg<GameObjectId>(0))->SetParams(
       event.GetArgsSubVector(1));
 }
 

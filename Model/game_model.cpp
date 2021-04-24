@@ -6,7 +6,7 @@ GameModel::GameModel(const GameModel& other) {
   }
   for (const auto& [game_object_id, player_data] : other.players_data_) {
     players_data_[game_object_id] =
-        std::make_shared<PlayerData>(PlayerData(*player_data));
+        std::make_shared<PlayerStats>(PlayerStats(*player_data));
   }
 }
 
@@ -61,15 +61,15 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
                         .valueToKey(static_cast<uint32_t>(type)));
 }
 
-void GameModel::AddPlayerData(GameObjectId player_id, QString nickname) {
-  players_data_[player_id] = std::make_shared<PlayerData>(
-      PlayerData(player_id, std::move(nickname)));
+void GameModel::AddPlayerStats(GameObjectId player_id, QString nickname) {
+  players_data_[player_id] = std::make_shared<PlayerStats>(
+      PlayerStats(player_id, std::move(nickname)));
 }
 
-std::shared_ptr<PlayerData> GameModel::GetPlayerDataByPlayerId(
+std::shared_ptr<PlayerStats> GameModel::GetPlayerStatsByPlayerId(
     GameObjectId player_id) {
   if (players_data_.find(player_id) == players_data_.end()) {
-    players_data_[player_id] = std::make_shared<PlayerData>(PlayerData());
+    players_data_[player_id] = std::make_shared<PlayerStats>(PlayerStats());
   }
   return players_data_[player_id];
 }
@@ -148,8 +148,8 @@ void GameModel::AttachGameObject(
          .valueToKey(static_cast<uint32_t>(game_object->GetType())));
 }
 
-std::vector<std::shared_ptr<PlayerData>> GameModel::GetAllPlayersData() {
-  std::vector<std::shared_ptr<PlayerData>> result;
+std::vector<std::shared_ptr<PlayerStats>> GameModel::GetAllPlayersStats() {
+  std::vector<std::shared_ptr<PlayerStats>> result;
   for (auto& it : players_data_) {
     result.emplace_back(it.second);
   }

@@ -79,7 +79,7 @@ enum class EventType {
 
   // [0] - <GameObjectId> player_id
   // [1+] - player_data_args
-  kUpdatePlayersData,
+  kUpdatePlayersStats,
 
   // [0] - <GameObjectId> game_object_id that left receiver player FOV
   kGameObjectLeftFov,

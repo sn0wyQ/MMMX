@@ -59,8 +59,8 @@ void RoomController::OnTick(int delta_time) {
                            std::make_shared<RoomGameModel>(*model_)});
   this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
-  this->SendPlayersDataToPlayers();
-  model_->UpdatePlayerDataHashes();
+  this->SendPlayersStatsToPlayers();
+  model_->UpdatePlayerStatsHashes();
   for (const auto& player_id : this->GetAllPlayerIds()) {
     // Рассказываем НАМ о других с учетом FOV
     SendGameObjectsDataToPlayer(player_id);
@@ -136,8 +136,9 @@ void RoomController::AddClient(ClientId client_id) {
   this->AddEventToSendToSinglePlayer(event_add_local_player, player_id);
   this->AddEventToSendToSingleClient(
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
-  model_->AddPlayerData(player_id,
+  model_->AddPlayerStats(player_id,
                         QString("Player#") + QString::number(player_id));
+  this->ForceSendPlayersStatsToPlayer(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
                               << "] Connected client (ID: " << client_id << ")";
@@ -285,13 +286,23 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
   }
 }
 
-void RoomController::SendPlayersDataToPlayers() {
+void RoomController::ForceSendPlayersStatsToPlayer(GameObjectId player_id) {
+  for (auto player_stats_id : this->GetAllPlayerIds()) {
+    Event event_update_players_data = Event(EventType::kUpdatePlayersStats,
+                                            player_stats_id);
+    event_update_players_data.PushBackArgs(
+        model_->GetPlayerStatsByPlayerId(player_stats_id)->GetParams());
+    this->AddEventToSendToSinglePlayer(event_update_players_data, player_id);
+  }
+}
+
+void RoomController::SendPlayersStatsToPlayers() {
   for (auto player_id : this->GetAllPlayerIds()) {
-    if (model_->IsNeededToSendPlayerData(player_id)) {
-      Event event_update_players_data = Event(EventType::kUpdatePlayersData,
+    if (model_->IsNeededToSendPlayerStats(player_id)) {
+      Event event_update_players_data = Event(EventType::kUpdatePlayersStats,
                                               player_id);
       event_update_players_data.PushBackArgs(
-          model_->GetPlayerDataByPlayerId(player_id)->GetParams());
+          model_->GetPlayerStatsByPlayerId(player_id)->GetParams());
       this->AddEventToSendToAllPlayers(event_update_players_data);
     }
   }
@@ -448,5 +459,5 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
 void RoomController::SendNicknameEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   auto nickname = event.GetArg<QString>(1);
-  model_->GetPlayerDataByPlayerId(player_id)->SetNickname(nickname);
+  model_->GetPlayerStatsByPlayerId(player_id)->SetNickname(nickname);
 }

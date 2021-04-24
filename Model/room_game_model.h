@@ -17,8 +17,8 @@ class RoomGameModel : public GameModel {
                              const std::vector<QVariant>& params);
   bool IsNeededToSendGameObjectData(GameObjectId game_object_id) const;
   void UpdateGameObjectHashes();
-  bool IsNeededToSendPlayerData(GameObjectId player_id);
-  void UpdatePlayerDataHashes();
+  bool IsNeededToSendPlayerStats(GameObjectId player_id);
+  void UpdatePlayerStatsHashes();
 
  private:
   GameObjectId next_game_object_id_{1};

@@ -1,15 +1,15 @@
-#ifndef PLAYERDATA_PLAYER_DATA_H_
-#define PLAYERDATA_PLAYER_DATA_H_
+#ifndef PLAYERSTATS_PLAYER_STATS_H_
+#define PLAYERSTATS_PLAYER_STATS_H_
 
 #include <vector>
 #include <QVariant>
 
 #include "constants.h"
 
-class PlayerData {
+class PlayerStats {
  public:
-  PlayerData() = default;
-  PlayerData(GameObjectId game_object_id, QString nickname);
+  PlayerStats() = default;
+  PlayerStats(GameObjectId game_object_id, QString nickname);
 
   GameObjectId GetPlayerId() const;
   void SetParams(std::vector<QVariant> params);
@@ -31,4 +31,4 @@ class PlayerData {
   int deaths_{0};
 };
 
-#endif  // PLAYERDATA_PLAYER_DATA_H_
+#endif  // PLAYERSTATS_PLAYER_STATS_H_

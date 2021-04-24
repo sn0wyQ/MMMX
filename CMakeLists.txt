@@ -87,7 +87,7 @@ set(SOURCES
         Model/room_game_model.cpp
         Model/server_model.cpp
         Painter/painter.cpp
-        PlayerData/player_data.cpp
+        PlayerStats/player_stats.cpp
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp

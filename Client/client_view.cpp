@@ -68,7 +68,7 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
                        .arg(controller_->GetPing())
                        .arg(local_player_position.x())
                        .arg(local_player_position.y())
-                       .arg(model_->GetLocalPlayerData()->GetNickname()));
+                       .arg(model_->GetLocalPlayerStats()->GetNickname()));
   info_label_->adjustSize();
 
   qDebug().noquote().nospace() << "[VIEW] Repainted";
