@@ -19,13 +19,10 @@ void PlayerData::SetParams(std::vector<QVariant> params) {
   params.pop_back();
   this->SetDeaths(params.back().toInt());
   params.pop_back();
-  this->SetHealthPoints(params.back().toInt());
-  params.pop_back();
 }
 
 std::vector<QVariant> PlayerData::GetParams() const {
   std::vector<QVariant> params;
-  params.emplace_back(this->GetHealthPoints());
   params.emplace_back(this->GetDeaths());
   params.emplace_back(this->GetKills());
   params.emplace_back(this->GetNickname());
@@ -59,12 +56,4 @@ void PlayerData::SetDeaths(int deaths) {
 
 GameObjectId PlayerData::GetPlayerId() const {
   return player_id_;
-}
-
-int PlayerData::GetHealthPoints() const {
-  return health_points_;
-}
-
-void PlayerData::SetHealthPoints(int health_points) {
-  health_points_ = health_points;
 }

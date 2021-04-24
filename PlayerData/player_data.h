@@ -28,15 +28,11 @@ class PlayerData {
   void SetDeaths(int deaths);
   int GetDeaths() const;
 
-  void SetHealthPoints(int health_points);
-  int GetHealthPoints() const;
-
  private:
   GameObjectId player_id_{Constants::kNullGameObjectId};
   QString nickname_{""};
   int kills_{0};
   int deaths_{0};
-  int health_points_{Constants::kMaxHealthPoints};
 };
 
 #endif  // PLAYERDATA_PLAYER_DATA_H_
