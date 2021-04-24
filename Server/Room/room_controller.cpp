@@ -126,6 +126,8 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                   std::dynamic_pointer_cast<Player>(entity)->GetLevel())
                   * Constants::kExpMultiplier;
               killer->IncreaseExperience(receive_exp);
+              model_->GetPlayerStatsByPlayerId(killer_id)->
+                                                   SetLevel(killer->GetLevel());
               this->AddEventToSendToSinglePlayer(
                   Event(EventType::kIncreaseLocalPlayerExperience,
                         receive_exp),

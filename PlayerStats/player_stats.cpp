@@ -7,6 +7,8 @@ PlayerStats::PlayerStats(GameObjectId player_id,
                                            nickname_{std::move(nickname)} {}
 
 void PlayerStats::SetParams(std::vector<QVariant> params) {
+  this->SetLevel(params.back().toInt());
+  params.pop_back();
   this->SetDeaths(params.back().toInt());
   params.pop_back();
   this->SetKills(params.back().toInt());
@@ -23,6 +25,7 @@ std::vector<QVariant> PlayerStats::GetParams() const {
   params.emplace_back(this->GetNickname());
   params.emplace_back(this->GetKills());
   params.emplace_back(this->GetDeaths());
+  params.emplace_back(this->GetLevel());
   return params;
 }
 
@@ -52,4 +55,12 @@ void PlayerStats::SetDeaths(int deaths) {
 
 GameObjectId PlayerStats::GetPlayerId() const {
   return player_id_;
+}
+
+int PlayerStats::GetLevel() const {
+  return level_;
+}
+
+void PlayerStats::SetLevel(int level) {
+  level_ = level;
 }

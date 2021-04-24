@@ -43,6 +43,7 @@ class GameObject {
   virtual void OnTick(int delta_time) {}
   void Draw(Painter* painter);
   virtual void DrawHealthBar(Painter* painter) {}
+  virtual void DrawLevel(Painter* painter) {}
   virtual void DrawRelatively(Painter* painter) {}
 
   virtual bool IsMovable() const;

@@ -17,6 +17,7 @@ class Player : public Entity {
   explicit Player(GameObjectId player_id);
   Player(const Player& other);
 
+  void DrawLevel(Painter* painter) override;
   void DrawRelatively(Painter* painter) override;
 
   bool IsLocalPlayer() const;

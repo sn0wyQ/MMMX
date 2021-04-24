@@ -24,11 +24,15 @@ class PlayerStats {
   void SetDeaths(int deaths);
   int GetDeaths() const;
 
+  void SetLevel(int level);
+  int GetLevel() const;
+
  private:
   GameObjectId player_id_{Constants::kNullGameObjectId};
   QString nickname_{""};
   int kills_{0};
   int deaths_{0};
+  int level_{0};
 };
 
 #endif  // PLAYERSTATS_PLAYER_STATS_H_
