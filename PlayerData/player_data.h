@@ -14,21 +14,29 @@ class PlayerData {
  public:
   PlayerData() = default;
   PlayerData(GameObjectId game_object_id, QString nickname);
+
+  GameObjectId GetPlayerId() const;
   void SetParams(std::vector<QVariant> params);
   std::vector<QVariant> GetParams() const;
+
   void SetNickname(const QString& nickname);
-  void SetKills(int kills);
-  void SetDeaths(int deaths);
   const QString& GetNickname() const;
+
+  void SetKills(int kills);
   int GetKills() const;
+
+  void SetDeaths(int deaths);
   int GetDeaths() const;
-  GameObjectId GetPlayerId() const;
+
+  void SetHealthPoints(int health_points);
+  int GetHealthPoints() const;
 
  private:
   GameObjectId player_id_{Constants::kNullGameObjectId};
   QString nickname_{""};
   int kills_{0};
   int deaths_{0};
+  int health_points_{Constants::kMaxHealthPoints};
 };
 
 #endif  // PLAYERDATA_PLAYER_DATA_H_
