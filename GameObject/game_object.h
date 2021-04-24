@@ -42,7 +42,9 @@ class GameObject {
 
   virtual void OnTick(int delta_time) {}
   void Draw(Painter* painter);
+  virtual void DrawHealthBar(Painter* painter) {}
   virtual void DrawRelatively(Painter* painter) {}
+
   virtual bool IsMovable() const;
 
   std::shared_ptr<RigidBody> GetRigidBody() const;
@@ -75,6 +77,8 @@ class GameObject {
   bool IsInFov() const;
   void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
+
+  virtual bool IsEntity() const;
 
   virtual std::shared_ptr<GameObject> Clone() const;
 

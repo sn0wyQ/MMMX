@@ -14,6 +14,9 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   game_view_->move(0, 0);
   game_view_->setMouseTracking(true);
 
+  // Player Bar
+  player_bar_ = new PlayerBar(this, controller_->GetModel());
+
   // Info Label
   info_label_ = new QLabel(this);
   info_label_->move(10, 10);
@@ -74,4 +77,7 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
   game_view_->resize(resize_event->size());
+  int height_of_bar = static_cast<int>(0.15f * static_cast<float>(height()));
+  player_bar_->resize(width(), height_of_bar);
+  player_bar_->move(0, height() - height_of_bar);
 }
