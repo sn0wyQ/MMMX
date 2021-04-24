@@ -37,18 +37,18 @@ void RoomGameModel::UpdateGameObjectHashes() {
 }
 
 bool RoomGameModel::IsNeededToSendPlayerStats(GameObjectId player_id) {
-  auto data_iter = last_player_stats_hash_.find(player_id);
-  if (data_iter == last_player_stats_hash_.end()) {
+  auto stats_iter = last_player_stats_hash_.find(player_id);
+  if (stats_iter == last_player_stats_hash_.end()) {
     return true;
   }
   auto hash = HashCalculator::GetHash(
       this->GetPlayerStatsByPlayerId(player_id)->GetParams());
-  return hash != data_iter->second;
+  return hash != stats_iter->second;
 }
 
 void RoomGameModel::UpdatePlayerStatsHashes() {
-  for (const auto& data : this->GetAllPlayersStats()) {
-    last_player_stats_hash_[data->GetPlayerId()] =
-        HashCalculator::GetHash(data->GetParams());
+  for (const auto& stats : this->GetAllPlayersStats()) {
+    last_player_stats_hash_[stats->GetPlayerId()] =
+        HashCalculator::GetHash(stats->GetParams());
   }
 }
