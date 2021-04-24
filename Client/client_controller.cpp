@@ -319,6 +319,7 @@ void ClientController::MousePressEvent(QMouseEvent*) {
     if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
       return;
     }
+    // Temporary nickname change
     this->AddEventToSend(Event(EventType::kSendNickname,
                                model_->GetLocalPlayer()->GetId(),
                                QString("Shooter#") +
