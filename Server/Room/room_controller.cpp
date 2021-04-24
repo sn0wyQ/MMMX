@@ -285,6 +285,17 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
   }
 }
 
+void RoomController::SendPlayersDataToPlayers() {
+  for (auto player_id : this->GetAllPlayerIds()) {
+    if (model_->IsNeededToSendPlayerData(player_id)) {
+      Event event_update_players_data = Event(EventType::kUpdatePlayersData,
+                                              player_id);
+      event_update_players_data.PushBackArgs(
+          model_->GetPlayerDataByPlayerId(player_id)->GetParams());
+      this->AddEventToSendToAllPlayers(event_update_players_data);
+    }
+  }
+}
 
 bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
                                        GameObjectId player_id) {
@@ -438,16 +449,4 @@ void RoomController::SendNicknameEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   auto nickname = event.GetArg<QString>(1);
   model_->GetPlayerDataByPlayerId(player_id)->SetNickname(nickname);
-}
-
-void RoomController::SendPlayersDataToPlayers() {
-  for (auto player_id : this->GetAllPlayerIds()) {
-    if (model_->IsNeededToSendPlayerData(player_id)) {
-      Event event_update_players_data = Event(EventType::kUpdatePlayersData,
-                                              player_id);
-      event_update_players_data.PushBackArgs(
-          model_->GetPlayerDataByPlayerId(player_id)->GetParams());
-      this->AddEventToSendToAllPlayers(event_update_players_data);
-    }
-  }
 }

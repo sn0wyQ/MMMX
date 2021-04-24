@@ -45,6 +45,7 @@ bool RoomGameModel::IsNeededToSendPlayerData(GameObjectId player_id) {
       this->GetPlayerDataByPlayerId(player_id)->GetParams());
   return hash != data_iter->second;
 }
+
 void RoomGameModel::UpdatePlayerDataHashes() {
   for (const auto& data : this->GetAllPlayersData()) {
     last_player_data_hash_[data->GetPlayerId()] =

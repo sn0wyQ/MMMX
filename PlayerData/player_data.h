@@ -1,7 +1,3 @@
-//
-// Created by matvey on 21.04.21.
-//
-
 #ifndef PLAYERDATA_PLAYER_DATA_H_
 #define PLAYERDATA_PLAYER_DATA_H_
 

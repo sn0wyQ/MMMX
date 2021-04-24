@@ -1,7 +1,3 @@
-//
-// Created by matvey on 21.04.21.
-//
-
 #include <utility>
 
 #include "player_data.h"
@@ -26,7 +22,7 @@ std::vector<QVariant> PlayerData::GetParams() const {
   params.emplace_back(this->GetDeaths());
   params.emplace_back(this->GetKills());
   params.emplace_back(this->GetNickname());
-  params.emplace_back(player_id_);
+  params.emplace_back(this->GetPlayerId());
   return params;
 }
 
