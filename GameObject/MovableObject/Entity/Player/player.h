@@ -8,7 +8,7 @@
 #include <QEvent>
 
 #include "GameObject/MovableObject/Entity/entity.h"
-#include "Weapon/weapon.h"
+#include "Weapon/Crossbow/crossbow.h"
 #include "Weapon/MachineGun/machine_gun.h"
 #include "constants.h"
 

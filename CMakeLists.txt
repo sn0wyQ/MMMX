@@ -90,6 +90,7 @@ set(SOURCES
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
+        Weapon/Crossbow/crossbow.cpp
         Weapon/MachineGun/machine_gun.cpp
         Weapon/weapon.cpp
         )

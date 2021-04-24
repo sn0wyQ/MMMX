@@ -13,7 +13,8 @@
 #include "Weapon/WeaponConstants/weapon_constants.h"
 
 enum class WeaponType {
-  kMachineGun
+  kMachineGun,
+  kCrossbow
 };
 
 class Weapon {

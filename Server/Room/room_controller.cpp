@@ -125,7 +125,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
 }
 
 void RoomController::AddClient(ClientId client_id) {
-  GameObjectId player_id = AddDefaultPlayer();
+  GameObjectId player_id = AddPlayer();
   player_ids_[client_id] = player_id;
 
   Event event_add_local_player(EventType::kAddLocalPlayerGameObject, player_id);
@@ -281,7 +281,6 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
   }
 }
 
-
 bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
                                        GameObjectId player_id) {
   auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
@@ -292,16 +291,29 @@ bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
   return player->GetShortestDistance(game_object) <
     player->GetFovRadius() * Constants::kFovMultiplier;
 }
-
-GameObjectId RoomController::AddDefaultPlayer() {
-  return model_->AddGameObject(
-      GameObjectType::kPlayer,
-      {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
-       Constants::kDefaultPlayerRotation, Constants::kDefaultPlayerRadius * 2,
-       Constants::kDefaultPlayerRadius * 2,
-       static_cast<int>(RigidBodyType::kCircle),
-       0.f, 0.f, Constants::kDefaultEntityFov * 2.f,
-       static_cast<int>(WeaponType::kMachineGun)});
+// Temporary -> AddPlayer(PlayerType)
+GameObjectId RoomController::AddPlayer() {
+  std::vector<QVariant>
+      params = {Constants::kDefaultPlayerX,
+                Constants::kDefaultPlayerY,
+                Constants::kDefaultPlayerRotation,
+                Constants::kDefaultPlayerRadius * 2,
+                Constants::kDefaultPlayerRadius * 2,
+                static_cast<int>(RigidBodyType::kCircle),
+                0.f, 0.f, Constants::kDefaultEntityFov * 2.f};
+  // Temporary
+  int players_count = this->GetPlayersCount() % 2;
+  switch (players_count) {
+    case 0: {
+      params.emplace_back(static_cast<int>(WeaponType::kCrossbow));
+      break;
+    }
+    case 1: {
+      params.emplace_back(static_cast<int>(WeaponType::kMachineGun));
+      break;
+    }
+  }
+  return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
 
 void RoomController::AddBox(float x, float y, float rotation,
