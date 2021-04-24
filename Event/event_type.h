@@ -97,13 +97,13 @@ enum class EventType {
   // [0] - <GameObjectId> player_id
   kPlayerDisconnected,
 
-  // [0] - <float> health_points
-  kUpdateLocalPlayerHealthPoints,
+  // [0] - <float> experience_to_add
+  kIncreaseLocalPlayerExperience,
 
   kLocalPlayerDied,
 
-  // [0] - <float> experience_to_add
-  kIncreaseLocalPlayerExperience,
+  // [0] - <float> health_points
+  kUpdateLocalPlayerHealthPoints,
 
   SIZE
 };

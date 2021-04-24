@@ -18,8 +18,11 @@ class PlayerBar : public QWidget {
 
   void paintEvent(QPaintEvent* paint_event) override;
 
+  void DrawNickname(QPainter* painter);
+  void DrawHealthRect(QPainter* painter);
+  void DrawExpRect(QPainter* painter);
+
   QRectF RectWithPercents(float x1, float y1, float width, float height);
-  QPointF PointWithPercents(float x, float y);
 
  private:
   std::shared_ptr<ClientGameModel> model_;

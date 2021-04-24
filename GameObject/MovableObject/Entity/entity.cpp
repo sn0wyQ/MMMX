@@ -5,14 +5,14 @@ Entity::Entity(GameObjectId id) : MovableObject(id) {}
 Entity::Entity(const Entity& other) : MovableObject(other) {
   fov_radius_ = other.fov_radius_;
   health_points_ = other.health_points_;
-  health_regen_speed_ = other.health_regen_speed_;
+  health_regen_rate_ = other.health_regen_rate_;
   max_health_points_ = other.max_health_points_;
 }
 
 void Entity::SetParams(std::vector<QVariant> params) {
   SetMaxHealthPoints(params.back().toFloat());
   params.pop_back();
-  SetHealthRegenSpeed(params.back().toFloat());
+  SetHealthRegenRate(params.back().toFloat());
   params.pop_back();
   SetHealthPoints(params.back().toFloat());
   params.pop_back();
@@ -25,7 +25,7 @@ std::vector<QVariant> Entity::GetParams() const {
   std::vector<QVariant> result = MovableObject::GetParams();
   result.emplace_back(GetFovRadius());
   result.emplace_back(GetHealthPoints());
-  result.emplace_back(GetHealthRegenSpeed());
+  result.emplace_back(GetHealthRegenRate());
   result.emplace_back(GetMaxHealthPoints());
   return result;
 }
@@ -110,17 +110,21 @@ QPointF Entity::GetSpawnPosition() const {
   return spawn_position_;
 }
 
-float Entity::GetHealthRegenSpeed() const {
-  return health_regen_speed_;
+float Entity::GetHealthRegenRate() const {
+  return health_regen_rate_;
 }
 
-void Entity::SetHealthRegenSpeed(float health_regen_speed) {
-  health_regen_speed_ = health_regen_speed;
+void Entity::SetHealthRegenRate(float health_regen_rate) {
+  health_regen_rate_ = health_regen_rate;
 }
 
 void Entity::OnTick(int delta_time) {
-  health_points_ = std::min(
-      health_points_ + health_regen_speed_ * static_cast<float>(delta_time),
-      max_health_points_);
   MovableObject::OnTick(delta_time);
+  TickHealthPoints(delta_time);
+}
+
+void Entity::TickHealthPoints(int delta_time) {
+  health_points_ = std::min(
+      health_points_ + health_regen_rate_ * static_cast<float>(delta_time),
+      max_health_points_);
 }
