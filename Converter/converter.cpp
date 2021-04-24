@@ -26,12 +26,12 @@ void Converter::UpdateCoefficient(float fov) {
                            static_cast<float>(widget_->height()) / 2.f);
 }
 
-QPointF Converter::PointFromGameToScreen(const QPointF& point) {
+QPointF Converter::PointFromGameToScreen(const QPointF& point) const {
   QPointF delta = ScaleFromGameToScreen(point - game_center_);
   return screen_center_ - delta;
 }
 
-QPointF Converter::PointFromScreenToGame(const QPointF& point) {
+QPointF Converter::PointFromScreenToGame(const QPointF& point) const {
   QPointF delta = ScaleFromScreenToGame(screen_center_ - point);
   return game_center_ - delta;
 }

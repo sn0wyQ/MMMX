@@ -121,7 +121,9 @@ class ClientController : public BaseController {
   void SendGameInfoToInterpolateEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;
-  void UpdateLocalPlayerSizeEvent(const Event& event) override;
+  void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;
+  void LocalPlayerDiedEvent(const Event& event) override;
+  void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;

@@ -32,12 +32,21 @@ class Player : public Entity {
 
   const std::shared_ptr<Weapon>& GetWeapon() const;
 
+  void SetLevel(int level);
+  int GetLevel() const;
+  void SetCurrentExp(float current_exp);
+  float GetCurrentExp() const;
+
+  void IncreaseExperience(float experience_to_add);
+
   std::shared_ptr<GameObject> Clone() const override;
 
  private:
   bool is_local_player_{false};
   std::shared_ptr<Weapon> weapon_;
   WeaponType weapon_type_;
+  int level_;
+  float current_exp_;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_

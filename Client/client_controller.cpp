@@ -229,7 +229,6 @@ void ClientController::UpdateVarsEvent(const Event& event) {
   view_->Update();
 }
 
-
 QVector2D ClientController::GetKeyForce() const {
   bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
   bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
@@ -312,6 +311,7 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
     local_player->SetRotation(rotation);
   }
 }
+
 void ClientController::MousePressEvent(QMouseEvent*) {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
@@ -392,8 +392,25 @@ void ClientController::UpdatePlayersStatsEvent(const Event& event) {
       event.GetArgsSubVector(1));
 }
 
-void ClientController::UpdateLocalPlayerSizeEvent(const Event& event) {
-  auto local_player = model_->GetLocalPlayer();
-  local_player->SetWidth(event.GetArg<float>(0));
-  local_player->SetHeight(event.GetArg<float>(1));
+void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto health_points = event.GetArg<float>(0);
+  model_->GetLocalPlayer()->SetHealthPoints(health_points);
+}
+
+void ClientController::LocalPlayerDiedEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  model_->GetLocalPlayer()->Revive();
+}
+
+void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto experience_to_add = event.GetArg<float>(0);
+  model_->GetLocalPlayer()->IncreaseExperience(experience_to_add);
 }

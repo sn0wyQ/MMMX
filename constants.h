@@ -62,6 +62,9 @@ constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
 constexpr bool kRigidBodyShow = true;
 
+// GameObject
+constexpr float kDefaultMaxHealthPoints = 100.f;
+
 // MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
@@ -71,9 +74,15 @@ constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
+constexpr float kDefaultHealthRegenSpeed = 0.001f;
 
 // Bullet collision
 constexpr int kAccuracy = 10;
+
+constexpr float kExpForLevel[] = {
+    10, 15, 20, 25, 30, 35, 40, 45, 50, 55
+};
+constexpr float kExpMultiplier = 5.f;
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_
