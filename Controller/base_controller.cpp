@@ -29,7 +29,7 @@ BaseController::BaseController() {
   SetFunctionForEventType(EventType::kAddLocalPlayerGameObject,
     std::bind(&BaseController::AddLocalPlayerGameObjectEvent, this, _1));
   SetFunctionForEventType(EventType::kSendGameInfoToInterpolate,
-    std::bind(&BaseController::SendGameInfoToInterpolateEvent,this, _1));
+    std::bind(&BaseController::SendGameInfoToInterpolateEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateGameObjectData,
     std::bind(&BaseController::UpdateGameObjectDataEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdatePlayersData,
