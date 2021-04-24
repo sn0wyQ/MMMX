@@ -104,6 +104,7 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
 void ClientController::OnTickGameInProgress(int delta_time) {
   this->UpdateInterpolationInfo();
   this->UpdateLocalPlayer(delta_time);
+  this->UpdateLocalBullets(delta_time);
 }
 
 void ClientController::UpdateInterpolationInfo() {
@@ -115,10 +116,13 @@ void ClientController::UpdateInterpolationInfo() {
   // С учетом обновления булевской IsInFov
   // Удаляем объект из модели и из интерполятора
   for (const auto& game_object : model_->GetAllGameObjects()) {
-    if (!game_object->IsInFov()) {
-      auto game_object_id = game_object->GetId();
+    auto game_object_id = game_object->GetId();
+    bool is_or_will_in_fov =
+        model_->GetScheduledVariableValue(
+            game_object_id, Variable::kIsInFov).toBool();
+    if (!(is_or_will_in_fov || game_object->IsInFov())) {
       model_->DeleteGameObject(game_object_id);
-      model_->RemoveScheduled(game_object_id);
+      model_->RemoveFromInterpolator(game_object_id);
     }
   }
 
@@ -132,8 +136,6 @@ void ClientController::UpdateInterpolationInfo() {
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
-    // Если о нем есть информация, то он явно в FOV
-    game_object->SetIsInFov(true);
   }
 }
 
@@ -144,8 +146,14 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   auto local_player = model_->GetLocalPlayer();
 
+  std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding;
+  for (const auto& game_object : model_->GetAllGameObjects()) {
+    if (game_object->GetType() != GameObjectType::kBullet) {
+      game_objects_to_move_with_sliding.push_back(game_object);
+    }
+  }
   ObjectCollision::MoveWithSlidingCollision(
-      local_player, model_->GetAllGameObjects(),
+      local_player, game_objects_to_move_with_sliding,
       this->GetKeyForce(), delta_time);
 
   local_player->OnTick(delta_time);
@@ -159,6 +167,25 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
                         local_player->GetY(),
                         local_player->GetVelocity(),
                         local_player->GetRotation()));
+}
+
+void ClientController::UpdateLocalBullets(int delta_time) {
+  std::vector<GameObjectId> is_need_to_delete;
+  for (const auto& bullet : model_->GetLocalBullets()) {
+    auto object_collided = ObjectCollision::GetObjectBulletCollidedWith(
+            bullet, model_->GetAllGameObjects(), delta_time, true);
+    if (object_collided != nullptr) {
+      bullet->SetIsNeedToDelete(true);
+    }
+    bullet->OnTick(delta_time);
+    if (bullet->IsNeedToDelete()) {
+      is_need_to_delete.push_back(bullet->GetId());
+    }
+  }
+
+  for (const auto& bullet_id : is_need_to_delete) {
+    model_->DeleteLocalBullet(bullet_id);
+  }
 }
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
@@ -202,6 +229,7 @@ void ClientController::UpdateVarsEvent(const Event& event) {
   view_->Update();
 }
 
+
 QVector2D ClientController::GetKeyForce() const {
   bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
   bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
@@ -227,7 +255,6 @@ QVector2D ClientController::GetKeyForce() const {
   key_force.normalize();
   return key_force;
 }
-
 
 void ClientController::SetTimeDifferenceEvent(const Event& event) {
   auto client_sent_time = event.GetArg<int64_t>(0);
@@ -255,7 +282,6 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
-  this->AddEventToSend(Event(EventType::kSendNickname, model_->GetLocalPlayer()->GetId(), "Gay"));
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
@@ -286,6 +312,24 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
     local_player->SetRotation(rotation);
   }
 }
+void ClientController::MousePressEvent(QMouseEvent*) {
+  if (model_->IsLocalPlayerSet()) {
+    auto local_player = model_->GetLocalPlayer();
+    auto timestamp = GetCurrentServerTime();
+    if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
+      return;
+    }
+    this->AddEventToSend(Event(EventType::kSendNickname,
+                               model_->GetLocalPlayer()->GetId(),
+                               QString("Shooter#") +
+                        QString::number(model_->GetLocalPlayer()->GetId())));
+    local_player->GetWeapon()->SetLastTimeShot(timestamp);
+    model_->AddLocalBullet();
+    this->AddEventToSend(Event(EventType::kSendPlayerShooting,
+                               static_cast<qint64>(GetCurrentServerTime()),
+                               local_player->GetId()));
+  }
+}
 
 // ------------------- GAME EVENTS -------------------
 
@@ -302,18 +346,10 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
   auto params = event.GetArgsSubVector(1);
   auto game_object =
       model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
-  if (game_object->IsMovable()) {
-    auto movable_object = std::dynamic_pointer_cast<MovableObject>(game_object);
-    auto velocity_to_return = movable_object->GetVelocity();
-    movable_object->SetParams(params);
-    model_->AddScheduledUpdate(
-        game_object_id, Variable::kVelocity,
-        {game_object->GetUpdatedTime(),
-         movable_object->GetVelocity()});
-    movable_object->SetVelocity(velocity_to_return);
-  } else {
-    game_object->SetParams(params);
-  }
+  game_object->SetParams(params);
+  model_->AddScheduledUpdate(
+      game_object_id, Variable::kIsInFov,
+      {game_object->GetUpdatedTime(), true});
 }
 
 void ClientController::GameObjectLeftFovEvent(const Event& event) {
@@ -333,10 +369,6 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   auto game_object_type = event.GetArg<GameObjectType>(1);
   auto sent_time = event.GetArg<int64_t>(2);
   auto event_type = event.GetArg<EventType>(3);
-  if (model_->IsLocalPlayerSet() &&
-      game_object_id == model_->GetLocalPlayer()->GetId()) {
-    return;
-  }
   sent_time = std::max(
       GetCurrentServerTime() - Constants::kInterpolationMSecs, sent_time);
   if (event_type == EventType::kUpdateGameObjectData) {
@@ -349,7 +381,7 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   model_->DeleteGameObject(player_id);
-  model_->RemoveScheduled(player_id);
+  model_->RemoveFromInterpolator(player_id);
   game_state_ = GameState::kGameNotStarted;
   view_->Update();
 }
@@ -357,4 +389,10 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
 void ClientController::UpdatePlayersDataEvent(const Event& event) {
   model_->GetPlayerDataByPlayerId(event.GetArg<GameObjectId>(0))->SetParams(
       event.GetArgsSubVector(1));
+}
+
+void ClientController::UpdateLocalPlayerSizeEvent(const Event& event) {
+  auto local_player = model_->GetLocalPlayer();
+  local_player->SetWidth(event.GetArg<float>(0));
+  local_player->SetHeight(event.GetArg<float>(1));
 }

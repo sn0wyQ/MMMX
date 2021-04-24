@@ -4,12 +4,13 @@
 #include <deque>
 #include <memory>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #include "Model/game_model.h"
 
 enum class Variable {
   kIsInFov,
-  kVelocity,
   SIZE
 };
 
@@ -37,25 +38,33 @@ class ClientGameModel : public GameModel {
     QVariant value;
   };
 
-  void RemoveScheduled(GameObjectId game_object_id);
+  void RemoveFromInterpolator(GameObjectId game_object_id);
   void AddScheduledUpdate(GameObjectId game_object_id,
                           Variable variable,
                           const UpdateVariable& update);
   void UpdateScheduled(int64_t current_time);
+  QVariant GetScheduledVariableValue(GameObjectId game_object_id,
+                                     Variable variable) const;
 
+  void AddLocalBullet();
+
+  std::vector<std::shared_ptr<Bullet>> GetLocalBullets() const;
+  void DeleteLocalBullet(GameObjectId bullet_id);
 
  private:
   GameObjectId local_player_id_{Constants::kNullGameObjectId};
   std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> interpolator_;
 
   QVariant GetValueAccordingVariable(GameObjectId game_object_id,
-                                 Variable variable);
+                                 Variable variable) const;
   void SetValueAccordingVariable(GameObjectId game_object_id,
                                  Variable variable,
                                  const QVariant& value);
   std::array<std::unordered_map<GameObjectId, std::deque<UpdateVariable>>,
   static_cast<uint32_t>(Variable::SIZE)>
     scheduled_updates_;
+
+  std::unordered_map<GameObjectId, std::shared_ptr<Bullet>> local_bullets_;
 };
 
 #endif  // MODEL_CLIENT_GAME_MODEL_H_

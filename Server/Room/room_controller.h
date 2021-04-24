@@ -15,6 +15,7 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
+#include "GameObject/RigidBody/object_collision.h"
 #include "Model/room_game_model.h"
 #include "Server/Room/room_settings.h"
 #include "constants.h"
@@ -81,10 +82,16 @@ class RoomController : public BaseController {
   std::vector<Event> events_for_server_;
 
   void RecalculateModel(const ModelData& model_data);
-  void TickPlayersInModel(const ModelData& model_data);
+  void TickObjectsInModel(const ModelData& model_data);
+  void ProcessBulletsHits(const ModelData& model_data);
+  void DeleteReadyToBeDeletedObjects(const ModelData& model_data);
+
   GameObjectId AddDefaultPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);
   void AddTree(float x, float y, float radius);
+  GameObjectId AddBullet(GameObjectId parent_id, float x, float y,
+                         float rotation,
+                         const std::shared_ptr<Weapon>& weapon);
   void AddConstantObjects();
 
   Event GetEventOfGameObjectData(GameObjectId game_object_id) const;
@@ -93,11 +100,13 @@ class RoomController : public BaseController {
                          GameObjectId player_id);
   void SendPlayersDataToPlayers();
   void SendGameObjectsDataToPlayer(GameObjectId player_id);
+  int GetModelIdByTimestamp(int64_t timestamp) const;
 
   void SendNicknameEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
+  void SendPlayerShootingEvent(const Event& event) override;
   void SendControlsEvent(const Event& event) override;
 };
 

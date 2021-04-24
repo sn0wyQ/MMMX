@@ -2,21 +2,18 @@
 #include "room_game_model.h"
 
 RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {
+  next_game_object_id_ = model.next_game_object_id_;
   last_object_hash_ = model.last_object_hash_;
   last_player_data_hash_ = model.last_player_data_hash_;
 }
 
-GameObjectId RoomGameModel::GetNextUnusedGameObjectId() const {
-  GameObjectId game_object_id = 1;
-  while (GameModel::IsGameObjectIdTaken(game_object_id)) {
-    game_object_id++;
-  }
-  return game_object_id;
+GameObjectId RoomGameModel::GenerateNextUnusedGameObjectId() {
+  return next_game_object_id_++;
 }
 
 GameObjectId RoomGameModel::AddGameObject(GameObjectType type,
                                           const std::vector<QVariant>& params) {
-  GameObjectId game_object_id = this->GetNextUnusedGameObjectId();
+  GameObjectId game_object_id = this->GenerateNextUnusedGameObjectId();
   GameModel::AddGameObject(game_object_id, type, params);
   return game_object_id;
 }

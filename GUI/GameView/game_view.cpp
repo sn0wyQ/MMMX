@@ -45,6 +45,7 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
                         local_player->GetY(),
                         local_player->GetFovRadius());
 
+
   std::vector<std::shared_ptr<GameObject>> filtered_objects
       = model_->GetFilteredByFovObjects();
   for (const auto& object : filtered_objects) {
@@ -54,6 +55,12 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
   }
   for (const auto& object : filtered_objects) {
     if (object->IsInFov() && object->IsMovable()) {
+      object->Draw(&painter);
+    }
+  }
+
+  for (const auto& object : model_->GetLocalBullets()) {
+    if (object->IsInFov()) {
       object->Draw(&painter);
     }
   }
