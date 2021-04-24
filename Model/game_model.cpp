@@ -61,9 +61,10 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
                         .valueToKey(static_cast<uint32_t>(type)));
 }
 
-void GameModel::AddPlayerStats(GameObjectId player_id, QString nickname) {
+void GameModel::AddPlayerStats(GameObjectId player_id, QString nickname,
+                               int level) {
   players_stats_[player_id] = std::make_shared<PlayerStats>(
-      PlayerStats(player_id, std::move(nickname)));
+      PlayerStats(player_id, std::move(nickname), level));
 }
 
 std::shared_ptr<PlayerStats> GameModel::GetPlayerStatsByPlayerId(

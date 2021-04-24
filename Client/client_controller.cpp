@@ -388,8 +388,13 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
 }
 
 void ClientController::UpdatePlayersStatsEvent(const Event& event) {
-  model_->GetPlayerStatsByPlayerId(event.GetArg<GameObjectId>(0))->SetParams(
+  auto player_id = event.GetArg<GameObjectId>(0);
+  model_->GetPlayerStatsByPlayerId(player_id)->SetParams(
       event.GetArgsSubVector(1));
+  if (model_->IsGameObjectIdTaken(player_id)) {
+    model_->GetPlayerByPlayerId(player_id)->SetLevel(
+        model_->GetPlayerStatsByPlayerId(player_id)->GetLevel());
+  }
 }
 
 void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {

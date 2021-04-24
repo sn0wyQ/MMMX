@@ -9,7 +9,7 @@
 class PlayerStats {
  public:
   PlayerStats() = default;
-  PlayerStats(GameObjectId game_object_id, QString nickname);
+  PlayerStats(GameObjectId game_object_id, QString nickname, int level);
 
   GameObjectId GetPlayerId() const;
   void SetParams(std::vector<QVariant> params);
@@ -32,7 +32,7 @@ class PlayerStats {
   QString nickname_{""};
   int kills_{0};
   int deaths_{0};
-  int level_{0};
+  int level_{1};
 };
 
 #endif  // PLAYERSTATS_PLAYER_STATS_H_

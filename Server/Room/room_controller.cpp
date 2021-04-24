@@ -57,8 +57,8 @@ void RoomController::SendEvent(const Event& event) {
 void RoomController::OnTick(int delta_time) {
   models_cache_.push_back({delta_time,
                            std::make_shared<RoomGameModel>(*model_)});
-  this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
+  this->RecalculateModel(models_cache_.back());
   this->SendPlayersStatsToPlayers();
   model_->UpdatePlayerStatsHashes();
   for (const auto& player_id : this->GetAllPlayerIds()) {
@@ -126,7 +126,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                   std::dynamic_pointer_cast<Player>(entity)->GetLevel())
                   * Constants::kExpMultiplier;
               killer->IncreaseExperience(receive_exp);
-              model_->GetPlayerStatsByPlayerId(killer_id)->
+              model_data.model->GetPlayerStatsByPlayerId(killer_id)->
                                                    SetLevel(killer->GetLevel());
               this->AddEventToSendToSinglePlayer(
                   Event(EventType::kIncreaseLocalPlayerExperience,
@@ -162,8 +162,10 @@ void RoomController::AddClient(ClientId client_id) {
   this->AddEventToSendToSinglePlayer(event_add_local_player, player_id);
   this->AddEventToSendToSingleClient(
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
+  auto player = model_->GetPlayerByPlayerId(player_id);
   model_->AddPlayerStats(player_id,
-                        QString("Player#") + QString::number(player_id));
+                        QString("Player#") + QString::number(player_id),
+                        player->GetLevel());
   this->ForceSendPlayersStatsToPlayer(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
@@ -356,8 +358,7 @@ GameObjectId RoomController::AddDefaultPlayer() {
        Constants::kDefaultMaxHealthPoints * 0.733f,
        Constants::kDefaultHealthRegenSpeed,
        Constants::kDefaultMaxHealthPoints,
-       static_cast<int>(WeaponType::kMachineGun),
-       1, 0.f});
+       static_cast<int>(WeaponType::kMachineGun)});
 }
 
 void RoomController::AddBox(float x, float y, float rotation,

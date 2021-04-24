@@ -3,8 +3,9 @@
 #include "player_stats.h"
 
 PlayerStats::PlayerStats(GameObjectId player_id,
-                       QString nickname) : player_id_{player_id},
-                                           nickname_{std::move(nickname)} {}
+                       QString nickname, int level) : player_id_{player_id},
+                                           nickname_{std::move(nickname)},
+                                           level_(level) {}
 
 void PlayerStats::SetParams(std::vector<QVariant> params) {
   this->SetLevel(params.back().toInt());

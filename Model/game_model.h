@@ -35,7 +35,7 @@ class GameModel {
   void AddGameObject(GameObjectId game_object_id, GameObjectType type,
                      const std::vector<QVariant>& params);
 
-  void AddPlayerStats(GameObjectId player_id, QString nickname);
+  void AddPlayerStats(GameObjectId player_id, QString nickname, int level);
   std::shared_ptr<PlayerStats> GetPlayerStatsByPlayerId(GameObjectId player_id);
   std::vector<std::shared_ptr<PlayerStats>> GetAllPlayersStats();
 
