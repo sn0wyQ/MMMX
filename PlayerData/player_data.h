@@ -2,8 +2,8 @@
 // Created by matvey on 21.04.21.
 //
 
-#ifndef PLAYER_DATA_PLAYER_DATA_H_
-#define PLAYER_DATA_PLAYER_DATA_H_
+#ifndef PLAYERDATA_PLAYER_DATA_H_
+#define PLAYERDATA_PLAYER_DATA_H_
 
 #include <vector>
 #include <QVariant>
@@ -31,4 +31,4 @@ class PlayerData {
   int deaths_{0};
 };
 
-#endif  // PLAYER_DATA_PLAYER_DATA_H_
+#endif  // PLAYERDATA_PLAYER_DATA_H_

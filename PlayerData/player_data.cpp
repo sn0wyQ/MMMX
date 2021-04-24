@@ -2,6 +2,8 @@
 // Created by matvey on 21.04.21.
 //
 
+#include <utility>
+
 #include "player_data.h"
 
 PlayerData::PlayerData(GameObjectId player_id,
