@@ -40,7 +40,6 @@ void Entity::SetFovRadius(float fov_radius) {
 
 void Entity::SetHealthPoints(float health_points) {
   health_points_ = health_points;
-  // die if <= 0
 }
 
 float Entity::GetHealthPoints() const {

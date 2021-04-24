@@ -65,7 +65,7 @@ constexpr bool kRigidBodyShow = true;
 // GameObject
 constexpr float kDefaultMaxHealthPoints = 100.f;
 
-    // MovableObject
+// MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
