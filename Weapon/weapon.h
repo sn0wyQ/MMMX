@@ -13,8 +13,10 @@
 #include "Weapon/WeaponConstants/weapon_constants.h"
 
 enum class WeaponType {
+  kAssaultRifle,
+  kCrossbow,
   kMachineGun,
-  kCrossbow
+  kShotgun
 };
 
 class Weapon {
@@ -50,12 +52,12 @@ class Weapon {
   int GetCurrentBulletsInClip() const;
   void SetCurrentBulletsInClip(int current_bullets_in_clip);
 
-  std::vector<QVariant> GetBulletParam(GameObjectId parent_id,
-                                       float x,
-                                       float y,
-                                       float rotation);
+  std::vector<QVariant> GetBulletParams(GameObjectId parent_id,
+                                        float x,
+                                        float y,
+                                        float rotation);
 
-  std::vector<std::vector<QVariant>> GetBulletParams(
+  std::vector<std::vector<QVariant>> GetBulletsParams(
       GameObjectId parent_id, float x, float y, float rotation);
 
   virtual WeaponType GetWeaponType() = 0;

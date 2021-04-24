@@ -302,14 +302,22 @@ GameObjectId RoomController::AddPlayer() {
                 static_cast<int>(RigidBodyType::kCircle),
                 0.f, 0.f, Constants::kDefaultEntityFov * 2.f};
   // Temporary
-  int players_count = this->GetPlayersCount() % 2; // )))
+  int players_count = this->GetPlayersCount() % Constants::kDefaultMaxClients;
   switch (players_count) {
     case 0: {
-      params.emplace_back(static_cast<int>(WeaponType::kCrossbow));
+      params.emplace_back(static_cast<int>(WeaponType::kAssaultRifle));
       break;
     }
     case 1: {
+      params.emplace_back(static_cast<int>(WeaponType::kCrossbow));
+      break;
+    }
+    case 2: {
       params.emplace_back(static_cast<int>(WeaponType::kMachineGun));
+      break;
+    }
+    case 3: {
+      params.emplace_back(static_cast<int>(WeaponType::kShotgun));
       break;
     }
   }
@@ -332,16 +340,9 @@ void RoomController::AddTree(float x, float y, float radius) {
 std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
-  // std::shared_ptr<GameObject> parent = model_->GetGameObjectByGameObjectId(parent_id);
-  // auto params = model_->GetGameObjectByGameObjectId(parent_id)->GetParams().back();
-  // switch (static_cast<WeaponType>(model_->GetGameObjectByGameObjectId(parent_id)->GetParams().back().toInt()) {
-  //   case WeaponType::kCrossbow: {
-  //
-  //     break;
-  //   }
-  // }
   std::vector<GameObjectId> bullets_id;
-  std::vector<std::vector<QVariant>> bullets_params = weapon->GetBulletParams(parent_id, x, y, rotation);
+  std::vector<std::vector<QVariant>> bullets_params = weapon->GetBulletsParams(parent_id, x, y, rotation);
+  bullets_id.reserve(bullets_params.size());
   for (const std::vector<QVariant>& bullet_params : bullets_params) {
     bullets_id.emplace_back(model_->AddGameObject(
         GameObjectType::kBullet,

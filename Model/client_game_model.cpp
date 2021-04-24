@@ -136,7 +136,7 @@ void ClientGameModel::AddLocalBullets() {
   auto local_player = this->GetLocalPlayer();
   static int bullet_id_to_set = 1;
   std::vector<std::vector<QVariant>> bullets = local_player->GetWeapon()->
-      GetBulletParams(local_player_id_,
+      GetBulletsParams(local_player_id_,
                       local_player->GetX(),
                       local_player->GetY(),
                       local_player->GetRotation());
