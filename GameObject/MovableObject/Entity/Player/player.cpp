@@ -45,26 +45,8 @@ void Player::DrawLevel(Painter* painter) {
   painter->setFont(font);
   QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
                    rect_width, rect_height);
-  auto cur_hp = static_cast<int>(this->GetHealthPoints());
-  auto max_hp = static_cast<int>(this->GetMaxHealthPoints());
   painter->drawText(text_rect, Qt::AlignCenter,
                     QString::number(this->GetLevel()));
-  // auto pen = painter->pen();
-  // QColor clr_back = Qt::gray;
-  // clr_back.setAlphaF(0.4f);
-  // painter->setPen(clr_back);
-  // painter->drawRect(-rect_width / 2.f, -rect_height / 2.f,
-  //                   rect_width, rect_height);
-  // auto brush = painter->brush();
-  // QColor clr_main = Qt::darkGreen;
-  // clr_main.setAlphaF(0.4f);
-  // painter->setBrush(clr_main);
-  // float part = this->GetHealthPoints() / this->GetMaxHealthPoints();
-  // float width = part * rect_width;
-  // painter->drawRect(-rect_width / 2.f, -rect_height / 2.f,
-  //                   width, rect_height);
-  // painter->setBrush(brush);
-  // painter->setPen(pen);
   painter->Translate(-translation);
 }
 
