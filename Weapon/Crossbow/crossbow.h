@@ -3,15 +3,6 @@
 
 #include "Weapon/weapon.h"
 
-// using Constants::Weapon::Crossbow::kDefaultBaseBulletDamage;
-// using Constants::Weapon::Crossbow::kDefaultBulletSpeed;
-// using Constants::Weapon::Crossbow::kDefaultBulletRange;
-// using Constants::Weapon::Crossbow::kDefaultRateOfFire;
-// using Constants::Weapon::Crossbow::kDefaultReloadingTime;
-// using Constants::Weapon::Crossbow::kDefaultClipSize;
-
-using namespace Constants::Weapon::Crossbow;
-
 class Crossbow : public Weapon {
  public:
   Crossbow();

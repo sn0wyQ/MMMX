@@ -3,13 +3,13 @@
 Shotgun::Shotgun(const Shotgun& shotgun) : Weapon(shotgun) {}
 
 Shotgun::Shotgun() {
-  SetBulletDamage(kDefaultBaseBulletDamage);
-  SetBulletSpeed(kDefaultBulletSpeed);
-  SetBulletRange(kDefaultBulletRange);
-  SetRateOfFire(kDefaultRateOfFire);
-  SetReloadingTime(kDefaultReloadingTime);
-  SetClipSize(kDefaultClipSize);
-  SetCurrentBulletsInClip(kDefaultClipSize);
+  SetBulletDamage(Constants::Weapon::Shotgun::kDefaultBaseBulletDamage);
+  SetBulletSpeed(Constants::Weapon::Shotgun::kDefaultBulletSpeed);
+  SetBulletRange(Constants::Weapon::Shotgun::kDefaultBulletRange);
+  SetRateOfFire(Constants::Weapon::Shotgun::kDefaultRateOfFire);
+  SetReloadingTime(Constants::Weapon::Shotgun::kDefaultReloadingTime);
+  SetClipSize(Constants::Weapon::Shotgun::kDefaultClipSize);
+  SetCurrentBulletsInClip(Constants::Weapon::Shotgun::kDefaultClipSize);
 }
 
 void Shotgun::DrawWeapon(Painter* painter) {

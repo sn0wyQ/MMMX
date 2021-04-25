@@ -3,15 +3,6 @@
 
 #include "Weapon/weapon.h"
 
-// using Constants::Weapon::AssaultRifle::kDefaultBaseBulletDamage;
-// using Constants::Weapon::AssaultRifle::kDefaultBulletSpeed;
-// using Constants::Weapon::AssaultRifle::kDefaultBulletRange;
-// using Constants::Weapon::AssaultRifle::kDefaultRateOfFire;
-// using Constants::Weapon::AssaultRifle::kDefaultReloadingTime;
-// using Constants::Weapon::AssaultRifle::kDefaultClipSize;
-
-using namespace Constants::Weapon::AssaultRifle;
-
 class AssaultRifle : public Weapon {
  public:
   AssaultRifle();

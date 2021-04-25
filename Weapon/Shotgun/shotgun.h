@@ -3,15 +3,6 @@
 
 #include "Weapon/weapon.h"
 
-// using Constants::Weapon::Shotgun::kDefaultBaseBulletDamage;
-// using Constants::Weapon::Shotgun::kDefaultBulletSpeed;
-// using Constants::Weapon::Shotgun::kDefaultBulletRange;
-// using Constants::Weapon::Shotgun::kDefaultRateOfFire;
-// using Constants::Weapon::Shotgun::kDefaultReloadingTime;
-// using Constants::Weapon::Shotgun::kDefaultClipSize;
-
-using namespace Constants::Weapon::Shotgun;
-
 class Shotgun : public Weapon {
  public:
   Shotgun();
