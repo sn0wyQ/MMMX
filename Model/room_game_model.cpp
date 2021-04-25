@@ -1,3 +1,5 @@
+#include <utility>
+
 #include "Hash/hash_calculator.h"
 #include "room_game_model.h"
 
