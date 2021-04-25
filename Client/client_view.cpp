@@ -63,13 +63,15 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
                                   "Room Var: %2\n"
                                   "Client Var: %3\n"
                                   "Ping: %4\n"
-                                  "X: %5, \tY: %6"))
+                                  "X: %5, \tY: %6\n"
+                                  "Nickname: %7\n"))
                        .arg(controller_->GetServerVar())
                        .arg(controller_->GetRoomVar())
                        .arg(controller_->GetClientVar())
                        .arg(controller_->GetPing())
                        .arg(local_player_position.x())
-                       .arg(local_player_position.y()));
+                       .arg(local_player_position.y())
+                       .arg(model_->GetLocalPlayerStats()->GetNickname()));
   info_label_->adjustSize();
 
   qDebug().noquote().nospace() << "[VIEW] Repainted";

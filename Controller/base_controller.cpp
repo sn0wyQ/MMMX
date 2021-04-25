@@ -16,6 +16,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendEventToClientEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToRoom,
     std::bind(&BaseController::SendEventToRoomEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendNickname,
+    std::bind(&BaseController::SendNicknameEvent, this, _1));
   SetFunctionForEventType(EventType::kStartGame,
     std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateVars,
@@ -24,11 +26,14 @@ BaseController::BaseController() {
     std::bind(&BaseController::SetTimeDifferenceEvent, this, _1));
 
   // ------------------- GAME EVENTS -------------------
+  SetFunctionForEventType(EventType::kAddLocalPlayerGameObject,
+    std::bind(&BaseController::AddLocalPlayerGameObjectEvent, this, _1));
   SetFunctionForEventType(EventType::kSendGameInfoToInterpolate,
-    std::bind(&BaseController::SendGameInfoToInterpolateEvent,
-              this, _1));
+    std::bind(&BaseController::SendGameInfoToInterpolateEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateGameObjectData,
     std::bind(&BaseController::UpdateGameObjectDataEvent, this, _1));
+  SetFunctionForEventType(EventType::kUpdatePlayersStats,
+    std::bind(&BaseController::UpdatePlayersStatsEvent, this, _1));
   SetFunctionForEventType(EventType::kGameObjectLeftFov,
     std::bind(&BaseController::GameObjectLeftFovEvent, this, _1));
   SetFunctionForEventType(EventType::kSendControls,

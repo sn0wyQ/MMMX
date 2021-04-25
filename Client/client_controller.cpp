@@ -334,6 +334,11 @@ void ClientController::MouseHolding() {
     if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
       return;
     }
+    // Temporary nickname change
+    this->AddEventToSend(Event(EventType::kSendNickname,
+                               model_->GetLocalPlayer()->GetId(),
+                               QString("Shooter#") +
+                        QString::number(model_->GetLocalPlayer()->GetId())));
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
     model_->AddLocalBullets();
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
@@ -395,6 +400,16 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_->RemoveFromInterpolator(player_id);
   game_state_ = GameState::kGameNotStarted;
   view_->Update();
+}
+
+void ClientController::UpdatePlayersStatsEvent(const Event& event) {
+  auto player_id = event.GetArg<GameObjectId>(0);
+  model_->GetPlayerStatsByPlayerId(player_id)->SetParams(
+      event.GetArgsSubVector(1));
+  if (model_->IsGameObjectIdTaken(player_id)) {
+    model_->GetPlayerByPlayerId(player_id)->SetLevel(
+        model_->GetPlayerStatsByPlayerId(player_id)->GetLevel());
+  }
 }
 
 void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {

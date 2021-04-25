@@ -98,8 +98,12 @@ class RoomController : public BaseController {
   Event GetEventOfGameObjectLeftFov(GameObjectId game_object_id) const;
   bool IsGameObjectInFov(GameObjectId game_object_id,
                          GameObjectId player_id);
+  void ForceSendPlayersStatsToPlayer(GameObjectId player_id);
+  void SendPlayersStatsToPlayers();
   void SendGameObjectsDataToPlayer(GameObjectId player_id);
   int GetModelIdByTimestamp(int64_t timestamp) const;
+
+  void SendNicknameEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 

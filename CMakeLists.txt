@@ -5,7 +5,7 @@ project(MMMX-Server)
 set(CMAKE_CXX_STANDARD 20)
 add_compile_options(
         "$<$<CONFIG:RELEASE>:-O3>"
-        "$<$<CONFIG:DEBUG>:-O1>"
+        "$<$<CONFIG:DEBUG>:-O3>"
 )
 
 set(CMAKE_AUTOMOC ON) # Enable Qt MOC compiler
@@ -88,6 +88,7 @@ set(SOURCES
         Model/room_game_model.cpp
         Model/server_model.cpp
         Painter/painter.cpp
+        PlayerStats/player_stats.cpp
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
