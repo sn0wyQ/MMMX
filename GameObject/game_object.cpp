@@ -68,6 +68,7 @@ void GameObject::Draw(Painter* painter) {
   painter->save();
   painter->Translate(position_);
   this->DrawHealthBar(painter);
+  this->DrawLevel(painter);
   painter->RotateCounterClockWise(rotation_);
   this->DrawRelatively(painter);
   if (Constants::kRigidBodyShow) {

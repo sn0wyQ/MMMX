@@ -17,10 +17,6 @@ Player::Player(const Player& other) : Entity(other) {
 }
 
 void Player::SetParams(std::vector<QVariant> params) {
-  SetCurrentExp(params.back().toFloat());
-  params.pop_back();
-  SetLevel(params.back().toInt());
-  params.pop_back();
   auto weapon_type = static_cast<WeaponType>(params.back().toInt());
   weapon_type_ = weapon_type;
   switch (weapon_type) {
@@ -36,9 +32,23 @@ void Player::SetParams(std::vector<QVariant> params) {
 std::vector<QVariant> Player::GetParams() const {
   std::vector<QVariant> result = Entity::GetParams();
   result.emplace_back(static_cast<int>(weapon_type_));
-  result.emplace_back(GetLevel());
-  result.emplace_back(GetCurrentExp());
   return result;
+}
+
+void Player::DrawLevel(Painter* painter) {
+  QPointF translation(0.f, -GetHeight() * 1.7f);
+  painter->Translate(translation);
+  float rect_width = 75.f;
+  float rect_height = 14.f;
+  QFont font{};
+  font.setPointSizeF(7.f);
+  painter->setFont(font);
+  QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
+                   rect_width, rect_height);
+
+  painter->drawText(text_rect, Qt::AlignCenter,
+                    QString::number(this->GetLevel()));
+  painter->Translate(-translation);
 }
 
 void Player::DrawRelatively(Painter* painter) {

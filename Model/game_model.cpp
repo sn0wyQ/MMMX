@@ -4,6 +4,10 @@ GameModel::GameModel(const GameModel& other) {
   for (const auto& [game_object_id, game_object] : other.game_objects_) {
     game_objects_.emplace(game_object_id, game_object->Clone());
   }
+  for (const auto& [game_object_id, player_stats] : other.players_stats_) {
+    players_stats_[game_object_id] =
+        std::make_shared<PlayerStats>(PlayerStats(*player_stats));
+  }
 }
 
 std::shared_ptr<Player> GameModel::GetPlayerByPlayerId(
@@ -43,8 +47,8 @@ std::shared_ptr<GameObject> GameModel::GetNewEmptyGameObject(
 }
 
 void GameModel::AddGameObject(GameObjectId game_object_id,
-                                  GameObjectType type,
-                                  const std::vector<QVariant>& params) {
+                              GameObjectType type,
+                              const std::vector<QVariant>& params) {
   if (game_objects_.find(game_object_id) != game_objects_.end()) {
     throw std::runtime_error("[MODEL] This game_object_id already exists");
   }
@@ -55,6 +59,14 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
   qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
                     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
                         .valueToKey(static_cast<uint32_t>(type)));
+}
+
+std::shared_ptr<PlayerStats> GameModel::GetPlayerStatsByPlayerId(
+    GameObjectId player_id) {
+  if (players_stats_.find(player_id) == players_stats_.end()) {
+    players_stats_[player_id] = std::make_shared<PlayerStats>(PlayerStats());
+  }
+  return players_stats_[player_id];
 }
 
 void GameModel::DeleteGameObject(GameObjectId game_object_id) {

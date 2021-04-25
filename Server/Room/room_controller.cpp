@@ -57,8 +57,10 @@ void RoomController::SendEvent(const Event& event) {
 void RoomController::OnTick(int delta_time) {
   models_cache_.push_back({delta_time,
                            std::make_shared<RoomGameModel>(*model_)});
-  this->RecalculateModel(models_cache_.back());
   model_ = models_cache_.back().model;
+  this->RecalculateModel(models_cache_.back());
+  this->SendPlayersStatsToPlayers();
+  model_->UpdatePlayerStatsHashes();
   for (const auto& player_id : this->GetAllPlayerIds()) {
     // Рассказываем НАМ о других с учетом FOV
     SendGameObjectsDataToPlayer(player_id);
@@ -124,6 +126,8 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                   std::dynamic_pointer_cast<Player>(entity)->GetLevel())
                   * Constants::kExpMultiplier;
               killer->IncreaseExperience(receive_exp);
+              model_data.model->GetPlayerStatsByPlayerId(killer_id)->
+                                                   SetLevel(killer->GetLevel());
               this->AddEventToSendToSinglePlayer(
                   Event(EventType::kIncreaseLocalPlayerExperience,
                         receive_exp),
@@ -158,6 +162,11 @@ void RoomController::AddClient(ClientId client_id) {
   this->AddEventToSendToSinglePlayer(event_add_local_player, player_id);
   this->AddEventToSendToSingleClient(
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
+  auto player = model_->GetPlayerByPlayerId(player_id);
+  model_->AddPlayerStats(player_id,
+                        QString("Player#") + QString::number(player_id),
+                        player->GetLevel());
+  this->ForceSendPlayersStatsToPlayer(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
                               << "] Connected client (ID: " << client_id << ")";
@@ -305,6 +314,27 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
   }
 }
 
+void RoomController::ForceSendPlayersStatsToPlayer(GameObjectId player_id) {
+  for (auto player_stats_id : this->GetAllPlayerIds()) {
+    Event event_update_players_stats = Event(EventType::kUpdatePlayersStats,
+                                            player_stats_id);
+    event_update_players_stats.PushBackArgs(
+        model_->GetPlayerStatsByPlayerId(player_stats_id)->GetParams());
+    this->AddEventToSendToSinglePlayer(event_update_players_stats, player_id);
+  }
+}
+
+void RoomController::SendPlayersStatsToPlayers() {
+  for (auto player_id : this->GetAllPlayerIds()) {
+    if (model_->IsNeededToSendPlayerStats(player_id)) {
+      Event event_update_players_stats = Event(EventType::kUpdatePlayersStats,
+                                              player_id);
+      event_update_players_stats.PushBackArgs(
+          model_->GetPlayerStatsByPlayerId(player_id)->GetParams());
+      this->AddEventToSendToAllPlayers(event_update_players_stats);
+    }
+  }
+}
 
 bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
                                        GameObjectId player_id) {
@@ -328,8 +358,7 @@ GameObjectId RoomController::AddDefaultPlayer() {
        Constants::kDefaultMaxHealthPoints * 0.733f,
        Constants::kDefaultHealthRegenSpeed,
        Constants::kDefaultMaxHealthPoints,
-       static_cast<int>(WeaponType::kMachineGun),
-       1, 0.f});
+       static_cast<int>(WeaponType::kMachineGun)});
 }
 
 void RoomController::AddBox(float x, float y, float rotation,
@@ -456,4 +485,10 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
 
     model_id++;
   }
+}
+
+void RoomController::SendNicknameEvent(const Event& event) {
+  auto player_id = event.GetArg<GameObjectId>(0);
+  auto nickname = event.GetArg<QString>(1);
+  model_->GetPlayerStatsByPlayerId(player_id)->SetNickname(nickname);
 }

@@ -34,7 +34,8 @@ void PlayerBar::DrawNickname(QPainter* painter) {
   painter->drawRect(0, 0,
                    width(), height());
   painter->drawText(RectWithPercents(0.f, 5.f, 20.f, 20.f),
-                   Qt::AlignCenter, "nickname");
+                   Qt::AlignCenter,
+                   model_->GetLocalPlayerStats()->GetNickname());
 }
 
 void PlayerBar::DrawHealthRect(QPainter* painter) {

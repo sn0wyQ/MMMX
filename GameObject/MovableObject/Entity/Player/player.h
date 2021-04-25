@@ -17,6 +17,7 @@ class Player : public Entity {
   explicit Player(GameObjectId player_id);
   Player(const Player& other);
 
+  void DrawLevel(Painter* painter) override;
   void DrawRelatively(Painter* painter) override;
 
   bool IsLocalPlayer() const;
@@ -45,8 +46,8 @@ class Player : public Entity {
   bool is_local_player_{false};
   std::shared_ptr<Weapon> weapon_;
   WeaponType weapon_type_;
-  int level_;
-  float current_exp_;
+  int level_{1};
+  float current_exp_{};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_
