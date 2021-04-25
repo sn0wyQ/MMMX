@@ -20,6 +20,6 @@ class MachineGun : public Weapon {
   void DrawWeapon(Painter *painter) override;
 
   WeaponType GetWeaponType() override;
-
 };
+
 #endif  // WEAPON_MACHINEGUN_MACHINE_GUN_H_

@@ -20,6 +20,6 @@ class Shotgun : public Weapon {
   void DrawWeapon(Painter *painter) override;
 
   WeaponType GetWeaponType() override;
-
 };
+
 #endif  // WEAPON_SHOTGUN_SHOTGUN_H_

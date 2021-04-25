@@ -1,6 +1,7 @@
 #include "assault_rifle.h"
 
-AssaultRifle::AssaultRifle(const AssaultRifle& assault_rifle) : Weapon(assault_rifle) {}
+AssaultRifle::AssaultRifle(const AssaultRifle& assault_rifle) : Weapon(
+    assault_rifle) {}
 
 AssaultRifle::AssaultRifle() {
   SetBulletDamage(kDefaultBaseBulletDamage);

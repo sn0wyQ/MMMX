@@ -348,7 +348,7 @@ GameObjectId RoomController::AddPlayer() {
       break;
     }
   }
-  params.emplace_back(1); 
+  params.emplace_back(1);
   params.emplace_back(0.f);
   return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
@@ -370,7 +370,8 @@ std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
   std::vector<GameObjectId> bullets_id;
-  std::vector<std::vector<QVariant>> bullets_params = weapon->GetBulletsParams(parent_id, x, y, rotation);
+  std::vector<std::vector<QVariant>> bullets_params =
+      weapon->GetBulletsParams(parent_id, x, y, rotation);
   bullets_id.reserve(bullets_params.size());
   for (const std::vector<QVariant>& bullet_params : bullets_params) {
     bullets_id.emplace_back(model_->AddGameObject(
