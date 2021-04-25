@@ -324,7 +324,10 @@ GameObjectId RoomController::AddPlayer() {
                 Constants::kDefaultPlayerRadius * 2,
                 Constants::kDefaultPlayerRadius * 2,
                 static_cast<int>(RigidBodyType::kCircle),
-                0.f, 0.f, Constants::kDefaultEntityFov * 2.f};
+                0.f, 0.f, Constants::kDefaultEntityFov * 2.f,
+                Constants::kDefaultMaxHealthPoints,
+                Constants::kDefaultHealthRegenSpeed,
+                Constants::kDefaultMaxHealthPoints};
   // Temporary
   int players_count = this->GetPlayersCount() % Constants::kDefaultMaxClients;
   switch (players_count) {
@@ -345,6 +348,8 @@ GameObjectId RoomController::AddPlayer() {
       break;
     }
   }
+  params.emplace_back(1); 
+  params.emplace_back(0.f);
   return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
 
