@@ -17,6 +17,10 @@ Player::Player(const Player& other) : Entity(other) {
 }
 
 void Player::SetParams(std::vector<QVariant> params) {
+  SetCurrentExp(params.back().toFloat());
+  params.pop_back();
+  SetLevel(params.back().toInt());
+  params.pop_back();
   auto weapon_type = static_cast<WeaponType>(params.back().toInt());
   weapon_type_ = weapon_type;
   switch (weapon_type) {
@@ -32,6 +36,8 @@ void Player::SetParams(std::vector<QVariant> params) {
 std::vector<QVariant> Player::GetParams() const {
   std::vector<QVariant> result = Entity::GetParams();
   result.emplace_back(static_cast<int>(weapon_type_));
+  result.emplace_back(GetLevel());
+  result.emplace_back(GetCurrentExp());
   return result;
 }
 
