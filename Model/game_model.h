@@ -35,9 +35,7 @@ class GameModel {
   void AddGameObject(GameObjectId game_object_id, GameObjectType type,
                      const std::vector<QVariant>& params);
 
-  void AddPlayerStats(GameObjectId player_id, QString nickname, int level);
   std::shared_ptr<PlayerStats> GetPlayerStatsByPlayerId(GameObjectId player_id);
-  std::vector<std::shared_ptr<PlayerStats>> GetAllPlayersStats();
 
   std::shared_ptr<GameObject>
     GetNewEmptyGameObject(GameObjectId game_object_id, GameObjectType type);
@@ -45,9 +43,11 @@ class GameModel {
   void AttachGameObject(GameObjectId game_object_id,
                         const std::shared_ptr<GameObject>& game_object);
 
+ protected:
+  std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;
+
  private:
   std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
-  std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;
 };
 
 #endif  // MODEL_GAME_MODEL_H_
