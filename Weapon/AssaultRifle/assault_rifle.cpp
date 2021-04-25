@@ -18,6 +18,6 @@ void AssaultRifle::DrawWeapon(Painter* painter) {
   painter->DrawRect(1.5f, -0.07f, 0.2f, 0.07f);
 }
 
-WeaponType AssaultRifle::GetWeaponType() {
+WeaponType AssaultRifle::GetWeaponType() const {
   return WeaponType::kAssaultRifle;
 }

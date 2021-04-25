@@ -488,11 +488,11 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
     return;
   }
 
-  std::vector<GameObjectId> bullets_id =
+  std::vector<GameObjectId> bullets_ids =
       AddBullets(player_id, player_in_model->GetX(), player_in_model->GetY(),
                  player_in_model->GetRotation(), player_in_model->GetWeapon());
 
-  for (int bullet_id_from_bullets_id : bullets_id) {
+  for (int bullet_id_from_bullets_id : bullets_ids) {
     GameObjectId bullet_id = bullet_id_from_bullets_id;
 
     QPointF position_to_set =

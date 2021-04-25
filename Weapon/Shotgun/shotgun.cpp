@@ -17,6 +17,6 @@ void Shotgun::DrawWeapon(Painter* painter) {
   painter->DrawRect(0.7f, 0.f, 0.8f, 0.3f);
 }
 
-WeaponType Shotgun::GetWeaponType() {
+WeaponType Shotgun::GetWeaponType() const {
   return WeaponType::kShotgun;
 }

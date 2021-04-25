@@ -43,7 +43,8 @@ float Math::DistanceBetweenPoints(QPointF first, QPointF second) {
   return distance;
 }
 
-float Math::GetRightAngle(float angle) {
-  return ((angle < 0.f) ? angle + 360.f : (angle > 360.f) ? angle - 360.f
-                                                          : angle);
+float Math::GetNormalizeAngle(float angle) {
+  int64_t cnt = static_cast<int64_t>(angle) / 360;
+  angle = angle + 360.f * static_cast<float>(cnt);
+  return (angle < 0.f ? angle + 360.f : angle);
 }

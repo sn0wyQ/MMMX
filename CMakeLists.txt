@@ -5,7 +5,7 @@ project(MMMX-Server)
 set(CMAKE_CXX_STANDARD 20)
 add_compile_options(
         "$<$<CONFIG:RELEASE>:-O3>"
-        "$<$<CONFIG:DEBUG>:-O3>"
+        "$<$<CONFIG:DEBUG>:-O0>"
 )
 
 set(CMAKE_AUTOMOC ON) # Enable Qt MOC compiler

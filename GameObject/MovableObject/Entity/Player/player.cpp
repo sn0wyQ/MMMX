@@ -91,12 +91,6 @@ void Player::DrawRelatively(Painter* painter) {
       QPointF(0.4f * GetRadius(), 0.3f * GetRadius()),
       0.2f, 0.2f);
 
-  // Direction Arrow [Needs improvement to look cuter]
-  // if (IsLocalPlayer()) {
-  //   painter->DrawTriangle(QPointF(GetRadius() + 0.2f, -0.3f),
-  //                         QPointF(GetRadius() + 0.2f, 0.3f),
-  //                         QPointF(GetRadius() + 0.7f, 0.f));
-  // }
   weapon_->DrawWeapon(painter);
 }
 

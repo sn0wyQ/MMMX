@@ -152,8 +152,8 @@ class ClientController : public BaseController {
       {Direction::kDown, false},
       {Direction::kLeft, false}
   };
-  QTimer timer_for_mouse_;
-  bool mouse_is_holding_{false};
+  QTimer mouse_timer_;
+  bool is_holded{false};
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

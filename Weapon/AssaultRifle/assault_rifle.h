@@ -10,7 +10,7 @@ class AssaultRifle : public Weapon {
 
   void DrawWeapon(Painter *painter) override;
 
-  WeaponType GetWeaponType() override;
+  WeaponType GetWeaponType() const override;
 };
 
 #endif  // WEAPON_ASSAULTRIFLE_ASSAULT_RIFLE_H_

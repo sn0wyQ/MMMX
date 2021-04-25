@@ -81,7 +81,7 @@ void Weapon::SetLastTimeShot(int64_t cur_time) {
 std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
                                               float x,
                                               float y,
-                                              float rotation) {
+                                              float rotation) const {
   QVector2D velocity = Math::GetVectorByAngle(rotation);
   velocity *= this->GetBulletSpeed();
   return {x, y, 0.f,
@@ -97,7 +97,7 @@ std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
 }
 
 std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
-    GameObjectId parent_id, float x, float y, float rotation) {
+    GameObjectId parent_id, float x, float y, float rotation) const {
   std::vector<std::vector<QVariant>> bullets_params;
   WeaponType weapon_type = GetWeaponType();
   switch (weapon_type) {
@@ -105,13 +105,13 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
       bullets_params.emplace_back(GetBulletParams(parent_id,
                                                   x,
                                                   y,
-                                                  Math::GetRightAngle(
+                                                  Math::GetNormalizeAngle(
                                                       rotation + 3.f)));
       bullets_params.emplace_back(GetBulletParams(parent_id, x, y, rotation));
       bullets_params.emplace_back(GetBulletParams(parent_id,
                                                   x,
                                                   y,
-                                                  Math::GetRightAngle(
+                                                  Math::GetNormalizeAngle(
                                                       rotation - 3.f)));
       break;
     }

@@ -55,12 +55,12 @@ class Weapon {
   std::vector<QVariant> GetBulletParams(GameObjectId parent_id,
                                         float x,
                                         float y,
-                                        float rotation);
+                                        float rotation) const;
 
   std::vector<std::vector<QVariant>> GetBulletsParams(
-      GameObjectId parent_id, float x, float y, float rotation);
+      GameObjectId parent_id, float x, float y, float rotation) const;
 
-  virtual WeaponType GetWeaponType() = 0;
+  virtual WeaponType GetWeaponType() const = 0;
 
  private:
   float bullet_damage_{};  // дамаг (может прокачать герой)
