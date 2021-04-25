@@ -45,6 +45,7 @@ void Player::DrawLevel(Painter* painter) {
   painter->setFont(font);
   QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
                    rect_width, rect_height);
+  
   painter->drawText(text_rect, Qt::AlignCenter,
                     QString::number(this->GetLevel()));
   painter->Translate(-translation);
