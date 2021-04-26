@@ -8,9 +8,9 @@ ClientController::ClientController(const QUrl& url) : url_(url),
   connect(&web_socket_, &QWebSocket::disconnected, this,
           &ClientController::OnDisconnected);
   web_socket_.open(url);
-  connect(&mouse_timer_, &QTimer::timeout, this,
-          &ClientController::MouseHolding);
-  mouse_timer_.start(Constants::kMouseCheck);
+  connect(&shoot_check_timer, &QTimer::timeout, this,
+          &ClientController::ShootHolding);
+  shoot_check_timer.start(Constants::kShootHoldingCheck);
   this->StartTicking();
 }
 
@@ -281,7 +281,7 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity({0, 0});
   }
-  is_holded = false;
+  is_holding = false;
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
@@ -317,15 +317,15 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientController::MousePressEvent(QMouseEvent*) {
-  is_holded = true;
+  is_holding = true;
 }
 
 void ClientController::MouseReleaseEvent(QMouseEvent*) {
-  is_holded = false;
+  is_holding = false;
 }
 
-void ClientController::MouseHolding() {
-  if (!is_holded) {
+void ClientController::ShootHolding() {
+  if (!is_holding) {
     return;
   }
   if (model_->IsLocalPlayerSet()) {

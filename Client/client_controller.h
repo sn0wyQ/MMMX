@@ -106,7 +106,7 @@ class ClientController : public BaseController {
   void OnByteArrayReceived(const QByteArray& message);
   void UpdateVarsAndPing();
   void SetPing(int elapsed_time);
-  void MouseHolding();
+  void ShootHolding();
 
  private:
   void EndGameEvent(const Event& event) override;
@@ -152,8 +152,8 @@ class ClientController : public BaseController {
       {Direction::kDown, false},
       {Direction::kLeft, false}
   };
-  QTimer mouse_timer_;
-  bool is_holded{false};
+  QTimer shoot_check_timer;
+  bool is_holding{false};
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_
