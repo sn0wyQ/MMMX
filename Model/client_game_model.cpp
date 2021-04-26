@@ -136,20 +136,23 @@ void ClientGameModel::RemoveFromInterpolator(GameObjectId game_object_id) {
   interpolator_.erase(game_object_id);
 }
 
-void ClientGameModel::AddLocalBullet() {
-  static int bullet_id_to_set = 1;
-  auto bullet = std::make_shared<Bullet>(bullet_id_to_set);
+void ClientGameModel::AddLocalBullets() {
   auto local_player = this->GetLocalPlayer();
-  bullet->SetParams(
-      local_player->GetWeapon()->GetBulletParams(
-      local_player_id_,
-      local_player->GetX(),
-      local_player->GetY(),
-      local_player->GetRotation()));
-  bullet->SetIsInFov(true);
-  local_bullets_.emplace(std::make_pair(bullet_id_to_set, bullet));
-  qInfo().noquote() << "[MODEL] Added new local bullet:" << bullet_id_to_set;
-  bullet_id_to_set++;
+  std::vector<std::vector<QVariant>> bullets = local_player->GetWeapon()->
+      GetBulletsParams(local_player_id_,
+                      local_player->GetX(),
+                      local_player->GetY(),
+                      local_player->GetRotation());
+
+  for (const auto& bullet_params : bullets) {
+    auto bullet = std::make_shared<Bullet>(bullet_id_to_set_);
+    bullet->SetParams(bullet_params);
+    bullet->SetIsInFov(true);
+    local_bullets_.emplace(std::make_pair(bullet_id_to_set_, bullet));
+    qDebug().noquote() << "[MODEL] Added new local bullet:"
+      << bullet_id_to_set_;
+    bullet_id_to_set_++;
+  }
 }
 
 std::vector<std::shared_ptr<Bullet>> ClientGameModel::GetLocalBullets() const {
@@ -166,5 +169,5 @@ void ClientGameModel::DeleteLocalBullet(GameObjectId bullet_id) {
     return;
   }
   local_bullets_.erase(iter);
-  qInfo().noquote() << "[MODEL] Removed local bullet:" << bullet_id;
+  qDebug().noquote() << "[MODEL] Removed local bullet:" << bullet_id;
 }

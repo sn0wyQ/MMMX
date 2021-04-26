@@ -46,7 +46,7 @@ class ClientGameModel : public GameModel {
   QVariant GetScheduledVariableValue(GameObjectId game_object_id,
                                      Variable variable) const;
 
-  void AddLocalBullet();
+  void AddLocalBullets();
 
   std::vector<std::shared_ptr<Bullet>> GetLocalBullets() const;
   void DeleteLocalBullet(GameObjectId bullet_id);
@@ -65,6 +65,7 @@ class ClientGameModel : public GameModel {
     scheduled_updates_;
 
   std::unordered_map<GameObjectId, std::shared_ptr<Bullet>> local_bullets_;
+  int bullet_id_to_set_{1};
 };
 
 #endif  // MODEL_CLIENT_GAME_MODEL_H_

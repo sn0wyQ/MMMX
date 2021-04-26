@@ -99,3 +99,7 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
                            - stats_table_->pos().y() -
                            this->size().height() / 12);
 }
+
+void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
+  controller_->MouseReleaseEvent(mouse_event);
+}
