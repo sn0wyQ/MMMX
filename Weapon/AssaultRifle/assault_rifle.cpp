@@ -15,7 +15,7 @@ AssaultRifle::AssaultRifle() {
 
 void AssaultRifle::DrawWeapon(Painter* painter) {
   painter->DrawRect(0.7f, -0.3f, 0.8f, 0.6f);
-  painter->DrawRect(1.5f, -0.07f, 0.2f, 0.07f);
+  painter->DrawRect(1.5f, -0.1f, 0.2f, 0.1f);
 }
 
 WeaponType AssaultRifle::GetWeaponType() const {
