@@ -10,9 +10,24 @@ Player::Player(const Player& other) : Entity(other) {
   is_local_player_ = other.is_local_player_;
   weapon_type_ = other.weapon_type_;
   switch (weapon_type_) {
+    case WeaponType::kAssaultRifle: {
+      weapon_ = std::make_shared<AssaultRifle>(
+          *(std::dynamic_pointer_cast<AssaultRifle>(other.weapon_)));
+      break;
+    }
+    case WeaponType::kCrossbow: {
+      weapon_ = std::make_shared<Crossbow>(
+          *(std::dynamic_pointer_cast<Crossbow>(other.weapon_)));
+      break;
+    }
     case WeaponType::kMachineGun: {
       weapon_ = std::make_shared<MachineGun>(
           *(std::dynamic_pointer_cast<MachineGun>(other.weapon_)));
+      break;
+    }
+    case WeaponType::kShotgun: {
+      weapon_ = std::make_shared<Shotgun>(
+          *(std::dynamic_pointer_cast<Shotgun>(other.weapon_)));
       break;
     }
   }
@@ -27,8 +42,20 @@ void Player::SetParams(std::vector<QVariant> params) {
   auto weapon_type = static_cast<WeaponType>(params.back().toInt());
   weapon_type_ = weapon_type;
   switch (weapon_type) {
+    case WeaponType::kAssaultRifle: {
+      weapon_ = std::make_shared<AssaultRifle>();
+      break;
+    }
+    case WeaponType::kCrossbow: {
+      weapon_ = std::make_shared<Crossbow>();
+      break;
+    }
     case WeaponType::kMachineGun: {
       weapon_ = std::make_shared<MachineGun>();
+      break;
+    }
+    case WeaponType::kShotgun: {
+      weapon_ = std::make_shared<Shotgun>();
       break;
     }
   }
@@ -71,12 +98,6 @@ void Player::DrawRelatively(Painter* painter) {
       QPointF(0.4f * GetRadius(), 0.3f * GetRadius()),
       0.2f, 0.2f);
 
-  // Direction Arrow [Needs improvement to look cuter]
-  if (IsLocalPlayer()) {
-    painter->DrawTriangle(QPointF(GetRadius() + 0.2f, -0.3f),
-                          QPointF(GetRadius() + 0.2f, 0.3f),
-                          QPointF(GetRadius() + 0.7f, 0.f));
-  }
   weapon_->DrawWeapon(painter);
 }
 
@@ -149,30 +170,32 @@ void Player::SetFreeLevelingPoints(int free_leveling_points) {
 void Player::IncreaseLevelingPoint(int index) {
   switch (index) {
     case 0:
-      SetMaxHealthPoints(GetMaxHealthPoints() * 1.1f);
+      SetMaxHealthPoints(GetMaxHealthPoints() * 1.5f);
       break;
     case 1:
-      SetHealthRegenRate(GetHealthRegenRate() * 1.1f);
+      SetHealthRegenRate(GetHealthRegenRate() * 1.5f);
       break;
     case 2:
-      SetSpeedMultiplier(GetSpeedMultiplier() * 1.1f);
+      SetSpeedMultiplier(GetSpeedMultiplier() * 1.2f);
       break;
     case 3:
-      SetFovRadius(GetFovRadius() * 1.1f);
+      SetFovRadius(GetFovRadius() * 1.2f);
       break;
     case 4:
       break;
     case 5:
-      weapon_->SetBulletSpeed(weapon_->GetBulletSpeed() * 1.1f);
+      weapon_->SetBulletSpeed(weapon_->GetBulletSpeed() * 1.2f);
       break;
     case 6:
-      weapon_->SetRateOfFire(weapon_->GetRateOfFire() * 1.1f);
+      weapon_->SetRateOfFire(
+          static_cast<int>(
+              static_cast<float>(weapon_->GetRateOfFire()) * 1.3f));
       break;
     case 7:
-      weapon_->SetBulletRange(weapon_->GetBulletRange() * 1.1f);
+      weapon_->SetBulletRange(weapon_->GetBulletRange() * 1.3f);
       break;
     case 8:
-      weapon_->SetBulletDamage(weapon_->GetBulletDamage() * 1.5f);
+      weapon_->SetBulletDamage(weapon_->GetBulletDamage() * 1.3f);
       break;
     case 9:
       break;

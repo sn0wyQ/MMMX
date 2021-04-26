@@ -8,6 +8,9 @@ ClientController::ClientController(const QUrl& url) : url_(url),
   connect(&web_socket_, &QWebSocket::disconnected, this,
           &ClientController::OnDisconnected);
   web_socket_.open(url);
+  connect(&shoot_check_timer, &QTimer::timeout, this,
+          &ClientController::ShootHolding);
+  shoot_check_timer.start(Constants::kShootHoldingCheck);
   this->StartTicking();
 }
 
@@ -287,6 +290,7 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity({0, 0});
   }
+  is_holding_ = false;
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
@@ -322,6 +326,17 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientController::MousePressEvent(QMouseEvent*) {
+  is_holding_ = true;
+}
+
+void ClientController::MouseReleaseEvent(QMouseEvent*) {
+  is_holding_ = false;
+}
+
+void ClientController::ShootHolding() {
+  if (!is_holding_) {
+    return;
+  }
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
     auto timestamp = GetCurrentServerTime();
@@ -334,7 +349,7 @@ void ClientController::MousePressEvent(QMouseEvent*) {
                                QString("Shooter#") +
                         QString::number(model_->GetLocalPlayer()->GetId())));
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
-    model_->AddLocalBullet();
+    model_->AddLocalBullets();
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
                                static_cast<qint64>(GetCurrentServerTime()),
                                local_player->GetId()));

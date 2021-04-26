@@ -13,7 +13,10 @@
 #include "Weapon/WeaponConstants/weapon_constants.h"
 
 enum class WeaponType {
-  kMachineGun
+  kAssaultRifle,
+  kCrossbow,
+  kMachineGun,
+  kShotgun
 };
 
 class Weapon {
@@ -49,8 +52,19 @@ class Weapon {
   int GetCurrentBulletsInClip() const;
   void SetCurrentBulletsInClip(int current_bullets_in_clip);
 
-  std::vector<QVariant> GetBulletParams(
-      GameObjectId parent_id, float x, float y, float rotation) const;
+  std::vector<QVariant> GetBulletParams(GameObjectId parent_id,
+                                        float x,
+                                        float y,
+                                        float rotation,
+                                        float radius) const;
+
+  std::vector<std::vector<QVariant>> GetBulletsParams(
+      GameObjectId parent_id,
+      float x,
+      float y,
+      float rotation) const;
+
+  virtual WeaponType GetWeaponType() const = 0;
 
  private:
   float bullet_damage_{};  // дамаг (может прокачать герой)

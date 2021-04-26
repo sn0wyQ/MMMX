@@ -86,3 +86,7 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
   player_bar_->move(0, height() - height_of_bar_);
   player_bar_->resize(width(), height_of_bar_);
 }
+
+void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
+  controller_->MouseReleaseEvent(mouse_event);
+}
