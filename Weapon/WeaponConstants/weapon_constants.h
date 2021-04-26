@@ -11,7 +11,7 @@ namespace Constants::Weapon {
 
 namespace Constants::Weapon::AssaultRifle {
 
-constexpr float kDefaultBaseBulletDamage = 10.f;
+constexpr float kDefaultBaseBulletDamage = 12.f;
 constexpr float kDefaultBulletSpeed = 3.f;
 constexpr float kDefaultBulletRadius = 0.25f;
 constexpr float kDefaultBulletRange = 20.f;
@@ -25,7 +25,7 @@ constexpr int kDefaultClipSize = 12;
 
 namespace Constants::Weapon::Crossbow {
 
-constexpr float kDefaultBaseBulletDamage = 10.f;
+constexpr float kDefaultBaseBulletDamage = 15.f;
 constexpr float kDefaultBulletSpeed = 2.5f;
 constexpr float kDefaultBulletRadius = 0.3f;
 constexpr float kDefaultBulletRange = 30.f;
@@ -39,7 +39,7 @@ constexpr int kDefaultClipSize = 12;
 
 namespace Constants::Weapon::MachineGun {
 
-constexpr float kDefaultBaseBulletDamage = 5.f;
+constexpr float kDefaultBaseBulletDamage = 6.f;
 constexpr float kDefaultBulletSpeed = 5.f;
 constexpr float kDefaultBulletRadius = 0.15f;
 constexpr float kDefaultBulletRange = 20.f;
@@ -53,7 +53,7 @@ constexpr int kDefaultClipSize = 12;
 
 namespace Constants::Weapon::Shotgun {
 
-constexpr float kDefaultBaseBulletDamage = 10.f;
+constexpr float kDefaultBaseBulletDamage = 8.f;
 constexpr float kDefaultBulletSpeed = 4.f;
 constexpr float kDefaultBulletRadius = 0.2f;
 constexpr float kDefaultBulletRange = 12.f;
