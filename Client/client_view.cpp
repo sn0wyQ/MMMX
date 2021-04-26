@@ -1,4 +1,5 @@
 #include "client_view.h"
+// #include <QKeyEvent>
 
 ClientView::ClientView(std::shared_ptr<ClientController> controller)
     : AbstractClientView(),
@@ -22,6 +23,11 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   info_label_->move(10, 10);
   info_label_->setAlignment(Qt::AlignTop);
 
+  // Stats table
+  stats_table_ = new StatsTable(this, controller_->GetModel(),
+                                QPoint(100, 100), QSize(200, 200));
+  stats_table_->hide();
+
   controller_->SetView(std::shared_ptr<ClientView>(this));
   model_ = controller_->GetModel();
 }
@@ -39,10 +45,16 @@ void ClientView::focusOutEvent(QFocusEvent* focus_event) {
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
+  if (key_event->key() == Qt::Key_Tab) {
+    stats_table_->show();
+  }
   controller_->KeyPressEvent(key_event);
 }
 
 void ClientView::keyReleaseEvent(QKeyEvent* key_event) {
+  if (key_event->key() == Qt::Key_Tab) {
+    stats_table_->hide();
+  }
   controller_->KeyReleaseEvent(key_event);
 }
 
@@ -56,22 +68,20 @@ void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {
   auto local_player_position = model_->IsLocalPlayerSet()
-                      ? model_->GetLocalPlayer()->GetPosition()
-                      : QPointF(0.f, 0.f);
+                               ? model_->GetLocalPlayer()->GetPosition()
+                               : QPointF(0.f, 0.f);
 
   info_label_->setText(QString(tr("Server Var: %1\n"
                                   "Room Var: %2\n"
                                   "Client Var: %3\n"
                                   "Ping: %4\n"
-                                  "X: %5, \tY: %6\n"
-                                  "Nickname: %7\n"))
-                       .arg(controller_->GetServerVar())
-                       .arg(controller_->GetRoomVar())
-                       .arg(controller_->GetClientVar())
-                       .arg(controller_->GetPing())
-                       .arg(local_player_position.x())
-                       .arg(local_player_position.y())
-                       .arg(model_->GetLocalPlayerStats()->GetNickname()));
+                                  "X: %5, \tY: %6\n"))
+                           .arg(controller_->GetServerVar())
+                           .arg(controller_->GetRoomVar())
+                           .arg(controller_->GetClientVar())
+                           .arg(controller_->GetPing())
+                           .arg(local_player_position.x())
+                           .arg(local_player_position.y()));
   info_label_->adjustSize();
 
   qDebug().noquote().nospace() << "[VIEW] Repainted";
@@ -82,4 +92,10 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
   int height_of_bar = static_cast<int>(0.15f * static_cast<float>(height()));
   player_bar_->resize(width(), height_of_bar);
   player_bar_->move(0, height() - height_of_bar);
+  stats_table_->move(this->size().width() / 10,
+                     this->size().height() / 7);
+  stats_table_->resize(this->size().width() - 2 * stats_table_->pos().x(),
+                       this->size().height() - height_of_bar
+                           - stats_table_->pos().y() -
+                           this->size().height() / 12);
 }

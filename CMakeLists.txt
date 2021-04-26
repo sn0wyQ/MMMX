@@ -5,7 +5,7 @@ project(MMMX-Server)
 set(CMAKE_CXX_STANDARD 20)
 add_compile_options(
         "$<$<CONFIG:RELEASE>:-O3>"
-        "$<$<CONFIG:DEBUG>:-O3>"
+        "$<$<CONFIG:DEBUG>:-O0>"
 )
 
 set(CMAKE_AUTOMOC ON) # Enable Qt MOC compiler
@@ -94,7 +94,7 @@ set(SOURCES
         Server/server_controller.cpp
         Weapon/MachineGun/machine_gun.cpp
         Weapon/weapon.cpp
-        )
+        GUI/GameView/stats_table.cpp GUI/GameView/stats_table.h)
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT

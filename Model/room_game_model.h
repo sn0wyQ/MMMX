@@ -20,7 +20,6 @@ class RoomGameModel : public GameModel {
   void UpdateGameObjectHashes();
 
   void AddPlayerStats(GameObjectId player_id, QString nickname, int level);
-  std::vector<std::shared_ptr<PlayerStats>> GetAllPlayersStats();
   bool IsNeededToSendPlayerStats(GameObjectId player_id);
   void UpdatePlayerStatsHashes();
 
