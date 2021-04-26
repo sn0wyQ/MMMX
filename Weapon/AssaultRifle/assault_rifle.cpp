@@ -4,7 +4,7 @@ AssaultRifle::AssaultRifle(const AssaultRifle& assault_rifle) : Weapon(
     assault_rifle) {}
 
 AssaultRifle::AssaultRifle() {
-  SetBulletDamage(Constants::Weapon::AssaultRifle::kDefaultBaseBulletDamage);
+  SetBulletDamage(Constants::Weapon::AssaultRifle::kDefaultBulletDamage);
   SetBulletSpeed(Constants::Weapon::AssaultRifle::kDefaultBulletSpeed);
   SetBulletRange(Constants::Weapon::AssaultRifle::kDefaultBulletRange);
   SetRateOfFire(Constants::Weapon::AssaultRifle::kDefaultRateOfFire);

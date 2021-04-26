@@ -3,7 +3,7 @@
 Crossbow::Crossbow(const Crossbow& crossbow) : Weapon(crossbow) {}
 
 Crossbow::Crossbow() {
-  SetBulletDamage(Constants::Weapon::Crossbow::kDefaultBaseBulletDamage);
+  SetBulletDamage(Constants::Weapon::Crossbow::kDefaultBulletDamage);
   SetBulletSpeed(Constants::Weapon::Crossbow::kDefaultBulletSpeed);
   SetBulletRange(Constants::Weapon::Crossbow::kDefaultBulletRange);
   SetRateOfFire(Constants::Weapon::Crossbow::kDefaultRateOfFire);

@@ -3,7 +3,7 @@
 Shotgun::Shotgun(const Shotgun& shotgun) : Weapon(shotgun) {}
 
 Shotgun::Shotgun() {
-  SetBulletDamage(Constants::Weapon::Shotgun::kDefaultBaseBulletDamage);
+  SetBulletDamage(Constants::Weapon::Shotgun::kDefaultBulletDamage);
   SetBulletSpeed(Constants::Weapon::Shotgun::kDefaultBulletSpeed);
   SetBulletRange(Constants::Weapon::Shotgun::kDefaultBulletRange);
   SetRateOfFire(Constants::Weapon::Shotgun::kDefaultRateOfFire);

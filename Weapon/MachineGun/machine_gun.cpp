@@ -3,7 +3,7 @@
 MachineGun::MachineGun(const MachineGun& machine_gun) : Weapon(machine_gun) {}
 
 MachineGun::MachineGun() {
-  SetBulletDamage(Constants::Weapon::MachineGun::kDefaultBaseBulletDamage);
+  SetBulletDamage(Constants::Weapon::MachineGun::kDefaultBulletDamage);
   SetBulletSpeed(Constants::Weapon::MachineGun::kDefaultBulletSpeed);
   SetBulletRange(Constants::Weapon::MachineGun::kDefaultBulletRange);
   SetRateOfFire(Constants::Weapon::MachineGun::kDefaultRateOfFire);

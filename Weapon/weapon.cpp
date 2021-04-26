@@ -133,22 +133,24 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
     case WeaponType::kShotgun: {
       bullets_params.emplace_back(
           GetBulletParams(parent_id,
-                          x,
-                          y,
-                          Math::GetNormalizeAngle(rotation + 10.f),
-                          Constants::Weapon::Shotgun::kDefaultBulletRadius));
+                    x,
+                    y,
+                    Math::GetNormalizeAngle(rotation
+                    + Constants::Weapon::Shotgun::kDefaultAngleBetweenBullets),
+                    Constants::Weapon::Shotgun::kDefaultBulletRadius));
       bullets_params.emplace_back(
           GetBulletParams(parent_id,
-                          x,
-                          y,
-                          Math::GetNormalizeAngle(rotation),
-                          Constants::Weapon::Shotgun::kDefaultBulletRadius));
+                    x,
+                    y,
+                    Math::GetNormalizeAngle(rotation),
+                    Constants::Weapon::Shotgun::kDefaultBulletRadius));
       bullets_params.emplace_back(
           GetBulletParams(parent_id,
-                          x,
-                          y,
-                          Math::GetNormalizeAngle(rotation - 10.f),
-                          Constants::Weapon::Shotgun::kDefaultBulletRadius));
+                    x,
+                    y,
+                    Math::GetNormalizeAngle(rotation
+                    - Constants::Weapon::Shotgun::kDefaultAngleBetweenBullets),
+                    Constants::Weapon::Shotgun::kDefaultBulletRadius));
       break;
     }
   }
