@@ -156,10 +156,12 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
       "REGEN",
       "SPEED",
       "FOV",
+      "ACCURACY",
       "BULLET SPEED",
       "RATE OF FIRE",
       "RANGE",
-      "DAMAGE"
+      "DAMAGE",
+      "RELOAD"
   };
   for (int i = 0; i < Constants::kLevelingCount; i++) {
     painter->save();

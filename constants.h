@@ -84,7 +84,7 @@ constexpr float kExpForLevel[] = {
 };
 constexpr float kExpMultiplier = 5.f;
 
-constexpr int kLevelingCount = 8;
+constexpr int kLevelingCount = 10;
 constexpr int kCountOfLevels = 5;
 }  // namespace Constants
 

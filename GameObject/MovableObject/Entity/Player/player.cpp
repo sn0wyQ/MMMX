@@ -161,16 +161,20 @@ void Player::IncreaseLevelingPoint(int index) {
       SetFovRadius(GetFovRadius() * 1.1f);
       break;
     case 4:
-      weapon_->SetBulletSpeed(weapon_->GetBulletSpeed() * 1.1f);
       break;
     case 5:
-      weapon_->SetRateOfFire(weapon_->GetRateOfFire() * 1.1f);
+      weapon_->SetBulletSpeed(weapon_->GetBulletSpeed() * 1.1f);
       break;
     case 6:
-      weapon_->SetBulletRange(weapon_->GetBulletRange() * 1.1f);
+      weapon_->SetRateOfFire(weapon_->GetRateOfFire() * 1.1f);
       break;
     case 7:
+      weapon_->SetBulletRange(weapon_->GetBulletRange() * 1.1f);
+      break;
+    case 8:
       weapon_->SetBulletDamage(weapon_->GetBulletDamage() * 1.5f);
+      break;
+    case 9:
       break;
     default:
       break;

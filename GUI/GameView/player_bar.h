@@ -41,8 +41,8 @@ class PlayerBar : public QWidget {
   float interval_lr_ = 2.f;
   float small_padding_u_ = 2.f;
   float small_interval_lr_ = 0.3f;
-  float padding_u_ = 7.f;
-  float picture_height_ = 60.f;
+  float padding_u_ = 15.f;
+  float picture_height_ = 45.f;
   float picture_width_;
   float small_full_width_;
   float small_width_;
