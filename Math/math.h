@@ -35,6 +35,9 @@ bool IsPointOnSegment(QPointF first, QPointF second, QPointF point);
 
 float DistanceBetweenPoints(QPointF first, QPointF second);
 
+// always return angle [0; 360)
+float GetNormalizeAngle(float angle);
+
 template <typename T>
 std::vector<QPointF> GetRectanglePoints(QPointF position, float rotation,
                                         const std::shared_ptr<T>& object) {

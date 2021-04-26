@@ -8,8 +8,10 @@
 #include <QEvent>
 
 #include "GameObject/MovableObject/Entity/entity.h"
-#include "Weapon/weapon.h"
+#include "Weapon/AssaultRifle/assault_rifle.h"
+#include "Weapon/Crossbow/crossbow.h"
 #include "Weapon/MachineGun/machine_gun.h"
+#include "Weapon/Shotgun/shotgun.h"
 #include "constants.h"
 
 class Player : public Entity {

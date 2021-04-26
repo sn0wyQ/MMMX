@@ -5,7 +5,7 @@ project(MMMX-Server)
 set(CMAKE_CXX_STANDARD 20)
 add_compile_options(
         "$<$<CONFIG:RELEASE>:-O3>"
-        "$<$<CONFIG:DEBUG>:-O3>"
+        "$<$<CONFIG:DEBUG>:-O0>"
 )
 
 set(CMAKE_AUTOMOC ON) # Enable Qt MOC compiler
@@ -92,7 +92,10 @@ set(SOURCES
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
+        Weapon/AssaultRifle/assault_rifle.cpp
+        Weapon/Crossbow/crossbow.cpp
         Weapon/MachineGun/machine_gun.cpp
+        Weapon/Shotgun/shotgun.cpp
         Weapon/weapon.cpp
         )
 

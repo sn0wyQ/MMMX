@@ -153,7 +153,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
 }
 
 void RoomController::AddClient(ClientId client_id) {
-  GameObjectId player_id = AddDefaultPlayer();
+  GameObjectId player_id = AddPlayer();
   player_ids_[client_id] = player_id;
 
   Event event_add_local_player(EventType::kAddLocalPlayerGameObject, player_id);
@@ -347,18 +347,40 @@ bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
     player->GetFovRadius() * Constants::kFovMultiplier;
 }
 
-GameObjectId RoomController::AddDefaultPlayer() {
-  return model_->AddGameObject(
-      GameObjectType::kPlayer,
-      {Constants::kDefaultPlayerX, Constants::kDefaultPlayerY,
-       Constants::kDefaultPlayerRotation, Constants::kDefaultPlayerRadius * 2,
-       Constants::kDefaultPlayerRadius * 2,
-       static_cast<int>(RigidBodyType::kCircle),
-       0.f, 0.f, Constants::kDefaultEntityFov * 2.f,
-       Constants::kDefaultMaxHealthPoints * 0.733f,
-       Constants::kDefaultHealthRegenSpeed,
-       Constants::kDefaultMaxHealthPoints,
-       static_cast<int>(WeaponType::kMachineGun)});
+// Temporary -> AddPlayer(PlayerType)
+GameObjectId RoomController::AddPlayer() {
+  std::vector<QVariant>
+      params = {Constants::kDefaultPlayerX,
+                Constants::kDefaultPlayerY,
+                Constants::kDefaultPlayerRotation,
+                Constants::kDefaultPlayerRadius * 2,
+                Constants::kDefaultPlayerRadius * 2,
+                static_cast<int>(RigidBodyType::kCircle),
+                0.f, 0.f, Constants::kDefaultEntityFov * 2.f,
+                Constants::kDefaultMaxHealthPoints,
+                Constants::kDefaultHealthRegenSpeed,
+                Constants::kDefaultMaxHealthPoints};
+  // Temporary
+  int players_type = this->GetPlayersCount() % Constants::kDefaultMaxClients;
+  switch (players_type) {
+    case 0: {
+      params.emplace_back(static_cast<int>(WeaponType::kAssaultRifle));
+      break;
+    }
+    case 1: {
+      params.emplace_back(static_cast<int>(WeaponType::kCrossbow));
+      break;
+    }
+    case 2: {
+      params.emplace_back(static_cast<int>(WeaponType::kMachineGun));
+      break;
+    }
+    case 3: {
+      params.emplace_back(static_cast<int>(WeaponType::kShotgun));
+      break;
+    }
+  }
+  return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
 
 void RoomController::AddBox(float x, float y, float rotation,
@@ -374,12 +396,18 @@ void RoomController::AddTree(float x, float y, float radius) {
                          static_cast<int>(RigidBodyType::kCircle)});
 }
 
-GameObjectId RoomController::AddBullet(GameObjectId parent_id,
+std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
-  return model_->AddGameObject(
-      GameObjectType::kBullet,
-      weapon->GetBulletParams(parent_id, x, y, rotation));
+  std::vector<std::vector<QVariant>> bullets_params =
+      weapon->GetBulletsParams(parent_id, x, y, rotation);
+  std::vector<GameObjectId> bullet_ids(bullets_params.size());
+  for (const std::vector<QVariant>& bullet_params : bullets_params) {
+    bullet_ids.emplace_back(model_->AddGameObject(
+        GameObjectType::kBullet,
+        bullet_params));
+  }
+  return bullet_ids;
 }
 
 void RoomController::AddConstantObjects() {
@@ -458,32 +486,39 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
   if (!player_in_model->GetWeapon()->IsPossibleToShoot(timestamp)) {
     return;
   }
-  GameObjectId bullet_id =
-      AddBullet(player_id, player_in_model->GetX(), player_in_model->GetY(),
-                player_in_model->GetRotation(), player_in_model->GetWeapon());
-  QPointF position_to_set =
-      {player_in_model->GetX(), player_in_model->GetY()};
-  bool break_bullet = false;
-  bool break_player = false;
-  while (model_id != static_cast<int>(models_cache_.size())) {
-    auto cur_model = models_cache_[model_id].model;
-    if (!break_bullet && cur_model->IsGameObjectIdTaken(bullet_id)) {
-      auto bullet_in_model = cur_model->GetGameObjectByGameObjectId(bullet_id);
-      bullet_in_model->SetPosition(position_to_set);
-      bullet_in_model->OnTick(models_cache_[model_id].delta_time);
-      position_to_set = bullet_in_model->GetPosition();
-    } else {
-      break_bullet = true;
-    }
 
-    if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
-      auto player = cur_model->GetPlayerByPlayerId(player_id);
-      player->GetWeapon()->SetLastTimeShot(timestamp);
-    } else {
-      break_player = true;
-    }
+  std::vector<GameObjectId> bullet_ids =
+      AddBullets(player_id, player_in_model->GetX(), player_in_model->GetY(),
+                 player_in_model->GetRotation(), player_in_model->GetWeapon());
 
-    model_id++;
+  for (int bullet_id_from_bullets_id : bullet_ids) {
+    GameObjectId bullet_id = bullet_id_from_bullets_id;
+
+    QPointF position_to_set =
+        {player_in_model->GetX(), player_in_model->GetY()};
+    bool break_bullet = false;
+    bool break_player = false;
+    while (model_id != static_cast<int>(models_cache_.size())) {
+      auto cur_model = models_cache_[model_id].model;
+      if (!break_bullet && cur_model->IsGameObjectIdTaken(bullet_id)) {
+        auto bullet_in_model =
+            cur_model->GetGameObjectByGameObjectId(bullet_id);
+        bullet_in_model->SetPosition(position_to_set);
+        bullet_in_model->OnTick(models_cache_[model_id].delta_time);
+        position_to_set = bullet_in_model->GetPosition();
+      } else {
+        break_bullet = true;
+      }
+
+      if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
+        auto player = cur_model->GetPlayerByPlayerId(player_id);
+        player->GetWeapon()->SetLastTimeShot(timestamp);
+      } else {
+        break_player = true;
+      }
+
+      model_id++;
+    }
   }
 }
 
