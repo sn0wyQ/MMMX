@@ -354,7 +354,8 @@ GameObjectId RoomController::AddDefaultPlayer() {
        Constants::kDefaultPlayerRotation, Constants::kDefaultPlayerRadius * 2,
        Constants::kDefaultPlayerRadius * 2,
        static_cast<int>(RigidBodyType::kCircle),
-       0.f, 0.f, Constants::kDefaultEntityFov * 2.f,
+       0.f, 0.f, Constants::kDefaultSpeedMultiplier,
+       Constants::kDefaultEntityFov * 2.f,
        Constants::kDefaultMaxHealthPoints * 0.733f,
        Constants::kDefaultHealthRegenSpeed,
        Constants::kDefaultMaxHealthPoints,
@@ -401,6 +402,12 @@ int RoomController::GetModelIdByTimestamp(int64_t timestamp) const {
   latency = std::max(static_cast<int64_t>(0), latency);
   int latency_in_ticks = static_cast<int>(latency / Constants::kTimeToTick);
   return static_cast<int>(models_cache_.size()) - 1 - latency_in_ticks;
+}
+
+void RoomController::SendNicknameEvent(const Event& event) {
+  auto player_id = event.GetArg<GameObjectId>(0);
+  auto nickname = event.GetArg<QString>(1);
+  model_->GetPlayerStatsByPlayerId(player_id)->SetNickname(nickname);
 }
 
 // ------------------- GAME EVENTS -------------------
@@ -487,8 +494,22 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
   }
 }
 
-void RoomController::SendNicknameEvent(const Event& event) {
+void RoomController::SendLevelingPointsEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
-  auto nickname = event.GetArg<QString>(1);
-  model_->GetPlayerStatsByPlayerId(player_id)->SetNickname(nickname);
+  if (!model_->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  auto player = model_->GetPlayerByPlayerId(player_id);
+  std::vector<int> leveling_points;
+  for (int i = 0; i < Constants::kLevelingCount; i++) {
+    auto param = event.GetArg<int>(1 + i);
+    leveling_points.push_back(param);
+  }
+  auto was_leveling_points = player->GetLevelingPoints();
+  for (int i = 0; i < Constants::kLevelingCount; i++) {
+    while (was_leveling_points[i] < leveling_points[i]) {
+      player->IncreaseLevelingPoint(i);
+      was_leveling_points[i]++;
+    }
+  }
 }

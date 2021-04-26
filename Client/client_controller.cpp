@@ -167,6 +167,15 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
                         local_player->GetY(),
                         local_player->GetVelocity(),
                         local_player->GetRotation()));
+
+  if (local_player->IsNeedToSendLevelingPoints()) {
+    Event event(EventType::kSendLevelingPoints, local_player->GetId());
+    for (const auto& item : local_player->GetLevelingPoints()) {
+      event.PushBackArg(item);
+    }
+    this->AddEventToSend(event);
+    local_player->SetNeedToSendLevelingPoints(false);
+  }
 }
 
 void ClientController::UpdateLocalBullets(int delta_time) {

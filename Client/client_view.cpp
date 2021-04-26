@@ -3,7 +3,8 @@
 ClientView::ClientView(std::shared_ptr<ClientController> controller)
     : AbstractClientView(),
       controller_(std::move(controller)) {
-  resize(700, 700);
+  resize(1400, 960);
+  height_of_bar_ = static_cast<int>(0.15f * static_cast<float>(height()));
   setMinimumSize(310, 70);
   setWindowTitle(Constants::kWindowTitle);
   setMouseTracking(true);
@@ -15,7 +16,9 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   game_view_->setMouseTracking(true);
 
   // Player Bar
-  player_bar_ = new PlayerBar(this, controller_->GetModel());
+  player_bar_ = new PlayerBar(this, controller_->GetModel(),
+                              QPoint(0, height() - height_of_bar_),
+                              QSize(width(), height_of_bar_));
 
   // Info Label
   info_label_ = new QLabel(this);
@@ -79,7 +82,7 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
   game_view_->resize(resize_event->size());
-  int height_of_bar = static_cast<int>(0.15f * static_cast<float>(height()));
-  player_bar_->resize(width(), height_of_bar);
-  player_bar_->move(0, height() - height_of_bar);
+  player_bar_->MoveButtons();
+  player_bar_->move(0, height() - height_of_bar_);
+  player_bar_->resize(width(), height_of_bar_);
 }

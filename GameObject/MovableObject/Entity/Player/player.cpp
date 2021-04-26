@@ -1,6 +1,10 @@
 #include "player.h"
 
-Player::Player(GameObjectId player_id) : Entity(player_id) {}
+Player::Player(GameObjectId player_id)
+    : Entity(player_id),
+      leveling_points_(Constants::kLevelingCount) {
+  free_leveling_points_ = 15;
+}
 
 Player::Player(const Player& other) : Entity(other) {
   is_local_player_ = other.is_local_player_;
@@ -14,6 +18,9 @@ Player::Player(const Player& other) : Entity(other) {
   }
   current_exp_ = other.current_exp_;
   level_ = other.level_;
+  free_leveling_points_ = other.free_leveling_points_;
+  leveling_points_ = other.leveling_points_;
+  need_to_send_leveling_points_ = other.need_to_send_leveling_points_;
 }
 
 void Player::SetParams(std::vector<QVariant> params) {
@@ -122,6 +129,60 @@ void Player::IncreaseExperience(float experience_to_add) {
   current_exp_ += experience_to_add;
   while (current_exp_ >= Constants::kExpForLevel[level_ - 1]) {
     current_exp_ -= Constants::kExpForLevel[level_ - 1];
+    free_leveling_points_++;
     level_++;
   }
+}
+
+int Player::GetFreeLevelingPoints() const {
+  return free_leveling_points_;
+}
+
+const std::vector<int>& Player::GetLevelingPoints() const {
+  return leveling_points_;
+}
+
+void Player::SetFreeLevelingPoints(int free_leveling_points) {
+  free_leveling_points_ = free_leveling_points;
+}
+
+void Player::IncreaseLevelingPoint(int index) {
+  switch (index) {
+    case 0:
+      SetMaxHealthPoints(GetMaxHealthPoints() * 1.1f);
+      break;
+    case 1:
+      SetHealthRegenRate(GetHealthRegenRate() * 1.1f);
+      break;
+    case 2:
+      SetSpeedMultiplier(GetSpeedMultiplier() * 1.1f);
+      break;
+    case 3:
+      SetFovRadius(GetFovRadius() * 1.1f);
+      break;
+    case 4:
+      weapon_->SetBulletSpeed(weapon_->GetBulletSpeed() * 1.1f);
+      break;
+    case 5:
+      weapon_->SetRateOfFire(weapon_->GetRateOfFire() * 1.1f);
+      break;
+    case 6:
+      weapon_->SetBulletRange(weapon_->GetBulletRange() * 1.1f);
+      break;
+    case 7:
+      weapon_->SetBulletDamage(weapon_->GetBulletDamage() * 1.5f);
+      break;
+    default:
+      break;
+  }
+  leveling_points_[index]++;
+  need_to_send_leveling_points_ = true;
+}
+
+bool Player::IsNeedToSendLevelingPoints() const {
+  return need_to_send_leveling_points_;
+}
+
+void Player::SetNeedToSendLevelingPoints(bool need_to_send_leveling_points) {
+  need_to_send_leveling_points_ = need_to_send_leveling_points;
 }

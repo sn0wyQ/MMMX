@@ -66,7 +66,7 @@ constexpr bool kRigidBodyShow = true;
 constexpr float kDefaultMaxHealthPoints = 100.f;
 
 // MovableObject
-constexpr float kDefaultMovableObjectSpeed = 0.01f;
+constexpr float kDefaultSpeedMultiplier = 0.01f;
 
 // Player
 constexpr float kDefaultEntityFov = 12.f;
@@ -83,6 +83,9 @@ constexpr float kExpForLevel[] = {
     10, 15, 20, 25, 30, 35, 40, 45, 50, 55
 };
 constexpr float kExpMultiplier = 5.f;
+
+constexpr int kLevelingCount = 8;
+constexpr int kCountOfLevels = 5;
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

@@ -98,6 +98,10 @@ enum class EventType {
   // [1] - <GameObjectId> sender_player_id
   kSendPlayerShooting,
 
+  // [0] - <GameObjectId> sender_player_id
+  // Constants::kLevelingCount times int
+  kSendLevelingPoints,
+
   // [0] - <GameObjectId> player_id
   // [1] - player_args
   kAddLocalPlayerGameObject,

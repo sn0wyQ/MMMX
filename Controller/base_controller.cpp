@@ -40,9 +40,6 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendControlsEvent, this, _1));
   SetFunctionForEventType(EventType::kSendPlayerShooting,
     std::bind(&BaseController::SendPlayerShootingEvent, this, _1));
-  SetFunctionForEventType(EventType::kAddLocalPlayerGameObject,
-    std::bind(&BaseController::AddLocalPlayerGameObjectEvent,
-              this, _1));
   SetFunctionForEventType(EventType::kUpdateLocalPlayerHealthPoints,
     std::bind(&BaseController::UpdateLocalPlayerHealthPointsEvent,
               this, _1));
@@ -50,6 +47,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::LocalPlayerDiedEvent, this, _1));
   SetFunctionForEventType(EventType::kIncreaseLocalPlayerExperience,
     std::bind(&BaseController::IncreaseLocalPlayerExperienceEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendLevelingPoints,
+    std::bind(&BaseController::SendLevelingPointsEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

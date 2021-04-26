@@ -3,7 +3,7 @@
 
 #include "Weapon/weapon.h"
 
-using Constants::Weapon::MachineGun::kDefaultBaseBulletDamage;
+using Constants::Weapon::MachineGun::kDefaultBulletDamage;
 using Constants::Weapon::MachineGun::kDefaultBulletSpeed;
 using Constants::Weapon::MachineGun::kDefaultBulletRange;
 using Constants::Weapon::MachineGun::kDefaultRateOfFire;

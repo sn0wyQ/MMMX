@@ -88,6 +88,7 @@ std::vector<QVariant> Weapon::GetBulletParams(
           static_cast<int>(RigidBodyType::kCircle),
           static_cast<float>(velocity.x()),
           static_cast<float>(velocity.y()),
+          Constants::kDefaultSpeedMultiplier,
           parent_id, x, y,
           this->GetBulletDamage(),
           this->GetBulletSpeed(),
