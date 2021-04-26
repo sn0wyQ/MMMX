@@ -55,10 +55,14 @@ class Weapon {
   std::vector<QVariant> GetBulletParams(GameObjectId parent_id,
                                         float x,
                                         float y,
-                                        float rotation) const;
+                                        float rotation,
+                                        float radius) const;
 
   std::vector<std::vector<QVariant>> GetBulletsParams(
-      GameObjectId parent_id, float x, float y, float rotation) const;
+      GameObjectId parent_id,
+      float x,
+      float y,
+      float rotation) const;
 
   virtual WeaponType GetWeaponType() const = 0;
 
