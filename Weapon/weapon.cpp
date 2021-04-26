@@ -105,50 +105,32 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
   switch (weapon_type) {
     case WeaponType::kAssaultRifle: {
       bullets_params.emplace_back(
-          GetBulletParams(parent_id,
-                        x,
-                        y,
-                        Math::GetNormalizeAngle(rotation),
+          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
                         Constants::Weapon::AssaultRifle::kDefaultBulletRadius));
       break;
     }
     case WeaponType::kCrossbow: {
       bullets_params.emplace_back(
-          GetBulletParams(parent_id,
-                          x,
-                          y,
-                          Math::GetNormalizeAngle(rotation),
+          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
                           Constants::Weapon::Crossbow::kDefaultBulletRadius));
       break;
     }
     case WeaponType::kMachineGun: {
       bullets_params.emplace_back(
-          GetBulletParams(parent_id,
-                          x,
-                          y,
-                          Math::GetNormalizeAngle(rotation),
+          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
                           Constants::Weapon::MachineGun::kDefaultBulletRadius));
       break;
     }
     case WeaponType::kShotgun: {
       bullets_params.emplace_back(
-          GetBulletParams(parent_id,
-                    x,
-                    y,
-                    Math::GetNormalizeAngle(rotation
+          GetBulletParams(parent_id, x, y,Math::GetNormalizeAngle(rotation
                     + Constants::Weapon::Shotgun::kDefaultAngleBetweenBullets),
                     Constants::Weapon::Shotgun::kDefaultBulletRadius));
       bullets_params.emplace_back(
-          GetBulletParams(parent_id,
-                    x,
-                    y,
-                    Math::GetNormalizeAngle(rotation),
+          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
                     Constants::Weapon::Shotgun::kDefaultBulletRadius));
       bullets_params.emplace_back(
-          GetBulletParams(parent_id,
-                    x,
-                    y,
-                    Math::GetNormalizeAngle(rotation
+          GetBulletParams(parent_id, x, y,Math::GetNormalizeAngle(rotation
                     - Constants::Weapon::Shotgun::kDefaultAngleBetweenBullets),
                     Constants::Weapon::Shotgun::kDefaultBulletRadius));
       break;

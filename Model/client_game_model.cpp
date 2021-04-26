@@ -138,7 +138,6 @@ void ClientGameModel::RemoveFromInterpolator(GameObjectId game_object_id) {
 
 void ClientGameModel::AddLocalBullets() {
   auto local_player = this->GetLocalPlayer();
-  static int bullet_id_to_set = 1;
   std::vector<std::vector<QVariant>> bullets = local_player->GetWeapon()->
       GetBulletsParams(local_player_id_,
                       local_player->GetX(),
@@ -146,12 +145,12 @@ void ClientGameModel::AddLocalBullets() {
                       local_player->GetRotation());
 
   for (const auto& bullet_params : bullets) {
-    auto bullet = std::make_shared<Bullet>(bullet_id_to_set);
+    auto bullet = std::make_shared<Bullet>(bullet_id_to_set_);
     bullet->SetParams(bullet_params);
     bullet->SetIsInFov(true);
-    local_bullets_.emplace(std::make_pair(bullet_id_to_set, bullet));
-    qDebug().noquote() << "[MODEL] Added new local bullet:" << bullet_id_to_set;
-    bullet_id_to_set++;
+    local_bullets_.emplace(std::make_pair(bullet_id_to_set_, bullet));
+    qDebug().noquote() << "[MODEL] Added new local bullet:" << bullet_id_to_set_;
+    bullet_id_to_set_++;
   }
 }
 

@@ -38,13 +38,11 @@ QVector2D Math::GetVectorByAngle(float rotation) {
 }
 
 float Math::DistanceBetweenPoints(QPointF first, QPointF second) {
-  float distance = sqrt((first.x() - second.x()) * ((first.x() - second.x())) +
+  float distance = std::sqrt((first.x() - second.x()) * ((first.x() - second.x())) +
       (first.y() - second.y()) * ((first.y() - second.y())));
   return distance;
 }
 
 float Math::GetNormalizeAngle(float angle) {
-  int64_t cnt = static_cast<int64_t>(angle) / 360;
-  angle = angle + 360.f * static_cast<float>(cnt);
-  return (angle < 0.f ? angle + 360.f : angle);
+  return std::fmod(angle, 360.f);
 }

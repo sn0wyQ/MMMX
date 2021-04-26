@@ -281,7 +281,7 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity({0, 0});
   }
-  is_holding = false;
+  is_holding_ = false;
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
@@ -317,15 +317,15 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientController::MousePressEvent(QMouseEvent*) {
-  is_holding = true;
+  is_holding_ = true;
 }
 
 void ClientController::MouseReleaseEvent(QMouseEvent*) {
-  is_holding = false;
+  is_holding_ = false;
 }
 
 void ClientController::ShootHolding() {
-  if (!is_holding) {
+  if (!is_holding_) {
     return;
   }
   if (model_->IsLocalPlayerSet()) {

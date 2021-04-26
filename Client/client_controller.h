@@ -153,7 +153,7 @@ class ClientController : public BaseController {
       {Direction::kLeft, false}
   };
   QTimer shoot_check_timer;
-  bool is_holding{false};
+  bool is_holding_{false};
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

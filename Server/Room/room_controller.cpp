@@ -361,8 +361,8 @@ GameObjectId RoomController::AddPlayer() {
                 Constants::kDefaultHealthRegenSpeed,
                 Constants::kDefaultMaxHealthPoints};
   // Temporary
-  int players_count = this->GetPlayersCount() % Constants::kDefaultMaxClients;
-  switch (players_count) {
+  int players_type = this->GetPlayersCount() % Constants::kDefaultMaxClients;
+  switch (players_type) {
     case 0: {
       params.emplace_back(static_cast<int>(WeaponType::kAssaultRifle));
       break;
@@ -399,16 +399,16 @@ void RoomController::AddTree(float x, float y, float radius) {
 std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
-  std::vector<GameObjectId> bullets_id;
+
   std::vector<std::vector<QVariant>> bullets_params =
       weapon->GetBulletsParams(parent_id, x, y, rotation);
-  bullets_id.reserve(bullets_params.size());
+  std::vector<GameObjectId> bullet_ids(bullets_params.size());
   for (const std::vector<QVariant>& bullet_params : bullets_params) {
-    bullets_id.emplace_back(model_->AddGameObject(
+    bullet_ids.emplace_back(model_->AddGameObject(
         GameObjectType::kBullet,
         bullet_params));
   }
-  return bullets_id;
+  return bullet_ids;
 }
 
 void RoomController::AddConstantObjects() {
@@ -488,11 +488,11 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
     return;
   }
 
-  std::vector<GameObjectId> bullets_ids =
+  std::vector<GameObjectId> bullet_ids =
       AddBullets(player_id, player_in_model->GetX(), player_in_model->GetY(),
                  player_in_model->GetRotation(), player_in_model->GetWeapon());
 
-  for (int bullet_id_from_bullets_id : bullets_ids) {
+  for (int bullet_id_from_bullets_id : bullet_ids) {
     GameObjectId bullet_id = bullet_id_from_bullets_id;
 
     QPointF position_to_set =
