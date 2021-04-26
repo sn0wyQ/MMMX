@@ -106,10 +106,10 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
     case WeaponType::kAssaultRifle: {
       bullets_params.emplace_back(
           GetBulletParams(parent_id,
-                          x,
-                          y,
-                          Math::GetNormalizeAngle(rotation),
-                          Constants::Weapon::AssaultRifle::kDefaultBulletRadius));
+                        x,
+                        y,
+                        Math::GetNormalizeAngle(rotation),
+                        Constants::Weapon::AssaultRifle::kDefaultBulletRadius));
       break;
     }
     case WeaponType::kCrossbow: {
@@ -151,7 +151,6 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
                           Constants::Weapon::Shotgun::kDefaultBulletRadius));
       break;
     }
-
   }
   return bullets_params;
 }
