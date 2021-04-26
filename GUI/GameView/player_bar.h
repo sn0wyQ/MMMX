@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include <QPaintEvent>
 #include <QWidget>

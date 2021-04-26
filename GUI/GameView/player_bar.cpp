@@ -170,12 +170,14 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
       first = 100 - first - picture_width_;
     }
     auto rect = RectWithPercents(first + picture_width_ / 2.f,
-                                 padding_u_ + picture_height_ / 2.f, 0, 0);
+                                 padding_u_ + picture_height_ / 2.f,
+                                 0, 0);
     painter->translate(rect.x(), rect.y());
     painter->rotate(45);
     int get_i = first_part ? i : 3 * Constants::kLevelingCount / 2 - 1 - i;
     painter->drawText(
-        RectWithPercents(- picture_width_ / 2.f - interval_lr_ / 2.f, - picture_height_ / 2.f,
+        RectWithPercents(- picture_width_ / 2.f - interval_lr_ / 2.f,
+                         - picture_height_ / 2.f,
                          picture_width_ + interval_lr_, picture_height_),
                          Qt::AlignCenter,
         leveling_strings[get_i]);
