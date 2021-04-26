@@ -150,7 +150,7 @@ void ClientGameModel::AddLocalBullets() {
     bullet->SetParams(bullet_params);
     bullet->SetIsInFov(true);
     local_bullets_.emplace(std::make_pair(bullet_id_to_set, bullet));
-    qInfo().noquote() << "[MODEL] Added new local bullet:" << bullet_id_to_set;
+    qDebug().noquote() << "[MODEL] Added new local bullet:" << bullet_id_to_set;
     bullet_id_to_set++;
   }
 }
@@ -169,5 +169,5 @@ void ClientGameModel::DeleteLocalBullet(GameObjectId bullet_id) {
     return;
   }
   local_bullets_.erase(iter);
-  qInfo().noquote() << "[MODEL] Removed local bullet:" << bullet_id;
+  qDebug().noquote() << "[MODEL] Removed local bullet:" << bullet_id;
 }
