@@ -399,7 +399,6 @@ void RoomController::AddTree(float x, float y, float radius) {
 std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
-
   std::vector<std::vector<QVariant>> bullets_params =
       weapon->GetBulletsParams(parent_id, x, y, rotation);
   std::vector<GameObjectId> bullet_ids(bullets_params.size());
