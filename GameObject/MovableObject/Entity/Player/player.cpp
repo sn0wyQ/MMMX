@@ -148,11 +148,15 @@ void Player::SetCurrentExp(float current_exp) {
 
 void Player::IncreaseExperience(float experience_to_add) {
   current_exp_ += experience_to_add;
-  while (current_exp_ >= Constants::kExpForLevel[level_ - 1]) {
-    current_exp_ -= Constants::kExpForLevel[level_ - 1];
+  while (current_exp_ >= Constants::GetExpForLevel(level_)) {
+    if (level_ + 1 > Constants::kMaxLevel) {
+      break;
+    }
+    current_exp_ -= Constants::GetExpForLevel(level_);
     free_leveling_points_++;
     level_++;
   }
+  current_exp_ = std::min(current_exp_, Constants::GetExpForLevel(level_));
 }
 
 int Player::GetFreeLevelingPoints() const {

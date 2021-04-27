@@ -87,7 +87,7 @@ void PlayerBar::DrawExpRect(QPainter* painter) {
   auto local_player = model_->GetLocalPlayer();
   int cur_level = local_player->GetLevel();
   auto cur_exp = static_cast<int>(local_player->GetCurrentExp());
-  float exp_for_level = Constants::kExpForLevel[cur_level - 1];
+  float exp_for_level = Constants::GetExpForLevel(cur_level);
   float exp_bar_width = 30.f;
   float exp_bar_height = 25.f;
   float exp_bar_x = 50.f - exp_bar_width / 2.f;

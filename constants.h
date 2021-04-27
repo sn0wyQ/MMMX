@@ -78,9 +78,12 @@ constexpr float kDefaultHealthRegenSpeed = 0.002f;
 // Bullet collision
 constexpr int kAccuracy = 10;
 
-constexpr float kExpForLevel[] = {
-    10, 15, 20, 25, 30, 35, 40, 45, 50, 55
-};
+constexpr int kMaxLevel = 30;
+
+constexpr float GetExpForLevel(int level) {
+  return static_cast<float>(1 + level) * 5;
+}
+
 constexpr float kExpMultiplier = 5.f;
 
 constexpr int kLevelingCount = 10;
