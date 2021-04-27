@@ -136,7 +136,7 @@ void ClientGameModel::RemoveFromInterpolator(GameObjectId game_object_id) {
   interpolator_.erase(game_object_id);
 }
 
-void ClientGameModel::AddLocalBullets() {
+void ClientGameModel::AddLocalBullets(int64_t timestamp) {
   auto local_player = this->GetLocalPlayer();
   std::vector<std::vector<QVariant>> bullets = local_player->GetWeapon()->
       GetBulletsParams(local_player_id_,
@@ -148,6 +148,7 @@ void ClientGameModel::AddLocalBullets() {
     auto bullet = std::make_shared<Bullet>(bullet_id_to_set_);
     bullet->SetParams(bullet_params);
     bullet->SetIsInFov(true);
+    bullet->SetUpdatedTime(timestamp);
     local_bullets_.emplace(std::make_pair(bullet_id_to_set_, bullet));
     qDebug().noquote() << "[MODEL] Added new local bullet:"
       << bullet_id_to_set_;

@@ -151,7 +151,8 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding;
   for (const auto& game_object : model_->GetAllGameObjects()) {
-    if (game_object->GetType() != GameObjectType::kBullet) {
+    if (game_object->GetType() != GameObjectType::kBullet &&
+        game_object->GetType() != GameObjectType::kPlayer) {
       game_objects_to_move_with_sliding.push_back(game_object);
     }
   }
@@ -349,7 +350,7 @@ void ClientController::ShootHolding() {
                                QString("Shooter#") +
                         QString::number(model_->GetLocalPlayer()->GetId())));
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
-    model_->AddLocalBullets();
+    model_->AddLocalBullets(timestamp);
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
                                static_cast<qint64>(GetCurrentServerTime()),
                                local_player->GetId()));
@@ -442,4 +443,13 @@ void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {
   }
   auto experience_to_add = event.GetArg<float>(0);
   model_->GetLocalPlayer()->IncreaseExperience(experience_to_add);
+}
+
+void ClientController::FailedPacketSendShootingEvent(const Event& event) {
+  auto timestamp = static_cast<int64_t>(event.GetArg<qint64>(0));
+  for (const auto& bullet : model_->GetLocalBullets()) {
+    if (bullet->GetUpdatedTime() == timestamp) {
+      bullet->SetIsNeedToDelete(true);
+    }
+  }
 }

@@ -8,10 +8,7 @@ PlayerBar::PlayerBar(QWidget* parent,
     buttons_(Constants::kLevelingCount) {
   this->move(position);
   this->resize(size);
-  picture_width_ = picture_height_ / this->width() * this->height();
-  small_full_width_ = picture_width_ / Constants::kCountOfLevels;
-  small_width_ = small_full_width_ - small_interval_lr_;
-  small_height_ = small_width_ / this->height() * this->width();
+  this->RecalculateSizes();
 
   for (int i = 0; i < Constants::kLevelingCount; i++) {
     buttons_[i] = new QPushButton(this);
@@ -203,6 +200,7 @@ void PlayerBar::Clicked(int index) {
 }
 
 void PlayerBar::MoveButtons() {
+  this->RecalculateSizes();
   for (int i = 0; i < Constants::kLevelingCount; i++) {
     int draw_i = i % (Constants::kLevelingCount / 2);
     float first = interval_lr_ + (picture_width_ + interval_lr_) * draw_i;
@@ -217,4 +215,11 @@ void PlayerBar::MoveButtons() {
     buttons_[set_i]->move(rect.x(), rect.y());
     buttons_[set_i]->resize(rect.width(), rect.height());
   }
+}
+
+void PlayerBar::RecalculateSizes() {
+  picture_width_ = picture_height_ / this->width() * this->height();
+  small_full_width_ = picture_width_ / Constants::kCountOfLevels;
+  small_width_ = small_full_width_ - small_interval_lr_;
+  small_height_ = small_width_ / this->height() * this->width();
 }

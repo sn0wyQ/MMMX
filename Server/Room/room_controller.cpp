@@ -477,21 +477,18 @@ void RoomController::SendControlsEvent(const Event& event) {
 void RoomController::SendPlayerShootingEvent(const Event& event) {
   auto timestamp = event.GetArg<int64_t>(0);
   auto model_id = GetModelIdByTimestamp(timestamp);
-  // Проигнорим, если чел нам прислал то, что он сделал очень давно
+  auto player_id = event.GetArg<GameObjectId>(1);
   if (model_id < 0) {
+    this->AddEventToSendToSinglePlayer(
+        Event(EventType::kFailedPacketSendShooting, timestamp), player_id);
     return;
   }
   auto current_model_data = models_cache_[model_id];
-  auto player_id = event.GetArg<GameObjectId>(1);
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
   auto player_in_model =
       current_model_data.model->GetPlayerByPlayerId(player_id);
-
-  if (!player_in_model->GetWeapon()->IsPossibleToShoot(timestamp)) {
-    return;
-  }
 
   std::vector<GameObjectId> bullet_ids =
       AddBullets(player_id, player_in_model->GetX(), player_in_model->GetY(),

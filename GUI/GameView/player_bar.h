@@ -23,6 +23,7 @@ class PlayerBar : public QWidget {
 
   void paintEvent(QPaintEvent* paint_event) override;
 
+  void RecalculateSizes();
   void MoveButtons();
 
   void DrawLeveling(QPainter* painter);
@@ -33,6 +34,7 @@ class PlayerBar : public QWidget {
 
  public slots:
   void Clicked(int index);
+  void mousePressEvent(QMouseEvent*) override {};
 
  private:
   std::shared_ptr<ClientGameModel> model_;

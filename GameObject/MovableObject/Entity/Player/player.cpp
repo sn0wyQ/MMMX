@@ -3,7 +3,7 @@
 Player::Player(GameObjectId player_id)
     : Entity(player_id),
       leveling_points_(Constants::kLevelingCount) {
-  free_leveling_points_ = 15;
+  free_leveling_points_ = 5;
 }
 
 Player::Player(const Player& other) : Entity(other) {
@@ -169,17 +169,20 @@ void Player::SetFreeLevelingPoints(int free_leveling_points) {
 
 void Player::IncreaseLevelingPoint(int index) {
   switch (index) {
-    case 0:
+    case 0: {
+      float part_to_set = GetHealthPoints() / GetMaxHealthPoints();
       SetMaxHealthPoints(GetMaxHealthPoints() * 1.5f);
+      SetHealthPoints(GetMaxHealthPoints() * part_to_set);
       break;
+    }
     case 1:
-      SetHealthRegenRate(GetHealthRegenRate() * 1.5f);
+      SetHealthRegenRate(GetHealthRegenRate() * 2.1f);
       break;
     case 2:
       SetSpeedMultiplier(GetSpeedMultiplier() * 1.2f);
       break;
     case 3:
-      SetFovRadius(GetFovRadius() * 1.2f);
+      SetFovRadius(GetFovRadius() * 1.4f);
       break;
     case 4:
       break;
@@ -189,13 +192,13 @@ void Player::IncreaseLevelingPoint(int index) {
     case 6:
       weapon_->SetRateOfFire(
           static_cast<int>(
-              static_cast<float>(weapon_->GetRateOfFire()) * 1.3f));
+              static_cast<float>(weapon_->GetRateOfFire()) * 1.1f));
       break;
     case 7:
       weapon_->SetBulletRange(weapon_->GetBulletRange() * 1.3f);
       break;
     case 8:
-      weapon_->SetBulletDamage(weapon_->GetBulletDamage() * 1.3f);
+      weapon_->SetBulletDamage(weapon_->GetBulletDamage() * 1.1f);
       break;
     case 9:
       break;

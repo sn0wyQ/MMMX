@@ -5,7 +5,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
       controller_(std::move(controller)) {
   resize(1400, 960);
   height_of_bar_ = static_cast<int>(0.15f * static_cast<float>(height()));
-  setMinimumSize(310, 70);
+  setMinimumSize(1300, 700);
   setWindowTitle(Constants::kWindowTitle);
   setMouseTracking(true);
   setFocusPolicy(Qt::StrongFocus);

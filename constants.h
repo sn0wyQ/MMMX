@@ -75,7 +75,7 @@ constexpr float kDefaultPlayerX = 5.f;
 constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
-constexpr float kDefaultHealthRegenSpeed = 0.001f;
+constexpr float kDefaultHealthRegenSpeed = 0.002f;
 
 // Bullet collision
 constexpr int kAccuracy = 10;
