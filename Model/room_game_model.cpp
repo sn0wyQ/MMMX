@@ -121,6 +121,7 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
       // костыль если вся карта занята
       // я тут хз что делать, крашить сервер не хочется,
       // так что пока оставил создание объекта где то далеко
+      qWarning() << "[MODEL] Can't find spawn point";
       return QPointF(Constants::kDefaultMapWidth,
                      Constants::kDefaultMapHeight);
     }
