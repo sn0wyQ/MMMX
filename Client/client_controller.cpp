@@ -114,16 +114,10 @@ void ClientController::UpdateInterpolationInfo() {
   auto time_to_interpolate = GetCurrentServerTime()
       - Constants::kInterpolationMSecs;
 
-  // Применяем запланированные на какое-то время обновления
-  model_->UpdateScheduled(time_to_interpolate);
-  // С учетом обновления булевской IsInFov
-  // Удаляем объект из модели и из интерполятора
   for (const auto& game_object : model_->GetAllGameObjects()) {
-    auto game_object_id = game_object->GetId();
-    bool is_or_will_in_fov =
-        model_->GetScheduledVariableValue(
-            game_object_id, Variable::kIsInFov).toBool();
-    if (!(is_or_will_in_fov || game_object->IsInFov())) {
+    if (game_object->IsDeleteScheduled() &&
+      game_object->GetTimeToDelete() < time_to_interpolate) {
+      auto game_object_id = game_object->GetId();
       model_->DeleteGameObject(game_object_id);
       model_->RemoveFromInterpolator(game_object_id);
     }
@@ -364,7 +358,6 @@ void ClientController::AddLocalPlayerGameObjectEvent(const Event& event) {
   model_->AddGameObject(game_object_id,
       GameObjectType::kPlayer,
       event.GetArgsSubVector(1));
-  model_->GetGameObjectByGameObjectId(game_object_id)->SetIsInFov(true);
 }
 
 void ClientController::UpdateGameObjectDataEvent(const Event& event) {
@@ -373,21 +366,16 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
   auto game_object =
       model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
   game_object->SetParams(params);
-  model_->AddScheduledUpdate(
-      game_object_id, Variable::kIsInFov,
-      {game_object->GetUpdatedTime(), true});
 }
 
-void ClientController::GameObjectLeftFovEvent(const Event& event) {
+void ClientController::DeleteGameObjectEvent(const Event& event) {
   auto game_object_id = event.GetArg<GameObjectId>(0);
-  if (!model_->IsGameObjectInInterpolation(game_object_id)) {
+  if (!model_->IsGameObjectIdTaken(game_object_id)) {
     return;
   }
-  auto game_object =
-      model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
-  model_->AddScheduledUpdate(
-      game_object_id, Variable::kIsInFov,
-      {game_object->GetUpdatedTime(), false});
+  auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+  game_object->SetIsDeleteScheduled(true);
+  game_object->SetTimeToDelete(GetCurrentServerTime());
 }
 
 void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {

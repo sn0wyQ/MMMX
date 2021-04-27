@@ -78,7 +78,6 @@ class RoomController : public BaseController {
   RoomSettings room_settings_;
   RoomState room_state_ = RoomState::kWaitingForClients;
   std::unordered_map<ClientId, GameObjectId> player_ids_;
-  std::set<std::pair<GameObjectId, GameObjectId>> is_first_in_fov_of_second_;
   std::vector<Event> events_for_server_;
 
   void RecalculateModel(const ModelData& model_data);
@@ -95,12 +94,11 @@ class RoomController : public BaseController {
   void AddConstantObjects();
 
   Event GetEventOfGameObjectData(GameObjectId game_object_id) const;
-  Event GetEventOfGameObjectLeftFov(GameObjectId game_object_id) const;
-  bool IsGameObjectInFov(GameObjectId game_object_id,
-                         GameObjectId player_id);
+  Event GetEventOfDeleteGameObject(GameObjectId game_object_id) const;
   void ForceSendPlayersStatsToPlayer(GameObjectId player_id);
   void SendPlayersStatsToPlayers();
-  void SendGameObjectsDataToPlayer(GameObjectId player_id);
+  void SendGameObjectsDataToPlayer(GameObjectId player_id,
+                                   bool force_sending = false);
   int GetModelIdByTimestamp(int64_t timestamp) const;
 
   void SendNicknameEvent(const Event& event) override;

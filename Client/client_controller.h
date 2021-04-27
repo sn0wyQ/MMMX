@@ -119,7 +119,7 @@ class ClientController : public BaseController {
   // ------------------- GAME EVENTS -------------------
 
   void AddLocalPlayerGameObjectEvent(const Event& event) override;
-  void GameObjectLeftFovEvent(const Event& event) override;
+  void DeleteGameObjectEvent(const Event& event) override;
   void SendGameInfoToInterpolateEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;

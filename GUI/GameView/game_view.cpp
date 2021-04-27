@@ -49,20 +49,18 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
   std::vector<std::shared_ptr<GameObject>> filtered_objects
       = model_->GetFilteredByFovObjects();
   for (const auto& object : filtered_objects) {
-    if (object->IsInFov() && !object->IsMovable()) {
+    if (!object->IsMovable()) {
       object->Draw(&painter);
     }
   }
   for (const auto& object : filtered_objects) {
-    if (object->IsInFov() && object->IsMovable()) {
+    if (object->IsMovable()) {
       object->Draw(&painter);
     }
   }
 
   for (const auto& object : model_->GetLocalBullets()) {
-    if (object->IsInFov()) {
-      object->Draw(&painter);
-    }
+    object->Draw(&painter);
   }
 }
 

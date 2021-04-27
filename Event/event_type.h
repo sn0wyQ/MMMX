@@ -77,8 +77,8 @@ enum class EventType {
   // [1+] - game_object_args : relative SetParams
   kUpdateGameObjectData,
 
-  // [0] - <GameObjectId> game_object_id that left receiver player FOV
-  kGameObjectLeftFov,
+  // [0] - <GameObjectId> game_object_id that should be deleted
+  kDeleteGameObject,
 
   // ]]]]]]]]]
 

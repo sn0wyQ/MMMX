@@ -75,8 +75,6 @@ class GameObject {
   bool IsNeedToDelete() const;
   void SetIsNeedToDelete(bool is_need_to_delete);
 
-  bool IsInFov() const;
-  void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
 
   virtual bool IsEntity() const;
@@ -85,6 +83,12 @@ class GameObject {
 
   void SetUpdatedTime(int64_t updated_time);
   int64_t GetUpdatedTime() const;
+
+  void SetIsDeleteScheduled(bool is_delete_scheduled);
+  bool IsDeleteScheduled() const;
+
+  void SetTimeToDelete(int64_t time_to_delete);
+  int64_t GetTimeToDelete() const;
 
  private:
   GameObjectId id_{Constants::kNullGameObjectId};
@@ -96,9 +100,10 @@ class GameObject {
   float width_{0.f};
   float height_{0.f};
   std::shared_ptr<RigidBody> rigid_body_;
-  bool is_in_fov_{false};
   bool is_need_to_delete_{false};
   int64_t updated_time_{};
+  bool is_delete_scheduled_{false};
+  int64_t time_to_delete_{};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_

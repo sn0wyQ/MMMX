@@ -85,7 +85,7 @@ class BaseController : public QObject {
 
   // room -> client
   virtual void AddLocalPlayerGameObjectEvent(const Event& event) {}
-  virtual void GameObjectLeftFovEvent(const Event& event) {}
+  virtual void DeleteGameObjectEvent(const Event& event) {}
   virtual void SendGameInfoToInterpolateEvent(const Event& event) {}
   virtual void UpdateGameObjectDataEvent(const Event& event) {}
   virtual void UpdatePlayersStatsEvent(const Event& event) {}

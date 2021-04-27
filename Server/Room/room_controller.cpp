@@ -62,7 +62,7 @@ void RoomController::OnTick(int delta_time) {
   this->SendPlayersStatsToPlayers();
   model_->UpdatePlayerStatsHashes();
   for (const auto& player_id : this->GetAllPlayerIds()) {
-    // Рассказываем НАМ о других с учетом FOV
+    // Рассказываем НАМ о других
     SendGameObjectsDataToPlayer(player_id);
   }
   model_->UpdateGameObjectHashes();
@@ -83,7 +83,7 @@ void RoomController::DeleteReadyToBeDeletedObjects(
   for (const auto& game_object : game_objects) {
     if (game_object->IsNeedToDelete()) {
       this->AddEventToSendToAllPlayers(
-          GetEventOfGameObjectLeftFov(game_object->GetId()));
+          GetEventOfDeleteGameObject(game_object->GetId()));
       model_data.model->DeleteGameObject(game_object->GetId());
     }
   }
@@ -147,7 +147,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
   }
   for (const auto& game_object_id : objects_to_delete) {
     this->AddEventToSendToAllPlayers(
-        GetEventOfGameObjectLeftFov(game_object_id));
+        GetEventOfDeleteGameObject(game_object_id));
     model_data.model->DeleteGameObject(game_object_id);
   }
 }
@@ -166,6 +166,7 @@ void RoomController::AddClient(ClientId client_id) {
   model_->AddPlayerStats(player_id,
                         QString("Player#") + QString::number(player_id),
                         player->GetLevel());
+  this->SendGameObjectsDataToPlayer(player_id, true);
   this->ForceSendPlayersStatsToPlayer(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
@@ -271,21 +272,21 @@ Event RoomController::GetEventOfGameObjectData(
   return event;
 }
 
-Event RoomController::GetEventOfGameObjectLeftFov(
+Event RoomController::GetEventOfDeleteGameObject(
     GameObjectId game_object_id) const {
   auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
   Event event(EventType::kSendGameInfoToInterpolate,
               game_object_id,
               static_cast<int>(game_object->GetType()),
               static_cast<qint64>(GetCurrentServerTime()),
-              static_cast<int>(EventType::kGameObjectLeftFov),
+              static_cast<int>(EventType::kDeleteGameObject),
               game_object_id);
   return event;
 }
 
-void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
+void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id,
+                                                 bool force_sending) {
   for (const auto& object : model_->GetAllGameObjects()) {
-    auto sender_receiver_pair = std::make_pair(object->GetId(), player_id);
     if (object->GetId() == player_id) {
       continue;
     }
@@ -297,19 +298,10 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
       }
     }
 
-    if (this->IsGameObjectInFov(object->GetId(), player_id)) {
-      if (is_first_in_fov_of_second_.find(sender_receiver_pair)
-          == is_first_in_fov_of_second_.end() ||
-          model_->IsNeededToSendGameObjectData(object->GetId())) {
-        this->AddEventToSendToSinglePlayer(
-            GetEventOfGameObjectData(object->GetId()), player_id);
-      }
-      is_first_in_fov_of_second_.insert(sender_receiver_pair);
-    } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
-        != is_first_in_fov_of_second_.end()) {
-      is_first_in_fov_of_second_.erase(sender_receiver_pair);
+    if (force_sending ||
+      model_->IsNeededToSendGameObjectData(object->GetId())) {
       this->AddEventToSendToSinglePlayer(
-          GetEventOfGameObjectLeftFov(object->GetId()), player_id);
+          GetEventOfGameObjectData(object->GetId()), player_id);
     }
   }
 }
@@ -334,17 +326,6 @@ void RoomController::SendPlayersStatsToPlayers() {
       this->AddEventToSendToAllPlayers(event_update_players_stats);
     }
   }
-}
-
-bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
-                                       GameObjectId player_id) {
-  auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-  auto player = model_->GetPlayerByPlayerId(player_id);
-  if (!game_object->IsFilteredByFov()) {
-    return true;
-  }
-  return player->GetShortestDistance(game_object) <
-    player->GetFovRadius() * Constants::kFovMultiplier;
 }
 
 GameObjectId RoomController::AddPlayer() {
