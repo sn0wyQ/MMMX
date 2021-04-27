@@ -11,6 +11,7 @@ class AssaultRifle : public Weapon {
   void DrawWeapon(Painter *painter) override;
 
   WeaponType GetWeaponType() const override;
+  float GetRotationWithAccuracy(float random_bullet_shift) const override;
 };
 
 #endif  // WEAPON_ASSAULTRIFLE_ASSAULT_RIFLE_H_

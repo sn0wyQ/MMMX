@@ -4,6 +4,7 @@ AssaultRifle::AssaultRifle(const AssaultRifle& assault_rifle) : Weapon(
     assault_rifle) {}
 
 AssaultRifle::AssaultRifle() {
+  SetAccuracy(Constants::Weapon::AssaultRifle::kDefaultAccuracy);
   SetBulletDamage(Constants::Weapon::AssaultRifle::kDefaultBulletDamage);
   SetBulletSpeed(Constants::Weapon::AssaultRifle::kDefaultBulletSpeed);
   SetBulletRange(Constants::Weapon::AssaultRifle::kDefaultBulletRange);
@@ -20,4 +21,10 @@ void AssaultRifle::DrawWeapon(Painter* painter) {
 
 WeaponType AssaultRifle::GetWeaponType() const {
   return WeaponType::kAssaultRifle;
+}
+
+float AssaultRifle::GetRotationWithAccuracy(float random_bullet_shift) const {
+  float accuracy_function = random_bullet_shift * random_bullet_shift *
+      AssaultRifle::GetAccuracy();
+  return (random_bullet_shift < 0) ? -accuracy_function : accuracy_function;
 }

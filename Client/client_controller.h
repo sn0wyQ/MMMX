@@ -1,7 +1,9 @@
 #ifndef CLIENT_CLIENT_CONTROLLER_H_
 #define CLIENT_CLIENT_CONTROLLER_H_
 
+#include <ctime>
 #include <memory>
+#include <random>
 #include <unordered_map>
 #include <utility>
 #include <vector>

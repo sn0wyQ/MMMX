@@ -340,10 +340,26 @@ void ClientController::ShootHolding() {
                                QString("Shooter#") +
                         QString::number(model_->GetLocalPlayer()->GetId())));
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
-    model_->AddLocalBullets();
+    QList<QVariant> random_bullet_shifts;
+    static std::mt19937 generator_(0);
+    std::uniform_real_distribution<> generate_shift_ =
+        std::uniform_real_distribution<>(-1, 1);
+    switch (local_player->GetWeapon()->GetWeaponType()) {
+      case WeaponType::kShotgun: {
+        random_bullet_shifts.push_back(generate_shift_(generator_));
+        random_bullet_shifts.push_back(generate_shift_(generator_));
+        random_bullet_shifts.push_back(generate_shift_(generator_));
+        break;
+      }
+      default: {
+        random_bullet_shifts.push_back(generate_shift_(generator_));
+        break;
+      }
+    }
+    model_->AddLocalBullets(random_bullet_shifts);
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
                                static_cast<qint64>(GetCurrentServerTime()),
-                               local_player->GetId()));
+                               local_player->GetId(), random_bullet_shifts));
   }
 }
 

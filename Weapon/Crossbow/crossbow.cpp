@@ -3,6 +3,7 @@
 Crossbow::Crossbow(const Crossbow& crossbow) : Weapon(crossbow) {}
 
 Crossbow::Crossbow() {
+  SetAccuracy(Constants::Weapon::Crossbow::kDefaultAccuracy);
   SetBulletDamage(Constants::Weapon::Crossbow::kDefaultBulletDamage);
   SetBulletSpeed(Constants::Weapon::Crossbow::kDefaultBulletSpeed);
   SetBulletRange(Constants::Weapon::Crossbow::kDefaultBulletRange);
@@ -24,4 +25,10 @@ void Crossbow::DrawWeapon(Painter* painter) {
 
 WeaponType Crossbow::GetWeaponType() const {
   return WeaponType::kCrossbow;
+}
+
+float Crossbow::GetRotationWithAccuracy(float random_bullet_shift) const {
+  float accuracy_function = random_bullet_shift * random_bullet_shift *
+      Crossbow::GetAccuracy();
+  return (random_bullet_shift < 0) ? -accuracy_function : accuracy_function;
 }

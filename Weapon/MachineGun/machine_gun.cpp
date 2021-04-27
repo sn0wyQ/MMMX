@@ -3,6 +3,7 @@
 MachineGun::MachineGun(const MachineGun& machine_gun) : Weapon(machine_gun) {}
 
 MachineGun::MachineGun() {
+  SetAccuracy(Constants::Weapon::MachineGun::kDefaultAccuracy);
   SetBulletDamage(Constants::Weapon::MachineGun::kDefaultBulletDamage);
   SetBulletSpeed(Constants::Weapon::MachineGun::kDefaultBulletSpeed);
   SetBulletRange(Constants::Weapon::MachineGun::kDefaultBulletRange);
@@ -18,4 +19,10 @@ void MachineGun::DrawWeapon(Painter* painter) {
 
 WeaponType MachineGun::GetWeaponType() const {
   return WeaponType::kMachineGun;
+}
+
+float MachineGun::GetRotationWithAccuracy(float random_bullet_shift) const {
+  float accuracy_function = random_bullet_shift * random_bullet_shift *
+      MachineGun::GetAccuracy();
+  return (random_bullet_shift < 0) ? -accuracy_function : accuracy_function;
 }

@@ -3,6 +3,7 @@
 Shotgun::Shotgun(const Shotgun& shotgun) : Weapon(shotgun) {}
 
 Shotgun::Shotgun() {
+  SetAccuracy(Constants::Weapon::Shotgun::kDefaultAccuracy);
   SetBulletDamage(Constants::Weapon::Shotgun::kDefaultBulletDamage);
   SetBulletSpeed(Constants::Weapon::Shotgun::kDefaultBulletSpeed);
   SetBulletRange(Constants::Weapon::Shotgun::kDefaultBulletRange);
@@ -19,4 +20,10 @@ void Shotgun::DrawWeapon(Painter* painter) {
 
 WeaponType Shotgun::GetWeaponType() const {
   return WeaponType::kShotgun;
+}
+
+float Shotgun::GetRotationWithAccuracy(float random_bullet_shift) const {
+  float accuracy_function = random_bullet_shift * random_bullet_shift *
+      Shotgun::GetAccuracy();
+  return (random_bullet_shift < 0) ? -accuracy_function : accuracy_function;
 }

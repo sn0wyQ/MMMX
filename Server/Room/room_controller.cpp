@@ -398,9 +398,10 @@ void RoomController::AddTree(float x, float y, float radius) {
 
 std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
                                float x, float y, float rotation,
-                               const std::shared_ptr<Weapon>& weapon) {
+                               const std::shared_ptr<Weapon>& weapon,
+                               const QList<QVariant>& random_bullet_shifts) {
   std::vector<std::vector<QVariant>> bullets_params =
-      weapon->GetBulletsParams(parent_id, x, y, rotation);
+      weapon->GetBulletsParams(parent_id, x, y, rotation, random_bullet_shifts);
   std::vector<GameObjectId> bullet_ids(bullets_params.size());
   for (const std::vector<QVariant>& bullet_params : bullets_params) {
     bullet_ids.emplace_back(model_->AddGameObject(
@@ -489,7 +490,8 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
 
   std::vector<GameObjectId> bullet_ids =
       AddBullets(player_id, player_in_model->GetX(), player_in_model->GetY(),
-                 player_in_model->GetRotation(), player_in_model->GetWeapon());
+                 player_in_model->GetRotation(), player_in_model->GetWeapon(),
+                 event.GetArg<QList<QVariant>>(2));
 
   for (int bullet_id_from_bullets_id : bullet_ids) {
     GameObjectId bullet_id = bullet_id_from_bullets_id;

@@ -31,7 +31,10 @@ class Weapon {
 
   virtual void DrawWeapon(Painter* painter) = 0;
 
-  void SetBulletDamage(float base_bullet_damage);
+  void SetAccuracy(float accuracy);
+  float GetAccuracy() const;
+
+  void SetBulletDamage(float bullet_damage);
   float GetBulletDamage() const;
 
   void SetBulletSpeed(float bullet_speed);
@@ -52,21 +55,19 @@ class Weapon {
   int GetCurrentBulletsInClip() const;
   void SetCurrentBulletsInClip(int current_bullets_in_clip);
 
-  std::vector<QVariant> GetBulletParams(GameObjectId parent_id,
-                                        float x,
-                                        float y,
-                                        float rotation,
-                                        float radius) const;
+  std::vector<QVariant> GetBulletParams(GameObjectId parent_id, float x,
+                                    float y, float rotation, float radius,
+                                    float random_bullet_shift) const;
 
   std::vector<std::vector<QVariant>> GetBulletsParams(
-      GameObjectId parent_id,
-      float x,
-      float y,
-      float rotation) const;
+                      GameObjectId parent_id, float x, float y, float rotation,
+                      const QList<QVariant>& random_bullet_shifts ) const;
 
   virtual WeaponType GetWeaponType() const = 0;
+  virtual float GetRotationWithAccuracy(float random_bullet_shift) const = 0;
 
  private:
+  float accuracy_{}; // точность/разброс
   float bullet_damage_{};  // дамаг (может прокачать герой)
   float bullet_speed_{};  // скорость полета пули
   float bullet_range_{};  // расстояние полета пули

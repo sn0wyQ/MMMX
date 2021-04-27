@@ -90,8 +90,8 @@ class RoomController : public BaseController {
   void AddBox(float x, float y, float rotation, float width, float height);
   void AddTree(float x, float y, float radius);
   std::vector<GameObjectId> AddBullets(GameObjectId parent_id, float x, float y,
-                         float rotation,
-                         const std::shared_ptr<Weapon>& weapon);
+                         float rotation, const std::shared_ptr<Weapon>& weapon,
+                         const QList<QVariant>& random_bullet_shifts);
   void AddConstantObjects();
 
   Event GetEventOfGameObjectData(GameObjectId game_object_id) const;

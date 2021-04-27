@@ -30,6 +30,14 @@ void Weapon::SetBulletDamage(float bullet_damage) {
   bullet_damage_ = bullet_damage;
 }
 
+float Weapon::GetAccuracy() const {
+  return accuracy_;
+}
+
+void Weapon::SetAccuracy(float accuracy) {
+  accuracy_ = accuracy;
+}
+
 float Weapon::GetBulletSpeed() const {
   return bullet_speed_;
 }
@@ -79,11 +87,10 @@ void Weapon::SetLastTimeShot(int64_t cur_time) {
 }
 
 std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
-                                              float x,
-                                              float y,
-                                              float rotation,
-                                              float radius) const {
-  QVector2D velocity = Math::GetVectorByAngle(rotation);
+                              float x, float y, float rotation,
+                              float radius, float random_bullet_shift) const {
+  QVector2D velocity = Math::GetVectorByAngle(Math::GetNormalizeAngle(
+      rotation + GetRotationWithAccuracy(random_bullet_shift)));
   velocity *= this->GetBulletSpeed();
   return {x, y, 0.f, radius * 2.f, radius * 2.f,
           static_cast<int>(RigidBodyType::kCircle),
@@ -96,43 +103,47 @@ std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
 }
 
 std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
-    GameObjectId parent_id,
-    float x,
-    float y,
-    float rotation) const {
+    GameObjectId parent_id, float x, float y, float rotation,
+    const QList<QVariant>& random_bullet_shifts) const {
   std::vector<std::vector<QVariant>> bullets_params;
   WeaponType weapon_type = GetWeaponType();
   switch (weapon_type) {
     case WeaponType::kAssaultRifle: {
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                        Constants::Weapon::AssaultRifle::kDefaultBulletRadius));
+                        Constants::Weapon::AssaultRifle::kDefaultBulletRadius,
+                        random_bullet_shifts[0].toFloat()));
       break;
     }
     case WeaponType::kCrossbow: {
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                          Constants::Weapon::Crossbow::kDefaultBulletRadius));
+                          Constants::Weapon::Crossbow::kDefaultBulletRadius,
+                          random_bullet_shifts[0].toFloat()));
       break;
     }
     case WeaponType::kMachineGun: {
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                          Constants::Weapon::MachineGun::kDefaultBulletRadius));
+                          Constants::Weapon::MachineGun::kDefaultBulletRadius,
+                          random_bullet_shifts[0].toFloat()));
       break;
     }
     case WeaponType::kShotgun: {
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation
                     + Constants::Weapon::Shotgun::kDefaultAngleBetweenBullets),
-                    Constants::Weapon::Shotgun::kDefaultBulletRadius));
+                    Constants::Weapon::Shotgun::kDefaultBulletRadius,
+                    random_bullet_shifts[0].toFloat()));
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                    Constants::Weapon::Shotgun::kDefaultBulletRadius));
+                    Constants::Weapon::Shotgun::kDefaultBulletRadius,
+                          random_bullet_shifts[1].toFloat()));
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation
                     - Constants::Weapon::Shotgun::kDefaultAngleBetweenBullets),
-                    Constants::Weapon::Shotgun::kDefaultBulletRadius));
+                    Constants::Weapon::Shotgun::kDefaultBulletRadius,
+                          random_bullet_shifts[2].toFloat()));
       break;
     }
   }
