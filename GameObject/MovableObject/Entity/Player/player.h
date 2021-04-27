@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_
 
+#include <algorithm>
 #include <vector>
 #include <memory>
 
