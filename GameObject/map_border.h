@@ -1,6 +1,8 @@
 #ifndef GAMEOBJECT_MAP_BORDER_H_
 #define GAMEOBJECT_MAP_BORDER_H_
 
+#include <memory>
+
 #include "GameObject/game_object.h"
 
 class MapBorder : public GameObject {
