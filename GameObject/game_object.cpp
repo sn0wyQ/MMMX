@@ -193,3 +193,9 @@ void GameObject::SetIsDeleteScheduled(bool is_delete_scheduled) {
 void GameObject::SetTimeToDelete(int64_t time_to_delete) {
   time_to_delete_ = time_to_delete;
 }
+
+float GameObject::GetBoundingCircleRadius() const {
+  return Math::DistanceBetweenPoints(
+      QPointF(), QPointF(this->GetWidth() / 2.f,
+                         this->GetHeight() / 2.f));
+}

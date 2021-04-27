@@ -114,10 +114,13 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                                    cur_entity_hp - bullet->GetBulletDamage());
 
         if (hp_to_set == 0) {
-          entity->Revive();
+          QPointF point_to_spawn =
+              model_->GetPointToSpawn(entity->GetBoundingCircleRadius(), true);
+          entity->Revive(point_to_spawn);
           if (entity->GetType() == GameObjectType::kPlayer) {
             this->AddEventToSendToSinglePlayer(
-                Event(EventType::kLocalPlayerDied),
+                Event(EventType::kLocalPlayerDied,
+                      point_to_spawn),
                 entity->GetId());
             auto killer_id = bullet->GetParentId();
             if (model_data.model->IsGameObjectIdTaken(killer_id)) {
@@ -329,9 +332,11 @@ void RoomController::SendPlayersStatsToPlayers() {
 }
 
 GameObjectId RoomController::AddPlayer() {
+  QPointF point =
+      model_->GetPointToSpawn(Constants::kDefaultPlayerRadius, true);
   std::vector<QVariant>
-      params = {Constants::kDefaultPlayerX,
-                Constants::kDefaultPlayerY,
+      params = {point.x(),
+                point.y(),
                 Constants::kDefaultPlayerRotation,
                 Constants::kDefaultPlayerRadius * 2,
                 Constants::kDefaultPlayerRadius * 2,
@@ -371,10 +376,25 @@ void RoomController::AddBox(float x, float y, float rotation,
                          static_cast<int>(RigidBodyType::kRectangle)});
 }
 
+void RoomController::AddRandomBox(float width, float height) {
+  QPointF position = model_->GetPointToSpawn(
+      Math::DistanceBetweenPoints(
+          QPointF(), QPointF(width / 2.f, height / 2.f)));
+  static std::mt19937 rng(QDateTime::currentMSecsSinceEpoch());
+  std::uniform_real_distribution<> random_rotation(0, 360);
+  AddBox(position.x(), position.y(), random_rotation(rng), width, height);
+}
+
 void RoomController::AddTree(float x, float y, float radius) {
   model_->AddGameObject(GameObjectType::kGameObject,
-                        {x, y, 0.f, radius * 2.f, radius * 2.f,
+                        {x, y, 0.f,
+                         radius * 2.f, radius * 2.f,
                          static_cast<int>(RigidBodyType::kCircle)});
+}
+
+void RoomController::AddRandomTree(float radius) {
+  QPointF position = model_->GetPointToSpawn(radius);
+  AddTree(position.x(), position.y(), radius);
 }
 
 std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
@@ -392,17 +412,18 @@ std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
 }
 
 void RoomController::AddConstantObjects() {
-  this->AddBox(-5.f, -15.f, 45.f, 20.f, 10.f);
-  this->AddBox(12.f, -10.f, 120.f, 20.f, 10.f);
-  this->AddBox(15.f, -11.f, 120.f, 20.f, 10.f);
-  this->AddBox(-10.f, -10.f, 30.f, 20.f, 10.f);
-  this->AddBox(25.f, 0.f, 0.f, 20.f, 10.f);
-  this->AddBox(30.f, 5.f, 0.f, 20.f, 10.f);
-  this->AddTree(9.f, 7.f, 2.f);
-  this->AddTree(13.f, 6.f, 2.5f);
-  this->AddTree(10.f, 8.5f, 3.f);
-  this->AddTree(10.f, 15.f, 1.f);
-  this->AddTree(30.f, 30.f, 1.f);
+  model_->AddGameObject(GameObjectType::kMapBorder,
+                        {0.f, 0.f, 0.f,
+                         Constants::kDefaultMapWidth,
+                         Constants::kDefaultMapHeight,
+                         static_cast<int>(RigidBodyType::kRectangle)});
+
+  for (int i = 0; i < 15; i++) {
+    this->AddRandomBox(5.f, 5.f);
+  }
+  for (int i = 0; i < 15; i++) {
+    this->AddRandomTree(2.f);
+  }
 }
 
 int RoomController::GetModelIdByTimestamp(int64_t timestamp) const {

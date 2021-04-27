@@ -79,6 +79,7 @@ set(SOURCES
         GameObject/RigidBody/rigid_body.cpp
         GameObject/RigidBody/rigid_body_circle.cpp
         GameObject/RigidBody/rigid_body_rectangle.cpp
+        GameObject/map_border.cpp
         GameObject/game_object.cpp
         Hash/hash_calculator.cpp
         Interpolator/interpolator.cpp

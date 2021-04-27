@@ -25,7 +25,8 @@ Q_NAMESPACE
 enum class GameObjectType {
   kBullet,
   kPlayer,
-  kGameObject
+  kGameObject,
+  kMapBorder
 };
 
 Q_ENUM_NS(GameObjectType)
@@ -89,6 +90,8 @@ class GameObject {
 
   void SetTimeToDelete(int64_t time_to_delete);
   int64_t GetTimeToDelete() const;
+
+  float GetBoundingCircleRadius() const;
 
  private:
   GameObjectId id_{Constants::kNullGameObjectId};

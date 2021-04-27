@@ -2,8 +2,6 @@
 
 Converter::Converter(QWidget* widget) : widget_(widget) {
   UpdateCoefficient();
-  UpdateGameCenter(QPointF(Constants::kDefaultPlayerX,
-                           Constants::kDefaultPlayerY));
 }
 
 QPointF Converter::GetGameCenter() const {
