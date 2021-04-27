@@ -1,6 +1,7 @@
 #ifndef MODEL_ROOM_GAME_MODEL_H_
 #define MODEL_ROOM_GAME_MODEL_H_
 
+#include <algorithm>
 #include <random>
 #include <memory>
 #include <unordered_map>
