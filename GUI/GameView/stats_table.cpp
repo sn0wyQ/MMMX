@@ -20,11 +20,12 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
 
-  this->DrawTableBackground(&painter);
+  this->DrawTable(&painter);
   this->DrawPlayersStats(&painter);
 }
 
-void StatsTable::DrawTableBackground(QPainter* painter) {
+void StatsTable::DrawTable(QPainter* painter) {
+  column_count_ = model_->GetAllPlayersStats()[0]->GetParams().size() - 1;
   painter->setBrush(QBrush(Qt::black));
   float pen_width = 2;
   QPen pen(Qt::green);
@@ -41,6 +42,13 @@ void StatsTable::DrawTableBackground(QPainter* painter) {
   painter->drawLine(0, arc_size.height(),
                     w, arc_size.height());
 
+  pen.setWidthF(pen_width / 2);
+  painter->setPen(pen);
+  for (int i = 0; i < column_count_; i++) {
+    painter->drawLine((i + 1) * w / column_count_, arc_size.height(),
+                      (i + 1) * w / column_count_, h);
+  }
+
   painter->restore();
   painter->translate(0, 2 * pen_width + arc_size.height());
 }
@@ -51,10 +59,11 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
   painter->setPen(QPen(Qt::black));
   font.setPointSizeF(10.f);
   painter->setFont(font);
-  QFontMetrics font_metric(font);
-  int text_height = font_metric.height();
+  int text_height = QFontMetrics(font).height();
   for (const auto& player_stats : model_->GetAllPlayersStats()) {
-    painter->drawText(this->size().width() / 100, text_height, player_stats->GetNickname());
+    painter->drawText(this->size().width() / 100,
+                      text_height,
+                      player_stats->GetNickname());
     painter->translate(0, text_height);
   }
   painter->restore();

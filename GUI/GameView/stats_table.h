@@ -25,8 +25,11 @@ class StatsTable : public QWidget {
 
  private:
   std::shared_ptr<ClientGameModel> model_;
-  void DrawTableBackground(QPainter* painter);
+  void DrawTable(QPainter* painter);
   void DrawPlayersStats(QPainter* painter);
+  std::vector<QPoint> header_column_points_;
+  std::vector<QPoint> table_column_point_;
+  size_t column_count_;
 };
 
 #endif  // GUI_GAMEVIEW_STATS_TABLE_H_
