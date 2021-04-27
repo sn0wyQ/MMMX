@@ -480,7 +480,8 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(1);
   if (model_id < 0) {
     this->AddEventToSendToSinglePlayer(
-        Event(EventType::kFailedPacketSendShooting, timestamp), player_id);
+        Event(EventType::kFailedPacketSendShooting,
+              static_cast<qint64>(timestamp)), player_id);
     return;
   }
   auto current_model_data = models_cache_[model_id];
