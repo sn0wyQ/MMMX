@@ -424,7 +424,8 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
-  model_->GetLocalPlayer()->Revive();
+  auto spawn_point = event.GetArg<QPointF>(0);
+  model_->GetLocalPlayer()->Revive(spawn_point);
 }
 
 void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {
