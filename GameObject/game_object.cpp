@@ -185,7 +185,7 @@ bool GameObject::IsEntity() const {
   return false;
 }
 
-float GameObject::GetFullRadius() const {
+float GameObject::GetMaxPossibleRadius() const {
   return Math::DistanceBetweenPoints(
       QPointF(), QPointF(this->GetWidth() / 2.f,
                          this->GetHeight() / 2.f));

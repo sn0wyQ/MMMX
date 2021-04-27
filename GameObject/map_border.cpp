@@ -10,3 +10,7 @@ std::shared_ptr<GameObject> MapBorder::Clone() const {
 GameObjectType MapBorder::GetType() const {
   return GameObjectType::kMapBorder;
 }
+
+bool MapBorder::IsFilteredByFov() const {
+  return false;
+}

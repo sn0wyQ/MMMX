@@ -86,9 +86,14 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object) const {
       if (game_object->GetType() == GameObjectType::kMapBorder) {
         continue;
       }
-      float full_radius = game_object->GetFullRadius();
+      // спавнимся подальше от игроков
+      float player_delta = 0;
+      if (game_object->GetType() == GameObjectType::kPlayer) {
+        player_delta += 10.f;
+      }
+      float full_radius = game_object->GetMaxPossibleRadius();
       if (Math::DistanceBetweenPoints(point, game_object->GetPosition()) <
-          radius_from_object + full_radius) {
+          radius_from_object + full_radius + player_delta) {
         regenerate = true;
       }
     }

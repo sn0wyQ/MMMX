@@ -12,6 +12,8 @@ class MapBorder : public GameObject {
 
   GameObjectType GetType() const override;
 
+  bool IsFilteredByFov() const override;
+
   std::shared_ptr<GameObject> Clone() const override;
 };
 
