@@ -10,6 +10,7 @@
 #include <QMetaEnum>
 #include <QDebug>
 
+#include "GameObject/map_border.h"
 #include "GameObject/MovableObject/Entity/Player/player.h"
 #include "PlayerStats/player_stats.h"
 #include "constants.h"

@@ -4,6 +4,9 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <random>
+
+#include <QDateTime>
 
 #include "Model/game_model.h"
 
@@ -23,6 +26,8 @@ class RoomGameModel : public GameModel {
   std::vector<std::shared_ptr<PlayerStats>> GetAllPlayersStats();
   bool IsNeededToSendPlayerStats(GameObjectId player_id);
   void UpdatePlayerStatsHashes();
+
+  QPointF GetPointToSpawn(float radius_from_object) const;
 
  private:
   GameObjectId next_game_object_id_{1};

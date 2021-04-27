@@ -25,7 +25,8 @@ Q_NAMESPACE
 enum class GameObjectType {
   kBullet,
   kPlayer,
-  kGameObject
+  kGameObject,
+  kMapBorder
 };
 
 Q_ENUM_NS(GameObjectType)
@@ -85,6 +86,8 @@ class GameObject {
 
   void SetUpdatedTime(int64_t updated_time);
   int64_t GetUpdatedTime() const;
+
+  float GetFullRadius() const;
 
  private:
   GameObjectId id_{Constants::kNullGameObjectId};

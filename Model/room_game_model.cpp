@@ -17,11 +17,6 @@ GameObjectId RoomGameModel::AddGameObject(GameObjectType type,
                                           const std::vector<QVariant>& params) {
   GameObjectId game_object_id = this->GenerateNextUnusedGameObjectId();
   GameModel::AddGameObject(game_object_id, type, params);
-  auto object = this->GetGameObjectByGameObjectId(game_object_id);
-  if (object->IsEntity()) {
-    auto entity = std::dynamic_pointer_cast<Entity>(object);
-    entity->SetSpawnPosition(object->GetPosition());
-  }
   return game_object_id;
 }
 
@@ -71,5 +66,41 @@ void RoomGameModel::UpdatePlayerStatsHashes() {
   for (const auto& stats : this->GetAllPlayersStats()) {
     last_player_stats_hash_[stats->GetPlayerId()] =
         HashCalculator::GetHash(stats->GetParams());
+  }
+}
+
+QPointF RoomGameModel::GetPointToSpawn(float radius_from_object) const {
+  std::uniform_real_distribution<> random_x(
+      -Constants::kDefaultMapWidth / 2.f + radius_from_object,
+      Constants::kDefaultMapWidth / 2.f - radius_from_object);
+  std::uniform_real_distribution<> random_y(
+      -Constants::kDefaultMapHeight / 2.f + radius_from_object,
+      Constants::kDefaultMapHeight / 2.f - radius_from_object);
+  int times_generate = 0;
+  while (true) {
+    times_generate++;
+    bool regenerate = false;
+    static std::mt19937 rng(QDateTime::currentMSecsSinceEpoch());
+    QPointF point(random_x(rng), random_y(rng));
+    for (const auto& game_object : GetAllGameObjects()) {
+      if (game_object->GetType() == GameObjectType::kMapBorder) {
+        continue;
+      }
+      float full_radius = game_object->GetFullRadius();
+      if (Math::DistanceBetweenPoints(point, game_object->GetPosition()) <
+          radius_from_object + full_radius) {
+        regenerate = true;
+      }
+    }
+    if (!regenerate) {
+      return point;
+    }
+    if (times_generate == 1000) {
+      // костыль если вся карта занята
+      // я тут хз что делать, крашить сервер не хочется,
+      // так что пока оставил создание объекта где то далеко
+      return QPointF(Constants::kDefaultMapWidth,
+                     Constants::kDefaultMapHeight);
+    }
   }
 }

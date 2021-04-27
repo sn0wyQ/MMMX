@@ -184,3 +184,9 @@ int64_t GameObject::GetUpdatedTime() const {
 bool GameObject::IsEntity() const {
   return false;
 }
+
+float GameObject::GetFullRadius() const {
+  return Math::DistanceBetweenPoints(
+      QPointF(), QPointF(this->GetWidth() / 2.f,
+                         this->GetHeight() / 2.f));
+}
