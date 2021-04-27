@@ -136,7 +136,8 @@ void ClientGameModel::RemoveFromInterpolator(GameObjectId game_object_id) {
   interpolator_.erase(game_object_id);
 }
 
-void ClientGameModel::AddLocalBullets(const QList<QVariant>& random_bullet_shifts) {
+void ClientGameModel::AddLocalBullets(const QList<QVariant>&
+    random_bullet_shifts) {
   auto local_player = this->GetLocalPlayer();
   std::vector<std::vector<QVariant>> bullets = local_player->GetWeapon()->
       GetBulletsParams(local_player_id_,

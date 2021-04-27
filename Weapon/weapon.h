@@ -61,13 +61,13 @@ class Weapon {
 
   std::vector<std::vector<QVariant>> GetBulletsParams(
                       GameObjectId parent_id, float x, float y, float rotation,
-                      const QList<QVariant>& random_bullet_shifts ) const;
+                      const QList<QVariant>& random_bullet_shifts) const;
 
   virtual WeaponType GetWeaponType() const = 0;
   virtual float GetRotationWithAccuracy(float random_bullet_shift) const = 0;
 
  private:
-  float accuracy_{}; // точность/разброс
+  float accuracy_{};  // точность/разброс
   float bullet_damage_{};  // дамаг (может прокачать герой)
   float bullet_speed_{};  // скорость полета пули
   float bullet_range_{};  // расстояние полета пули
