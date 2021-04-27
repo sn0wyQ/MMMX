@@ -27,7 +27,8 @@ class RoomGameModel : public GameModel {
   bool IsNeededToSendPlayerStats(GameObjectId player_id);
   void UpdatePlayerStatsHashes();
 
-  QPointF GetPointToSpawn(float radius_from_object) const;
+  QPointF GetPointToSpawn(float radius_from_object,
+                          bool for_player = false) const;
 
  private:
   GameObjectId next_game_object_id_{1};

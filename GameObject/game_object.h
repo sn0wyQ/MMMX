@@ -87,7 +87,7 @@ class GameObject {
   void SetUpdatedTime(int64_t updated_time);
   int64_t GetUpdatedTime() const;
 
-  float GetMaxPossibleRadius() const;
+  float GetBoundingCircleRadius() const;
 
  private:
   GameObjectId id_{Constants::kNullGameObjectId};

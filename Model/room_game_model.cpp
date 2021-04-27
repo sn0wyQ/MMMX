@@ -69,7 +69,8 @@ void RoomGameModel::UpdatePlayerStatsHashes() {
   }
 }
 
-QPointF RoomGameModel::GetPointToSpawn(float radius_from_object) const {
+QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
+                                       bool for_player) const {
   std::uniform_real_distribution<> random_x(
       -Constants::kDefaultMapWidth / 2.f + radius_from_object,
       Constants::kDefaultMapWidth / 2.f - radius_from_object);
@@ -77,30 +78,46 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object) const {
       -Constants::kDefaultMapHeight / 2.f + radius_from_object,
       Constants::kDefaultMapHeight / 2.f - radius_from_object);
   int times_generate = 0;
+  QPointF best_point;
+  float big_distance{Constants::kDefaultMapHeight};
+  float best_point_min_player_distance{0.f};
   while (true) {
     times_generate++;
     bool regenerate = false;
     static std::mt19937 rng(QDateTime::currentMSecsSinceEpoch());
+    float min_player_distance{big_distance};
     QPointF point(random_x(rng), random_y(rng));
     for (const auto& game_object : GetAllGameObjects()) {
       if (game_object->GetType() == GameObjectType::kMapBorder) {
         continue;
       }
-      // спавнимся подальше от игроков
-      float player_delta = 0;
-      if (game_object->GetType() == GameObjectType::kPlayer) {
-        player_delta += 10.f;
+      if (for_player) {
+        if (game_object->GetType() == GameObjectType::kPlayer) {
+          min_player_distance =
+              std::min(min_player_distance, Math::DistanceBetweenPoints(
+                  point, game_object->GetPosition()));
+        }
       }
-      float full_radius = game_object->GetMaxPossibleRadius();
+      float bounding_circle_radius = game_object->GetBoundingCircleRadius();
       if (Math::DistanceBetweenPoints(point, game_object->GetPosition()) <
-          radius_from_object + full_radius + player_delta) {
+          radius_from_object + bounding_circle_radius) {
         regenerate = true;
       }
     }
     if (!regenerate) {
-      return point;
+      if (for_player) {
+        if (min_player_distance >= best_point_min_player_distance) {
+          best_point_min_player_distance = min_player_distance;
+          best_point = point;
+        }
+      } else {
+        return point;
+      }
     }
     if (times_generate == 1000) {
+      if (for_player) {
+        break;
+      }
       // костыль если вся карта занята
       // я тут хз что делать, крашить сервер не хочется,
       // так что пока оставил создание объекта где то далеко
@@ -108,4 +125,5 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object) const {
                      Constants::kDefaultMapHeight);
     }
   }
+  return best_point;
 }
