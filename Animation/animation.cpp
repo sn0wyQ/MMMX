@@ -1,73 +1,31 @@
 #include "animation.h"
 
-std::vector<std::vector<std::vector<std::shared_ptr<QSvgRenderer>>>>
-    Animation::global_animation_frames_(static_cast<int>(AnimationType::SIZE));
-std::vector<std::vector<InstructionList>>
-    Animation::global_animation_instructions_
-        (static_cast<int>(AnimationType::SIZE));
-
 Animation::Animation(AnimationType animation_type)
     : animation_type_(animation_type) {
   if (animation_type == AnimationType::kNone) {
     return;
-  }
-
-  animation_frames_ =
-      &global_animation_frames_.at(static_cast<int>(animation_type_));
-  animation_frames_->resize(static_cast<int>(AnimationState::SIZE));
-
-  animation_instructions_ =
-      &global_animation_instructions_.at(static_cast<int>(animation_type_));
-  animation_instructions_->resize(static_cast<int>(AnimationState::SIZE));
-
-  // ParseAnimation only if we never parsed |animation_type| before
-  if (animation_frames_->at(0).empty()
-      && animation_instructions_->at(0).empty()) {
-    ParseAnimation();
-  }
-}
-
-QString CalcLeadingZeros(int x) {
-  if (x < 10) {
-    return "00";
-  } else if (x < 100) {
-    return "0";
   } else {
-    return "";
-  }
-}
+    base_path_ =
+        "C:/QtProjects/MMMX/Res/Animation/" + animation_type_strings_.at(animation_type) + "/";
 
-void Animation::ParseAnimation() {
-  QString animation_name;
-  switch (animation_type_) {
-    case AnimationType::kTreeGreen:
-      animation_name = "TreeGreen";
-      break;
-
-    default:
-      return;
-  }
-  QString base_path = ":/" + animation_name + "/";
-
-  // Read all files related to the sprite
-  std::vector<QString> animation_states_strings = {"idle", "move", "shoot"};
-  for (int animation_state_index = 0;
-       animation_state_index < static_cast<int>(AnimationState::SIZE);
-       ++animation_state_index) {
-    QString current_path_prefix =
-        base_path + animation_states_strings.at(animation_state_index);
-    int image_index = 0;
-    QString full_path;
-    while (full_path = current_path_prefix + CalcLeadingZeros(image_index)
-        + QString::number(image_index) + ".svg", QFile::exists(full_path)) {
-      animation_frames_->at(animation_state_index).push_back(
-          std::make_shared<QSvgRenderer>(full_path));
-      ++image_index;
+    // Loading first frames of sequence for each animation state
+    int animation_state_index = 0;
+    auto animation_state = static_cast<AnimationState>(0);
+    while (animation_state < AnimationState::SIZE) {
+      std::queue<Frame> first_frames_of_state;
+      first_frames_of_state.emplace(base_path_, animation_state, 0);
+      if (first_frames_of_state.front().IsExists()) {
+        if (animation_state == animation_state_) {
+          first_frames_of_state.emplace(base_path_, animation_state, 1);
+        }
+        animation_frames_.insert({animation_state, first_frames_of_state});
+      }
+      ++animation_state_index;
+      animation_state = static_cast<AnimationState>(animation_state_index);
     }
-  }
 
-  // Parse description file
-  ParseAnimationDescription(base_path + "description");
+    ParseAnimationDescription(base_path_ + "description");
+  }
 }
 
 void Animation::ParseAnimationDescription(const QString& description_path) {
@@ -78,7 +36,7 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
   QFile description_file(description_path);
   int line_index = 1;
   if (description_file.open(QIODevice::ReadOnly)) {
-    AnimationState animation_state_index = AnimationState::kNone;
+    AnimationState animation_state = AnimationState::SIZE;
     while (description_file.bytesAvailable() > 0) {
       QString current_line = description_file.readLine();
       QStringList
@@ -86,40 +44,31 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
 
       if (parts.empty() || parts[0].startsWith('#')) {
         // Just do nothing - empty line or line with comment
-      } else if (parts[0] == "idle:") {
-        animation_state_index = AnimationState::kIdle;
-      } else if (parts[0] == "move:") {
-        animation_state_index = AnimationState::kMove;
-      } else if (parts[0] == "shoot:") {
-        animation_state_index = AnimationState::kShoot;
+      } else if (auto label_iter = animation_state_labels_.find(parts[0]);
+                 label_iter != animation_state_labels_.end()) {
+        animation_state = label_iter->second;
       } else {
-        if (animation_state_index == AnimationState::kNone) {
+        if (animation_state == AnimationState::SIZE) {
           throw std::runtime_error(
               ("Invalid animation description format in "
                   + description_path
                   + ":" + QString::number(line_index)).toStdString());
         }
 
-        if (parts[0] == "end") {
-          animation_instructions_->at(static_cast<int>(animation_state_index))
-            .push_back({AnimationInstruction::kEnd, {}});
-          animation_state_index = AnimationState::kNone;
-        } else if (parts[0] == "loop") {
-          animation_instructions_->at(static_cast<int>(animation_state_index))
-              .push_back({AnimationInstruction::kLoop, {}});
-          animation_state_index = AnimationState::kNone;
-        } else if (parts[0] == "nextframe") {
-          animation_instructions_->at(static_cast<int>(animation_state_index))
-              .push_back({AnimationInstruction::kNextFrame, {}});
-        } else if (parts[0] == "playframes") {
-          animation_instructions_->at(static_cast<int>(animation_state_index))
-              .push_back({AnimationInstruction::kPlayFrames, {}});
-        } else if (parts[0] == "wait") {
-          animation_instructions_->at(static_cast<int>(animation_state_index))
-              .push_back({AnimationInstruction::kWait, {}});
-        } else if (parts[0] == "waitrand") {
-          animation_instructions_->at(static_cast<int>(animation_state_index))
-              .push_back({AnimationInstruction::kWaitRand, {}});
+        if (animation_instructions_.find(animation_state)
+            == animation_instructions_.end()) {
+          animation_instructions_.insert({animation_state, InstructionList()});
+        }
+
+        if (auto instruction_iter =
+              animation_commands_to_instructions_.find(parts[0]);
+            instruction_iter != animation_commands_to_instructions_.end()) {
+          animation_instructions_.at(animation_state)
+              .push_back({instruction_iter->second, {}});
+          if (instruction_iter->second == AnimationInstruction::kEnd
+              || instruction_iter->second == AnimationInstruction::kLoop) {
+            animation_state = AnimationState::SIZE;
+          }
         } else {
           throw std::runtime_error(
               ("Invalid animation instruction format in "
@@ -130,7 +79,7 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
         // If we met '#' that means that comment started
         for (int index = 1;
              index < parts.size() && !parts[index].startsWith('#'); ++index) {
-          animation_instructions_->at(static_cast<int>(animation_state_index))
+          animation_instructions_.at(animation_state)
               .back().second.push_back(parts[index].toInt());
         }
       }
@@ -148,9 +97,8 @@ void Animation::Update(int delta_time) {
 
   current_animation_time_ += delta_time;
   while (current_animation_time_ >= go_to_next_instruction_time_) {
-    InstructionList& current_instruction_list =
-        animation_instructions_->at(static_cast<int>(animation_state_));
-
+    InstructionList&
+        current_instruction_list = animation_instructions_.at(animation_state_);
     switch (current_instruction_list.at(animation_instruction_index_).first) {
       case AnimationInstruction::kEnd: {
         SetAnimationState(AnimationState::kIdle, true);
@@ -163,11 +111,27 @@ void Animation::Update(int delta_time) {
       }
 
       case AnimationInstruction::kNextFrame: {
-        ++animation_frame_index_;
-        if (animation_frame_index_
-            >= animation_frames_
-                ->at(static_cast<int>(animation_state_)).size()) {
-          throw std::runtime_error("Trying to play non-existing frame");
+        std::queue<Frame>& frames = animation_frames_.at(animation_state_);
+
+        // If sequence contains only one frame we don't touch anything
+        // (We guarantee that if sequence has more than one frame frames.size()
+        //  would return more, than one)
+        if (frames.size() > 1) {
+          frames.pop();
+          Frame next_frame
+              (base_path_,
+               animation_state_,
+               frames.front().GetFrameIndex() + 1);
+          if (next_frame.IsExists()) {
+            frames.push(next_frame);
+          } else {
+            // if frames.front() frame is last in sequence
+            frames.emplace(base_path_, animation_state_, 0);
+          }
+          if (!frames.front().IsExists()) {
+            throw std::runtime_error(
+                "Loaded non existing frame to final sequence");
+          }
         }
         ++animation_instruction_index_;
         break;
@@ -231,18 +195,34 @@ void Animation::SetAnimationState(AnimationState animation_state, bool forced) {
     return;
   }
 
+  // Clearing current animation state's frames queue
+  // and adding there first frame of sequence
+  std::queue<Frame>().swap(animation_frames_.at(animation_state_));
+  animation_frames_.at(animation_state_).emplace(base_path_,
+                                                 animation_state_,
+                                                 0);
+
   animation_state_ = animation_state;
-  animation_frame_index_ = 0;
   animation_instruction_index_ = 0;
   go_to_next_instruction_time_ = current_animation_time_;
+
+  // We guarantee that we always already have 0th frame
+  // (if it exists in storage) and we also want to preload next frame
+  animation_frames_.at(animation_state_).emplace(base_path_,
+                                                 animation_state_,
+                                                 1);
 }
 
 void Animation::RenderFrame(Painter* painter, float w, float h) const {
+  const Frame& frame_to_render = animation_frames_.at(animation_state_).front();
+  if (!frame_to_render.IsExists()) {
+    return;
+  }
+
   painter->RenderSvg(QPointF(),
                      w,
                      h,
-                     animation_frames_->at(static_cast<int>(animation_state_))
-                         .at(animation_frame_index_));
+                     frame_to_render.GetSvgRenderer());
 }
 
 AnimationType Animation::GetType() const {

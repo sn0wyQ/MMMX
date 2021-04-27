@@ -67,6 +67,9 @@ set(UBSAN_FLAGS
 # Add code files
 set(SOURCES
         Animation/animation.cpp
+        Animation/animation_enums.h
+        Animation/animations_holder.cpp
+        Animation/frame.cpp
         Client/abstract_client_view.h
         Client/client_controller.cpp
         Client/client_view.cpp
@@ -95,11 +98,12 @@ set(SOURCES
         Painter/painter.cpp
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
-        Server/server_controller.cpp)
+        Server/server_controller.cpp
+        )
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
-        Resources/Animation/animation.qrc)
+        )
 qt5_add_big_resources(RESOURCES_SERVER
         )
 

@@ -11,7 +11,7 @@
 #include <QRectF>
 #include <QRegion>
 #include <QSize>
-#include <QtSvg/QtSvg>
+#include <QSvgRenderer>
 
 #include "Converter/converter.h"
 

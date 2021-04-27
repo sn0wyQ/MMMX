@@ -11,6 +11,7 @@
 #include <QString>
 
 #include "Animation/animation.h"
+#include "Animation/animations_holder.h"
 #include "Painter/painter.h"
 #include "Math/math.h"
 #include "GameObject/RigidBody/intersect_constants.h"
@@ -75,8 +76,8 @@ class GameObject {
   void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
 
-  void SetAnimation(AnimationType animation_type, bool forced = false);
-  void UpdateAnimation(int delta_time);
+  void SetAnimation(AnimationType animation_type);
+  static AnimationsHolder& GetAnimationsHolder();
 
   virtual std::shared_ptr<GameObject> Clone() const;
 
@@ -84,8 +85,13 @@ class GameObject {
   int64_t GetUpdatedTime() const;
 
  private:
+  // Holds animations for all GameObjects
+  // Prevents same Frame being loaded into RAM more than once at a time
+  static AnimationsHolder animations_holder_;
+
   GameObjectId id_{Constants::kNullGameObjectId};
-  std::shared_ptr<Animation> animation_;
+  std::shared_ptr<Animation>
+      animation_ = std::make_shared<Animation>(AnimationType::kNone);
   QPointF position_{0.f, 0.f};
   // 0 is direction from left to right
   // Increasing counterclockwise

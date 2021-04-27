@@ -163,9 +163,7 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 }
 
 void ClientController::UpdateAnimations(int delta_time) {
-  for (const auto& object : model_->GetAllGameObjects()) {
-    object->UpdateAnimation(delta_time);
-  }
+  GameObject::GetAnimationsHolder().UpdateAnimations(delta_time);
 }
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {

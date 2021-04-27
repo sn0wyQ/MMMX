@@ -1,11 +1,13 @@
 #include "game_object.h"
 
+AnimationsHolder GameObject::animations_holder_;
+
 GameObject::GameObject(GameObjectId id)
   : id_(id) {}
 
 GameObject::GameObject(const GameObject& other) {
   id_ = other.id_;
-  SetAnimation(other.animation_->GetType(), true);
+  SetAnimation(other.animation_->GetType());
   if (rigid_body_ == nullptr) {
     switch (other.GetRigidBody()->GetType()) {
       case RigidBodyType::kCircle:
@@ -173,14 +175,12 @@ bool GameObject::IsFilteredByFov() const {
   return true;
 }
 
-void GameObject::SetAnimation(AnimationType animation_type, bool forced) {
-  if (forced || !animation_) {
-    animation_ = std::make_shared<Animation>(animation_type);
-  }
+void GameObject::SetAnimation(AnimationType animation_type) {
+  animation_ = animations_holder_.GetAnimation(animation_type);
 }
 
-void GameObject::UpdateAnimation(int delta_time) {
-  animation_->Update(delta_time);
+AnimationsHolder& GameObject::GetAnimationsHolder() {
+  return animations_holder_;
 }
 
 std::shared_ptr<GameObject> GameObject::Clone() const {
