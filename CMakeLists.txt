@@ -97,6 +97,7 @@ set(SOURCES
         Weapon/Crossbow/crossbow.cpp
         Weapon/MachineGun/machine_gun.cpp
         Weapon/Shotgun/shotgun.cpp
+        Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
         )
 
@@ -111,3 +112,5 @@ target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER})
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
+
+FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Res DESTINATION ${CMAKE_BINARY_DIR})

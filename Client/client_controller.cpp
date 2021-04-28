@@ -289,10 +289,10 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
-  if (native_key == Controls::kKeyR) {
-    if (model_->IsLocalPlayerSet()) {
-      auto local_player = model_->GetLocalPlayer();
-      local_player->SetVelocity(GetKeyForce());
+  if (model_->IsLocalPlayerSet()) {
+    auto local_player = model_->GetLocalPlayer();
+    local_player->SetVelocity(GetKeyForce());
+    if (native_key == Controls::kKeyR) {
       auto timestamp = GetCurrentServerTime();
       if (local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
         model_->GetLocalPlayer()->GetWeapon()->Reload(timestamp);

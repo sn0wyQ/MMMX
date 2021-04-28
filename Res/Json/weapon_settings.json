@@ -1,0 +1,47 @@
+[
+  {
+    "type": "kAssaultRifle",
+    "accuracy": 5,
+    "bullet_damage": 13,
+    "bullet_radius": 0.25,
+    "bullet_range": 20,
+    "bullet_speed": 3,
+    "clip_size": 30,
+    "rate_of_fire": 300,
+    "reloading_time": 4000
+  },
+  {
+    "type": "kCrossbow",
+    "accuracy": 2,
+    "bullet_damage": 18,
+    "bullet_radius": 0.3,
+    "bullet_range": 30,
+    "bullet_speed": 2.5,
+    "clip_size": 12,
+    "rate_of_fire": 200,
+    "reloading_time": 7500
+  },
+  {
+    "type": "kMachineGun",
+    "accuracy": 10,
+    "bullet_damage": 6,
+    "bullet_radius": 0.15,
+    "bullet_range": 20,
+    "bullet_speed": 5,
+    "clip_size": 50,
+    "rate_of_fire": 450,
+    "reloading_time": 9000
+  },
+  {
+    "type": "kShotgun",
+    "accuracy": 7,
+    "bullet_damage": 19,
+    "bullet_radius": 0.2,
+    "bullet_range": 12,
+    "bullet_speed": 4,
+    "clip_size": 15,
+    "rate_of_fire": 90,
+    "reloading_time": 8000,
+    "angle_between_bullets": 10
+  }
+]

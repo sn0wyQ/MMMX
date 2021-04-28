@@ -4,14 +4,8 @@ AssaultRifle::AssaultRifle(const AssaultRifle& assault_rifle) : Weapon(
     assault_rifle) {}
 
 AssaultRifle::AssaultRifle() {
-  SetAccuracy(Constants::Weapon::AssaultRifle::kDefaultAccuracy);
-  SetBulletDamage(Constants::Weapon::AssaultRifle::kDefaultBulletDamage);
-  SetBulletSpeed(Constants::Weapon::AssaultRifle::kDefaultBulletSpeed);
-  SetBulletRange(Constants::Weapon::AssaultRifle::kDefaultBulletRange);
-  SetRateOfFire(Constants::Weapon::AssaultRifle::kDefaultRateOfFire);
-  SetReloadingTime(Constants::Weapon::AssaultRifle::kDefaultReloadingTime);
-  SetClipSize(Constants::Weapon::AssaultRifle::kDefaultClipSize);
-  SetCurrentBulletsInClip(Constants::Weapon::AssaultRifle::kDefaultClipSize);
+  this->SetParams(WeaponSettings::GetInstance().GetParams(
+      WeaponType::kAssaultRifle));
 }
 
 void AssaultRifle::DrawWeapon(Painter* painter) {
