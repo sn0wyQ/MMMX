@@ -133,6 +133,9 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
                           bullet_radius));
       break;
     }
+
+    default:
+      break;
   }
   return bullets_params;
 }
