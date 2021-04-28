@@ -59,12 +59,12 @@ void RoomController::OnTick(int delta_time) {
                            std::make_shared<RoomGameModel>(*model_)});
   model_ = models_cache_.back().model;
   this->RecalculateModel(models_cache_.back());
-  this->SendPlayersStatsToPlayers();
-  model_->UpdatePlayerStatsHashes();
   for (const auto& player_id : this->GetAllPlayerIds()) {
     // Рассказываем НАМ о других
     SendGameObjectsDataToPlayer(player_id);
   }
+  this->SendPlayersStatsToPlayers();
+  model_->UpdatePlayerStatsHashes();
   model_->UpdateGameObjectHashes();
   if (models_cache_.size() > Constants::kTicksToStore) {
     models_cache_.pop_front();
