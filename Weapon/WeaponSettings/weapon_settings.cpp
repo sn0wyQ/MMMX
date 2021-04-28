@@ -23,6 +23,7 @@ WeaponSettings::WeaponSettings() {
   QJsonArray
       json_weapon_array(QJsonDocument::fromJson(file.readAll()).array());
   std::vector<QString> weapon_types_;
+  weapon_types_.reserve(static_cast<int>(WeaponType::SIZE));
   for (int i = 0; i < static_cast<int>(WeaponType::SIZE); i++) {
     weapon_types_.emplace_back(QMetaEnum::fromType<WeaponType>().valueToKey(0));
   }
