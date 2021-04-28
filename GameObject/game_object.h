@@ -84,9 +84,10 @@ class GameObject {
   void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
 
+  std::shared_ptr<Animation> GetAnimation();
   void SetAnimation(AnimationType animation_type);
   static AnimationsHolder& GetAnimationsHolder();
-  
+
   virtual bool IsEntity() const;
 
   virtual std::shared_ptr<GameObject> Clone() const;

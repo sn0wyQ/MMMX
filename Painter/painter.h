@@ -46,7 +46,7 @@ class Painter : public QPainter {
   void RotateCounterClockWise(float degree);
 
   void Translate(const QPointF& delta);
-  
+
   float GetScaledFloat(float x) const;
 
   void DrawEllipse(const QPointF& center, float rx, float ry);

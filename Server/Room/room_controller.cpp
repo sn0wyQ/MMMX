@@ -422,8 +422,11 @@ void RoomController::AddRandomTree(float radius) {
   AddTree(position.x(), position.y(), radius);
 }
 
-std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
-                               float x, float y, float rotation,
+std::vector<GameObjectId>
+    RoomController::AddBullets(GameObjectId parent_id,
+                               float x,
+                               float y,
+                               float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
   std::vector<std::vector<QVariant>> bullets_params =
       weapon->GetBulletsParams(parent_id, x, y, rotation);
@@ -441,13 +444,16 @@ void RoomController::AddConstantObjects() {
                         {0.f, 0.f, 0.f,
                          Constants::kDefaultMapWidth,
                          Constants::kDefaultMapHeight,
-                         static_cast<int>(RigidBodyType::kRectangle)});
+                         static_cast<int>(RigidBodyType::kRectangle),
+                         Constants::kDefaultMapWidth,
+                         Constants::kDefaultMapHeight,
+                         static_cast<int>(AnimationType::kNone)});
 
   for (int i = 0; i < 15; i++) {
-    this->AddRandomBox(5.f, 5.f);
+    this->AddRandomBox(7.f, 7.f);
   }
   for (int i = 0; i < 15; i++) {
-    this->AddRandomTree(2.f);
+    this->AddRandomTree(5.f);
   }
 }
 

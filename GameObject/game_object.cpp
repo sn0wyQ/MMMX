@@ -150,12 +150,10 @@ float GameObject::GetHeight() const {
 
 void GameObject::SetWidth(float width) {
   width_ = width;
-  rigid_body_->SetWidth(width_);
 }
 
 void GameObject::SetHeight(float height) {
   height_ = height;
-  rigid_body_->SetHeight(width_);
 }
 
 bool GameObject::IsMovable() const {
@@ -185,6 +183,10 @@ GameObjectType GameObject::GetType() const {
 bool GameObject::IsFilteredByFov() const {
   // Temporarily. For testing FOV
   return true;
+}
+
+std::shared_ptr<Animation> GameObject::GetAnimation() {
+  return animation_;
 }
 
 void GameObject::SetAnimation(AnimationType animation_type) {
