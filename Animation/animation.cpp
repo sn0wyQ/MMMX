@@ -111,7 +111,8 @@ void Animation::Update(int delta_time) {
       }
 
       case AnimationInstructionType::kNextFrame: {
-        std::queue<SharedFrame>& frames = animation_frames_.at(animation_state_);
+        std::queue<SharedFrame>&
+            frames = animation_frames_.at(animation_state_);
 
         // If sequence contains only one frame we don't touch anything
         // (We guarantee that if sequence has more than one frame frames.size()
