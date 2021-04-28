@@ -25,7 +25,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   // Stats table
   stats_table_ = new StatsTable(this, controller_->GetModel(),
                                 QPoint(100, 100), QSize(200, 200));
-  stats_table_->hide();
+  stats_table_->Hide();
 
   controller_->SetView(std::shared_ptr<ClientView>(this));
   model_ = controller_->GetModel();
@@ -40,19 +40,20 @@ std::shared_ptr<Converter> ClientView::GetConverter() {
 }
 
 void ClientView::focusOutEvent(QFocusEvent* focus_event) {
+  stats_table_->Hide();
   controller_->FocusOutEvent(focus_event);
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
   if (key_event->key() == Qt::Key_Tab) {
-    stats_table_->show();
+    stats_table_->Show();
   }
   controller_->KeyPressEvent(key_event);
 }
 
 void ClientView::keyReleaseEvent(QKeyEvent* key_event) {
   if (key_event->key() == Qt::Key_Tab) {
-    stats_table_->hide();
+    stats_table_->Hide();
   }
   controller_->KeyReleaseEvent(key_event);
 }
