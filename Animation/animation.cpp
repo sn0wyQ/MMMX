@@ -6,7 +6,7 @@ Animation::Animation(AnimationType animation_type)
     return;
   } else {
     base_path_ =
-        "./Res/Animation/" + animation_type_strings_.at(animation_type) + "/";
+        "./Res/Animation/" + kAnimationTypeStrings.at(animation_type) + "/";
 
     // Loading first frames of sequence for each animation state
     int animation_state_index = 0;
@@ -44,8 +44,8 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
 
       if (parts.empty() || parts[0].startsWith('#')) {
         // Just do nothing - empty line or line with comment
-      } else if (auto label_iter = animation_state_labels_.find(parts[0]);
-                 label_iter != animation_state_labels_.end()) {
+      } else if (auto label_iter = kAnimationStateLabels.find(parts[0]);
+                 label_iter != kAnimationStateLabels.end()) {
         animation_state = label_iter->second;
       } else {
         if (animation_state == AnimationState::SIZE) {
@@ -61,8 +61,8 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
         }
 
         if (auto instruction_iter =
-              animation_commands_to_instructions_.find(parts[0]);
-            instruction_iter != animation_commands_to_instructions_.end()) {
+              kAnimationCommandsToInstructions.find(parts[0]);
+            instruction_iter != kAnimationCommandsToInstructions.end()) {
           animation_instructions_.at(animation_state)
               .push_back({instruction_iter->second, {}});
           if (instruction_iter->second == AnimationInstruction::kEnd

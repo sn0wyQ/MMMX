@@ -11,7 +11,7 @@
 
 #include "Animation/animation_enums.h"
 
-const std::unordered_map<AnimationState, QString> animation_state_strings_ {
+const std::unordered_map<AnimationState, QString> kAnimationStateStrings {
     { AnimationState::kDestroy, "destroy" },
     { AnimationState::kIdle, "idle" },
     { AnimationState::kMove, "move" },

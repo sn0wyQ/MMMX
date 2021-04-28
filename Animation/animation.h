@@ -22,11 +22,11 @@
 #include "Animation/frame.h"
 #include "Painter/painter.h"
 
-const std::unordered_map<AnimationType, QString> animation_type_strings_ {
+const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
     { AnimationType::kTreeGreen, "TreeGreen" }
 };
 
-const std::unordered_map<QString, AnimationState> animation_state_labels_ {
+const std::unordered_map<QString, AnimationState> kAnimationStateLabels {
     { "destroy:", AnimationState::kDestroy },
     { "idle:", AnimationState::kIdle },
     { "move:", AnimationState::kMove },
@@ -34,7 +34,7 @@ const std::unordered_map<QString, AnimationState> animation_state_labels_ {
 };
 
 const std::unordered_map<QString, AnimationInstruction>
-    animation_commands_to_instructions_ {
+    kAnimationCommandsToInstructions {
     { "end", AnimationInstruction::kEnd },
     { "loop", AnimationInstruction::kLoop },
     { "nextframe", AnimationInstruction::kNextFrame },
