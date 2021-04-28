@@ -79,8 +79,9 @@ void StatsTable::DrawTable(QPainter* painter) {
         arc_size.height() + frame_height);
   }
   for (int i = 0; i < column_count_; i++) {
-    table_column_points_.emplace_back(offset_x + i * inner_width_ / column_count_,
-                                      arc_size.height() + 1.5f * offset_y);
+    table_column_points_.emplace_back(
+        offset_x + i * inner_width_ / column_count_,
+        arc_size.height() + 1.5f * offset_y);
   }
 
   painter->restore();
@@ -89,7 +90,7 @@ void StatsTable::DrawTable(QPainter* painter) {
 void StatsTable::DrawPlayersStats(QPainter* painter) {
   painter->save();
   QFont font(Constants::StatsTable::kHeaderFont);
-  font.setPixelSize(this->height() / 23 );
+  font.setPixelSize(this->height() / 23);
   painter->setFont(font);
   auto stats = model_->GetAllPlayersStats();
   std::sort(stats.begin(),
