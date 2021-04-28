@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include <QPaintEvent>
 #include <QWidget>
@@ -11,7 +12,7 @@
 #include "Painter/painter.h"
 
 class StatsTable : public QWidget {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   StatsTable(QWidget* parent,
@@ -20,15 +21,14 @@ class StatsTable : public QWidget {
              QSize size);
 
   void paintEvent(QPaintEvent* event) override;
-  void mouseMoveEvent(QMouseEvent* mouse_event) override;
-  void mousePressEvent(QMouseEvent* mouse_event) override;
 
  private:
   std::shared_ptr<ClientGameModel> model_;
   void DrawTable(QPainter* painter);
   void DrawPlayersStats(QPainter* painter);
-  std::vector<QPoint> header_column_points_;
-  std::vector<QPoint> table_column_point_;
+  std::vector<QRect> header_column_rects_;
+  std::vector<QPoint> table_column_points_;
+  QPen pen_;
   size_t column_count_;
 };
 

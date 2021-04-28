@@ -126,8 +126,10 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                   std::dynamic_pointer_cast<Player>(entity)->GetLevel())
                   * Constants::kExpMultiplier;
               killer->IncreaseExperience(receive_exp);
-              model_data.model->GetPlayerStatsByPlayerId(killer_id)->
-                                                   SetLevel(killer->GetLevel());
+              auto killer_stats =
+                  model_data.model->GetPlayerStatsByPlayerId(killer_id);
+              killer_stats->SetKills(killer_stats->GetKills() + 1);
+              killer_stats->SetLevel(killer->GetLevel());
               this->AddEventToSendToSinglePlayer(
                   Event(EventType::kIncreaseLocalPlayerExperience,
                         receive_exp),
@@ -164,8 +166,8 @@ void RoomController::AddClient(ClientId client_id) {
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
   auto player = model_->GetPlayerByPlayerId(player_id);
   model_->AddPlayerStats(player_id,
-                        QString("Player#") + QString::number(player_id),
-                        player->GetLevel());
+                         QString("Player#") + QString::number(player_id),
+                         player->GetLevel());
   this->ForceSendPlayersStatsToPlayer(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
@@ -317,7 +319,7 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
 void RoomController::ForceSendPlayersStatsToPlayer(GameObjectId player_id) {
   for (auto player_stats_id : this->GetAllPlayerIds()) {
     Event event_update_players_stats = Event(EventType::kUpdatePlayersStats,
-                                            player_stats_id);
+                                             player_stats_id);
     event_update_players_stats.PushBackArgs(
         model_->GetPlayerStatsByPlayerId(player_stats_id)->GetParams());
     this->AddEventToSendToSinglePlayer(event_update_players_stats, player_id);
@@ -328,7 +330,7 @@ void RoomController::SendPlayersStatsToPlayers() {
   for (auto player_id : this->GetAllPlayerIds()) {
     if (model_->IsNeededToSendPlayerStats(player_id)) {
       Event event_update_players_stats = Event(EventType::kUpdatePlayersStats,
-                                              player_id);
+                                               player_id);
       event_update_players_stats.PushBackArgs(
           model_->GetPlayerStatsByPlayerId(player_id)->GetParams());
       this->AddEventToSendToAllPlayers(event_update_players_stats);
@@ -344,7 +346,7 @@ bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
     return true;
   }
   return player->GetShortestDistance(game_object) <
-    player->GetFovRadius() * Constants::kFovMultiplier;
+      player->GetFovRadius() * Constants::kFovMultiplier;
 }
 
 // Temporary -> AddPlayer(PlayerType)
@@ -397,8 +399,11 @@ void RoomController::AddTree(float x, float y, float radius) {
 }
 
 std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
-                               float x, float y, float rotation,
-                               const std::shared_ptr<Weapon>& weapon) {
+                                                     float x,
+                                                     float y,
+                                                     float rotation,
+                                                     const std::shared_ptr<
+                                                         Weapon>& weapon) {
   std::vector<std::vector<QVariant>> bullets_params =
       weapon->GetBulletsParams(parent_id, x, y, rotation);
   std::vector<GameObjectId> bullet_ids(bullets_params.size());

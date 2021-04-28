@@ -27,6 +27,8 @@ class PlayerStats {
   void SetLevel(int level);
   int GetLevel() const;
 
+  bool operator<(const PlayerStats& other) const;
+
  private:
   GameObjectId player_id_{Constants::kNullGameObjectId};
   QString nickname_{""};

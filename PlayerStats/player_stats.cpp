@@ -65,3 +65,16 @@ int PlayerStats::GetLevel() const {
 void PlayerStats::SetLevel(int level) {
   level_ = level;
 }
+
+bool PlayerStats::operator<(const PlayerStats& other) const {
+  if (this->GetLevel() == other.GetLevel()) {
+    if (this->GetKills() == other.GetKills()) {
+      if (this->GetDeaths() == other.GetDeaths()) {
+        return this->GetNickname() < other.GetNickname();
+      }
+      return this->GetDeaths() < other.GetDeaths();
+    }
+    return this->GetKills() > other.GetKills();
+  }
+  return this->GetLevel() > other.GetLevel();
+}
