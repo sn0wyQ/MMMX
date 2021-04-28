@@ -20,7 +20,7 @@ const std::vector<QString> kColumnNames{
     "Deaths"
 };
 
-}  // namespace StatsTable
+}  // namespace Constants::StatsTable
 
 StatsTable::StatsTable(QWidget* parent,
                        std::shared_ptr<ClientGameModel> model,
