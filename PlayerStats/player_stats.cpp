@@ -54,6 +54,10 @@ void PlayerStats::SetDeaths(int deaths) {
   deaths_ = deaths;
 }
 
+int& PlayerStats::GetMutableDeaths() {
+  return deaths_;
+}
+
 GameObjectId PlayerStats::GetPlayerId() const {
   return player_id_;
 }

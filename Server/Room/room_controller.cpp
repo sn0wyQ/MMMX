@@ -116,6 +116,8 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
         if (hp_to_set == 0) {
           entity->Revive();
           if (entity->GetType() == GameObjectType::kPlayer) {
+            model_data.model->GetPlayerStatsByPlayerId(
+                entity->GetId())->GetMutableDeaths()++;
             this->AddEventToSendToSinglePlayer(
                 Event(EventType::kLocalPlayerDied),
                 entity->GetId());
@@ -398,12 +400,9 @@ void RoomController::AddTree(float x, float y, float radius) {
                          static_cast<int>(RigidBodyType::kCircle)});
 }
 
-std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
-                                                     float x,
-                                                     float y,
-                                                     float rotation,
-                                                     const std::shared_ptr<
-                                                         Weapon>& weapon) {
+std::vector<GameObjectId> RoomController::AddBullets(
+    GameObjectId parent_id, float x, float y, float rotation,
+    const std::shared_ptr<Weapon>& weapon) {
   std::vector<std::vector<QVariant>> bullets_params =
       weapon->GetBulletsParams(parent_id, x, y, rotation);
   std::vector<GameObjectId> bullet_ids(bullets_params.size());

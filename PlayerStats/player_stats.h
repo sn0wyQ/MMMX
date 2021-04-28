@@ -22,6 +22,7 @@ class PlayerStats {
   int GetKills() const;
 
   void SetDeaths(int deaths);
+  int& GetMutableDeaths();
   int GetDeaths() const;
 
   void SetLevel(int level);

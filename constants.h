@@ -1,6 +1,7 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
+#include <QColor>
 #include <QCryptographicHash>
 #include <QString>
 #include <QUrl>
@@ -84,6 +85,26 @@ constexpr float kExpForLevel[] = {
     10, 15, 20, 25, 30, 35, 40, 45, 50, 55
 };
 constexpr float kExpMultiplier = 5.f;
+
+namespace StatsTable {
+
+const QColor kTableColor = Qt::black;
+const QColor kBackgroundColor = QColor(128, 128, 128, 128);
+const QColor kHeaderTextColor = Qt::green;
+const QColor kTextColor = Qt::black;
+const QColor kLocalPLayerTextColor = Qt::yellow;
+const int kMainTableWidth = 3;
+const int kInternalTableWidth = 1;
+
+const std::vector<QString> kColumnNames{
+    "Nickname",
+    "Level",
+    "Kills",
+    "Deaths"
+};
+
+}  // namespace StatsTable
+
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

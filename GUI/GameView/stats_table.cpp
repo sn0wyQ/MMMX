@@ -3,25 +3,7 @@
 #include <algorithm>
 #include <utility>
 
-namespace StatsTableConstants {
-
-const QColor kTableColor = Qt::black;
-QColor kBackgroundColor = Qt::darkGreen;
-int kBackgroundTransparency = 100;
-const QColor kHeaderTextColor = Qt::green;
-const QColor kTextColor = Qt::black;
-const QColor kLocalPLayerTextColor = Qt::yellow;
-const int kMainTableWidth = 3;
-const int kInternalTableWidth = 1;
-
-}  // namespace StatsTableConstants
-
-const std::vector<QString> kColumnNames{
-    "Nickname",
-    "Level",
-    "Kills",
-    "Deaths"
-};
+using namespace Constants::StatsTable;
 
 StatsTable::StatsTable(QWidget* parent,
                        std::shared_ptr<ClientGameModel> model,
@@ -29,8 +11,6 @@ StatsTable::StatsTable(QWidget* parent,
                        QSize size) :
     QWidget(parent),
     model_{std::move(model)} {
-  StatsTableConstants::kBackgroundColor.setAlpha(
-      StatsTableConstants::kBackgroundTransparency);
   this->move(position);
   this->resize(size);
   this->setMouseTracking(true);
@@ -49,21 +29,20 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
 
 void StatsTable::DrawTable(QPainter* painter) {
   column_count_ = static_cast<int>(kColumnNames.size());
-  pen_.setColor(StatsTableConstants::kTableColor);
-  pen_.setWidth(StatsTableConstants::kMainTableWidth);
+  pen_.setColor(kTableColor);
+  pen_.setWidth(kMainTableWidth);
   painter->setPen(pen_);
   int w = this->size().width()
-      - 2 * static_cast<int>(std::ceil(StatsTableConstants::kMainTableWidth));
+      - 2 * static_cast<int>(std::ceil(kMainTableWidth));
   int h = this->size().height()
-      - 2 * static_cast<int>(std::ceil(StatsTableConstants::kMainTableWidth));
+      - 2 * static_cast<int>(std::ceil(kMainTableWidth));
   painter->save();
-  painter->translate(StatsTableConstants::kMainTableWidth,
-                     StatsTableConstants::kMainTableWidth);
+  painter->translate(kMainTableWidth,
+                     kMainTableWidth);
   QSize arc_size = QSize(std::max(w, h) / 20, std::max(w, h) / 20);
-  painter->setBrush(QBrush(StatsTableConstants::kBackgroundColor));
+  painter->setBrush(QBrush(kBackgroundColor));
   painter->drawRoundedRect(0, 0, w, h, arc_size.width(), arc_size.height());
-  painter->drawLine(0, arc_size.height(),
-                    w, arc_size.height());
+  painter->drawLine(0, arc_size.height(), w, arc_size.height());
 
   header_column_rects_.clear();
   table_column_points_.clear();
@@ -77,7 +56,7 @@ void StatsTable::DrawTable(QPainter* painter) {
                                       w / column_count_,
                                       arc_size.height());
   }
-  pen_.setWidth(StatsTableConstants::kInternalTableWidth);
+  pen_.setWidth(kInternalTableWidth);
   painter->setPen(pen_);
   for (int i = 0; i < column_count_; i++) {
     if (i + 1 < column_count_) {
@@ -104,7 +83,7 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                const std::shared_ptr<PlayerStats>& stats2) {
               return *stats1 < *stats2;
             });
-  pen_.setColor(StatsTableConstants::kHeaderTextColor);
+  pen_.setColor(kHeaderTextColor);
   painter->setPen(pen_);
   for (int i = 0; i < column_count_; i++) {
     painter->drawText(header_column_rects_[i],
@@ -120,9 +99,9 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
   };
   for (const auto& stat : stats) {
     if (stat->GetPlayerId() == model_->GetLocalPlayer()->GetId()) {
-      pen_.setColor(StatsTableConstants::kLocalPLayerTextColor);
+      pen_.setColor(kLocalPLayerTextColor);
     } else {
-      pen_.setColor(StatsTableConstants::kTextColor);
+      pen_.setColor(kTextColor);
     }
     painter->setPen(pen_);
     painter->drawText(get_rect(0), Qt::AlignCenter, stat->GetNickname());
@@ -132,7 +111,7 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                       QString::number(stat->GetKills()));
     painter->drawText(get_rect(3), Qt::AlignCenter,
                       QString::number(stat->GetDeaths()));
-    pen_.setColor(StatsTableConstants::kTableColor);
+    pen_.setColor(kTableColor);
     painter->setPen(pen_);
 
     painter->drawLine(get_rect(0).bottomLeft(),
