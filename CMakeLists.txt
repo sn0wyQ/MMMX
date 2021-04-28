@@ -125,7 +125,7 @@ target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
 # Synchronize Res with output folder
 add_custom_command(TARGET MMMX-Client POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory
-        $<TARGET_FILE_DIR:MMMX-Client>/Res)
+        ${CMAKE_BINARY_DIR}/Res)
 add_custom_command(TARGET MMMX-Client POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/Res/ $<TARGET_FILE_DIR:MMMX-Client>/Res)
+        ${CMAKE_SOURCE_DIR}/Res/ ${CMAKE_BINARY_DIR}/Res)
