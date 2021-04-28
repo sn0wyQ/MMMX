@@ -1,5 +1,5 @@
-#ifndef ANIMATION_ENUMS_H_
-#define ANIMATION_ENUMS_H_
+#ifndef ANIMATION_ANIMATION_ENUMS_H_
+#define ANIMATION_ANIMATION_ENUMS_H_
 
 #include <QMetaObject>
 #include <QMetaType>
@@ -85,4 +85,4 @@ Q_DECLARE_METATYPE(AnimationState)
 using AnimationType = AnimationEnumsWrapper::AnimationType;
 Q_DECLARE_METATYPE(AnimationType)
 
-#endif  // ANIMATION_ENUMS_H_
+#endif  // ANIMATION_ANIMATION_ENUMS_H_

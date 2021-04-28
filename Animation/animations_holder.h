@@ -1,5 +1,5 @@
-#ifndef ANIMATIONS_HOLDER_H_
-#define ANIMATIONS_HOLDER_H_
+#ifndef ANIMATION_ANIMATIONS_HOLDER_H_
+#define ANIMATION_ANIMATIONS_HOLDER_H_
 
 #include <memory>
 #include <unordered_map>
@@ -19,4 +19,4 @@ class AnimationsHolder {
   std::unordered_map<AnimationType, std::shared_ptr<Animation>> animations_;
 };
 
-#endif  // ANIMATIONS_HOLDER_H_
+#endif  // ANIMATION_ANIMATIONS_HOLDER_H_

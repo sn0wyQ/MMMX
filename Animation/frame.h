@@ -1,5 +1,5 @@
-#ifndef FRAME_H_
-#define FRAME_H_
+#ifndef ANIMATION_FRAME_H_
+#define ANIMATION_FRAME_H_
 
 #include <memory>
 #include <unordered_map>
@@ -35,4 +35,4 @@ class Frame {
       svg_renderer_ = std::make_shared<QSvgRenderer>();
 };
 
-#endif  // FRAME_H_
+#endif  // ANIMATION_FRAME_H_
