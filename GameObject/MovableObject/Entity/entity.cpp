@@ -96,17 +96,9 @@ void Entity::DrawHealthBar(Painter* painter) {
   painter->Translate(-translation);
 }
 
-void Entity::Revive() {
-  SetPosition(GetSpawnPosition());
+void Entity::Revive(QPointF point_to_spawn) {
+  SetPosition(point_to_spawn);
   SetHealthPoints(GetMaxHealthPoints());
-}
-
-void Entity::SetSpawnPosition(QPointF spawn_position) {
-  spawn_position_ = spawn_position;
-}
-
-QPointF Entity::GetSpawnPosition() const {
-  return spawn_position_;
 }
 
 float Entity::GetHealthRegenRate() const {

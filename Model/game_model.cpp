@@ -42,6 +42,9 @@ std::shared_ptr<GameObject> GameModel::GetNewEmptyGameObject(
     case GameObjectType::kBullet:
       object = std::make_shared<Bullet>(game_object_id);
       break;
+    case GameObjectType::kMapBorder:
+      object = std::make_shared<MapBorder>(game_object_id);
+      break;
   }
   return object;
 }

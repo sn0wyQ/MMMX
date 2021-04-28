@@ -31,10 +31,7 @@ class Entity : public MovableObject {
 
   bool IsEntity() const override;
 
-  void Revive();
-
-  void SetSpawnPosition(QPointF spawn_position);
-  QPointF GetSpawnPosition() const;
+  void Revive(QPointF point_to_spawn);
 
   void SetHealthRegenRate(float health_regen_rate);
   float GetHealthRegenRate() const;
@@ -46,7 +43,6 @@ class Entity : public MovableObject {
   float health_points_{};
   float health_regen_rate_{};
   float max_health_points_{};
-  QPointF spawn_position_;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_

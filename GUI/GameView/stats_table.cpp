@@ -5,15 +5,12 @@
 
 namespace Constants::StatsTable {
 
-const QColor kTableColor = Qt::black;
 const QColor kBackgroundColor = QColor(86, 86, 86, 180);
 QFont kHeaderFont("Roboto Mono", 31);
 const QColor kHeaderTextColor = QColor(95, 255, 62, 180);
 const QFont kTextFont("Roboto Mono", 25);
 const QColor kTextColor = QColor(236, 236, 236, 180);
 const QColor kLocalPLayerTextColor = QColor(62, 62, 62, 255);
-const int kMainTableWidth = 3;
-const int kInternalTableWidth = 1;
 
 const std::vector<QString> kColumnNames{
     "Nickname",
@@ -49,16 +46,10 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
 
 void StatsTable::DrawTable(QPainter* painter) {
   column_count_ = static_cast<int>(Constants::StatsTable::kColumnNames.size());
-  pen_.setColor(Constants::StatsTable::kTableColor);
-  pen_.setWidth(Constants::StatsTable::kMainTableWidth);
   painter->setPen(pen_);
-  int w = this->size().width()
-      - 2 * static_cast<int>(std::ceil(Constants::StatsTable::kMainTableWidth));
-  int h = this->size().height()
-      - 2 * static_cast<int>(std::ceil(Constants::StatsTable::kMainTableWidth));
+  int w = this->size().width();
+  int h = this->size().height();
   painter->save();
-  painter->translate(Constants::StatsTable::kMainTableWidth,
-                     Constants::StatsTable::kMainTableWidth);
   QSize arc_size = QSize(std::max(w, h) / 20, std::max(w, h) / 20);
   painter->setPen(Qt::NoPen);
   painter->setBrush(QBrush(Constants::StatsTable::kBackgroundColor));
@@ -72,7 +63,6 @@ void StatsTable::DrawTable(QPainter* painter) {
                                       w / column_count_,
                                       arc_size.height());
   }
-  pen_.setWidth(Constants::StatsTable::kInternalTableWidth);
   painter->setPen(pen_);
   for (int i = 0; i < column_count_; i++) {
     table_column_points_.emplace_back(i * w / column_count_,
@@ -126,7 +116,6 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                       QString::number(stat->GetKills()));
     painter->drawText(get_rect(3), Qt::AlignCenter,
                       QString::number(stat->GetDeaths()));
-    pen_.setColor(Constants::StatsTable::kTableColor);
     painter->setPen(pen_);
 
     prev_offset_y = curr_offset_y;
