@@ -3,13 +3,8 @@
 Crossbow::Crossbow(const Crossbow& crossbow) : Weapon(crossbow) {}
 
 Crossbow::Crossbow() {
-  SetBulletDamage(Constants::Weapon::Crossbow::kDefaultBulletDamage);
-  SetBulletSpeed(Constants::Weapon::Crossbow::kDefaultBulletSpeed);
-  SetBulletRange(Constants::Weapon::Crossbow::kDefaultBulletRange);
-  SetRateOfFire(Constants::Weapon::Crossbow::kDefaultRateOfFire);
-  SetReloadingTime(Constants::Weapon::Crossbow::kDefaultReloadingTime);
-  SetClipSize(Constants::Weapon::Crossbow::kDefaultClipSize);
-  SetCurrentBulletsInClip(Constants::Weapon::Crossbow::kDefaultClipSize);
+  this->SetParams(WeaponSettings::GetInstance().GetParams(
+      WeaponType::kCrossbow));
 }
 
 void Crossbow::DrawWeapon(Painter* painter) {
