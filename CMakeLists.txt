@@ -122,5 +122,10 @@ target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER})
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
 
-# Copy Res to output folder
-FILE(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Res DESTINATION ${CMAKE_BINARY_DIR})
+# Synchronize Res with output folder
+add_custom_command(TARGET MMMX-Client POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove_directory
+        $<TARGET_FILE_DIR:MMMX-Client>/Res)
+add_custom_command(TARGET MMMX-Client POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/Res/ $<TARGET_FILE_DIR:MMMX-Client>/Res)
