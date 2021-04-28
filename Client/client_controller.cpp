@@ -289,9 +289,18 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
-
-  if (model_->IsLocalPlayerSet()) {
-    model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
+  if (native_key == Controls::kKeyR) {
+    if (model_->IsLocalPlayerSet()) {
+      auto local_player = model_->GetLocalPlayer();
+      local_player->SetVelocity(GetKeyForce());
+      auto timestamp = GetCurrentServerTime();
+      if (local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
+        model_->GetLocalPlayer()->GetWeapon()->Reload(timestamp);
+        this->AddEventToSend(Event(EventType::kSendPlayerReloading,
+                                   static_cast<qint64>(GetCurrentServerTime()),
+                                   local_player->GetId()));
+      }
+    }
   }
 }
 
@@ -339,6 +348,9 @@ void ClientController::ShootHolding() {
                                model_->GetLocalPlayer()->GetId(),
                                QString("Shooter#") +
                         QString::number(model_->GetLocalPlayer()->GetId())));
+    if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
+      return;
+    }
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
     QList<QVariant> random_bullet_shifts;
     static std::mt19937 generator_(0);
@@ -356,6 +368,9 @@ void ClientController::ShootHolding() {
         break;
       }
     }
+    local_player->GetWeapon()->SetCurrentBulletsInClip(
+        local_player->GetWeapon()->GetCurrentBulletsInClip()
+            - random_bullet_shifts.size());
     model_->AddLocalBullets(random_bullet_shifts);
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
                                static_cast<qint64>(GetCurrentServerTime()),

@@ -25,6 +25,7 @@ class Weapon {
   Weapon(const Weapon& weapon) = default;
 
   void Reload(int64_t cur_time);
+  bool IsPossibleToReload(int64_t cur_time) const;
   bool IsPossibleToShoot(int64_t cur_time) const;
   void SetLastTimeShot(int64_t cur_time);
   int64_t GetTimeBetweenShoots() const;

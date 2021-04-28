@@ -13,6 +13,13 @@ bool Weapon::IsPossibleToShoot(int64_t cur_time) const {
   return true;
 }
 
+bool Weapon::IsPossibleToReload(int64_t cur_time) const {
+  if (cur_time - last_time_pressed_reload_ < GetReloadingTime()) {
+    return false;
+  }
+  return true;
+}
+
 void Weapon::Reload(int64_t cur_time) {
   last_time_pressed_reload_ = cur_time;
   SetCurrentBulletsInClip(GetClipSize());

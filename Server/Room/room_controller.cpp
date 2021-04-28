@@ -434,7 +434,8 @@ int RoomController::GetModelIdByTimestamp(int64_t timestamp) const {
 
 // ------------------- GAME EVENTS -------------------
 
-void RoomController::SendControlsEvent(const Event& event) {
+void RoomController::SendPlayerReloadingEvent(const Event& event) {
+  // Temporary
   auto timestamp = event.GetArg<int64_t>(0);
   auto model_id = GetModelIdByTimestamp(timestamp);
   // Проигнорим, если чел нам прислал то, что он сделал очень давно
@@ -446,27 +447,7 @@ void RoomController::SendControlsEvent(const Event& event) {
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
-  // Мы перемещаем человека в той самой модели из прошлого
-  QPointF position_to_set =
-      {event.GetArg<float>(2), event.GetArg<float>(3)};
-  auto velocity = event.GetArg<QVector2D>(4);
-  auto rotation = event.GetArg<float>(5);
-  // А теперь с учетом этого проталкиваем его пересечение на будущее
-  // учитывая velocity и rotation
-  while (model_id != static_cast<int>(models_cache_.size())) {
-    auto cur_model = models_cache_[model_id].model;
-    if (!cur_model->IsGameObjectIdTaken(player_id)) {
-      break;
-    }
-    auto player_in_model
-        = cur_model->GetPlayerByPlayerId(player_id);
-    player_in_model->SetPosition(position_to_set);
-    player_in_model->SetVelocity(velocity);
-    player_in_model->SetRotation(rotation);
-    player_in_model->MovableObject::OnTick(models_cache_[model_id].delta_time);
-    position_to_set = player_in_model->GetPosition();
-    model_id++;
-  }
+  // TODO(everyone) Send event for all person of reloading Player
 }
 
 void RoomController::SendPlayerShootingEvent(const Event& event) {
@@ -521,6 +502,41 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
 
       model_id++;
     }
+  }
+}
+
+void RoomController::SendControlsEvent(const Event& event) {
+  auto timestamp = event.GetArg<int64_t>(0);
+  auto model_id = GetModelIdByTimestamp(timestamp);
+  // Проигнорим, если чел нам прислал то, что он сделал очень давно
+  if (model_id < 0) {
+    return;
+  }
+  auto current_model_data = models_cache_[model_id];
+  auto player_id = event.GetArg<GameObjectId>(1);
+  if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  // Мы перемещаем человека в той самой модели из прошлого
+  QPointF position_to_set =
+      {event.GetArg<float>(2), event.GetArg<float>(3)};
+  auto velocity = event.GetArg<QVector2D>(4);
+  auto rotation = event.GetArg<float>(5);
+  // А теперь с учетом этого проталкиваем его пересечение на будущее
+  // учитывая velocity и rotation
+  while (model_id != static_cast<int>(models_cache_.size())) {
+    auto cur_model = models_cache_[model_id].model;
+    if (!cur_model->IsGameObjectIdTaken(player_id)) {
+      break;
+    }
+    auto player_in_model
+        = cur_model->GetPlayerByPlayerId(player_id);
+    player_in_model->SetPosition(position_to_set);
+    player_in_model->SetVelocity(velocity);
+    player_in_model->SetRotation(rotation);
+    player_in_model->MovableObject::OnTick(models_cache_[model_id].delta_time);
+    position_to_set = player_in_model->GetPosition();
+    model_id++;
   }
 }
 

@@ -107,8 +107,9 @@ class RoomController : public BaseController {
 
   // ------------------- GAME EVENTS -------------------
 
-  void SendPlayerShootingEvent(const Event& event) override;
   void SendControlsEvent(const Event& event) override;
+  void SendPlayerShootingEvent(const Event& event) override;
+  void SendPlayerReloadingEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

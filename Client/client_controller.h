@@ -30,6 +30,7 @@
 #ifdef WIN32
 enum class Controls {
   kKeyW = 17,
+  kKeyR = 19,
   kKeyA = 30,
   kKeyS = 31,
   kKeyD = 32
@@ -37,6 +38,7 @@ enum class Controls {
 #else
 enum class Controls {
   kKeyW = 25,
+  kKeyR = 27,
   kKeyA = 38,
   kKeyS = 39,
   kKeyD = 40
