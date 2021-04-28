@@ -108,6 +108,7 @@ enum class EventType {
   // [0] - <float> experience_to_add
   kIncreaseLocalPlayerExperience,
 
+  // [0] - <QPointF> point_to_spawn
   kLocalPlayerDied,
 
   // [0] - <float> health_points

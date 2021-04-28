@@ -41,8 +41,8 @@ constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
 constexpr float kFovMultiplier = 1.7f;
 
 // Map
-constexpr float kDefaultMapWidth = 50.f;
-constexpr float kDefaultMapHeight = 50.f;
+constexpr float kDefaultMapWidth = 100.f;
+constexpr float kDefaultMapHeight = 100.f;
 
 // Room
 constexpr int kDefaultMaxClients = 4;
@@ -71,8 +71,6 @@ constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
 constexpr float kDefaultEntityFov = 12.f;
-constexpr float kDefaultPlayerX = 5.f;
-constexpr float kDefaultPlayerY = 5.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
 constexpr float kDefaultHealthRegenSpeed = 0.001f;

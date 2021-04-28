@@ -17,11 +17,6 @@ GameObjectId RoomGameModel::AddGameObject(GameObjectType type,
                                           const std::vector<QVariant>& params) {
   GameObjectId game_object_id = this->GenerateNextUnusedGameObjectId();
   GameModel::AddGameObject(game_object_id, type, params);
-  auto object = this->GetGameObjectByGameObjectId(game_object_id);
-  if (object->IsEntity()) {
-    auto entity = std::dynamic_pointer_cast<Entity>(object);
-    entity->SetSpawnPosition(object->GetPosition());
-  }
   return game_object_id;
 }
 
@@ -64,4 +59,64 @@ void RoomGameModel::UpdatePlayerStatsHashes() {
     last_player_stats_hash_[stats->GetPlayerId()] =
         HashCalculator::GetHash(stats->GetParams());
   }
+}
+
+QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
+                                       bool for_player) const {
+  std::uniform_real_distribution<> random_x(
+      -Constants::kDefaultMapWidth / 2.f + radius_from_object,
+      Constants::kDefaultMapWidth / 2.f - radius_from_object);
+  std::uniform_real_distribution<> random_y(
+      -Constants::kDefaultMapHeight / 2.f + radius_from_object,
+      Constants::kDefaultMapHeight / 2.f - radius_from_object);
+  int times_generate = 0;
+  QPointF best_point;
+  float big_distance{Constants::kDefaultMapHeight};
+  float best_point_min_player_distance{0.f};
+  while (true) {
+    times_generate++;
+    bool regenerate = false;
+    static std::mt19937 rng(QDateTime::currentMSecsSinceEpoch());
+    float min_player_distance{big_distance};
+    QPointF point(random_x(rng), random_y(rng));
+    for (const auto& game_object : GetAllGameObjects()) {
+      if (game_object->GetType() == GameObjectType::kMapBorder) {
+        continue;
+      }
+      if (for_player) {
+        if (game_object->GetType() == GameObjectType::kPlayer) {
+          min_player_distance =
+              std::min(min_player_distance, Math::DistanceBetweenPoints(
+                  point, game_object->GetPosition()));
+        }
+      }
+      float bounding_circle_radius = game_object->GetBoundingCircleRadius();
+      if (Math::DistanceBetweenPoints(point, game_object->GetPosition()) <
+          radius_from_object + bounding_circle_radius) {
+        regenerate = true;
+      }
+    }
+    if (!regenerate) {
+      if (for_player) {
+        if (min_player_distance >= best_point_min_player_distance) {
+          best_point_min_player_distance = min_player_distance;
+          best_point = point;
+        }
+      } else {
+        return point;
+      }
+    }
+    if (times_generate == 1000) {
+      if (for_player) {
+        break;
+      }
+      // костыль если вся карта занята
+      // я тут хз что делать, крашить сервер не хочется,
+      // так что пока оставил создание объекта где то далеко
+      qWarning() << "[MODEL] Can't find spawn point";
+      return QPointF(Constants::kDefaultMapWidth,
+                     Constants::kDefaultMapHeight);
+    }
+  }
+  return best_point;
 }
