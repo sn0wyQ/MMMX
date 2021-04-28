@@ -8,7 +8,7 @@ namespace AnimationEnumsWrapper {
 
 Q_NAMESPACE
 
-enum class AnimationInstruction {
+enum class AnimationInstructionType {
   // Sets |animation_state_| to AnimationState::kIdle
   // Sets |animation_frame_index_| to 0
   // Sets |animation_instruction_index_| to 0
@@ -44,7 +44,7 @@ enum class AnimationInstruction {
   kWaitRand
 };
 
-Q_ENUM_NS(AnimationInstruction)
+Q_ENUM_NS(AnimationInstructionType)
 
 // Animation currently has 4 states:
 // 1) kDestroy (after object is destroyed)
@@ -76,8 +76,9 @@ Q_ENUM_NS(AnimationType)
 
 }  // namespace AnimationEnumsWrapper
 
-using AnimationInstruction = AnimationEnumsWrapper::AnimationInstruction;
-Q_DECLARE_METATYPE(AnimationInstruction)
+using AnimationInstructionType =
+    AnimationEnumsWrapper::AnimationInstructionType;
+Q_DECLARE_METATYPE(AnimationInstructionType)
 
 using AnimationState = AnimationEnumsWrapper::AnimationState;
 Q_DECLARE_METATYPE(AnimationState)

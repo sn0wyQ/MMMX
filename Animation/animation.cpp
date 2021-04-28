@@ -65,8 +65,8 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
             instruction_iter != kAnimationCommandsToInstructions.end()) {
           animation_instructions_.at(animation_state)
               .push_back({instruction_iter->second, {}});
-          if (instruction_iter->second == AnimationInstruction::kEnd
-              || instruction_iter->second == AnimationInstruction::kLoop) {
+          if (instruction_iter->second == AnimationInstructionType::kEnd
+              || instruction_iter->second == AnimationInstructionType::kLoop) {
             animation_state = AnimationState::SIZE;
           }
         } else {
@@ -80,7 +80,7 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
         for (int index = 1;
              index < parts.size() && !parts[index].startsWith('#'); ++index) {
           animation_instructions_.at(animation_state)
-              .back().second.push_back(parts[index].toInt());
+              .back().args.push_back(parts[index].toInt());
         }
       }
       ++line_index;
@@ -99,18 +99,18 @@ void Animation::Update(int delta_time) {
   while (current_animation_time_ >= go_to_next_instruction_time_) {
     InstructionList&
         current_instruction_list = animation_instructions_.at(animation_state_);
-    switch (current_instruction_list.at(animation_instruction_index_).first) {
-      case AnimationInstruction::kEnd: {
+    switch (current_instruction_list.at(animation_instruction_index_).type) {
+      case AnimationInstructionType::kEnd: {
         SetAnimationState(AnimationState::kIdle, true);
         break;
       }
 
-      case AnimationInstruction::kLoop: {
+      case AnimationInstructionType::kLoop: {
         SetAnimationState(animation_state_, true);
         break;
       }
 
-      case AnimationInstruction::kNextFrame: {
+      case AnimationInstructionType::kNextFrame: {
         std::queue<Frame>& frames = animation_frames_.at(animation_state_);
 
         // If sequence contains only one frame we don't touch anything
@@ -137,18 +137,18 @@ void Animation::Update(int delta_time) {
         break;
       }
 
-      case AnimationInstruction::kPlayFrames: {
+      case AnimationInstructionType::kPlayFrames: {
         InstructionList instructions_to_insert_;
         for (int index = 0;
               index < current_instruction_list.
-                at(animation_instruction_index_).second.at(0);
+                at(animation_instruction_index_).args.at(0);
               ++index) {
-          instructions_to_insert_.push_back({AnimationInstruction::kNextFrame,
+          instructions_to_insert_.push_back({AnimationInstructionType::kNextFrame,
                                              {}});
-          instructions_to_insert_.push_back({AnimationInstruction::kWait,
+          instructions_to_insert_.push_back({AnimationInstructionType::kWait,
                                              {current_instruction_list.at(
                                                 animation_instruction_index_)
-                                                .second.at(1)}});
+                                                .args.at(1)}});
         }
         current_instruction_list.erase(
             current_instruction_list.begin()
@@ -161,21 +161,21 @@ void Animation::Update(int delta_time) {
         break;
       }
 
-      case AnimationInstruction::kWait: {
+      case AnimationInstructionType::kWait: {
         go_to_next_instruction_time_
             += current_instruction_list
-                .at(animation_instruction_index_).second.at(0);
+                .at(animation_instruction_index_).args.at(0);
         ++animation_instruction_index_;
         break;
       }
 
-      case AnimationInstruction::kWaitRand: {
+      case AnimationInstructionType::kWaitRand: {
         int min_wait_time =
             current_instruction_list
-                .at(animation_instruction_index_).second.at(0);
+                .at(animation_instruction_index_).args.at(0);
         int max_wait_time =
             current_instruction_list
-                .at(animation_instruction_index_).second.at(1);
+                .at(animation_instruction_index_).args.at(1);
         go_to_next_instruction_time_ +=
             QRandomGenerator::global()->bounded(min_wait_time, max_wait_time);
         ++animation_instruction_index_;

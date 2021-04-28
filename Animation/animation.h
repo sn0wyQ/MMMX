@@ -2,7 +2,6 @@
 #define ANIMATION_ANIMATION_H_
 
 #include <exception>
-#include <limits>
 #include <memory>
 #include <queue>
 #include <unordered_map>
@@ -11,12 +10,10 @@
 
 #include <QDebug>
 #include <QFile>
-#include <QPixmap>
 #include <QRandomGenerator>
 #include <QRegExp>
 #include <QString>
 #include <QStringList>
-#include <QtSvg/QtSvg>
 
 #include "Animation/animation_enums.h"
 #include "Animation/frame.h"
@@ -33,18 +30,21 @@ const std::unordered_map<QString, AnimationState> kAnimationStateLabels {
     { "shoot:", AnimationState::kShoot }
 };
 
-const std::unordered_map<QString, AnimationInstruction>
+const std::unordered_map<QString, AnimationInstructionType>
     kAnimationCommandsToInstructions {
-    { "end", AnimationInstruction::kEnd },
-    { "loop", AnimationInstruction::kLoop },
-    { "nextframe", AnimationInstruction::kNextFrame },
-    { "playframes", AnimationInstruction::kPlayFrames },
-    { "wait", AnimationInstruction::kWait },
-    { "waitrand", AnimationInstruction::kWaitRand }
+    { "end", AnimationInstructionType::kEnd },
+    { "loop", AnimationInstructionType::kLoop },
+    { "nextframe", AnimationInstructionType::kNextFrame },
+    { "playframes", AnimationInstructionType::kPlayFrames },
+    { "wait", AnimationInstructionType::kWait },
+    { "waitrand", AnimationInstructionType::kWaitRand }
 };
 
-using InstructionList =
-    std::vector<std::pair<AnimationInstruction, std::vector<int>>>;
+struct Instruction {
+  AnimationInstructionType type;
+  std::vector<int> args;
+};
+using InstructionList = std::vector<Instruction>;
 
 // Images for animations must lay in the Resources/Animation/%sprite_name%
 class Animation {
