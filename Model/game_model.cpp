@@ -61,7 +61,7 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
                         .valueToKey(static_cast<uint32_t>(type)));
 }
 
-std::vector<std::shared_ptr<PlayerStats>>GameModel::
+std::vector<std::shared_ptr<PlayerStats>> GameModel::
                                                   GetAllPlayersStats() const {
   std::vector<std::shared_ptr<PlayerStats>> result;
   for (const auto& it : players_stats_) {

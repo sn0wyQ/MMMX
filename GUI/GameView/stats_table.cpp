@@ -3,7 +3,24 @@
 #include <algorithm>
 #include <utility>
 
-using namespace Constants::StatsTable;
+namespace Constants::StatsTable {
+
+const QColor kTableColor = Qt::black;
+const QColor kBackgroundColor = QColor(128, 128, 128, 128);
+const QColor kHeaderTextColor = Qt::green;
+const QColor kTextColor = Qt::black;
+const QColor kLocalPLayerTextColor = Qt::yellow;
+const int kMainTableWidth = 3;
+const int kInternalTableWidth = 1;
+
+const std::vector<QString> kColumnNames{
+    "Nickname",
+    "Level",
+    "Kills",
+    "Deaths"
+};
+
+}  // namespace StatsTable
 
 StatsTable::StatsTable(QWidget* parent,
                        std::shared_ptr<ClientGameModel> model,
@@ -28,19 +45,19 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
 }
 
 void StatsTable::DrawTable(QPainter* painter) {
-  column_count_ = static_cast<int>(kColumnNames.size());
-  pen_.setColor(kTableColor);
-  pen_.setWidth(kMainTableWidth);
+  column_count_ = static_cast<int>(Constants::StatsTable::kColumnNames.size());
+  pen_.setColor(Constants::StatsTable::kTableColor);
+  pen_.setWidth(Constants::StatsTable::kMainTableWidth);
   painter->setPen(pen_);
   int w = this->size().width()
-      - 2 * static_cast<int>(std::ceil(kMainTableWidth));
+      - 2 * static_cast<int>(std::ceil(Constants::StatsTable::kMainTableWidth));
   int h = this->size().height()
-      - 2 * static_cast<int>(std::ceil(kMainTableWidth));
+      - 2 * static_cast<int>(std::ceil(Constants::StatsTable::kMainTableWidth));
   painter->save();
-  painter->translate(kMainTableWidth,
-                     kMainTableWidth);
+  painter->translate(Constants::StatsTable::kMainTableWidth,
+                     Constants::StatsTable::kMainTableWidth);
   QSize arc_size = QSize(std::max(w, h) / 20, std::max(w, h) / 20);
-  painter->setBrush(QBrush(kBackgroundColor));
+  painter->setBrush(QBrush(Constants::StatsTable::kBackgroundColor));
   painter->drawRoundedRect(0, 0, w, h, arc_size.width(), arc_size.height());
   painter->drawLine(0, arc_size.height(), w, arc_size.height());
 
@@ -56,7 +73,7 @@ void StatsTable::DrawTable(QPainter* painter) {
                                       w / column_count_,
                                       arc_size.height());
   }
-  pen_.setWidth(kInternalTableWidth);
+  pen_.setWidth(Constants::StatsTable::kInternalTableWidth);
   painter->setPen(pen_);
   for (int i = 0; i < column_count_; i++) {
     if (i + 1 < column_count_) {
@@ -83,12 +100,12 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                const std::shared_ptr<PlayerStats>& stats2) {
               return *stats1 < *stats2;
             });
-  pen_.setColor(kHeaderTextColor);
+  pen_.setColor(Constants::StatsTable::kHeaderTextColor);
   painter->setPen(pen_);
   for (int i = 0; i < column_count_; i++) {
     painter->drawText(header_column_rects_[i],
                       Qt::AlignCenter,
-                      kColumnNames[i]);
+                      Constants::StatsTable::kColumnNames[i]);
   }
   auto offset_x = QPoint(this->size().width() / column_count_, 0);
   auto prev_offset_y = QPoint();
@@ -99,9 +116,9 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
   };
   for (const auto& stat : stats) {
     if (stat->GetPlayerId() == model_->GetLocalPlayer()->GetId()) {
-      pen_.setColor(kLocalPLayerTextColor);
+      pen_.setColor(Constants::StatsTable::kLocalPLayerTextColor);
     } else {
-      pen_.setColor(kTextColor);
+      pen_.setColor(Constants::StatsTable::kTextColor);
     }
     painter->setPen(pen_);
     painter->drawText(get_rect(0), Qt::AlignCenter, stat->GetNickname());
@@ -111,7 +128,7 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                       QString::number(stat->GetKills()));
     painter->drawText(get_rect(3), Qt::AlignCenter,
                       QString::number(stat->GetDeaths()));
-    pen_.setColor(kTableColor);
+    pen_.setColor(Constants::StatsTable::kTableColor);
     painter->setPen(pen_);
 
     painter->drawLine(get_rect(0).bottomLeft(),
