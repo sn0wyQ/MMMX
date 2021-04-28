@@ -10,8 +10,8 @@ const QColor kBackgroundColor = QColor(128, 128, 128, 128);
 const QColor kHeaderTextColor = Qt::green;
 const QColor kTextColor = Qt::black;
 const QColor kLocalPLayerTextColor = Qt::yellow;
-const int kMainTableWidth = 3;
-const int kInternalTableWidth = 1;
+const int kExternalLinesWidth = 3;
+const int kInternalLinesWidth = 1;
 
 const std::vector<QString> kColumnNames{
     "Nickname",
@@ -47,15 +47,14 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
 void StatsTable::DrawTable(QPainter* painter) {
   column_count_ = static_cast<int>(Constants::StatsTable::kColumnNames.size());
   pen_.setColor(Constants::StatsTable::kTableColor);
-  pen_.setWidth(Constants::StatsTable::kMainTableWidth);
+  pen_.setWidth(Constants::StatsTable::kExternalLinesWidth);
   painter->setPen(pen_);
-  int w = this->size().width()
-      - 2 * static_cast<int>(std::ceil(Constants::StatsTable::kMainTableWidth));
-  int h = this->size().height()
-      - 2 * static_cast<int>(std::ceil(Constants::StatsTable::kMainTableWidth));
+  int w = this->size().width() - 2 * Constants::StatsTable::kExternalLinesWidth;
+  int h =
+      this->size().height() - 2 * Constants::StatsTable::kExternalLinesWidth;
   painter->save();
-  painter->translate(Constants::StatsTable::kMainTableWidth,
-                     Constants::StatsTable::kMainTableWidth);
+  painter->translate(Constants::StatsTable::kExternalLinesWidth,
+                     Constants::StatsTable::kExternalLinesWidth);
   QSize arc_size = QSize(std::max(w, h) / 20, std::max(w, h) / 20);
   painter->setBrush(QBrush(Constants::StatsTable::kBackgroundColor));
   painter->drawRoundedRect(0, 0, w, h, arc_size.width(), arc_size.height());
@@ -73,7 +72,7 @@ void StatsTable::DrawTable(QPainter* painter) {
                                       w / column_count_,
                                       arc_size.height());
   }
-  pen_.setWidth(Constants::StatsTable::kInternalTableWidth);
+  pen_.setWidth(Constants::StatsTable::kInternalLinesWidth);
   painter->setPen(pen_);
   for (int i = 0; i < column_count_; i++) {
     if (i + 1 < column_count_) {
