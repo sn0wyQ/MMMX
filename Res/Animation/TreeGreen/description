@@ -2,7 +2,7 @@
 
 idle:
 	waitrand	8000	20000
-	playframes	400 16
+	playframes  400 16
 loop
 
 move:

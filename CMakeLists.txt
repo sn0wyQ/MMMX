@@ -69,7 +69,7 @@ set(SOURCES
         Animation/animation.cpp
         Animation/animation_enums.h
         Animation/animations_holder.cpp
-        Animation/frame.cpp
+        Animation/shared_frame.cpp
         Client/abstract_client_view.h
         Client/client_controller.cpp
         Client/client_view.cpp

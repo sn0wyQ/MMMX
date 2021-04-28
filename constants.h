@@ -61,6 +61,9 @@ constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
 constexpr bool kRigidBodyShow = true;
 
+// Animations
+constexpr int kTimeToCheckIfAnimationsNeedToBeUnloaded = 30;
+
 // GameObject
 constexpr float kMaximumDistanceToFovMultiplier = 1.25f;
 

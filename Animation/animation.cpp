@@ -12,7 +12,7 @@ Animation::Animation(AnimationType animation_type)
     int animation_state_index = 0;
     auto animation_state = static_cast<AnimationState>(0);
     while (animation_state < AnimationState::SIZE) {
-      std::queue<Frame> first_frames_of_state;
+      std::queue<SharedFrame> first_frames_of_state;
       first_frames_of_state.emplace(base_path_, animation_state, 0);
       if (first_frames_of_state.front().IsExists()) {
         if (animation_state == animation_state_) {
@@ -111,14 +111,14 @@ void Animation::Update(int delta_time) {
       }
 
       case AnimationInstructionType::kNextFrame: {
-        std::queue<Frame>& frames = animation_frames_.at(animation_state_);
+        std::queue<SharedFrame>& frames = animation_frames_.at(animation_state_);
 
         // If sequence contains only one frame we don't touch anything
         // (We guarantee that if sequence has more than one frame frames.size()
         //  would return more, than one)
         if (frames.size() > 1) {
           frames.pop();
-          Frame next_frame
+          SharedFrame next_frame
               (base_path_,
                animation_state_,
                frames.front().GetFrameIndex() + 1);
@@ -143,8 +143,8 @@ void Animation::Update(int delta_time) {
               index < current_instruction_list.
                 at(animation_instruction_index_).args.at(0);
               ++index) {
-          instructions_to_insert_.push_back({AnimationInstructionType::kNextFrame,
-                                             {}});
+          instructions_to_insert_
+            .push_back({AnimationInstructionType::kNextFrame, {}});
           instructions_to_insert_.push_back({AnimationInstructionType::kWait,
                                              {current_instruction_list.at(
                                                 animation_instruction_index_)
@@ -197,7 +197,7 @@ void Animation::SetAnimationState(AnimationState animation_state, bool forced) {
 
   // Clearing current animation state's frames queue
   // and adding there first frame of sequence
-  std::queue<Frame>().swap(animation_frames_.at(animation_state_));
+  std::queue<SharedFrame>().swap(animation_frames_.at(animation_state_));
   animation_frames_.at(animation_state_).emplace(base_path_,
                                                  animation_state_,
                                                  0);
@@ -214,7 +214,8 @@ void Animation::SetAnimationState(AnimationState animation_state, bool forced) {
 }
 
 void Animation::RenderFrame(Painter* painter, float w, float h) const {
-  const Frame& frame_to_render = animation_frames_.at(animation_state_).front();
+  const SharedFrame&
+      frame_to_render = animation_frames_.at(animation_state_).front();
   if (!frame_to_render.IsExists()) {
     return;
   }

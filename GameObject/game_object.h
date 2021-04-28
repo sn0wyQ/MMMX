@@ -86,7 +86,7 @@ class GameObject {
 
  private:
   // Holds animations for all GameObjects
-  // Prevents same Frame being loaded into RAM more than once at a time
+  // Prevents same SharedFrame being loaded into RAM more than once at a time
   static AnimationsHolder animations_holder_;
 
   GameObjectId id_{Constants::kNullGameObjectId};

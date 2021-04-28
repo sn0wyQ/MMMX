@@ -2,13 +2,20 @@
 
 std::shared_ptr<Animation>
     AnimationsHolder::GetAnimation(AnimationType animation_type) {
-  auto iter = animations_.find(animation_type);
-  if (iter == animations_.end()) {
-    iter = animations_.insert({animation_type,
+  if (kIsSynchronizedAllOfThisType.at(animation_type)) {
+    auto iter = animations_.find(animation_type);
+    if (iter == animations_.end()) {
+      return animations_.insert({animation_type,
+                                 std::make_shared<Animation>(animation_type)})
+                                ->second;
+    } else {
+      return iter->second;
+    }
+  } else {
+    return animations_.insert({animation_type,
                                std::make_shared<Animation>(animation_type)})
-                                  .first;
+                                ->second;
   }
-  return iter->second;
 }
 
 void AnimationsHolder::UpdateAnimations(int delta_time) {

@@ -16,7 +16,7 @@
 #include <QStringList>
 
 #include "Animation/animation_enums.h"
-#include "Animation/frame.h"
+#include "Animation/shared_frame.h"
 #include "Painter/painter.h"
 
 const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
@@ -66,7 +66,7 @@ class Animation {
   AnimationType animation_type_ = AnimationType::kNone;
   AnimationState animation_state_ = AnimationState::kIdle;
 
-  std::unordered_map<AnimationState, std::queue<Frame>> animation_frames_;
+  std::unordered_map<AnimationState, std::queue<SharedFrame>> animation_frames_;
 
   size_t animation_instruction_index_ = 0;
   std::unordered_map<AnimationState, InstructionList> animation_instructions_;
