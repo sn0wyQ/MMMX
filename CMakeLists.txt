@@ -5,7 +5,7 @@ project(MMMX-Server)
 set(CMAKE_CXX_STANDARD 20)
 add_compile_options(
         "$<$<CONFIG:RELEASE>:-O3>"
-        "$<$<CONFIG:DEBUG>:-O1>"
+        "$<$<CONFIG:DEBUG>:-O0>"
 )
 
 set(CMAKE_AUTOMOC ON) # Enable Qt MOC compiler
@@ -78,6 +78,8 @@ set(SOURCES
         Event/event.cpp
         Event/event_type.h
         GUI/GameView/game_view.cpp
+        GUI/GameView/player_bar.cpp
+        GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
@@ -87,6 +89,7 @@ set(SOURCES
         GameObject/RigidBody/rigid_body.cpp
         GameObject/RigidBody/rigid_body_circle.cpp
         GameObject/RigidBody/rigid_body_rectangle.cpp
+        GameObject/map_border.cpp
         GameObject/game_object.cpp
         Hash/hash_calculator.cpp
         Interpolator/interpolator.cpp
@@ -96,9 +99,15 @@ set(SOURCES
         Model/room_game_model.cpp
         Model/server_model.cpp
         Painter/painter.cpp
+        PlayerStats/player_stats.cpp
         Server/Room/room_controller.cpp
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
+        Weapon/AssaultRifle/assault_rifle.cpp
+        Weapon/Crossbow/crossbow.cpp
+        Weapon/MachineGun/machine_gun.cpp
+        Weapon/Shotgun/shotgun.cpp
+        Weapon/weapon.cpp
         )
 
 # If necessary, add resources files

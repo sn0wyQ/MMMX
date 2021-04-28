@@ -14,6 +14,9 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   game_view_->move(0, 0);
   game_view_->setMouseTracking(true);
 
+  // Player Bar
+  player_bar_ = new PlayerBar(this, controller_->GetModel());
+
   // Info Label
   info_label_ = new QLabel(this);
   info_label_->move(10, 10);
@@ -47,6 +50,10 @@ void ClientView::mouseMoveEvent(QMouseEvent* mouse_event) {
   controller_->MouseMoveEvent(mouse_event);
 }
 
+void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
+  controller_->MousePressEvent(mouse_event);
+}
+
 void ClientView::paintEvent(QPaintEvent* paint_event) {
   auto local_player_position = model_->IsLocalPlayerSet()
                       ? model_->GetLocalPlayer()->GetPosition()
@@ -56,13 +63,15 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
                                   "Room Var: %2\n"
                                   "Client Var: %3\n"
                                   "Ping: %4\n"
-                                  "X: %5, \tY: %6"))
+                                  "X: %5, \tY: %6\n"
+                                  "Nickname: %7\n"))
                        .arg(controller_->GetServerVar())
                        .arg(controller_->GetRoomVar())
                        .arg(controller_->GetClientVar())
                        .arg(controller_->GetPing())
                        .arg(local_player_position.x())
-                       .arg(local_player_position.y()));
+                       .arg(local_player_position.y())
+                       .arg(model_->GetLocalPlayerStats()->GetNickname()));
   info_label_->adjustSize();
 
   qDebug().noquote().nospace() << "[VIEW] Repainted";
@@ -70,4 +79,11 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
   game_view_->resize(resize_event->size());
+  int height_of_bar = static_cast<int>(0.15f * static_cast<float>(height()));
+  player_bar_->resize(width(), height_of_bar);
+  player_bar_->move(0, height() - height_of_bar);
+}
+
+void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
+  controller_->MouseReleaseEvent(mouse_event);
 }

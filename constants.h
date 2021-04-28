@@ -38,11 +38,11 @@ constexpr int kTimeToTick = 1000 / kTickrate;
 const auto kHashAlgorithm = QCryptographicHash::Algorithm::Md5;
 constexpr int kMSecsToStore = 1000;
 constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
-constexpr int64_t kInterpolationMSecs = 200;
+constexpr float kFovMultiplier = 1.7f;
 
 // Map
-constexpr float kDefaultMapWidth = 50.f;
-constexpr float kDefaultMapHeight = 50.f;
+constexpr float kDefaultMapWidth = 100.f;
+constexpr float kDefaultMapHeight = 100.f;
 
 // Room
 constexpr int kDefaultMaxClients = 4;
@@ -55,6 +55,8 @@ constexpr RoomId kNullRoomId = -1;
 // Client
 const QString kWindowTitle = "MMMX | Version " + kVersionString;
 constexpr int kTimeToUpdateVarsAndPing = 1000;
+constexpr int64_t kInterpolationMSecs = 200;
+constexpr int kShootHoldingCheck = 30;
 
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
@@ -65,18 +67,24 @@ constexpr bool kRigidBodyShow = true;
 constexpr int kTimeToCheckIfAnimationsNeedToBeUnloaded = 30;
 
 // GameObject
-constexpr float kMaximumDistanceToFovMultiplier = 1.25f;
+constexpr float kDefaultMaxHealthPoints = 100.f;
 
 // MovableObject
 constexpr float kDefaultMovableObjectSpeed = 0.01f;
 
 // Player
-constexpr float kDefaultEntityFov = 10.5f;
-constexpr float kDefaultPlayerX = 5.f;
-constexpr float kDefaultPlayerY = 5.f;
+constexpr float kDefaultEntityFov = 12.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
+constexpr float kDefaultHealthRegenSpeed = 0.001f;
 
+// Bullet collision
+constexpr int kAccuracy = 10;
+
+constexpr float kExpForLevel[] = {
+    10, 15, 20, 25, 30, 35, 40, 45, 50, 55
+};
+constexpr float kExpMultiplier = 5.f;
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

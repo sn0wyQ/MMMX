@@ -5,8 +5,13 @@
 #include <memory>
 
 #include <QVector2D>
+#include <QEvent>
 
 #include "GameObject/MovableObject/Entity/entity.h"
+#include "Weapon/AssaultRifle/assault_rifle.h"
+#include "Weapon/Crossbow/crossbow.h"
+#include "Weapon/MachineGun/machine_gun.h"
+#include "Weapon/Shotgun/shotgun.h"
 #include "constants.h"
 
 class Player : public Entity {
@@ -14,6 +19,7 @@ class Player : public Entity {
   explicit Player(GameObjectId player_id);
   Player(const Player& other);
 
+  void DrawLevel(Painter* painter) override;
   void DrawRelatively(Painter* painter) override;
 
   bool IsLocalPlayer() const;
@@ -27,10 +33,23 @@ class Player : public Entity {
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
 
+  const std::shared_ptr<Weapon>& GetWeapon() const;
+
+  void SetLevel(int level);
+  int GetLevel() const;
+  void SetCurrentExp(float current_exp);
+  float GetCurrentExp() const;
+
+  void IncreaseExperience(float experience_to_add);
+
   std::shared_ptr<GameObject> Clone() const override;
 
  private:
   bool is_local_player_{false};
+  std::shared_ptr<Weapon> weapon_;
+  WeaponType weapon_type_;
+  int level_{1};
+  float current_exp_{};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_

@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 
+#include "GameObject/MovableObject/Bullet/bullet.h"
 #include "GameObject/MovableObject/movable_object.h"
 #include "GameObject/RigidBody/intersect_checker.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
@@ -30,8 +31,10 @@ void MoveAlongTangents(
     const std::vector<std::shared_ptr<GameObject>>& objects,
     QVector2D force, const std::vector<QVector2D>& tangents);
 
-// Далее сюда можно добавить функции, которые будут обрабатывать столкновения
-// другого типа (с отталкиванием, с прилипанием)
+std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
+    const std::shared_ptr<Bullet>& main,
+    const std::vector<std::shared_ptr<GameObject>>& objects,
+    int delta_time, bool on_local);
 
 }  // namespace ObjectCollision
 

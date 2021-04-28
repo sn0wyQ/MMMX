@@ -84,6 +84,7 @@ class ClientController : public BaseController {
 
   void UpdateAnimations(int delta_time);
   void UpdateLocalPlayer(int delta_time);
+  void UpdateLocalBullets(int delta_time);
   void UpdateInterpolationInfo();
   int64_t GetCurrentServerTime() const override;
 
@@ -95,6 +96,8 @@ class ClientController : public BaseController {
   void KeyPressEvent(QKeyEvent* key_event);
   void KeyReleaseEvent(QKeyEvent* key_event);
   void MouseMoveEvent(QMouseEvent* mouse_event);
+  void MousePressEvent(QMouseEvent* mouse_event);
+  void MouseReleaseEvent(QMouseEvent* mouse_event);
 
   // --------------------------------------------------
 
@@ -104,20 +107,26 @@ class ClientController : public BaseController {
   void OnByteArrayReceived(const QByteArray& message);
   void UpdateVarsAndPing();
   void SetPing(int elapsed_time);
+  void ShootHolding();
 
  private:
   void EndGameEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
   void SetPlayerIdToClient(const Event& event) override;
+  void SetTimeDifferenceEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateVarsEvent(const Event& event) override;
-  void SetTimeDifferenceEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
-  void SendGameInfoToInterpolateEvent(const Event& event) override;
+
   void AddLocalPlayerGameObjectEvent(const Event& event) override;
-  void UpdateGameObjectDataEvent(const Event& event) override;
   void GameObjectLeftFovEvent(const Event& event) override;
+  void SendGameInfoToInterpolateEvent(const Event& event) override;
+  void UpdateGameObjectDataEvent(const Event& event) override;
+  void UpdatePlayersStatsEvent(const Event& event) override;
+  void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;
+  void LocalPlayerDiedEvent(const Event& event) override;
+  void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;
@@ -144,6 +153,8 @@ class ClientController : public BaseController {
       {Direction::kDown, false},
       {Direction::kLeft, false}
   };
+  QTimer shoot_check_timer;
+  bool is_holding_{false};
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

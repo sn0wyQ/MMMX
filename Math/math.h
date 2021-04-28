@@ -8,52 +8,57 @@
 
 #include <QLineF>
 #include <QPointF>
+#include <QVector2D>
 
 #include "GameObject/RigidBody/intersect_constants.h"
 
 namespace Math {
-  // Constants
-  constexpr float kPi = 3.1415927410125732421875f;
+// Constants
+constexpr float kPi = 3.1415927410125732421875f;
 
-  constexpr float kDegToRad = kPi / 180.f;
-  constexpr float kRadToDeg = 180.f / kPi;
+constexpr float kDegToRad = kPi / 180.f;
+constexpr float kRadToDeg = 180.f / kPi;
 
+// Returns the angle between X axis and line from |start| to |end|
+// Angle is measured in degrees, return value is inside [0.f, 360.f)
+float VectorAngle(const QPointF& start, const QPointF& end);
+QVector2D GetVectorByAngle(float rotation);
 
-  // Returns the angle between X axis and line from |start| to |end|
-  // Angle is measured in degrees, return value is inside [0.f, 360.f)
-  float VectorAngle(const QPointF& start, const QPointF& end);
+float DegreesToRadians(float degrees);
+float RadiansToDegrees(float radians);
 
+float GetRotationInOtherAxis(float rotation);
 
-  float DegreesToRadians(float degrees);
-  float RadiansToDegrees(float radians);
+bool IsPointOnSegment(QPointF first, QPointF second, QPointF point);
 
-  float GetRotationInOtherAxis(float rotation);
+float DistanceBetweenPoints(QPointF first, QPointF second);
 
-  bool IsPointOnSegment(QPointF first, QPointF second, QPointF point);
+// always return angle [0; 360)
+float GetNormalizeAngle(float angle);
 
-  template <typename T>
-  std::vector<QPointF> GetRectanglePoints(QPointF position, float rotation,
-                                          const std::shared_ptr<T>& object) {
-    std::vector<QPointF> points;
-    points.emplace_back(- object->GetWidth() / 2.f,
-                        - object->GetHeight() / 2.f);
-    points.emplace_back(+ object->GetWidth() / 2.f,
-                        - object->GetHeight() / 2.f);
-    points.emplace_back(+ object->GetWidth() / 2.f,
-                        + object->GetHeight() / 2.f);
-    points.emplace_back(- object->GetWidth() / 2.f,
-                        + object->GetHeight() / 2.f);
-    float rotation_rad = Math::DegreesToRadians(rotation);
-    for (auto& point : points) {
-      auto x = static_cast<float>(point.x());
-      auto y = static_cast<float>(point.y());
-      point.setX(x * std::cos(rotation_rad) + y * std::sin(rotation_rad));
-      point.setY(-x * std::sin(rotation_rad) + y * std::cos(rotation_rad));
-      point.rx() += position.x();
-      point.ry() += position.y();
-    }
-    return points;
+template <typename T>
+std::vector<QPointF> GetRectanglePoints(QPointF position, float rotation,
+                                        const std::shared_ptr<T>& object) {
+  std::vector<QPointF> points;
+  points.emplace_back(- object->GetWidth() / 2.f,
+                      - object->GetHeight() / 2.f);
+  points.emplace_back(+ object->GetWidth() / 2.f,
+                      - object->GetHeight() / 2.f);
+  points.emplace_back(+ object->GetWidth() / 2.f,
+                      + object->GetHeight() / 2.f);
+  points.emplace_back(- object->GetWidth() / 2.f,
+                      + object->GetHeight() / 2.f);
+  float rotation_rad = Math::DegreesToRadians(rotation);
+  for (auto& point : points) {
+    auto x = static_cast<float>(point.x());
+    auto y = static_cast<float>(point.y());
+    point.setX(x * std::cos(rotation_rad) + y * std::sin(rotation_rad));
+    point.setY(-x * std::sin(rotation_rad) + y * std::cos(rotation_rad));
+    point.rx() += position.x();
+    point.ry() += position.y();
   }
+  return points;
+}
 
 }  // namespace Math
 

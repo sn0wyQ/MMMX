@@ -15,6 +15,7 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
+#include "GameObject/RigidBody/object_collision.h"
 #include "Model/room_game_model.h"
 #include "Server/Room/room_settings.h"
 #include "constants.h"
@@ -81,20 +82,34 @@ class RoomController : public BaseController {
   std::vector<Event> events_for_server_;
 
   void RecalculateModel(const ModelData& model_data);
-  void TickPlayersInModel(const ModelData& model_data);
-  GameObjectId AddDefaultPlayer();
+  void TickObjectsInModel(const ModelData& model_data);
+  void ProcessBulletsHits(const ModelData& model_data);
+  void DeleteReadyToBeDeletedObjects(const ModelData& model_data);
+
+  GameObjectId AddPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);
+  void AddRandomBox(float width, float height);
   void AddTree(float x, float y, float radius);
+  void AddRandomTree(float radius);
+  std::vector<GameObjectId> AddBullets(GameObjectId parent_id, float x, float y,
+                         float rotation,
+                         const std::shared_ptr<Weapon>& weapon);
   void AddConstantObjects();
 
   Event GetEventOfGameObjectData(GameObjectId game_object_id) const;
   Event GetEventOfGameObjectLeftFov(GameObjectId game_object_id) const;
   bool IsGameObjectInFov(GameObjectId game_object_id,
                          GameObjectId player_id);
+  void ForceSendPlayersStatsToPlayer(GameObjectId player_id);
+  void SendPlayersStatsToPlayers();
   void SendGameObjectsDataToPlayer(GameObjectId player_id);
+  int GetModelIdByTimestamp(int64_t timestamp) const;
+
+  void SendNicknameEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
+  void SendPlayerShootingEvent(const Event& event) override;
   void SendControlsEvent(const Event& event) override;
 };
 

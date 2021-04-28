@@ -8,6 +8,9 @@ ClientController::ClientController(const QUrl& url) : url_(url),
   connect(&web_socket_, &QWebSocket::disconnected, this,
           &ClientController::OnDisconnected);
   web_socket_.open(url);
+  connect(&shoot_check_timer, &QTimer::timeout, this,
+          &ClientController::ShootHolding);
+  shoot_check_timer.start(Constants::kShootHoldingCheck);
   this->StartTicking();
 }
 
@@ -105,6 +108,7 @@ void ClientController::OnTickGameInProgress(int delta_time) {
   this->UpdateInterpolationInfo();
   this->UpdateLocalPlayer(delta_time);
   this->UpdateAnimations(delta_time);
+  this->UpdateLocalBullets(delta_time);
 }
 
 void ClientController::UpdateInterpolationInfo() {
@@ -116,10 +120,13 @@ void ClientController::UpdateInterpolationInfo() {
   // С учетом обновления булевской IsInFov
   // Удаляем объект из модели и из интерполятора
   for (const auto& game_object : model_->GetAllGameObjects()) {
-    if (!game_object->IsInFov()) {
-      auto game_object_id = game_object->GetId();
+    auto game_object_id = game_object->GetId();
+    bool is_or_will_in_fov =
+        model_->GetScheduledVariableValue(
+            game_object_id, Variable::kIsInFov).toBool();
+    if (!(is_or_will_in_fov || game_object->IsInFov())) {
       model_->DeleteGameObject(game_object_id);
-      model_->RemoveScheduled(game_object_id);
+      model_->RemoveFromInterpolator(game_object_id);
     }
   }
 
@@ -133,8 +140,6 @@ void ClientController::UpdateInterpolationInfo() {
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
-    // Если о нем есть информация, то он явно в FOV
-    game_object->SetIsInFov(true);
   }
 }
 
@@ -145,8 +150,14 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   auto local_player = model_->GetLocalPlayer();
 
+  std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding;
+  for (const auto& game_object : model_->GetAllGameObjects()) {
+    if (game_object->GetType() != GameObjectType::kBullet) {
+      game_objects_to_move_with_sliding.push_back(game_object);
+    }
+  }
   ObjectCollision::MoveWithSlidingCollision(
-      local_player, model_->GetAllGameObjects(),
+      local_player, game_objects_to_move_with_sliding,
       this->GetKeyForce(), delta_time);
 
   local_player->OnTick(delta_time);
@@ -164,6 +175,25 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
 void ClientController::UpdateAnimations(int delta_time) {
   GameObject::GetAnimationsHolder().UpdateAnimations(delta_time);
+}
+
+void ClientController::UpdateLocalBullets(int delta_time) {
+  std::vector<GameObjectId> is_need_to_delete;
+  for (const auto& bullet : model_->GetLocalBullets()) {
+    auto object_collided = ObjectCollision::GetObjectBulletCollidedWith(
+            bullet, model_->GetAllGameObjects(), delta_time, true);
+    if (object_collided != nullptr) {
+      bullet->SetIsNeedToDelete(true);
+    }
+    bullet->OnTick(delta_time);
+    if (bullet->IsNeedToDelete()) {
+      is_need_to_delete.push_back(bullet->GetId());
+    }
+  }
+
+  for (const auto& bullet_id : is_need_to_delete) {
+    model_->DeleteLocalBullet(bullet_id);
+  }
 }
 
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
@@ -233,7 +263,6 @@ QVector2D ClientController::GetKeyForce() const {
   return key_force;
 }
 
-
 void ClientController::SetTimeDifferenceEvent(const Event& event) {
   auto client_sent_time = event.GetArg<int64_t>(0);
   auto server_received_time = event.GetArg<int64_t>(1);
@@ -257,6 +286,7 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity({0, 0});
   }
+  is_holding_ = false;
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
@@ -291,6 +321,37 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   }
 }
 
+void ClientController::MousePressEvent(QMouseEvent*) {
+  is_holding_ = true;
+}
+
+void ClientController::MouseReleaseEvent(QMouseEvent*) {
+  is_holding_ = false;
+}
+
+void ClientController::ShootHolding() {
+  if (!is_holding_) {
+    return;
+  }
+  if (model_->IsLocalPlayerSet()) {
+    auto local_player = model_->GetLocalPlayer();
+    auto timestamp = GetCurrentServerTime();
+    if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
+      return;
+    }
+    // Temporary nickname change
+    this->AddEventToSend(Event(EventType::kSendNickname,
+                               model_->GetLocalPlayer()->GetId(),
+                               QString("Shooter#") +
+                        QString::number(model_->GetLocalPlayer()->GetId())));
+    local_player->GetWeapon()->SetLastTimeShot(timestamp);
+    model_->AddLocalBullets();
+    this->AddEventToSend(Event(EventType::kSendPlayerShooting,
+                               static_cast<qint64>(GetCurrentServerTime()),
+                               local_player->GetId()));
+  }
+}
+
 // ------------------- GAME EVENTS -------------------
 
 void ClientController::AddLocalPlayerGameObjectEvent(const Event& event) {
@@ -306,18 +367,10 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
   auto params = event.GetArgsSubVector(1);
   auto game_object =
       model_->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
-  if (game_object->IsMovable()) {
-    auto movable_object = std::dynamic_pointer_cast<MovableObject>(game_object);
-    auto velocity_to_return = movable_object->GetVelocity();
-    movable_object->SetParams(params);
-    model_->AddScheduledUpdate(
-        game_object_id, Variable::kVelocity,
-        {game_object->GetUpdatedTime(),
-         movable_object->GetVelocity()});
-    movable_object->SetVelocity(velocity_to_return);
-  } else {
-    game_object->SetParams(params);
-  }
+  game_object->SetParams(params);
+  model_->AddScheduledUpdate(
+      game_object_id, Variable::kIsInFov,
+      {game_object->GetUpdatedTime(), true});
 }
 
 void ClientController::GameObjectLeftFovEvent(const Event& event) {
@@ -337,10 +390,6 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   auto game_object_type = event.GetArg<GameObjectType>(1);
   auto sent_time = event.GetArg<int64_t>(2);
   auto event_type = event.GetArg<EventType>(3);
-  if (model_->IsLocalPlayerSet() &&
-      game_object_id == model_->GetLocalPlayer()->GetId()) {
-    return;
-  }
   sent_time = std::max(
       GetCurrentServerTime() - Constants::kInterpolationMSecs, sent_time);
   if (event_type == EventType::kUpdateGameObjectData) {
@@ -353,7 +402,41 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   model_->DeleteGameObject(player_id);
-  model_->RemoveScheduled(player_id);
+  model_->RemoveFromInterpolator(player_id);
   game_state_ = GameState::kGameNotStarted;
   view_->Update();
+}
+
+void ClientController::UpdatePlayersStatsEvent(const Event& event) {
+  auto player_id = event.GetArg<GameObjectId>(0);
+  model_->GetPlayerStatsByPlayerId(player_id)->SetParams(
+      event.GetArgsSubVector(1));
+  if (model_->IsGameObjectIdTaken(player_id)) {
+    model_->GetPlayerByPlayerId(player_id)->SetLevel(
+        model_->GetPlayerStatsByPlayerId(player_id)->GetLevel());
+  }
+}
+
+void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto health_points = event.GetArg<float>(0);
+  model_->GetLocalPlayer()->SetHealthPoints(health_points);
+}
+
+void ClientController::LocalPlayerDiedEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto spawn_point = event.GetArg<QPointF>(0);
+  model_->GetLocalPlayer()->Revive(spawn_point);
+}
+
+void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto experience_to_add = event.GetArg<float>(0);
+  model_->GetLocalPlayer()->IncreaseExperience(experience_to_add);
 }

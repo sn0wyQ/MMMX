@@ -46,6 +46,8 @@ class Painter : public QPainter {
   void RotateCounterClockWise(float degree);
 
   void Translate(const QPointF& delta);
+  
+  float GetScaledFloat(float x) const;
 
   void DrawEllipse(const QPointF& center, float rx, float ry);
   void DrawPixmap(QPointF point,
@@ -55,6 +57,7 @@ class Painter : public QPainter {
                   DrawPixmapType draw_image_type =
                       DrawPixmapType::kUsePointAsCenter);
   void DrawRect(float x, float y, float width, float height);
+  void DrawText(QRectF rect, int flags, const QString& str);
   void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
 
   void RenderSvg(QPointF point,

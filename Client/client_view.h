@@ -18,6 +18,7 @@
 #include "Client/client_controller.h"
 #include "Event/event.h"
 #include "GUI/GameView/game_view.h"
+#include "GUI/GameView/player_bar.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
@@ -34,12 +35,15 @@ class ClientView : public AbstractClientView {
   void keyPressEvent(QKeyEvent* key_event) override;
   void keyReleaseEvent(QKeyEvent* key_event) override;
   void mouseMoveEvent(QMouseEvent* mouse_event) override;
+  void mousePressEvent(QMouseEvent* mouse_event) override;
+  void mouseReleaseEvent(QMouseEvent* mouse_event) override;
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
   std::shared_ptr<ClientController> controller_;
   std::shared_ptr<ClientGameModel> model_;
   GameView* game_view_;
+  PlayerBar* player_bar_;
   QLabel* info_label_;
 };
 

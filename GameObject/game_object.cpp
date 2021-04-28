@@ -81,6 +81,8 @@ std::vector<QVariant> GameObject::GetParams() const {
 void GameObject::Draw(Painter* painter) {
   painter->save();
   painter->Translate(position_);
+  this->DrawHealthBar(painter);
+  this->DrawLevel(painter);
   painter->RotateCounterClockWise(rotation_);
   if (!animation_ || animation_->GetType() == AnimationType::kNone) {
     this->DrawRelatively(painter);
@@ -148,14 +150,24 @@ float GameObject::GetHeight() const {
 
 void GameObject::SetWidth(float width) {
   width_ = width;
+  rigid_body_->SetWidth(width_);
 }
 
 void GameObject::SetHeight(float height) {
   height_ = height;
+  rigid_body_->SetHeight(width_);
 }
 
 bool GameObject::IsMovable() const {
   return false;
+}
+
+bool GameObject::IsNeedToDelete() const {
+  return is_need_to_delete_;
+}
+
+void GameObject::SetIsNeedToDelete(bool is_need_to_delete) {
+  is_need_to_delete_ = is_need_to_delete;
 }
 
 bool GameObject::IsInFov() const {
@@ -193,4 +205,14 @@ void GameObject::SetUpdatedTime(int64_t updated_time) {
 
 int64_t GameObject::GetUpdatedTime() const {
   return updated_time_;
+}
+
+bool GameObject::IsEntity() const {
+  return false;
+}
+
+float GameObject::GetBoundingCircleRadius() const {
+  return Math::DistanceBetweenPoints(
+      QPointF(), QPointF(this->GetWidth() / 2.f,
+                         this->GetHeight() / 2.f));
 }

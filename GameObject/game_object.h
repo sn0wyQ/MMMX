@@ -27,8 +27,10 @@ Q_NAMESPACE
 // enum for sending events
 // MUST be sorted in alphabet order
 enum class GameObjectType {
+  kBullet,
+  kPlayer,
   kGameObject,
-  kPlayer
+  kMapBorder
 };
 
 Q_ENUM_NS(GameObjectType)
@@ -45,7 +47,10 @@ class GameObject {
 
   virtual void OnTick(int delta_time) {}
   void Draw(Painter* painter);
+  virtual void DrawHealthBar(Painter* painter) {}
+  virtual void DrawLevel(Painter* painter) {}
   virtual void DrawRelatively(Painter* painter) {}
+
   virtual bool IsMovable() const;
 
   std::shared_ptr<RigidBody> GetRigidBody() const;
@@ -72,17 +77,24 @@ class GameObject {
   virtual void SetParams(std::vector<QVariant> params);
   virtual std::vector<QVariant> GetParams() const;
 
+  bool IsNeedToDelete() const;
+  void SetIsNeedToDelete(bool is_need_to_delete);
+
   bool IsInFov() const;
   void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
 
   void SetAnimation(AnimationType animation_type);
   static AnimationsHolder& GetAnimationsHolder();
+  
+  virtual bool IsEntity() const;
 
   virtual std::shared_ptr<GameObject> Clone() const;
 
   void SetUpdatedTime(int64_t updated_time);
   int64_t GetUpdatedTime() const;
+
+  float GetBoundingCircleRadius() const;
 
  private:
   // Holds animations for all GameObjects
@@ -101,6 +113,7 @@ class GameObject {
   float height_{0.f};
   std::shared_ptr<RigidBody> rigid_body_;
   bool is_in_fov_{false};
+  bool is_need_to_delete_{false};
   int64_t updated_time_{};
 };
 

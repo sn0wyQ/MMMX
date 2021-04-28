@@ -28,6 +28,10 @@ enum class EventType {
   // [2+] - event_args
   kSendEventToRoom,
 
+  // [0] - <GameObjectId> player_id,
+  // [1] - <QString> new_nickname
+  kSendNickname,
+
   // No arguments
   kSendGetVars,
 
@@ -73,6 +77,10 @@ enum class EventType {
   // [1+] - game_object_args : relative SetParams
   kUpdateGameObjectData,
 
+  // [0] - <GameObjectId> player_id
+  // [1+] - player_stats_args
+  kUpdatePlayersStats,
+
   // [0] - <GameObjectId> game_object_id that left receiver player FOV
   kGameObjectLeftFov,
 
@@ -86,12 +94,25 @@ enum class EventType {
   // [5] - <float> rotation
   kSendControls,
 
+  // [0] - <int64> timestamp
+  // [1] - <GameObjectId> sender_player_id
+  kSendPlayerShooting,
+
   // [0] - <GameObjectId> player_id
   // [1] - player_args
   kAddLocalPlayerGameObject,
 
   // [0] - <GameObjectId> player_id
   kPlayerDisconnected,
+
+  // [0] - <float> experience_to_add
+  kIncreaseLocalPlayerExperience,
+
+  // [0] - <QPointF> point_to_spawn
+  kLocalPlayerDied,
+
+  // [0] - <float> health_points
+  kUpdateLocalPlayerHealthPoints,
 
   SIZE
 };
