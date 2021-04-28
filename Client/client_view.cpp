@@ -23,8 +23,8 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   info_label_->setAlignment(Qt::AlignTop);
 
   // Stats table
-  stats_table_ = new StatsTable(this, controller_->GetModel(),
-                                QPoint(100, 100), QSize(200, 200));
+  stats_table_ = new StatsTable(this, controller_->GetModel());
+  stats_table_->setMouseTracking(true);
   stats_table_->Hide();
 
   controller_->SetView(std::shared_ptr<ClientView>(this));
@@ -92,12 +92,11 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
   int height_of_bar = static_cast<int>(0.15f * static_cast<float>(height()));
   player_bar_->resize(width(), height_of_bar);
   player_bar_->move(0, height() - height_of_bar);
-  stats_table_->move(this->size().width() / 10,
-                     this->size().height() / 7);
-  stats_table_->resize(this->size().width() - 2 * stats_table_->pos().x(),
-                       this->size().height() - height_of_bar
-                           - stats_table_->pos().y() -
-                           this->size().height() / 12);
+  stats_table_->resize(this->width() * 0.9f,
+                       (this->height() - height_of_bar) * 0.9f);
+  stats_table_->move(
+      (this->width() - stats_table_->width()) / 2.f,
+      (this->height() - stats_table_->height() - height_of_bar) / 2.f);
 }
 
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {

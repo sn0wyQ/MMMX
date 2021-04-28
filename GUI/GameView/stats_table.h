@@ -17,9 +17,7 @@ class StatsTable : public QWidget {
 
  public:
   StatsTable(QWidget* parent,
-             std::shared_ptr<ClientGameModel> model,
-             QPoint position,
-             QSize size);
+             std::shared_ptr<ClientGameModel> model);
 
   void Show();
   void Hide();
@@ -34,6 +32,8 @@ class StatsTable : public QWidget {
   std::vector<QPoint> table_column_points_;
   QPen pen_;
   int column_count_;
+  float inner_width_;
+  float inner_height_;
 };
 
 #endif  // GUI_GAMEVIEW_STATS_TABLE_H_
