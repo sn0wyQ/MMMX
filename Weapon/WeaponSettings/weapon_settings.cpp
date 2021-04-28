@@ -16,7 +16,7 @@ WeaponSettings& WeaponSettings::GetInstance() {
 }
 
 WeaponSettings::WeaponSettings() {
-  QFile file("../Weapon/WeaponSettings/weapon_settings.json");
+  QFile file("./Res/Json/weapon_settings.json");
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qWarning() << "File cannot be open";
   }
