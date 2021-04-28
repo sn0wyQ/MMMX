@@ -1,11 +1,10 @@
-//
-// Created by matvey on 28.04.21.
-//
+#include <iostream>
+#include <utility>
 
 #include <QFile>
-#include <iostream>
 #include <QJsonArray>
 #include <QJsonDocument>
+
 #include "weapon_settings.h"
 
 WeaponSettings* WeaponSettings::instance_{nullptr};
