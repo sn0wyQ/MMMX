@@ -107,6 +107,7 @@ set(SOURCES
         Weapon/Crossbow/crossbow.cpp
         Weapon/MachineGun/machine_gun.cpp
         Weapon/Shotgun/shotgun.cpp
+        Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
         )
 

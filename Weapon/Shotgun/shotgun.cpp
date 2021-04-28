@@ -3,13 +3,8 @@
 Shotgun::Shotgun(const Shotgun& shotgun) : Weapon(shotgun) {}
 
 Shotgun::Shotgun() {
-  SetBulletDamage(Constants::Weapon::Shotgun::kDefaultBulletDamage);
-  SetBulletSpeed(Constants::Weapon::Shotgun::kDefaultBulletSpeed);
-  SetBulletRange(Constants::Weapon::Shotgun::kDefaultBulletRange);
-  SetRateOfFire(Constants::Weapon::Shotgun::kDefaultRateOfFire);
-  SetReloadingTime(Constants::Weapon::Shotgun::kDefaultReloadingTime);
-  SetClipSize(Constants::Weapon::Shotgun::kDefaultClipSize);
-  SetCurrentBulletsInClip(Constants::Weapon::Shotgun::kDefaultClipSize);
+  this->SetParams(WeaponSettings::GetInstance().GetParams(
+      WeaponType::kShotgun));
 }
 
 void Shotgun::DrawWeapon(Painter* painter) {

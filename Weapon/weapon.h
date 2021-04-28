@@ -10,14 +10,7 @@
 
 #include "GameObject/game_object.h"
 #include "GameObject/MovableObject/Bullet/bullet.h"
-#include "Weapon/WeaponConstants/weapon_constants.h"
-
-enum class WeaponType {
-  kAssaultRifle,
-  kCrossbow,
-  kMachineGun,
-  kShotgun
-};
+#include "Weapon/WeaponSettings/weapon_settings.h"
 
 class Weapon {
  public:
@@ -52,6 +45,8 @@ class Weapon {
   int GetCurrentBulletsInClip() const;
   void SetCurrentBulletsInClip(int current_bullets_in_clip);
 
+  void SetParams(std::vector<QVariant> params);
+
   std::vector<QVariant> GetBulletParams(GameObjectId parent_id,
                                         float x,
                                         float y,
@@ -68,11 +63,11 @@ class Weapon {
 
  private:
   float bullet_damage_{};  // дамаг (может прокачать герой)
-  float bullet_speed_{};  // скорость полета пули
   float bullet_range_{};  // расстояние полета пули
+  float bullet_speed_{};  // скорость полета пули
+  int clip_size_{};  // размер обоймы (может прокачать герой)
   int rate_of_fire_{};  // скорострельность пушки (кол-во выстрелов в минуту)
   int64_t reloading_time_{};  // время перезарядки (может прокачать герой)
-  int clip_size_{};  // размер обоймы (может прокачать герой)
   int current_bullets_in_clip_{};  // текущее кол-во патронов в обойме
 
   int64_t last_time_shot_{};
