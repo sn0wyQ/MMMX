@@ -10,14 +10,7 @@
 
 #include "GameObject/game_object.h"
 #include "GameObject/MovableObject/Bullet/bullet.h"
-#include "Weapon/WeaponConstants/weapon_constants.h"
-
-enum class WeaponType {
-  kAssaultRifle,
-  kCrossbow,
-  kMachineGun,
-  kShotgun
-};
+#include "Weapon/WeaponSettings/weapon_settings.h"
 
 class Weapon {
  public:
@@ -51,6 +44,8 @@ class Weapon {
 
   int GetCurrentBulletsInClip() const;
   void SetCurrentBulletsInClip(int current_bullets_in_clip);
+
+  void SetParams(std::vector<QVariant> params);
 
   std::vector<QVariant> GetBulletParams(GameObjectId parent_id,
                                         float x,
