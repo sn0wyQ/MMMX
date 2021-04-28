@@ -2,7 +2,7 @@
   {
     "type": "kAssaultRifle",
     "bullet_damage": 12,
-    "bullet_radius": 0.25,
+    "bullet_radius": 1,
     "bullet_range": 20,
     "bullet_speed": 3,
     "clip_size": 12,
