@@ -32,8 +32,8 @@ class StatsTable : public QWidget {
   std::vector<QPoint> table_column_points_;
   QPen pen_;
   int column_count_;
-  float inner_width_;
-  float inner_height_;
+  float inner_width_{};
+  float inner_height_{};
 };
 
 #endif  // GUI_GAMEVIEW_STATS_TABLE_H_

@@ -98,11 +98,11 @@ set(SOURCES
         Weapon/MachineGun/machine_gun.cpp
         Weapon/Shotgun/shotgun.cpp
         Weapon/weapon.cpp
-        GUI/GameView/stats_table.cpp GUI/GameView/stats_table.h)
+        GUI/GameView/stats_table.cpp)
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
-        QRC/fonts.qrc)
+        Res/Fonts/fonts.qrc)
 qt5_add_big_resources(RESOURCES_SERVER
         )
 

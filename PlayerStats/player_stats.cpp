@@ -70,15 +70,18 @@ void PlayerStats::SetLevel(int level) {
   level_ = level;
 }
 
-bool PlayerStats::operator<(const PlayerStats& other) const {
-  if (this->GetLevel() == other.GetLevel()) {
-    if (this->GetKills() == other.GetKills()) {
-      if (this->GetDeaths() == other.GetDeaths()) {
-        return this->GetNickname() < other.GetNickname();
-      }
-      return this->GetDeaths() < other.GetDeaths();
-    }
-    return this->GetKills() > other.GetKills();
+bool operator<(const PlayerStats& first, const PlayerStats& second) {
+  if (first.GetLevel() != second.GetLevel()) {
+    return (first.GetLevel() > second.GetLevel());
   }
-  return this->GetLevel() > other.GetLevel();
+
+  if (first.GetKills() != second.GetKills()) {
+    return (first.GetKills() > second.GetKills());
+  }
+
+  if (first.GetDeaths() != second.GetDeaths()) {
+    return (first.GetKills() < second.GetKills());
+  }
+
+  return first.GetNickname() < second.GetNickname();
 }

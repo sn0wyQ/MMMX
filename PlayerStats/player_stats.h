@@ -28,7 +28,7 @@ class PlayerStats {
   void SetLevel(int level);
   int GetLevel() const;
 
-  bool operator<(const PlayerStats& other) const;
+  friend bool operator<(const PlayerStats& first, const PlayerStats& second);
 
  private:
   GameObjectId player_id_{Constants::kNullGameObjectId};

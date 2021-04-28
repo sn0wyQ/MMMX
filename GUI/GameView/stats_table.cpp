@@ -5,14 +5,15 @@
 
 namespace Constants::StatsTable {
 
-QFont kHeaderFont("Roboto Mono");
+const QFont kHeaderFont("Roboto Mono", -1, QFont::Weight::Bold);
 const QFont kTextFont("Roboto Mono");
 
-const QColor kBackgroundColor = QColor(86, 86, 86, 180);
-const QColor kHeaderTextColor = QColor(95, 255, 62, 180);
-const QColor kTextColor = QColor(235, 235, 235, 180);
-const QColor kLocalPLayerTextColor = QColor(255, 235, 235, 255);
-const QColor kFrameColor = QColor(62, 62, 62, 255);
+const QColor kBackgroundColor(86, 86, 86, 180);
+const QColor kHeaderTextColor(95, 255, 62, 180);
+const QColor kTextColor(235, 235, 235, 180);
+const QColor kLocalPLayerTextColor(255, 235, 235, 255);
+const QColor kFrameColor(62, 62, 62, 255);
+const float kPenWidthMultiplier = 0.005f;
 
 const std::vector<QString> kColumnNames{
     "Nickname",
@@ -27,7 +28,7 @@ StatsTable::StatsTable(QWidget* parent,
                        std::shared_ptr<ClientGameModel> model) :
     QWidget(parent),
     model_{std::move(model)} {
-  Constants::StatsTable::kHeaderFont.setWeight(QFont::Weight::Bold);
+  column_count_ = static_cast<int>(Constants::StatsTable::kColumnNames.size());
 }
 
 void StatsTable::paintEvent(QPaintEvent* paint_event) {
@@ -42,17 +43,15 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
 }
 
 void StatsTable::DrawTable(QPainter* painter) {
-  column_count_ = static_cast<int>(Constants::StatsTable::kColumnNames.size());
+  painter->save();
   painter->setPen(pen_);
   float w = this->width();
   float h = this->height();
-  painter->save();
   QSize arc_size = QSize(std::max(w, h) / 20.f, std::max(w, h) / 20.f);
   painter->setPen(Qt::NoPen);
   painter->setBrush(Constants::StatsTable::kBackgroundColor);
   painter->drawRoundedRect(0, 0, w, h,
                            arc_size.width(), arc_size.height());
-
 
   header_column_rects_.clear();
   table_column_points_.clear();
@@ -65,7 +64,8 @@ void StatsTable::DrawTable(QPainter* painter) {
   float frame_offset_x = (w - frame_width) / 2.f;
 
   painter->setBrush(Qt::NoBrush);
-  painter->setPen(QPen(Constants::StatsTable::kFrameColor, w * 0.005f));
+  painter->setPen(QPen(Constants::StatsTable::kFrameColor,
+                       w * Constants::StatsTable::kPenWidthMultiplier));
   painter->drawRoundedRect(frame_offset_x, offset_y - frame_height,
                            frame_width,
                            arc_size.height() + frame_height,
@@ -113,7 +113,7 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
   painter->setFont(font);
   int text_height = 1.7f * QFontMetrics(font).height();
   auto curr_offset_y = QPoint(0, text_height);
-  auto get_rect = [&](int i) {
+  auto get_rect = [this, &prev_offset_y, &offset_x, &curr_offset_y](int i) {
     return QRect(table_column_points_[i] + prev_offset_y,
                  table_column_points_[i] + offset_x + curr_offset_y);
   };
