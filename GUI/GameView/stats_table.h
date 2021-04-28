@@ -5,9 +5,9 @@
 #include <utility>
 #include <vector>
 
+#include <QGraphicsOpacityEffect>
 #include <QPaintEvent>
 #include <QWidget>
-#include <QGraphicsOpacityEffect>
 
 #include "Client/client_controller.h"
 #include "Painter/painter.h"

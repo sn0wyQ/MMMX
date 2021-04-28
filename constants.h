@@ -4,7 +4,6 @@
 #include <QCryptographicHash>
 #include <QString>
 #include <QUrl>
-#include <QFont>
 
 // code_readability++;
 using ClientId = int;

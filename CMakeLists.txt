@@ -69,6 +69,7 @@ set(SOURCES
         Event/event_type.h
         GUI/GameView/game_view.cpp
         GUI/GameView/player_bar.cpp
+        GUI/GameView/stats_table.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
@@ -98,7 +99,7 @@ set(SOURCES
         Weapon/MachineGun/machine_gun.cpp
         Weapon/Shotgun/shotgun.cpp
         Weapon/weapon.cpp
-        GUI/GameView/stats_table.cpp)
+        )
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT

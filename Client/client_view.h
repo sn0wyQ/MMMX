@@ -18,8 +18,8 @@
 #include "Client/client_controller.h"
 #include "Event/event.h"
 #include "GUI/GameView/game_view.h"
-#include "GUI/GameView/stats_table.h"
 #include "GUI/GameView/player_bar.h"
+#include "GUI/GameView/stats_table.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT

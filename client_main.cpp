@@ -3,8 +3,8 @@
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
-#include <QTime>
 #include <QFontDatabase>
+#include <QTime>
 
 #include "Client/client_controller.h"
 #include "Client/client_view.h"
