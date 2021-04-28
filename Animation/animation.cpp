@@ -6,7 +6,7 @@ Animation::Animation(AnimationType animation_type)
     return;
   } else {
     base_path_ =
-        "C:/QtProjects/MMMX/Res/Animation/" + animation_type_strings_.at(animation_type) + "/";
+        "./Res/Animation/" + animation_type_strings_.at(animation_type) + "/";
 
     // Loading first frames of sequence for each animation state
     int animation_state_index = 0;

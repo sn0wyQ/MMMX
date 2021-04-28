@@ -17,7 +17,6 @@ Frame::Frame(QString path,
   path += animation_state_strings_.at(animation_state)
       + CalcLeadingZeros(frame_index_) + QString::number(frame_index_) + ".svg";
 
-  qInfo() << QFile::exists(path) << path;
   if (!QFile::exists(path)) {
     return;
   }
