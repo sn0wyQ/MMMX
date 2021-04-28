@@ -124,9 +124,13 @@ add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER})
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
 
 # Synchronize Res with output folder
-add_custom_command(TARGET MMMX-Client POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E remove_directory
-        ${CMAKE_BINARY_DIR}/Res)
-add_custom_command(TARGET MMMX-Client POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_SOURCE_DIR}/Res/ ${CMAKE_BINARY_DIR}/Res)
+if (WIN32)
+    add_custom_command(TARGET MMMX-Client POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E remove_directory
+            ${CMAKE_BINARY_DIR}/Res)
+    add_custom_command(TARGET MMMX-Client POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/Res/ ${CMAKE_BINARY_DIR}/Res)
+else()
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Res DESTINATION ${CMAKE_BINARY_DIR})
+endif (WIN32)
