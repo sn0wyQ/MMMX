@@ -5,10 +5,10 @@
 
 namespace StatsTableConstants {
 
-const QColor kTableColor = Qt::darkCyan;
-QColor kBackgroundColor = Qt::darkBlue;
-int kBackgroundTransparency = 128;
-const QColor kHeaderTextColor = Qt::darkRed;
+const QColor kTableColor = Qt::black;
+QColor kBackgroundColor = Qt::darkGreen;
+int kBackgroundTransparency = 100;
+const QColor kHeaderTextColor = Qt::green;
 const QColor kTextColor = Qt::black;
 const QColor kLocalPLayerTextColor = Qt::yellow;
 const int kMainTableWidth = 3;
@@ -37,7 +37,7 @@ StatsTable::StatsTable(QWidget* parent,
 }
 
 void StatsTable::paintEvent(QPaintEvent* paint_event) {
-  if (!model_ || !model_->IsLocalPlayerSet()) {
+  if (!model_->IsLocalPlayerSet()) {
     return;
   }
   QPainter painter(this);
@@ -48,7 +48,7 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
 }
 
 void StatsTable::DrawTable(QPainter* painter) {
-  column_count_ = kColumnNames.size();
+  column_count_ = static_cast<int>(kColumnNames.size());
   pen_.setColor(StatsTableConstants::kTableColor);
   pen_.setWidth(StatsTableConstants::kMainTableWidth);
   painter->setPen(pen_);

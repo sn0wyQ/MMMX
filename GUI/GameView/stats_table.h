@@ -29,7 +29,7 @@ class StatsTable : public QWidget {
   std::vector<QRect> header_column_rects_;
   std::vector<QPoint> table_column_points_;
   QPen pen_;
-  size_t column_count_;
+  int column_count_;
 };
 
 #endif  // GUI_GAMEVIEW_STATS_TABLE_H_

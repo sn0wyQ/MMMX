@@ -1,5 +1,4 @@
 #include "client_view.h"
-// #include <QKeyEvent>
 
 ClientView::ClientView(std::shared_ptr<ClientController> controller)
     : AbstractClientView(),
