@@ -1,6 +1,9 @@
 #ifndef WEAPON_WEAPONSETTINGS_WEAPON_SETTINGS_H_
 #define WEAPON_WEAPONSETTINGS_WEAPON_SETTINGS_H_
 
+#include <vector>
+#include <unordered_map>
+
 #include <QtCore>
 
 #include "constants.h"
