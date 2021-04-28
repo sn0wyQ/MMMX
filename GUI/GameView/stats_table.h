@@ -7,6 +7,7 @@
 
 #include <QPaintEvent>
 #include <QWidget>
+#include <QGraphicsOpacityEffect>
 
 #include "Client/client_controller.h"
 #include "Painter/painter.h"
@@ -19,6 +20,9 @@ class StatsTable : public QWidget {
              std::shared_ptr<ClientGameModel> model,
              QPoint position,
              QSize size);
+
+  void Show();
+  void Hide();
 
   void paintEvent(QPaintEvent* event) override;
 

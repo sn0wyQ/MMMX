@@ -1,0 +1,7 @@
+<RCC>
+    <qresource>
+        <file>../Res/Fonts/CynthoNext-Bold.ttf</file>
+        <file>../Res/Fonts/RobotoMono-Regular.ttf</file>
+        <file>../Res/Fonts/RobotoMono-Bold.ttf</file>
+    </qresource>
+</RCC>

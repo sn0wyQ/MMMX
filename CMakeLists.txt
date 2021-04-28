@@ -102,7 +102,7 @@ set(SOURCES
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
-        )
+        QRC/fonts.qrc)
 qt5_add_big_resources(RESOURCES_SERVER
         )
 

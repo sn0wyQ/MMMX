@@ -5,14 +5,12 @@
 
 namespace Constants::StatsTable {
 
-const QColor kTableColor = Qt::black;
-const QColor kBackgroundColor = QColor(128, 128, 128, 128);
-const QColor kHeaderTextColor = Qt::green;
-const QColor kTextColor = Qt::black;
-const QColor kLocalPLayerTextColor = Qt::yellow;
-const int kExternalLinesWidth = 3;
-const int kInternalLinesWidth = 1;
-
+const QColor kBackgroundColor = QColor(86, 86, 86, 180);
+QFont kHeaderFont("Roboto Mono", 31);
+const QColor kHeaderTextColor = QColor(95, 255, 62, 180);
+const QFont kTextFont("Roboto Mono", 25);
+const QColor kTextColor = QColor(236, 236, 236, 180);
+const QColor kLocalPLayerTextColor = QColor(62, 62, 62, 255);
 const std::vector<QString> kColumnNames{
     "Nickname",
     "Level",
@@ -31,6 +29,7 @@ StatsTable::StatsTable(QWidget* parent,
   this->move(position);
   this->resize(size);
   this->setMouseTracking(true);
+  Constants::StatsTable::kHeaderFont.setWeight(QFont::Weight::Bold);
 }
 
 void StatsTable::paintEvent(QPaintEvent* paint_event) {
@@ -46,39 +45,25 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
 
 void StatsTable::DrawTable(QPainter* painter) {
   column_count_ = static_cast<int>(Constants::StatsTable::kColumnNames.size());
-  pen_.setColor(Constants::StatsTable::kTableColor);
-  pen_.setWidth(Constants::StatsTable::kExternalLinesWidth);
   painter->setPen(pen_);
-  int w = this->size().width() - 2 * Constants::StatsTable::kExternalLinesWidth;
-  int h =
-      this->size().height() - 2 * Constants::StatsTable::kExternalLinesWidth;
+  int w = this->size().width();
+  int h = this->size().height();
   painter->save();
-  painter->translate(Constants::StatsTable::kExternalLinesWidth,
-                     Constants::StatsTable::kExternalLinesWidth);
   QSize arc_size = QSize(std::max(w, h) / 20, std::max(w, h) / 20);
+  painter->setPen(Qt::NoPen);
   painter->setBrush(QBrush(Constants::StatsTable::kBackgroundColor));
   painter->drawRoundedRect(0, 0, w, h, arc_size.width(), arc_size.height());
-  painter->drawLine(0, arc_size.height(), w, arc_size.height());
 
   header_column_rects_.clear();
   table_column_points_.clear();
 
   for (int i = 0; i < column_count_; i++) {
-    if (i + 1 < column_count_) {
-      painter->drawLine((i + 1) * w / column_count_, 0,
-                        (i + 1) * w / column_count_, arc_size.height());
-    }
     header_column_rects_.emplace_back(i * w / column_count_, 0,
                                       w / column_count_,
                                       arc_size.height());
   }
-  pen_.setWidth(Constants::StatsTable::kInternalLinesWidth);
   painter->setPen(pen_);
   for (int i = 0; i < column_count_; i++) {
-    if (i + 1 < column_count_) {
-      painter->drawLine((i + 1) * w / column_count_, arc_size.height(),
-                        (i + 1) * w / column_count_, h);
-    }
     table_column_points_.emplace_back(i * w / column_count_,
                                       arc_size.height());
   }
@@ -88,8 +73,8 @@ void StatsTable::DrawTable(QPainter* painter) {
 
 void StatsTable::DrawPlayersStats(QPainter* painter) {
   painter->save();
-  QFont font{};
-  font.setPixelSize(this->size().height() / 25);
+  QFont font(Constants::StatsTable::kHeaderFont);
+  font.setPixelSize(this->size().height() / 20);
   painter->setFont(font);
   int text_height = 2 * QFontMetrics(font).height();
   auto stats = model_->GetAllPlayersStats();
@@ -113,6 +98,9 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
     return QRect(table_column_points_[i] + prev_offset_y,
                  table_column_points_[i] + offset_x + curr_offset_y);
   };
+  font = Constants::StatsTable::kTextFont;
+  font.setPixelSize(this->size().height() / 20);
+  painter->setFont(font);
   for (const auto& stat : stats) {
     if (stat->GetPlayerId() == model_->GetLocalPlayer()->GetId()) {
       pen_.setColor(Constants::StatsTable::kLocalPLayerTextColor);
@@ -127,13 +115,22 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                       QString::number(stat->GetKills()));
     painter->drawText(get_rect(3), Qt::AlignCenter,
                       QString::number(stat->GetDeaths()));
-    pen_.setColor(Constants::StatsTable::kTableColor);
     painter->setPen(pen_);
 
-    painter->drawLine(get_rect(0).bottomLeft(),
-                      get_rect(3).bottomRight());
     prev_offset_y = curr_offset_y;
     curr_offset_y.ry() += text_height;
   }
   painter->restore();
+}
+
+void StatsTable::Hide() {
+  auto effect = new QGraphicsOpacityEffect;
+  effect->setOpacity(0.f);
+  this->setGraphicsEffect(effect);
+}
+
+void StatsTable::Show() {
+  auto effect = new QGraphicsOpacityEffect;
+  effect->setOpacity(1.f);
+  this->setGraphicsEffect(effect);
 }
