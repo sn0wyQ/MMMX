@@ -14,7 +14,7 @@ const QColor kLocalPLayerTextColor = Qt::yellow;
 const int kMainTableWidth = 3;
 const int kInternalTableWidth = 1;
 
-}
+}  // namespace StatsTableConstants
 
 const std::vector<QString> kColumnNames{
     "Nickname",
