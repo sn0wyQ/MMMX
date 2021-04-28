@@ -1,10 +1,11 @@
 #ifndef WEAPON_WEAPONSETTINGS_WEAPON_SETTINGS_H_
 #define WEAPON_WEAPONSETTINGS_WEAPON_SETTINGS_H_
 
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
-#include <QtCore>
+#include <QMetaEnum>
+#include "QJsonObject"
 
 #include "constants.h"
 
@@ -17,6 +18,7 @@ enum class WeaponType {
   kCrossbow,
   kMachineGun,
   kShotgun,
+
   SIZE
 };
 
@@ -34,7 +36,8 @@ class WeaponSettings {
 
   std::vector<QVariant> GetParams(WeaponType weapon_type) const;
   template<class T>
-  T GetWeaponSetting(WeaponType weapon_type, QString setting_name) const {
+  T GetWeaponSetting(WeaponType weapon_type,
+                     const QString& setting_name) const {
     return json_object_by_type_.at(weapon_type).value(setting_name)
         .toVariant().value<T>();
   }

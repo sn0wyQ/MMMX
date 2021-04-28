@@ -1,4 +1,3 @@
-#include <iostream>
 #include <utility>
 
 #include <QFile>
@@ -19,7 +18,7 @@ WeaponSettings& WeaponSettings::GetInstance() {
 WeaponSettings::WeaponSettings() {
   QFile file("../Weapon/WeaponSettings/weapon_settings.json");
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    std::cerr << "File cannot be open\n";
+    qWarning() << "File cannot be open";
   }
   QJsonArray
       json_weapon_array(QJsonDocument::fromJson(file.readAll()).array());
@@ -31,11 +30,11 @@ WeaponSettings::WeaponSettings() {
     auto object = json_weapon_array[i].toObject();
     std::vector<QVariant> params;
     params.emplace_back(object.value("bullet_damage"));
-    params.emplace_back(object.value("bullet_speed"));
     params.emplace_back(object.value("bullet_range"));
+    params.emplace_back(object.value("bullet_speed"));
+    params.emplace_back(object.value("clip_size"));
     params.emplace_back(object.value("rate_of_fire"));
     params.emplace_back(object.value("reloading_time"));
-    params.emplace_back(object.value("clip_size"));
     auto weapon_type_index =
         QMetaEnum::fromType<WeaponType>().keyToValue(
             object.value("type").toString().toStdString().c_str());

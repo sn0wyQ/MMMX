@@ -105,18 +105,8 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
   auto bullet_radius = WeaponSettings::GetInstance().
       GetWeaponSetting<float>(weapon_type, "bullet_radius");
   switch (weapon_type) {
-    case WeaponType::kAssaultRifle: {
-      bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                          bullet_radius));
-      break;
-    }
-    case WeaponType::kCrossbow: {
-      bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                          bullet_radius));
-      break;
-    }
+    case WeaponType::kAssaultRifle:
+    case WeaponType::kCrossbow:
     case WeaponType::kMachineGun: {
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
@@ -146,17 +136,17 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
 }
 
 void Weapon::SetParams(std::vector<QVariant> params) {
-  this->SetClipSize(params.back().toInt());
-  params.pop_back();
   this->SetReloadingTime(params.back().toInt());
   params.pop_back();
   this->SetRateOfFire(params.back().toInt());
   params.pop_back();
-  this->SetBulletRange(params.back().toDouble());
+  this->SetClipSize(params.back().toInt());
   params.pop_back();
-  this->SetBulletSpeed(params.back().toDouble());
+  this->SetBulletSpeed(params.back().toFloat());
   params.pop_back();
-  this->SetBulletDamage(params.back().toDouble());
+  this->SetBulletRange(params.back().toFloat());
+  params.pop_back();
+  this->SetBulletDamage(params.back().toFloat());
   params.pop_back();
   this->SetCurrentBulletsInClip(this->GetClipSize());
 }

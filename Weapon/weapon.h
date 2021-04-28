@@ -63,11 +63,11 @@ class Weapon {
 
  private:
   float bullet_damage_{};  // дамаг (может прокачать герой)
-  float bullet_speed_{};  // скорость полета пули
   float bullet_range_{};  // расстояние полета пули
+  float bullet_speed_{};  // скорость полета пули
+  int clip_size_{};  // размер обоймы (может прокачать герой)
   int rate_of_fire_{};  // скорострельность пушки (кол-во выстрелов в минуту)
   int64_t reloading_time_{};  // время перезарядки (может прокачать герой)
-  int clip_size_{};  // размер обоймы (может прокачать герой)
   int current_bullets_in_clip_{};  // текущее кол-во патронов в обойме
 
   int64_t last_time_shot_{};
