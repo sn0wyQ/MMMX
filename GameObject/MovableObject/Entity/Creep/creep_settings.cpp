@@ -28,6 +28,20 @@ CreepSettings::CreepSettings() {
   }
 }
 
+int CreepSettings::GetMaxCreepLevel() const {
+  if (json_object_by_level_.empty()) {
+    return -1;
+  }
+  return json_object_by_level_.rbegin()->first;
+}
+
+QSizeF CreepSettings::GetCreepSizeByLevel(int level) const {
+  return QSizeF(json_object_by_level_.at(level).value("width")
+                    .toVariant().toFloat(),
+                json_object_by_level_.at(level).value("height")
+                    .toVariant().toFloat());
+}
+
 std::vector<QVariant> CreepSettings::GetCreepParams(int creep_level,
                                                     float x,
                                                     float y,
@@ -63,4 +77,3 @@ std::vector<QVariant> CreepSettings::GetCreepParams(int creep_level,
       object.value("exp_increment_for_kill").toVariant().toFloat());
   return params;
 }
-
