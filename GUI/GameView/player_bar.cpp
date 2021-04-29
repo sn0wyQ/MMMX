@@ -56,7 +56,6 @@ QRectF PlayerBar::RectWithPercents(
 }
 
 void PlayerBar::DrawHealthRect(QPainter* painter) {
-  using namespace Constants::PlayerBar;
   painter->setBrush(Qt::gray);
   painter->drawRect(RectWithPercents(kHealthBarX, kHealthBarY,
                                      kHealthBarWidth,
@@ -82,8 +81,6 @@ void PlayerBar::DrawHealthRect(QPainter* painter) {
 }
 
 void PlayerBar::DrawExpRect(QPainter* painter) {
-  using namespace Constants::PlayerBar;
-
   auto local_player = model_->GetLocalPlayer();
   int cur_level = local_player->GetLevel();
   auto cur_exp = static_cast<int>(local_player->GetCurrentExp());
@@ -108,7 +105,6 @@ void PlayerBar::DrawExpRect(QPainter* painter) {
 }
 
 void PlayerBar::DrawLeveling(QPainter* painter) {
-  using namespace Constants::PlayerBar;
   auto local_player = model_->GetLocalPlayer();
   auto free_leveling_points = local_player->GetFreeLevelingPoints();
   auto leveling_points = local_player->GetLevelingPoints();
@@ -186,7 +182,6 @@ void PlayerBar::Clicked(int index) {
 }
 
 void PlayerBar::MoveButtons() {
-  using namespace Constants::PlayerBar;
   this->RecalculateSizes();
   for (int i = 0; i < Constants::kLevelingCount; i++) {
     int draw_i = i % (Constants::kLevelingCount / 2);
@@ -205,7 +200,6 @@ void PlayerBar::MoveButtons() {
 }
 
 void PlayerBar::RecalculateSizes() {
-  using namespace Constants::PlayerBar;
   picture_width_ = kPictureHeight / this->width() * this->height();
   small_full_width_ = picture_width_ / Constants::kCountOfLevels;
   small_width_ = small_full_width_ - kSmallIntervalLr;
