@@ -1,5 +1,19 @@
 #include "player_bar.h"
 
+namespace Constants::PlayerBar {
+
+const float kHealthBarWidth = 30.f;
+const float kHealthBarHeight = 25.f;
+const float kHealthBarX = 50.f - kHealthBarWidth / 2.f;
+const float kHealthBarY = 10.f;
+
+const float kExpBarWidth = 30.f;
+const float kExpBarHeight = 25.f;
+const float kExpBarX = 50.f - kExpBarWidth / 2.f;
+const float kExpBarY = 45.f;
+
+}  // namespace Constants::PlayerBar
+
 PlayerBar::PlayerBar(QWidget* parent,
                      std::shared_ptr<ClientGameModel> model,
                      QPoint position,
@@ -55,56 +69,52 @@ QRectF PlayerBar::RectWithPercents(
 }
 
 void PlayerBar::DrawHealthRect(QPainter* painter) {
-  float health_bar_width = 30.f;
-  float health_bar_height = 25.f;
-  float health_bar_x = 50.f - health_bar_width / 2.f;
-  float health_bar_y = 10.f;
+  using namespace Constants::PlayerBar;
   painter->setBrush(Qt::gray);
-  painter->drawRect(RectWithPercents(health_bar_x, health_bar_y,
-                                     health_bar_width,
-                                     health_bar_height));
+  painter->drawRect(RectWithPercents(kHealthBarX, kHealthBarY,
+                                     kHealthBarWidth,
+                                     kHealthBarHeight));
   painter->setBrush(Qt::darkGreen);
   auto local_player = model_->GetLocalPlayer();
   float hp_ratio = local_player->GetHealthPoints()
       / local_player->GetMaxHealthPoints();
   painter->drawRect(RectWithPercents(
-      health_bar_x, health_bar_y,
-      health_bar_width * hp_ratio, health_bar_height));
+      kHealthBarX, kHealthBarY,
+      kHealthBarWidth * hp_ratio, kHealthBarHeight));
   auto cur_hp = static_cast<int>(local_player->GetHealthPoints());
   auto max_hp = static_cast<int>(local_player->GetMaxHealthPoints());
   float regen_hp_in_sec = local_player->GetHealthRegenRate() * 1000.f;
   auto regen_hp_in_sec_int =
       static_cast<float>(std::floor(regen_hp_in_sec * 100.f) / 100.f);
-  painter->drawText(RectWithPercents(health_bar_x, health_bar_y,
-                                     health_bar_width,
-                                     health_bar_height), Qt::AlignCenter,
+  painter->drawText(RectWithPercents(kHealthBarX, kHealthBarY,
+                                     kHealthBarWidth,
+                                     kHealthBarHeight), Qt::AlignCenter,
                     QString::number(cur_hp) + " / "
                         + QString::number(max_hp) + " (+"
                         + QString::number(regen_hp_in_sec_int) + ")");
 }
 
 void PlayerBar::DrawExpRect(QPainter* painter) {
+  using namespace Constants::PlayerBar;
+
   auto local_player = model_->GetLocalPlayer();
   int cur_level = local_player->GetLevel();
   auto cur_exp = static_cast<int>(local_player->GetCurrentExp());
   float exp_for_level = Constants::GetExpForLevel(cur_level);
-  float exp_bar_width = 30.f;
-  float exp_bar_height = 25.f;
-  float exp_bar_x = 50.f - exp_bar_width / 2.f;
-  float exp_bar_y = 45.f;
+  
   painter->setBrush(Qt::gray);
-  painter->drawRect(RectWithPercents(exp_bar_x, exp_bar_y,
-                                     exp_bar_width,
-                                     exp_bar_height));
+  painter->drawRect(RectWithPercents(kExpBarX, kExpBarY,
+                                     kExpBarWidth,
+                                     kExpBarHeight));
   painter->setBrush(Qt::darkYellow);
   float exp_ratio = local_player->GetCurrentExp()
       / exp_for_level;
   painter->drawRect(RectWithPercents(
-      exp_bar_x, exp_bar_y,
-      exp_bar_width * exp_ratio, exp_bar_height));
-  painter->drawText(RectWithPercents(exp_bar_x, exp_bar_y,
-                                     exp_bar_width,
-                                     exp_bar_height), Qt::AlignCenter,
+      kExpBarX, kExpBarY,
+      kExpBarWidth * exp_ratio, kExpBarHeight));
+  painter->drawText(RectWithPercents(kExpBarX, kExpBarY,
+                                     kExpBarWidth,
+                                     kExpBarHeight), Qt::AlignCenter,
                     "Level " + QString::number(cur_level) + " : ("
                         + QString::number(cur_exp) + " / "
                         + QString::number(exp_for_level) + ")");
