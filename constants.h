@@ -45,7 +45,7 @@ constexpr float kDefaultMapWidth = 100.f;
 constexpr float kDefaultMapHeight = 100.f;
 
 // Room
-constexpr int kDefaultMaxClients = 10;
+constexpr int kDefaultMaxClients = 15;
 
 // Null Values
 constexpr ClientId kNullClientId = -1;
