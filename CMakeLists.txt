@@ -98,6 +98,7 @@ set(SOURCES
         Weapon/Crossbow/crossbow.cpp
         Weapon/MachineGun/machine_gun.cpp
         Weapon/Shotgun/shotgun.cpp
+        Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
         )
 
@@ -106,9 +107,13 @@ qt5_add_big_resources(RESOURCES_CLIENT
         Res/Fonts/fonts.qrc)
 qt5_add_big_resources(RESOURCES_SERVER
         )
+qt5_add_big_resources(RESOURCES_COMMON
+        Res/Json/weapon_settings.qrc)
 
-add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT})
+add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
+        ${RESOURCES_COMMON})
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
-add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER})
+add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}
+        ${RESOURCES_COMMON})
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
