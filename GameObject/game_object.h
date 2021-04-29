@@ -28,9 +28,9 @@ Q_NAMESPACE
 // MUST be sorted in alphabet order
 enum class GameObjectType {
   kBullet,
-  kPlayer,
   kGameObject,
-  kMapBorder
+  kMapBorder,
+  kPlayer
 };
 
 Q_ENUM_NS(GameObjectType)

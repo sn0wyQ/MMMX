@@ -107,8 +107,8 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
 void ClientController::OnTickGameInProgress(int delta_time) {
   this->UpdateInterpolationInfo();
   this->UpdateLocalPlayer(delta_time);
-  this->UpdateAnimations(delta_time);
   this->UpdateLocalBullets(delta_time);
+  this->UpdateAnimations(delta_time);
 }
 
 void ClientController::UpdateInterpolationInfo() {

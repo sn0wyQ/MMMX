@@ -46,13 +46,14 @@ struct Instruction {
 };
 using InstructionList = std::vector<Instruction>;
 
-// Images for animations must lay in the Resources/Animation/%sprite_name%
+// Images and descriptions for animations must lay in the
+// Res/Animation/%sprite_name%
 class Animation {
  public:
   explicit Animation(AnimationType animation_type);
 
   void Update(int delta_time);
-  void SetAnimationState(AnimationState animation_state, bool forced = false);
+  void SetAnimationState(AnimationState animation_state, bool restart = false);
 
   void RenderFrame(Painter* painter, float w, float h) const;
 
@@ -68,11 +69,11 @@ class Animation {
 
   std::unordered_map<AnimationState, std::queue<SharedFrame>> animation_frames_;
 
-  size_t animation_instruction_index_ = 0;
+  int animation_instruction_index_ = 0;
   std::unordered_map<AnimationState, InstructionList> animation_instructions_;
 
-  size_t current_animation_time_ = 0;
-  size_t go_to_next_instruction_time_ = 0;
+  int64_t current_animation_time_ = 0;
+  int64_t go_to_next_instruction_time_ = 0;
 };
 
 #endif  // ANIMATION_ANIMATION_H_

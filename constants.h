@@ -64,7 +64,7 @@ constexpr float kBaseViewHeight = 25.f;
 constexpr bool kRigidBodyShow = true;
 
 // Animations
-constexpr int kTimeToCheckIfAnimationsNeedToBeUnloaded = 30;
+constexpr int kUnloadAnimationCheckTime = 30;
 
 // GameObject
 constexpr float kDefaultMaxHealthPoints = 100.f;

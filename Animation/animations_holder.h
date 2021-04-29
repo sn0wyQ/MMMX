@@ -6,6 +6,7 @@
 
 #include "Animation/animation.h"
 #include "Animation/animation_enums.h"
+#include "constants.h"
 
 const std::unordered_map<AnimationType, bool> kIsSynchronizedAllOfThisType {
     { AnimationType::kNone, true },
@@ -19,6 +20,8 @@ class AnimationsHolder {
   std::shared_ptr<Animation> GetAnimation(AnimationType animation_type);
 
   void UpdateAnimations(int delta_time);
+
+  void UnloadUnusedAnimations();
 
  private:
   std::unordered_multimap<AnimationType, std::shared_ptr<Animation>>

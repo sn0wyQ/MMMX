@@ -25,27 +25,26 @@ SharedFrame::SharedFrame(QString path,
   if (!QFile::exists(path)) {
     return;
   } else {
-    exists_ = true;
+    is_exists_ = true;
   }
 
   if (!frames_unloader_->isActive()) {
     frames_unloader_
-      ->start(Constants::kTimeToCheckIfAnimationsNeedToBeUnloaded);
+      ->start(Constants::kUnloadAnimationCheckTime);
     frames_unloader_->callOnTimeout(SharedFrame::UnloadUnusedFrames);
   }
 
   auto iter = loaded_svgs_.find(path);
   if (iter == loaded_svgs_.end()) {
-    svg_renderer_ =
-        loaded_svgs_.insert({path, std::make_shared<QSvgRenderer>(path)})
-            .first->second;
+    auto new_renderer = std::make_shared<QSvgRenderer>(path);
+    svg_renderer_ = loaded_svgs_[path] = new_renderer;
   } else {
     svg_renderer_ = iter->second;
   }
 }
 
 bool SharedFrame::IsExists() const {
-  return exists_;
+  return is_exists_;
 }
 
 int SharedFrame::GetFrameIndex() const {

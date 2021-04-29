@@ -24,13 +24,13 @@ Animation::Animation(AnimationType animation_type)
       animation_state = static_cast<AnimationState>(animation_state_index);
     }
 
-    ParseAnimationDescription(base_path_ + "description");
+    ParseAnimationDescription(base_path_ + "description.mmmx");
   }
 }
 
 void Animation::ParseAnimationDescription(const QString& description_path) {
   if (!QFile::exists(description_path)) {
-    return;
+    throw std::runtime_error("[ANIMATION] Description file does not exist");
   }
 
   QFile description_file(description_path);
@@ -50,7 +50,7 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
       } else {
         if (animation_state == AnimationState::SIZE) {
           throw std::runtime_error(
-              ("Invalid animation description format in "
+              ("[ANIMATION] Invalid description format in "
                   + description_path
                   + ":" + QString::number(line_index)).toStdString());
         }
@@ -60,9 +60,8 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
           animation_instructions_.insert({animation_state, InstructionList()});
         }
 
-        if (auto instruction_iter =
-              kAnimationCommandsToInstructions.find(parts[0]);
-            instruction_iter != kAnimationCommandsToInstructions.end()) {
+        auto instruction_iter = kAnimationCommandsToInstructions.find(parts[0]);
+        if (instruction_iter != kAnimationCommandsToInstructions.end()) {
           animation_instructions_.at(animation_state)
               .push_back({instruction_iter->second, {}});
           if (instruction_iter->second == AnimationInstructionType::kEnd
@@ -71,7 +70,7 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
           }
         } else {
           throw std::runtime_error(
-              ("Invalid animation instruction format in "
+              ("[ANIMATION] Invalid animation instruction format in "
                   + description_path
                   + ":" + QString::number(line_index)).toStdString());
         }
@@ -86,7 +85,7 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
       ++line_index;
     }
   } else {
-    qWarning() << "Error while opening " << description_path;
+    qWarning() << "[ANIMATION] Error while opening " << description_path;
   }
 }
 
@@ -131,7 +130,7 @@ void Animation::Update(int delta_time) {
           }
           if (!frames.front().IsExists()) {
             throw std::runtime_error(
-                "Loaded non existing frame to final sequence");
+                "[ANIMATION] Loaded non existing frame to final sequence");
           }
         }
         ++animation_instruction_index_;
@@ -140,16 +139,16 @@ void Animation::Update(int delta_time) {
 
       case AnimationInstructionType::kPlayFrames: {
         InstructionList instructions_to_insert_;
-        for (int index = 0;
-              index < current_instruction_list.
+        for (int instruction_index = 0;
+             instruction_index < current_instruction_list.
                 at(animation_instruction_index_).args.at(0);
-              ++index) {
+             ++instruction_index) {
           instructions_to_insert_
             .push_back({AnimationInstructionType::kNextFrame, {}});
+          int wait_time = current_instruction_list
+              .at(animation_instruction_index_).args.at(1);
           instructions_to_insert_.push_back({AnimationInstructionType::kWait,
-                                             {current_instruction_list.at(
-                                                animation_instruction_index_)
-                                                .args.at(1)}});
+                                             {wait_time}});
         }
         current_instruction_list.erase(
             current_instruction_list.begin()
@@ -184,21 +183,23 @@ void Animation::Update(int delta_time) {
       }
     }
 
-    if (animation_instruction_index_ >= current_instruction_list.size()) {
-      throw std::runtime_error("Animation must be terminated "
+    if (animation_instruction_index_
+        >= static_cast<int>(current_instruction_list.size())) {
+      throw std::runtime_error("[ANIMATION] Animation must be terminated "
                                "with either \"end\" or \"loop\"");
     }
   }
 }
 
-void Animation::SetAnimationState(AnimationState animation_state, bool forced) {
-  if (!forced && animation_state_ == animation_state) {
+void Animation::SetAnimationState(AnimationState animation_state,
+                                  bool restart) {
+  if (!restart && animation_state_ == animation_state) {
     return;
   }
 
   // Clearing current animation state's frames queue
   // and adding there first frame of sequence
-  std::queue<SharedFrame>().swap(animation_frames_.at(animation_state_));
+  animation_frames_.at(animation_state_) = {};
   animation_frames_.at(animation_state_).emplace(base_path_,
                                                  animation_state_,
                                                  0);
@@ -215,16 +216,18 @@ void Animation::SetAnimationState(AnimationState animation_state, bool forced) {
 }
 
 void Animation::RenderFrame(Painter* painter, float w, float h) const {
+  if (animation_frames_.at(animation_state_).empty()) {
+    return;
+  }
+
   const SharedFrame&
       frame_to_render = animation_frames_.at(animation_state_).front();
+
   if (!frame_to_render.IsExists()) {
     return;
   }
 
-  painter->RenderSvg(QPointF(),
-                     w,
-                     h,
-                     frame_to_render.GetSvgRenderer());
+  painter->RenderSvg(QPointF(), w, h, frame_to_render.GetSvgRenderer());
 }
 
 AnimationType Animation::GetType() const {

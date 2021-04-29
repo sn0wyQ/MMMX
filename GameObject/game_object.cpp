@@ -11,8 +11,7 @@ GameObject::GameObject(const GameObject& other) {
   if (rigid_body_ == nullptr) {
     switch (other.GetRigidBody()->GetType()) {
       case RigidBodyType::kCircle:
-        rigid_body_ =
-            std::make_shared<RigidBodyCircle>();
+        rigid_body_ = std::make_shared<RigidBodyCircle>();
         break;
       case RigidBodyType::kRectangle:
         rigid_body_ = std::make_shared<RigidBodyRectangle>();
