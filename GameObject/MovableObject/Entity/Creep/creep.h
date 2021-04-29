@@ -23,8 +23,12 @@ class Creep : public Entity {
 
   std::shared_ptr<GameObject> Clone() const override;
 
+  void SetLevel(int level);
+  int GetLevel() const;
+
  private:
   float exp_increment_{};
+  int level_{};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_

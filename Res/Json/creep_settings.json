@@ -1,43 +1,12 @@
 [
   {
-    "type": "kAssaultRifle",
-    "bullet_damage": 12,
-    "bullet_radius": 0.25,
-    "bullet_range": 20,
-    "bullet_speed": 3,
-    "clip_size": 12,
-    "rate_of_fire": 300,
-    "reloading_time": 7000
-  },
-  {
-    "type": "kCrossbow",
-    "bullet_damage": 15,
-    "bullet_radius": 0.3,
-    "bullet_range": 30,
-    "bullet_speed": 2.5,
-    "clip_size": 12,
-    "rate_of_fire": 200,
-    "reloading_time": 7000
-  },
-  {
-    "type": "kMachineGun",
-    "bullet_damage": 6,
-    "bullet_radius": 0.15,
-    "bullet_range": 20,
-    "bullet_speed": 5,
-    "clip_size": 12,
-    "rate_of_fire": 450,
-    "reloading_time": 4000
-  },
-  {
-    "type": "kShotgun",
-    "bullet_damage": 8,
-    "bullet_radius": 0.2,
-    "bullet_range": 12,
-    "bullet_speed": 4,
-    "clip_size": 12,
-    "rate_of_fire": 50,
-    "reloading_time": 4000,
-    "angle_between_bullets": 10
+    "level": 1,
+    "exp_increment_for_kill": 1,
+    "max_hp": 100,
+    "default_hp": 80,
+    "hp_regen_rate": 0.001,
+    "width": 1,
+    "height": 1,
+    "rigid_body_type": 0
   }
 ]

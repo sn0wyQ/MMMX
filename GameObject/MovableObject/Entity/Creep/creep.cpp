@@ -15,11 +15,14 @@ GameObjectType Creep::GetType() const {
 void Creep::SetParams(std::vector<QVariant> params) {
   this->SetExpIncrementForKill(params.back().toFloat());
   params.pop_back();
+  this->SetLevel(params.back().toInt());
+  params.pop_back();
   Entity::SetParams(params);
 }
 
 std::vector<QVariant> Creep::GetParams() const {
   auto params = Entity::GetParams();
+  params.emplace_back(this->GetLevel());
   params.emplace_back(this->GetExpIncrementForKill());
   return params;
 }
@@ -38,4 +41,12 @@ float& Creep::GetMutableExpIncrementForKill() {
 
 std::shared_ptr<GameObject> Creep::Clone() const {
   return std::make_shared<Creep>(*this);
+}
+
+int Creep::GetLevel() const {
+  return level_;
+}
+
+void Creep::SetLevel(int level) {
+  level_ = level;
 }

@@ -1,4 +1,5 @@
 #include "room_controller.h"
+#include "GameObject/MovableObject/Entity/Creep/creep_settings.h"
 
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), model_(std::make_shared<RoomGameModel>()),
@@ -390,8 +391,7 @@ GameObjectId RoomController::AddPlayer() {
       params.emplace_back(static_cast<int>(WeaponType::kShotgun));
       break;
     }
-    default:
-      qWarning() << "Invalid player type";
+    default:qWarning() << "Invalid player type";
       break;
   }
   return model_->AddGameObject(GameObjectType::kPlayer, params);
@@ -427,14 +427,15 @@ void RoomController::AddRandomTree(float radius) {
 
 void RoomController::AddCreep(float x, float y, float radius) {
   model_->AddGameObject(GameObjectType::kCreep,
-                        {x, y, 0.f, radius, radius,
-                         static_cast<int>(RigidBodyType::kCircle), 0, 0,
-                         0, 100, 0.005, 100,
-                         1});
+                        CreepSettings::GetInstance().GetCreepParams(1,
+                                                                    x,
+                                                                    y,
+                                                                    0));
 }
 
 void RoomController::AddRandomCreep(float radius) {
   QPointF position = model_->GetPointToSpawn(radius);
+  qInfo() << position;
   this->AddCreep(position.x(), position.y(), radius);
 }
 
