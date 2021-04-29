@@ -99,6 +99,7 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
+        GameObject/MovableObject/Entity/Creep/creep.cpp
         )
 
 # If necessary, add resources files

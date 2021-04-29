@@ -36,6 +36,8 @@ class Entity : public MovableObject {
   void SetHealthRegenRate(float health_regen_rate);
   float GetHealthRegenRate() const;
 
+  virtual float GetExpIncrementForKill() const;
+
   std::shared_ptr<GameObject> Clone() const override;
 
  private:

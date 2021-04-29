@@ -105,6 +105,10 @@ float Entity::GetHealthRegenRate() const {
   return health_regen_rate_;
 }
 
+float Entity::GetExpIncrementForKill() const {
+  return 0;
+}
+
 void Entity::SetHealthRegenRate(float health_regen_rate) {
   health_regen_rate_ = health_regen_rate;
 }

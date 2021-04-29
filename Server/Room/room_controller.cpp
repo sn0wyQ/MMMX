@@ -122,20 +122,17 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                 Event(EventType::kLocalPlayerDied,
                       point_to_spawn),
                 entity->GetId());
-            auto killer_id = bullet->GetParentId();
-            if (model_data.model->IsGameObjectIdTaken(killer_id)) {
-              auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
-              float receive_exp = static_cast<float>(
-                  std::dynamic_pointer_cast<Player>(entity)->GetLevel())
-                  * Constants::kExpMultiplier;
-              killer->IncreaseExperience(receive_exp);
-              model_data.model->GetPlayerStatsByPlayerId(killer_id)->
-                                                   SetLevel(killer->GetLevel());
-              this->AddEventToSendToSinglePlayer(
-                  Event(EventType::kIncreaseLocalPlayerExperience,
-                        receive_exp),
-                  bullet->GetParentId());
-            }
+          }
+          auto killer_id = bullet->GetParentId();
+          if (model_data.model->IsGameObjectIdTaken(killer_id)) {
+            auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
+            float receive_exp = entity->GetExpIncrementForKill();
+            killer->IncreaseExperience(receive_exp);
+            model_data.model->GetPlayerStatsByPlayerId(killer_id)->
+                SetLevel(killer->GetLevel());
+            this->AddEventToSendToSinglePlayer(
+                Event(EventType::kIncreaseLocalPlayerExperience,
+                      receive_exp), killer_id);
           }
         } else {
           entity->SetHealthPoints(hp_to_set);
@@ -416,6 +413,17 @@ void RoomController::AddRandomTree(float radius) {
   AddTree(position.x(), position.y(), radius);
 }
 
+void RoomController::AddCreep(float x, float y, float radius) {
+  model_->AddGameObject(GameObjectType::kCreep,
+                        {x, y, 0.f, radius, radius,
+                         static_cast<int>(RigidBodyType::kCircle), 0, 0, 0, 100, 0.005, 100, 1});
+}
+
+void RoomController::AddRandomCreep(float radius) {
+  QPointF position = model_->GetPointToSpawn(radius);
+  this->AddCreep(position.x(), position.y(), radius);
+}
+
 std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
                                float x, float y, float rotation,
                                const std::shared_ptr<Weapon>& weapon) {
@@ -442,6 +450,9 @@ void RoomController::AddConstantObjects() {
   }
   for (int i = 0; i < 15; i++) {
     this->AddRandomTree(2.f);
+  }
+  for (int i = 0; i < 15; i++) {
+    this->AddRandomCreep(1.f);
   }
 }
 

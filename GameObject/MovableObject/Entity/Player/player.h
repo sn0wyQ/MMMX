@@ -42,6 +42,8 @@ class Player : public Entity {
 
   void IncreaseExperience(float experience_to_add);
 
+  float GetExpIncrementForKill() const override;
+
   std::shared_ptr<GameObject> Clone() const override;
 
  private:

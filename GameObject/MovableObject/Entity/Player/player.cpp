@@ -146,3 +146,7 @@ void Player::IncreaseExperience(float experience_to_add) {
     level_++;
   }
 }
+
+float Player::GetExpIncrementForKill() const {
+  return static_cast<float>(this->GetLevel()) * Constants::kExpMultiplier;
+}
