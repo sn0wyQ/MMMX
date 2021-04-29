@@ -48,9 +48,7 @@ void ClientView::focusOutEvent(QFocusEvent* focus_event) {
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
-  qInfo() << key_event->key();
   if (key_event->key() == Qt::Key_Tab) {
-    qInfo() << "ggg";
     stats_table_->Show();
   }
   controller_->KeyPressEvent(key_event);

@@ -13,8 +13,9 @@ PlayerBar::PlayerBar(QWidget* parent,
   for (int i = 0; i < Constants::kLevelingCount; i++) {
     buttons_[i] = new QPushButton(this);
     auto effect = new QGraphicsOpacityEffect;
-    effect->setOpacity(0.01f);
+    effect->setOpacity(0.f);
     buttons_[i]->setGraphicsEffect(effect);
+    buttons_[i]->setFocusPolicy(Qt::NoFocus);
   }
 
   MoveButtons();
