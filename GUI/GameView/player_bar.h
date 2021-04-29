@@ -35,6 +35,7 @@ class PlayerBar : public QWidget {
  public slots:
   void Clicked(int index);
   void mousePressEvent(QMouseEvent*) override {};
+  void resizeEvent(QResizeEvent*) override;
 
  private:
   std::shared_ptr<ClientGameModel> model_;

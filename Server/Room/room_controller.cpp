@@ -115,7 +115,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
 
         if (hp_to_set == 0) {
           QPointF point_to_spawn =
-              model_->GetPointToSpawn(entity->GetBoundingCircleRadius(), true);
+              model_data.model->GetPointToSpawn(entity->GetBoundingCircleRadius(), true);
           entity->Revive(point_to_spawn);
           if (entity->GetType() == GameObjectType::kPlayer) {
             this->AddEventToSendToSinglePlayer(

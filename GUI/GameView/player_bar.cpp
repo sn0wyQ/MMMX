@@ -223,3 +223,7 @@ void PlayerBar::RecalculateSizes() {
   small_width_ = small_full_width_ - small_interval_lr_;
   small_height_ = small_width_ / this->height() * this->width();
 }
+
+void PlayerBar::resizeEvent(QResizeEvent*) {
+  MoveButtons();
+}
