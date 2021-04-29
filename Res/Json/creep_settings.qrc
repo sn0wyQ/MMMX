@@ -1,0 +1,5 @@
+<RCC>
+    <qresource>
+        <file>weapon_settings.json</file>
+    </qresource>
+</RCC>
