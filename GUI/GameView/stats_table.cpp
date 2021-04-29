@@ -14,6 +14,7 @@ const QColor kTextColor(235, 235, 235, 180);
 const QColor kLocalPLayerTextColor(255, 235, 235, 255);
 const QColor kFrameColor(62, 62, 62, 255);
 const float kPenWidthMultiplier = 0.005f;
+const int kMaxPlayerInTable = 6;
 
 const std::vector<QString> kColumnNames{
     "Nickname",
@@ -99,6 +100,9 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                const std::shared_ptr<PlayerStats>& stats2) {
               return *stats1 < *stats2;
             });
+  if (stats.size() > Constants::StatsTable::kMaxPlayerInTable) {
+    stats.resize(Constants::StatsTable::kMaxPlayerInTable);
+  }
   pen_.setColor(Constants::StatsTable::kHeaderTextColor);
   painter->setPen(pen_);
   for (int i = 0; i < column_count_; i++) {
