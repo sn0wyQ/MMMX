@@ -1,15 +1,17 @@
-#include "game_view.h"
+#include "viewport.h"
 
-GameView::GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model)
+ViewPort::ViewPort(QWidget* parent, std::shared_ptr<ClientGameModel> model)
   : QWidget(parent), model_(std::move(model)) {
+  this->setMouseTracking(true);
+
   converter_ = std::make_shared<Converter>(this);
 }
 
-std::shared_ptr<Converter> GameView::GetConverter() {
+std::shared_ptr<Converter> ViewPort::GetConverter() {
   return converter_;
 }
 
-void GameView::paintEvent(QPaintEvent* paint_event) {
+void ViewPort::paintEvent(QPaintEvent* paint_event) {
   Painter painter(this,
                   converter_,
                   model_->IsLocalPlayerSet()
@@ -66,6 +68,6 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
   }
 }
 
-void GameView::resizeEvent(QResizeEvent* resize_event) {
+void ViewPort::resizeEvent(QResizeEvent* resize_event) {
   converter_->UpdateCoefficient();
 }

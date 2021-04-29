@@ -60,15 +60,15 @@ set(UBSAN_FLAGS
 
 # Add code files
 set(SOURCES
-        Client/abstract_client_view.h
+        Client/GUI/abstract_client_view.h
         Client/client_controller.cpp
-        Client/client_view.cpp
+        Client/GUI/client_view.cpp
         Controller/base_controller.cpp
         Converter/converter.cpp
         Event/event.cpp
         Event/event_type.h
-        GUI/GameView/game_view.cpp
-        GUI/GameView/player_bar.cpp
+        Client/GUI/GameView/ViewPort/viewport.cpp
+        Client/GUI/GameView/PlayerBar/player_bar.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
@@ -84,10 +84,10 @@ set(SOURCES
         Hash/hash_calculator.cpp
         Interpolator/interpolator.cpp
         Math/math.cpp
-        Model/client_game_model.cpp
+        Client/client_game_model.cpp
         Model/game_model.cpp
-        Model/room_game_model.cpp
-        Model/server_model.cpp
+        Server/Room/room_game_model.cpp
+        Server/server_model.cpp
         Painter/painter.cpp
         PlayerStats/player_stats.cpp
         Server/Room/room_controller.cpp
@@ -99,13 +99,13 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
-        )
+        Client/GUI/GameView/game_view.cpp Client/GUI/GameView/game_view.h)
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_COMMON
         Res/Json/weapon_settings.qrc)
 
-add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_COMMON})
+add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_COMMON} Client/GUI/MainMenu/main_menu.cpp Client/GUI/MainMenu/main_menu.h)
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_COMMON})

@@ -8,17 +8,20 @@
 #include <QFocusEvent>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QLayout>
 #include <QMainWindow>
 #include <QMouseEvent>
-#include <QPushButton>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QPushButton>
+#include <QStackedWidget>
 
-#include "Client/abstract_client_view.h"
+#include "Client/GUI/GameView/game_view.h"
+#include "Client/GUI/MainMenu/main_menu.h"
+#include "Client/GUI/abstract_client_view.h"
 #include "Client/client_controller.h"
+#include "Client/client_game_model.h"
 #include "Event/event.h"
-#include "GUI/GameView/game_view.h"
-#include "GUI/GameView/player_bar.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
@@ -29,6 +32,7 @@ class ClientView : public AbstractClientView {
 
   void Update() override;
   std::shared_ptr<Converter> GetConverter() override;
+  void SetWindow(ClientWindowType window_type) override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;
@@ -42,9 +46,10 @@ class ClientView : public AbstractClientView {
 
   std::shared_ptr<ClientController> controller_;
   std::shared_ptr<ClientGameModel> model_;
+
+  QStackedWidget* stacked_layout_;
   GameView* game_view_;
-  PlayerBar* player_bar_;
-  QLabel* info_label_;
+  MainMenu* main_menu_;
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_

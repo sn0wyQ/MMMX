@@ -6,7 +6,7 @@
 #include <QTime>
 
 #include "Client/client_controller.h"
-#include "Client/client_view.h"
+#include "GUI/client_view.h"
 
 void ClientMessageHandler(QtMsgType type,
                           const QMessageLogContext& context,

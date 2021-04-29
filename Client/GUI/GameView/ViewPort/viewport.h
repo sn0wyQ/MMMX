@@ -13,11 +13,11 @@
 #include "Converter/converter.h"
 #include "Painter/painter.h"
 
-class GameView : public QWidget {
+class ViewPort : public QWidget {
   Q_OBJECT
 
  public:
-  GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model);
+  ViewPort(QWidget* parent, std::shared_ptr<ClientGameModel> model);
 
   std::shared_ptr<Converter> GetConverter();
 

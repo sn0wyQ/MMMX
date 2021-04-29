@@ -14,12 +14,12 @@
 #include <QUrl>
 #include <QWebSocket>
 
-#include "Client/abstract_client_view.h"
+#include "GUI/abstract_client_view.h"
 #include "Controller/base_controller.h"
 #include "Converter/converter.h"
 #include "GameObject/RigidBody/object_collision.h"
 #include "Math/math.h"
-#include "Model/client_game_model.h"
+#include "client_game_model.h"
 #include "Interpolator/interpolator.h"
 
 // TODO(Everyone): make class Hotkeys instead of enum Controls

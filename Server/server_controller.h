@@ -10,7 +10,7 @@
 #include <QWebSocketServer>
 
 #include "Controller/base_controller.h"
-#include "Model/server_model.h"
+#include "server_model.h"
 
 class ServerController : public BaseController {
   Q_OBJECT
