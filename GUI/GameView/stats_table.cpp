@@ -148,7 +148,7 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
 
 void StatsTable::Hide() {
   auto effect = new QGraphicsOpacityEffect;
-  effect->setOpacity(0.f);
+  effect->setOpacity(0.01f);
   this->setGraphicsEffect(effect);
 }
 
