@@ -38,6 +38,7 @@ class GameModel {
 
   std::vector<std::shared_ptr<PlayerStats>> GetAllPlayersStats() const;
   std::shared_ptr<PlayerStats> GetPlayerStatsByPlayerId(GameObjectId player_id);
+  void DeletePlayerStats(GameObjectId player_id);
 
   std::shared_ptr<GameObject>
     GetNewEmptyGameObject(GameObjectId game_object_id, GameObjectType type);

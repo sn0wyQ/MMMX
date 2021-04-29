@@ -81,6 +81,10 @@ std::shared_ptr<PlayerStats>
   return players_stats_[player_id];
 }
 
+void GameModel::DeletePlayerStats(GameObjectId player_id) {
+  players_stats_.erase(player_id);
+}
+
 void GameModel::DeleteGameObject(GameObjectId game_object_id) {
   auto iter = game_objects_.find(game_object_id);
   if (iter == game_objects_.end()) {

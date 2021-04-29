@@ -191,6 +191,7 @@ void RoomController::RemoveClient(ClientId client_id) {
         "[ROOM ID:" + std::to_string(id_) + "] Invalid client ID");
   }
   model_->DeleteGameObject(player_id);
+  model_->DeletePlayerStats(player_id);
   this->AddEventToSendToAllClients(Event(EventType::kPlayerDisconnected,
                                          player_id));
   player_ids_.erase(client_id);
