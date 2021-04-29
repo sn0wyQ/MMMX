@@ -416,7 +416,9 @@ void RoomController::AddRandomTree(float radius) {
 void RoomController::AddCreep(float x, float y, float radius) {
   model_->AddGameObject(GameObjectType::kCreep,
                         {x, y, 0.f, radius, radius,
-                         static_cast<int>(RigidBodyType::kCircle), 0, 0, 0, 100, 0.005, 100, 1});
+                         static_cast<int>(RigidBodyType::kCircle), 0, 0,
+                         0, 100, 0.005, 100,
+                         1});
 }
 
 void RoomController::AddRandomCreep(float radius) {

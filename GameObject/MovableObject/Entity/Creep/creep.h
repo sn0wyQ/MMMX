@@ -1,5 +1,8 @@
-#ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_CREEP_H_
-#define GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_CREEP_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_
+#define GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_
+
+#include <memory>
+#include <vector>
 
 #include "GameObject/MovableObject/Entity/entity.h"
 
@@ -24,4 +27,4 @@ class Creep : public Entity {
   float exp_increment_{};
 };
 
-#endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_CREEP_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_
