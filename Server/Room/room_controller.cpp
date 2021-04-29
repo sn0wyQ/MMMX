@@ -371,7 +371,8 @@ GameObjectId RoomController::AddPlayer() {
                 Constants::kDefaultHealthRegenSpeed,
                 Constants::kDefaultMaxHealthPoints};
   // Temporary
-  int players_type = this->GetPlayersCount() % Constants::kDefaultMaxClients;
+  int players_type =
+      this->GetPlayersCount() % static_cast<int>(WeaponType::SIZE);
   switch (players_type) {
     case 0: {
       params.emplace_back(static_cast<int>(WeaponType::kAssaultRifle));
@@ -389,6 +390,9 @@ GameObjectId RoomController::AddPlayer() {
       params.emplace_back(static_cast<int>(WeaponType::kShotgun));
       break;
     }
+    default:
+      qWarning() << "Invalid player type";
+      break;
   }
   return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
