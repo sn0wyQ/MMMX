@@ -85,7 +85,7 @@ void PlayerBar::DrawExpRect(QPainter* painter) {
   int cur_level = local_player->GetLevel();
   auto cur_exp = static_cast<int>(local_player->GetCurrentExp());
   float exp_for_level = Constants::GetExpForLevel(cur_level);
-  
+
   painter->setBrush(Qt::gray);
   painter->drawRect(RectWithPercents(kExpBarX, kExpBarY,
                                      kExpBarWidth,
