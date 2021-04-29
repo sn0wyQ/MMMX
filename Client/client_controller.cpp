@@ -402,6 +402,7 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   model_->DeleteGameObject(player_id);
+  model_->DeletePlayerStats(player_id);
   model_->RemoveFromInterpolator(player_id);
   game_state_ = GameState::kGameNotStarted;
   view_->Update();

@@ -44,14 +44,6 @@ void RoomGameModel::AddPlayerStats(GameObjectId player_id, QString nickname,
       PlayerStats(player_id, std::move(nickname), level));
 }
 
-std::vector<std::shared_ptr<PlayerStats>> RoomGameModel::GetAllPlayersStats() {
-  std::vector<std::shared_ptr<PlayerStats>> result;
-  for (auto& it : players_stats_) {
-    result.emplace_back(it.second);
-  }
-  return result;
-}
-
 bool RoomGameModel::IsNeededToSendPlayerStats(GameObjectId player_id) {
   auto stats_iter = last_player_stats_hash_.find(player_id);
   if (stats_iter == last_player_stats_hash_.end()) {

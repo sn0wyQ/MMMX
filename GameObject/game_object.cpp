@@ -16,6 +16,9 @@ GameObject::GameObject(const GameObject& other) {
       case RigidBodyType::kRectangle:
         rigid_body_ = std::make_shared<RigidBodyRectangle>();
         break;
+      default:
+        qWarning() << "Invalid rigid body type";
+        break;
     }
   }
   rigid_body_->SetHeight(other.rigid_body_->GetHeight());
@@ -39,12 +42,16 @@ void GameObject::SetParams(std::vector<QVariant> params) {
   params.pop_back();
   auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
   if (rigid_body_ == nullptr) {
+    auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
     switch (rigid_body_type) {
       case RigidBodyType::kCircle:
         rigid_body_ = std::make_shared<RigidBodyCircle>();
         break;
       case RigidBodyType::kRectangle:
         rigid_body_ = std::make_shared<RigidBodyRectangle>();
+        break;
+      default:
+        qWarning() << "[GAME OBJECT] Invalid rigid body type";
         break;
     }
   }
