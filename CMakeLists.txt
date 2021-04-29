@@ -69,6 +69,7 @@ set(SOURCES
         Event/event_type.h
         GUI/GameView/game_view.cpp
         GUI/GameView/player_bar.cpp
+        GUI/GameView/stats_table.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
@@ -102,11 +103,17 @@ set(SOURCES
         )
 
 # If necessary, add resources files
+qt5_add_big_resources(RESOURCES_CLIENT
+        Res/Fonts/fonts.qrc)
+qt5_add_big_resources(RESOURCES_SERVER
+        )
 qt5_add_big_resources(RESOURCES_COMMON
         Res/Json/weapon_settings.qrc)
 
-add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_COMMON})
+add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
+        ${RESOURCES_COMMON})
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
-add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_COMMON})
+add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}
+        ${RESOURCES_COMMON})
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})

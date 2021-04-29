@@ -45,7 +45,7 @@ constexpr float kDefaultMapWidth = 100.f;
 constexpr float kDefaultMapHeight = 100.f;
 
 // Room
-constexpr int kDefaultMaxClients = 4;
+constexpr int kDefaultMaxClients = 15;
 
 // Null Values
 constexpr ClientId kNullClientId = -1;
@@ -82,6 +82,7 @@ constexpr float kExpForLevel[] = {
     10, 15, 20, 25, 30, 35, 40, 45, 50, 55
 };
 constexpr float kExpMultiplier = 5.f;
+
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

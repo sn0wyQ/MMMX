@@ -10,7 +10,7 @@ class Bullet : public MovableObject {
  public:
   explicit Bullet(GameObjectId bullet_id);
 
-  virtual GameObjectType GetType() const;
+  GameObjectType GetType() const override;
 
   void OnTick(int delta_time) override;
   void DrawRelatively(Painter* painter) override;
