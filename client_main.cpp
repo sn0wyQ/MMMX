@@ -3,6 +3,7 @@
 #include <QApplication>
 #include <QDebug>
 #include <QFile>
+#include <QFontDatabase>
 #include <QTime>
 
 #include "Client/client_controller.h"
@@ -72,7 +73,9 @@ void ClientMessageHandler(QtMsgType type,
 
 int main(int argc, char* argv[]) {
   QApplication app(argc, argv);
-
+  QFontDatabase::addApplicationFont(":Res/Fonts/CynthoNext-Bold.ttf");
+  QFontDatabase::addApplicationFont(":Res/Fonts/RobotoMono-Regular.ttf");
+  QFontDatabase::addApplicationFont(":Res/Fonts/RobotoMono-Bold.ttf");
   QFile::remove("client.log");
   qInstallMessageHandler(ClientMessageHandler);
 

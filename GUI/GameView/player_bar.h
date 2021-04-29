@@ -13,6 +13,39 @@
 #include "Client/client_controller.h"
 #include "Painter/painter.h"
 
+namespace Constants::PlayerBar {
+
+const float kHealthBarWidth = 30.f;
+const float kHealthBarHeight = 25.f;
+const float kHealthBarX = 50.f - kHealthBarWidth / 2.f;
+const float kHealthBarY = 10.f;
+
+const float kExpBarWidth = 30.f;
+const float kExpBarHeight = 25.f;
+const float kExpBarX = 50.f - kExpBarWidth / 2.f;
+const float kExpBarY = 45.f;
+
+const float kIntervalLr = 2.f;
+const float kSmallPaddingU = 2.f;
+const float kSmallIntervalLr = 0.3f;
+const float kPaddingU = 15.f;
+const float kPictureHeight = 45.f;
+
+const std::vector<QString> kLevelingStrings = {
+    "MAX HP",
+    "REGEN",
+    "SPEED",
+    "FOV",
+    "ACCURACY",
+    "BULLET SPEED",
+    "RATE OF FIRE",
+    "RANGE",
+    "DAMAGE",
+    "RELOAD"
+};
+
+}  // namespace Constants::PlayerBar
+
 class PlayerBar : public QWidget {
   Q_OBJECT
 
@@ -41,11 +74,6 @@ class PlayerBar : public QWidget {
   std::shared_ptr<ClientGameModel> model_;
   std::vector<QPushButton*> buttons_;
 
-  float interval_lr_ = 2.f;
-  float small_padding_u_ = 2.f;
-  float small_interval_lr_ = 0.3f;
-  float padding_u_ = 15.f;
-  float picture_height_ = 45.f;
   float picture_width_;
   float small_full_width_;
   float small_width_;

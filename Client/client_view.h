@@ -19,6 +19,7 @@
 #include "Event/event.h"
 #include "GUI/GameView/game_view.h"
 #include "GUI/GameView/player_bar.h"
+#include "GUI/GameView/stats_table.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
@@ -44,6 +45,7 @@ class ClientView : public AbstractClientView {
   std::shared_ptr<ClientGameModel> model_;
   GameView* game_view_;
   PlayerBar* player_bar_;
+  StatsTable* stats_table_;
   QLabel* info_label_;
   int height_of_bar_{};
 };

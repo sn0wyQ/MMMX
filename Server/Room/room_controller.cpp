@@ -118,6 +118,8 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
               model_data.model->GetPointToSpawn(entity->GetBoundingCircleRadius(), true);
           entity->Revive(point_to_spawn);
           if (entity->GetType() == GameObjectType::kPlayer) {
+            model_data.model->GetPlayerStatsByPlayerId(
+                entity->GetId())->GetMutableDeaths()++;
             this->AddEventToSendToSinglePlayer(
                 Event(EventType::kLocalPlayerDied,
                       point_to_spawn),
@@ -129,8 +131,10 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                   std::dynamic_pointer_cast<Player>(entity)->GetLevel())
                   * Constants::kExpMultiplier;
               killer->IncreaseExperience(receive_exp);
-              model_data.model->GetPlayerStatsByPlayerId(killer_id)->
-                                                   SetLevel(killer->GetLevel());
+              auto killer_stats =
+                  model_data.model->GetPlayerStatsByPlayerId(killer_id);
+              killer_stats->SetKills(killer_stats->GetKills() + 1);
+              killer_stats->SetLevel(killer->GetLevel());
               this->AddEventToSendToSinglePlayer(
                   Event(EventType::kIncreaseLocalPlayerExperience,
                         receive_exp),
@@ -188,6 +192,7 @@ void RoomController::RemoveClient(ClientId client_id) {
         "[ROOM ID:" + std::to_string(id_) + "] Invalid client ID");
   }
   model_->DeleteGameObject(player_id);
+  model_->DeletePlayerStats(player_id);
   this->AddEventToSendToAllClients(Event(EventType::kPlayerDisconnected,
                                          player_id));
   player_ids_.erase(client_id);
@@ -312,7 +317,7 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id,
 void RoomController::ForceSendPlayersStatsToPlayer(GameObjectId player_id) {
   for (auto player_stats_id : this->GetAllPlayerIds()) {
     Event event_update_players_stats = Event(EventType::kUpdatePlayersStats,
-                                            player_stats_id);
+                                             player_stats_id);
     event_update_players_stats.PushBackArgs(
         model_->GetPlayerStatsByPlayerId(player_stats_id)->GetParams());
     this->AddEventToSendToSinglePlayer(event_update_players_stats, player_id);
@@ -323,7 +328,7 @@ void RoomController::SendPlayersStatsToPlayers() {
   for (auto player_id : this->GetAllPlayerIds()) {
     if (model_->IsNeededToSendPlayerStats(player_id)) {
       Event event_update_players_stats = Event(EventType::kUpdatePlayersStats,
-                                              player_id);
+                                               player_id);
       event_update_players_stats.PushBackArgs(
           model_->GetPlayerStatsByPlayerId(player_id)->GetParams());
       this->AddEventToSendToAllPlayers(event_update_players_stats);
@@ -331,6 +336,7 @@ void RoomController::SendPlayersStatsToPlayers() {
   }
 }
 
+// Temporary -> AddPlayer(PlayerType)
 GameObjectId RoomController::AddPlayer() {
   QPointF point =
       model_->GetPointToSpawn(Constants::kDefaultPlayerRadius, true);
@@ -347,7 +353,8 @@ GameObjectId RoomController::AddPlayer() {
                 Constants::kDefaultHealthRegenSpeed,
                 Constants::kDefaultMaxHealthPoints};
   // Temporary
-  int players_type = this->GetPlayersCount() % Constants::kDefaultMaxClients;
+  int players_type =
+      this->GetPlayersCount() % static_cast<int>(WeaponType::SIZE);
   switch (players_type) {
     case 0: {
       params.emplace_back(static_cast<int>(WeaponType::kAssaultRifle));
@@ -365,6 +372,9 @@ GameObjectId RoomController::AddPlayer() {
       params.emplace_back(static_cast<int>(WeaponType::kShotgun));
       break;
     }
+    default:
+      qWarning() << "Invalid player type";
+      break;
   }
   return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
@@ -397,9 +407,9 @@ void RoomController::AddRandomTree(float radius) {
   AddTree(position.x(), position.y(), radius);
 }
 
-std::vector<GameObjectId> RoomController::AddBullets(GameObjectId parent_id,
-                               float x, float y, float rotation,
-                               const std::shared_ptr<Weapon>& weapon) {
+std::vector<GameObjectId> RoomController::AddBullets(
+    GameObjectId parent_id, float x, float y, float rotation,
+    const std::shared_ptr<Weapon>& weapon) {
   std::vector<std::vector<QVariant>> bullets_params =
       weapon->GetBulletsParams(parent_id, x, y, rotation);
   std::vector<GameObjectId> bullet_ids(bullets_params.size());

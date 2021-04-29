@@ -11,6 +11,13 @@
 
 #include "Converter/converter.h"
 
+namespace Constants::Painter {
+
+const QFont kDefaultFont("Roboto Mono", -1, QFont::Weight::Normal);
+const QColor kLevelColor(34, 185, 120);
+
+}  // namespace Constants::Painter
+
 class Painter : public QPainter {
  public:
   Painter(QPaintDevice* device,
@@ -30,9 +37,6 @@ class Painter : public QPainter {
   void DrawEllipse(const QPointF& center, float rx, float ry);
   void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
   void DrawRect(float x, float y, float width, float height);
-  void DrawText(QRectF rect, int flags, const QString& str);
-
-  float GetScaledFloat(float x) const;
 
  private:
   std::shared_ptr<Converter> converter_;

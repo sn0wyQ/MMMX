@@ -1,19 +1,5 @@
 #include "player_bar.h"
 
-namespace Constants::PlayerBar {
-
-const float kHealthBarWidth = 30.f;
-const float kHealthBarHeight = 25.f;
-const float kHealthBarX = 50.f - kHealthBarWidth / 2.f;
-const float kHealthBarY = 10.f;
-
-const float kExpBarWidth = 30.f;
-const float kExpBarHeight = 25.f;
-const float kExpBarX = 50.f - kExpBarWidth / 2.f;
-const float kExpBarY = 45.f;
-
-}  // namespace Constants::PlayerBar
-
 PlayerBar::PlayerBar(QWidget* parent,
                      std::shared_ptr<ClientGameModel> model,
                      QPoint position,
@@ -27,7 +13,7 @@ PlayerBar::PlayerBar(QWidget* parent,
   for (int i = 0; i < Constants::kLevelingCount; i++) {
     buttons_[i] = new QPushButton(this);
     auto effect = new QGraphicsOpacityEffect;
-    effect->setOpacity(0.f);
+    effect->setOpacity(0.01f);
     buttons_[i]->setGraphicsEffect(effect);
   }
 
@@ -48,7 +34,7 @@ void PlayerBar::paintEvent(QPaintEvent* paint_event) {
   auto local_player = model_->GetLocalPlayer();
   QPainter painter(this);
 
-  QFont font{};
+  QFont font(Constants::Painter::kDefaultFont);
   font.setPointSizeF(10.f);
   painter.setFont(font);
 
@@ -121,6 +107,7 @@ void PlayerBar::DrawExpRect(QPainter* painter) {
 }
 
 void PlayerBar::DrawLeveling(QPainter* painter) {
+  using namespace Constants::PlayerBar;
   auto local_player = model_->GetLocalPlayer();
   auto free_leveling_points = local_player->GetFreeLevelingPoints();
   auto leveling_points = local_player->GetLevelingPoints();
@@ -132,15 +119,15 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
       clr.setAlphaF(0.2f);
       painter->setBrush(clr);
     }
-    float first = interval_lr_ + (picture_width_ + interval_lr_) * draw_i;
+    float first = kIntervalLr + (picture_width_ + kIntervalLr) * draw_i;
     bool first_part = (i < Constants::kLevelingCount / 2);
     if (!first_part) {
       first = 100 - first - picture_width_;
     }
     painter->drawRect(
         RectWithPercents(first,
-                         padding_u_,
-                         picture_width_, picture_height_));
+                         kPaddingU,
+                         picture_width_, kPictureHeight));
     int get_i = first_part ? i : 3 * Constants::kLevelingCount / 2 - 1 - i;
     int current_leveling = leveling_points[get_i];
     painter->setBrush(Qt::darkYellow);
@@ -151,45 +138,33 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
       painter->drawEllipse(
           RectWithPercents(
               first
-                  + small_interval_lr_ + (small_full_width_) * j,
-              padding_u_ + picture_height_ + small_padding_u_,
+                  + kSmallIntervalLr + (small_full_width_) * j,
+              kPaddingU + kPictureHeight + kSmallPaddingU,
               small_width_, small_height_));
     }
     painter->setBrush(Qt::white);
   }
 
-  std::vector<QString> leveling_strings = {
-      "MAX HP",
-      "REGEN",
-      "SPEED",
-      "FOV",
-      "ACCURACY",
-      "BULLET SPEED",
-      "RATE OF FIRE",
-      "RANGE",
-      "DAMAGE",
-      "RELOAD"
-  };
   for (int i = 0; i < Constants::kLevelingCount; i++) {
     painter->save();
     int draw_i = i % (Constants::kLevelingCount / 2);
-    float first = interval_lr_ + (picture_width_ + interval_lr_) * draw_i;
+    float first = kIntervalLr + (picture_width_ + kIntervalLr) * draw_i;
     bool first_part = (i < Constants::kLevelingCount / 2);
     if (!first_part) {
       first = 100 - first - picture_width_;
     }
     auto rect = RectWithPercents(first + picture_width_ / 2.f,
-                                 padding_u_ + picture_height_ / 2.f,
+                                 kPaddingU + kPictureHeight / 2.f,
                                  0, 0);
     painter->translate(rect.x(), rect.y());
     painter->rotate(45);
     int get_i = first_part ? i : 3 * Constants::kLevelingCount / 2 - 1 - i;
     painter->drawText(
-        RectWithPercents(- picture_width_ / 2.f - interval_lr_ / 2.f,
-                         - picture_height_ / 2.f,
-                         picture_width_ + interval_lr_, picture_height_),
-                         Qt::AlignCenter,
-        leveling_strings[get_i]);
+        RectWithPercents(- picture_width_ / 2.f - kIntervalLr / 2.f,
+                         - kPictureHeight / 2.f,
+                         picture_width_ + kIntervalLr, kPictureHeight),
+        Qt::AlignCenter,
+        kLevelingStrings[get_i]);
     painter->restore();
   }
 }
@@ -210,17 +185,18 @@ void PlayerBar::Clicked(int index) {
 }
 
 void PlayerBar::MoveButtons() {
+  using namespace Constants::PlayerBar;
   this->RecalculateSizes();
   for (int i = 0; i < Constants::kLevelingCount; i++) {
     int draw_i = i % (Constants::kLevelingCount / 2);
-    float first = interval_lr_ + (picture_width_ + interval_lr_) * draw_i;
+    float first = kIntervalLr + (picture_width_ + kIntervalLr) * draw_i;
     bool first_part = (i < Constants::kLevelingCount / 2);
     if (!first_part) {
       first = 100.f - first - picture_width_;
     }
     auto rect = RectWithPercents(first,
-                                 padding_u_,
-                                 picture_width_, picture_height_);
+                                 kPaddingU,
+                                 picture_width_, kPictureHeight);
     int set_i = first_part ? i : 3 * Constants::kLevelingCount / 2 - 1 - i;
     buttons_[set_i]->move(rect.x(), rect.y());
     buttons_[set_i]->resize(rect.width(), rect.height());
@@ -228,9 +204,10 @@ void PlayerBar::MoveButtons() {
 }
 
 void PlayerBar::RecalculateSizes() {
-  picture_width_ = picture_height_ / this->width() * this->height();
+  using namespace Constants::PlayerBar;
+  picture_width_ = kPictureHeight / this->width() * this->height();
   small_full_width_ = picture_width_ / Constants::kCountOfLevels;
-  small_width_ = small_full_width_ - small_interval_lr_;
+  small_width_ = small_full_width_ - kSmallIntervalLr;
   small_height_ = small_width_ / this->height() * this->width();
 }
 

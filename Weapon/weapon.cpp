@@ -103,39 +103,52 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
     float rotation) const {
   std::vector<std::vector<QVariant>> bullets_params;
   WeaponType weapon_type = GetWeaponType();
+  auto bullet_radius = WeaponSettings::GetInstance().
+      GetWeaponSetting<float>(weapon_type, "bullet_radius");
   switch (weapon_type) {
-    case WeaponType::kAssaultRifle: {
-      bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                        Constants::Weapon::AssaultRifle::kDefaultBulletRadius));
-      break;
-    }
-    case WeaponType::kCrossbow: {
-      bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                          Constants::Weapon::Crossbow::kDefaultBulletRadius));
-      break;
-    }
+    case WeaponType::kAssaultRifle:
+    case WeaponType::kCrossbow:
     case WeaponType::kMachineGun: {
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                          Constants::Weapon::MachineGun::kDefaultBulletRadius));
+                          bullet_radius));
       break;
     }
     case WeaponType::kShotgun: {
+      auto angle_between_bullets = WeaponSettings::GetInstance().
+          GetWeaponSetting<float>(weapon_type, "angle_between_bullets");
       bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation
-                    + Constants::Weapon::Shotgun::kDefaultAngleBetweenBullets),
-                    Constants::Weapon::Shotgun::kDefaultBulletRadius));
+          GetBulletParams(parent_id, x, y,
+                          Math::GetNormalizeAngle(
+                              rotation + angle_between_bullets),
+                          bullet_radius));
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                    Constants::Weapon::Shotgun::kDefaultBulletRadius));
+                          bullet_radius));
       bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation
-                    - Constants::Weapon::Shotgun::kDefaultAngleBetweenBullets),
-                    Constants::Weapon::Shotgun::kDefaultBulletRadius));
+          GetBulletParams(parent_id, x, y,
+                          Math::GetNormalizeAngle(rotation
+                                                      - angle_between_bullets),
+                          bullet_radius));
       break;
     }
+    default: break;
   }
   return bullets_params;
+}
+
+void Weapon::SetParams(std::vector<QVariant> params) {
+  this->SetReloadingTime(params.back().toInt());
+  params.pop_back();
+  this->SetRateOfFire(params.back().toInt());
+  params.pop_back();
+  this->SetClipSize(params.back().toInt());
+  params.pop_back();
+  this->SetBulletSpeed(params.back().toFloat());
+  params.pop_back();
+  this->SetBulletRange(params.back().toFloat());
+  params.pop_back();
+  this->SetBulletDamage(params.back().toFloat());
+  params.pop_back();
+  this->SetCurrentBulletsInClip(this->GetClipSize());
 }

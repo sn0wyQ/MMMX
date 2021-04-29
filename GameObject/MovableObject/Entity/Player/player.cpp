@@ -30,6 +30,7 @@ Player::Player(const Player& other) : Entity(other) {
           *(std::dynamic_pointer_cast<Shotgun>(other.weapon_)));
       break;
     }
+    default: break;
   }
   current_exp_ = other.current_exp_;
   level_ = other.level_;
@@ -58,6 +59,7 @@ void Player::SetParams(std::vector<QVariant> params) {
       weapon_ = std::make_shared<Shotgun>();
       break;
     }
+    default: break;
   }
   params.pop_back();
   Entity::SetParams(params);
@@ -70,19 +72,23 @@ std::vector<QVariant> Player::GetParams() const {
 }
 
 void Player::DrawLevel(Painter* painter) {
-  QPointF translation(0.f, -GetHeight() * 1.7f);
+  painter->save();
+  QPointF translation(0.f, -2.5f);
   painter->Translate(translation);
   float rect_width = 75.f;
   float rect_height = 14.f;
-  QFont font{};
-  font.setPointSizeF(7.f);
+  QFont font(Constants::Painter::kDefaultFont);
+  font.setPointSizeF(20.f / GetHeight());
   painter->setFont(font);
+  QPen pen(Constants::Painter::kLevelColor);
+  painter->setPen(pen);
   QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
                    rect_width, rect_height);
 
   painter->drawText(text_rect, Qt::AlignCenter,
                     QString::number(this->GetLevel()));
   painter->Translate(-translation);
+  painter->restore();
 }
 
 void Player::DrawRelatively(Painter* painter) {
