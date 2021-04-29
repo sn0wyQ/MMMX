@@ -42,7 +42,6 @@ void GameObject::SetParams(std::vector<QVariant> params) {
   params.pop_back();
   auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
   if (rigid_body_ == nullptr) {
-    auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
     switch (rigid_body_type) {
       case RigidBodyType::kCircle:
         rigid_body_ = std::make_shared<RigidBodyCircle>();
