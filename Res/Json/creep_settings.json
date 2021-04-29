@@ -13,9 +13,19 @@
     "level": 2,
     "exp_increment_for_kill": 2,
     "max_hp": 200,
-    "default_hp": 80,
+    "default_hp": 150,
     "hp_regen_rate": 0.01,
     "width": 2,
+    "height": 2,
+    "rigid_body_type": 0
+  },
+  {
+    "level": 3,
+    "exp_increment_for_kill": 5,
+    "max_hp": 500,
+    "default_hp": 400,
+    "hp_regen_rate": 0.03,
+    "width": 5,
     "height": 2,
     "rigid_body_type": 0
   }
