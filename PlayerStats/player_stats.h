@@ -22,10 +22,13 @@ class PlayerStats {
   int GetKills() const;
 
   void SetDeaths(int deaths);
+  int& GetMutableDeaths();
   int GetDeaths() const;
 
   void SetLevel(int level);
   int GetLevel() const;
+
+  friend bool operator<(const PlayerStats& first, const PlayerStats& second);
 
  private:
   GameObjectId player_id_{Constants::kNullGameObjectId};

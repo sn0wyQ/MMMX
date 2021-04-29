@@ -54,6 +54,10 @@ void PlayerStats::SetDeaths(int deaths) {
   deaths_ = deaths;
 }
 
+int& PlayerStats::GetMutableDeaths() {
+  return deaths_;
+}
+
 GameObjectId PlayerStats::GetPlayerId() const {
   return player_id_;
 }
@@ -64,4 +68,20 @@ int PlayerStats::GetLevel() const {
 
 void PlayerStats::SetLevel(int level) {
   level_ = level;
+}
+
+bool operator<(const PlayerStats& first, const PlayerStats& second) {
+  if (first.GetLevel() != second.GetLevel()) {
+    return (first.GetLevel() > second.GetLevel());
+  }
+
+  if (first.GetKills() != second.GetKills()) {
+    return (first.GetKills() > second.GetKills());
+  }
+
+  if (first.GetDeaths() != second.GetDeaths()) {
+    return (first.GetKills() < second.GetKills());
+  }
+
+  return first.GetNickname() < second.GetNickname();
 }

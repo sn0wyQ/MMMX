@@ -71,12 +71,25 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
                         .valueToKey(static_cast<uint32_t>(type)));
 }
 
-std::shared_ptr<PlayerStats> GameModel::GetPlayerStatsByPlayerId(
-    GameObjectId player_id) {
+std::vector<std::shared_ptr<PlayerStats>>
+    GameModel::GetAllPlayersStats() const {
+  std::vector<std::shared_ptr<PlayerStats>> result;
+  for (const auto& it : players_stats_) {
+    result.emplace_back(it.second);
+  }
+  return result;
+}
+
+std::shared_ptr<PlayerStats>
+    GameModel::GetPlayerStatsByPlayerId(GameObjectId player_id) {
   if (players_stats_.find(player_id) == players_stats_.end()) {
     players_stats_[player_id] = std::make_shared<PlayerStats>(PlayerStats());
   }
   return players_stats_[player_id];
+}
+
+void GameModel::DeletePlayerStats(GameObjectId player_id) {
+  players_stats_.erase(player_id);
 }
 
 void GameModel::DeleteGameObject(GameObjectId game_object_id) {
