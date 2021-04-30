@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
+#include <QLineF>
 
 #include "creep_settings.h"
 
@@ -73,8 +74,7 @@ float CreepSettings::CalculateMaxHp(int level) const {
 }
 
 float CreepSettings::CalculateDefaultHp(int level) const {
-  return this->CalculateMaxHp(level)
-      * this->GetCreepSetting<float>("default_hp_ratio");
+  return this->CalculateMaxHp(level);
 }
 
 float CreepSettings::CalculateRegenRate(int level) const {
@@ -82,29 +82,29 @@ float CreepSettings::CalculateRegenRate(int level) const {
 }
 
 float CreepSettings::CalculateWidth(int level) const {
-  return std::min(this->GetCreepSetting<float>("max_width"), 0.1f * level);
+  return std::min(this->GetCreepSetting<float>("max_width"),
+      0.5f * level);
 }
 
 float CreepSettings::CalculateHeight(int level) const {
-  return std::min(this->GetCreepSetting<float>("max_height"), 0.1f * level);
+  return std::min(this->GetCreepSetting<float>("max_height"),
+      0.5f * level);
 }
 
 std::pair<int, int>
      CreepSettings::GetMinAndMaxCreepLevelByDistance(float distance) const {
-  static std::mt19937 gen(QDateTime::currentMSecsSinceEpoch());
-  static std::uniform_int_distribution<int>
-      uid1(this->GetCreepSetting<int>("min_creep_level"),
-           this->GetCreepSetting<int>("max_creep_level") / 2);
-  static std::uniform_int_distribution<int>
-      uid2(this->GetCreepSetting<int>("max_creep_level") / 2,
-           this->GetCreepSetting<int>("max_creep_level"));
-  int res{0};
-  if (distance < 30.f) {
-    res = uid2(gen);
-  } else {
-    res = uid1(gen);
-  }
-  return {res, res};
+  auto map_radius = QLineF(QPointF(0, 0),
+                           QPointF(Constants::kDefaultMapHeight,
+                                       Constants::kDefaultMapWidth)).length();
+  auto level_multiplier = (1 - distance / map_radius);
+  level_multiplier = level_multiplier * level_multiplier * level_multiplier;
+  float min_level = this->GetCreepSetting<int>("min_creep_level") *
+       level_multiplier;
+  float max_level =  this->GetCreepSetting<int>("max_creep_level") *
+       level_multiplier;
+  min_level = std::max(1.f, min_level);
+  max_level = std::max(1.f, max_level);
+  return {min_level, max_level};
 }
 
 QSizeF CreepSettings::GetMaxCreepSize() const {

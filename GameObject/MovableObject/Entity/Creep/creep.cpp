@@ -58,11 +58,3 @@ float& Creep::GetMutableExpIncrementForKill() {
 std::shared_ptr<GameObject> Creep::Clone() const {
   return std::make_shared<Creep>(*this);
 }
-
-int Creep::GetLevel() const {
-  return level_;
-}
-
-void Creep::SetLevel(int level) {
-  level_ = level;
-}

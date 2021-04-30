@@ -29,6 +29,9 @@ class Entity : public MovableObject {
   void SetMaxHealthPoints(float max_health_points);
   float GetMaxHealthPoints() const;
 
+  void SetLevel(int level);
+  int GetLevel() const;
+
   bool IsEntity() const override;
 
   void Revive(QPointF point_to_spawn);
@@ -39,6 +42,9 @@ class Entity : public MovableObject {
   virtual float GetExpIncrementForKill() const;
 
   std::shared_ptr<GameObject> Clone() const override;
+
+ protected:
+  int level_{1};
 
  private:
   float fov_radius_{Constants::kDefaultEntityFov};

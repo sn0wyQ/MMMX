@@ -7,6 +7,7 @@ Entity::Entity(const Entity& other) : MovableObject(other) {
   health_points_ = other.health_points_;
   health_regen_rate_ = other.health_regen_rate_;
   max_health_points_ = other.max_health_points_;
+  level_ = other.level_;
 }
 
 void Entity::SetParams(std::vector<QVariant> params) {
@@ -52,6 +53,14 @@ void Entity::SetMaxHealthPoints(float max_health_points) {
 
 float Entity::GetMaxHealthPoints() const {
   return max_health_points_;
+}
+
+int Entity::GetLevel() const {
+  return level_;
+}
+
+void Entity::SetLevel(int level) {
+  level_ = level;
 }
 
 bool Entity::IsEntity() const {
