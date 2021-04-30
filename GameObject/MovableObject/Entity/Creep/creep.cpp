@@ -4,8 +4,8 @@ Creep::Creep(GameObjectId player_id) : Entity(player_id) {}
 
 void Creep::DrawRelatively(Painter* painter) {
   painter->DrawEllipse(QPointF(),
-                       this->GetWidth() / 2 - 0.1,
-                       this->GetHeight() / 2 - 0.1);
+                       this->GetWidth() / 2.f - 0.1f,
+                       this->GetHeight() / 2.f - 0.1f);
 }
 
 void Creep::DrawLevel(Painter* painter) {

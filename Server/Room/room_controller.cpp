@@ -126,12 +126,15 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                   Event(EventType::kLocalPlayerDied, point_to_spawn),
                   entity->GetId());
               break;
+
             case GameObjectType::kCreep:
               creeps_count_--;
               objects_to_delete.emplace_back(entity->GetId());
               break;
+
             default:
               qWarning() << "Invalid game object type";
+              break;
           }
           auto killer_id = bullet->GetParentId();
           if (model_data.model->IsGameObjectIdTaken(killer_id)) {
@@ -398,8 +401,10 @@ GameObjectId RoomController::AddPlayer() {
       params.emplace_back(static_cast<int>(WeaponType::kShotgun));
       break;
     }
-    default:qWarning() << "Invalid player type";
+    default: {
+      qWarning() << "Invalid player type";
       break;
+    }
   }
   return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
