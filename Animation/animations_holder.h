@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 #include "Animation/animation.h"
 #include "Animation/animation_enums.h"

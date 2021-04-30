@@ -26,18 +26,17 @@ void AnimationsHolder::UpdateAnimations(int delta_time) {
 }
 
 void AnimationsHolder::UnloadUnusedAnimations() {
-  std::unordered_multimap<AnimationType, std::shared_ptr<Animation>>::iterator
-      *prev_iter = nullptr;
+  std::vector<std::unordered_multimap<AnimationType,
+                                      std::shared_ptr<Animation>>::iterator>
+      animations_to_delete;
+
   for (auto iter = animations_.begin(); iter != animations_.end(); ++iter) {
     if (iter->second.unique()) {
-      animations_.erase(iter);
-      if (prev_iter) {
-        iter = *prev_iter;
-      } else {
-        iter = animations_.begin();
-      }
-    } else {
-      prev_iter = &iter;
+      animations_to_delete.push_back(iter);
     }
+  }
+
+  for (const auto& animation_to_delete : animations_to_delete) {
+    animations_.erase(animation_to_delete);
   }
 }

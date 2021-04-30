@@ -139,12 +139,12 @@ void Animation::Update(int delta_time) {
 
       case AnimationInstructionType::kPlayFrames: {
         InstructionList instructions_to_insert_;
-        for (int instruction_index = 0;
-             instruction_index < current_instruction_list.
-                at(animation_instruction_index_).args.at(0);
+        int frames_count = current_instruction_list.
+            at(animation_instruction_index_).args.at(0);
+        for (int instruction_index = 0; instruction_index < frames_count;
              ++instruction_index) {
           instructions_to_insert_
-            .push_back({AnimationInstructionType::kNextFrame, {}});
+              .push_back({AnimationInstructionType::kNextFrame, {}});
           int wait_time = current_instruction_list
               .at(animation_instruction_index_).args.at(1);
           instructions_to_insert_.push_back({AnimationInstructionType::kWait,
