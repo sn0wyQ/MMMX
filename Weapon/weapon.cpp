@@ -141,6 +141,10 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
         bullet_radius, random_bullet_shifts.front().toFloat()));
       break;
     }
+    default: {
+      qWarning() << "Addressing a nonexistent type of weapon\n";
+      break;
+    }
   }
   return bullets_params;
 }
