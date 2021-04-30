@@ -5,10 +5,10 @@
 #include <utility>
 #include <vector>
 
-#include <QPaintEvent>
-#include <QWidget>
-#include <QPushButton>
 #include <QGraphicsOpacityEffect>
+#include <QPaintEvent>
+#include <QPushButton>
+#include <QWidget>
 
 #include "Client/client_controller.h"
 #include "Painter/painter.h"
@@ -46,13 +46,13 @@ class PlayerBar : public QWidget {
   float small_width_;
   float small_height_;
 
-  const float kHealthBarWidth = 30.f;
   const float kHealthBarHeight = 25.f;
+  const float kHealthBarWidth = 30.f;
   const float kHealthBarX = 50.f - kHealthBarWidth / 2.f;
   const float kHealthBarY = 10.f;
 
-  const float kExpBarWidth = 30.f;
   const float kExpBarHeight = 25.f;
+  const float kExpBarWidth = 30.f;
   const float kExpBarX = 50.f - kExpBarWidth / 2.f;
   const float kExpBarY = 45.f;
 
