@@ -56,7 +56,7 @@ std::vector<QVariant>
   params.emplace_back(0);  // velocity_y
   // Entity params
   params.emplace_back(0.f);  // FOV for creep is always 0
-  params.emplace_back(this->CalculateDefaultHp(creep_level));
+  params.emplace_back(this->CalculateMaxHp(creep_level));
   params.emplace_back(this->CalculateRegenRate(creep_level));
   params.emplace_back(this->CalculateMaxHp(creep_level));
   // Creep params
@@ -71,10 +71,6 @@ float CreepSettings::CalculateExpIncrement(int level) const {
 
 float CreepSettings::CalculateMaxHp(int level) const {
   return this->GetCreepSetting<float>("max_hp_multiplier") * level;
-}
-
-float CreepSettings::CalculateDefaultHp(int level) const {
-  return this->CalculateMaxHp(level);
 }
 
 float CreepSettings::CalculateRegenRate(int level) const {
@@ -97,11 +93,12 @@ std::pair<int, int>
                            QPointF(Constants::kDefaultMapHeight,
                                        Constants::kDefaultMapWidth)).length();
   auto level_multiplier = (1 - distance / map_radius);
-  level_multiplier = level_multiplier * level_multiplier * level_multiplier;
   float min_level = this->GetCreepSetting<int>("min_creep_level") *
-       level_multiplier;
+       std::pow(level_multiplier,
+                this->GetCreepSetting<float>("kMinLevelPow"));
   float max_level =  this->GetCreepSetting<int>("max_creep_level") *
-       level_multiplier;
+      std::pow(level_multiplier,
+               this->GetCreepSetting<float>("kMaxLevelPow"));;
   min_level = std::max(1.f, min_level);
   max_level = std::max(1.f, max_level);
   return {min_level, max_level};

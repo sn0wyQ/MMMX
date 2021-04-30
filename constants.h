@@ -14,10 +14,10 @@ namespace Constants {
 
 // Build Options
 constexpr bool kRemote = false;
-constexpr bool kServerShowOnlyInfoMessages = false;
-constexpr bool kServerShowDebugMessagesOnScreen = false;
-constexpr bool kClientShowOnlyInfoMessages = false;
-constexpr bool kClientShowDebugMessagesOnScreen = false;
+constexpr bool kClientEnableIgnoreLevel = true;
+constexpr QtMsgType kClientMessageIgnoreLevel = QtDebugMsg;
+constexpr bool kServerEnableIgnoreLevel = true;
+constexpr QtMsgType kServerMessageIgnoreLevel = QtDebugMsg;
 
 // Version
 constexpr int kMajorVersion = 0;

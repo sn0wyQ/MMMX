@@ -102,6 +102,7 @@ set(SOURCES
         Weapon/weapon.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp
         GameObject/MovableObject/Entity/Creep/creep_settings.cpp
+        message_handler.cpp
         )
 
 # If necessary, add resources files
