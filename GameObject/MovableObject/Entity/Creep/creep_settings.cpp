@@ -1,9 +1,10 @@
+#include <algorithm>
+#include <random>
 #include <utility>
 
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
-#include <random>
 
 #include "creep_settings.h"
 

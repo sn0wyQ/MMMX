@@ -2,6 +2,7 @@
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_SETTINGS_H_
 
 #include <map>
+#include <utility>
 #include <vector>
 
 #include <QJsonObject>
