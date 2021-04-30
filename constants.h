@@ -86,8 +86,23 @@ constexpr float GetExpForLevel(int level) {
 
 constexpr float kExpMultiplier = 5.f;
 
-constexpr int kLevelingCount = 10;
+constexpr int kDefaultLevelingPoints = 10;
 constexpr int kCountOfLevels = 5;
+
+namespace LevelingMultipliers {
+
+constexpr float kMaxHp = 1.5f;
+constexpr float kHealthRegenRate = 2.1f;
+constexpr float kSpeed = 1.1f;
+constexpr float kFovRadius = 1.3f;
+
+constexpr float kBulletSpeed = 1.2f;
+constexpr float kRateOfFire = 1.1f;
+constexpr float kBulletRange = 1.3f;
+constexpr float kBulletDamage = 1.1f;
+
+} // namespace LevelingMultipliers
+
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

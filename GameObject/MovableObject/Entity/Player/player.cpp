@@ -2,7 +2,7 @@
 
 Player::Player(GameObjectId player_id)
     : Entity(player_id),
-      leveling_points_(Constants::kLevelingCount) {
+      leveling_points_(Constants::kDefaultLevelingPoints) {
   free_leveling_points_ = 5;
 }
 
@@ -181,34 +181,42 @@ void Player::IncreaseLevelingPoint(int index) {
   switch (index) {
     case 0: {
       float part_to_set = GetHealthPoints() / GetMaxHealthPoints();
-      SetMaxHealthPoints(GetMaxHealthPoints() * 1.5f);
+      SetMaxHealthPoints(GetMaxHealthPoints()
+        * Constants::LevelingMultipliers::kMaxHp);
       SetHealthPoints(GetMaxHealthPoints() * part_to_set);
       break;
     }
     case 1:
-      SetHealthRegenRate(GetHealthRegenRate() * 2.1f);
+      SetHealthRegenRate(GetHealthRegenRate()
+      * Constants::LevelingMultipliers::kHealthRegenRate);
       break;
     case 2:
-      SetSpeedMultiplier(GetSpeedMultiplier() * 1.2f);
+      SetSpeedMultiplier(GetSpeedMultiplier()
+      * Constants::LevelingMultipliers::kSpeed);
       break;
     case 3:
-      SetFovRadius(GetFovRadius() * 1.4f);
+      SetFovRadius(GetFovRadius()
+      * Constants::LevelingMultipliers::kFovRadius);
       break;
     case 4:
       break;
     case 5:
-      weapon_->SetBulletSpeed(weapon_->GetBulletSpeed() * 1.2f);
+      weapon_->SetBulletSpeed(weapon_->GetBulletSpeed()
+      * Constants::LevelingMultipliers::kBulletSpeed);
       break;
     case 6:
       weapon_->SetRateOfFire(
           static_cast<int>(
-              static_cast<float>(weapon_->GetRateOfFire()) * 1.1f));
+              static_cast<float>(weapon_->GetRateOfFire())
+              * Constants::LevelingMultipliers::kRateOfFire));
       break;
     case 7:
-      weapon_->SetBulletRange(weapon_->GetBulletRange() * 1.3f);
+      weapon_->SetBulletRange(weapon_->GetBulletRange()
+      * Constants::LevelingMultipliers::kBulletRange);
       break;
     case 8:
-      weapon_->SetBulletDamage(weapon_->GetBulletDamage() * 1.1f);
+      weapon_->SetBulletDamage(weapon_->GetBulletDamage()
+      * Constants::LevelingMultipliers::kBulletDamage);
       break;
     case 9:
       break;

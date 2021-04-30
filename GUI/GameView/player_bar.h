@@ -62,7 +62,7 @@ class PlayerBar : public QWidget {
   const float kPaddingU = 15.f;
   const float kPictureHeight = 45.f;
 
-  const std::vector<QString> kLevelingStrings = {
+  const std::vector<QString> kLevelingNames = {
       "MAX HP",
       "REGEN",
       "SPEED",

@@ -102,7 +102,7 @@ enum class EventType {
   kSendPlayerShooting,
 
   // [0] - <GameObjectId> sender_player_id
-  // Constants::kLevelingCount times int
+  // Constants::kDefaultLevelingPoints times int
   kSendLevelingPoints,
 
   // [0] - <GameObjectId> player_id
