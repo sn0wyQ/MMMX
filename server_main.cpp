@@ -2,8 +2,8 @@
 
 #include <QCoreApplication>
 
-#include "Server/server_controller.h"
 #include "MessageHandler/message_handler.h"
+#include "Server/server_controller.h"
 
 MessageHandler message_handler(Constants::kServerEnableIgnoreLevel,
                                Constants::kServerMessageIgnoreLevel,

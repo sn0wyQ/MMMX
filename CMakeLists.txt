@@ -71,6 +71,8 @@ set(SOURCES
         GUI/GameView/player_bar.cpp
         GUI/GameView/stats_table.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
+        GameObject/MovableObject/Entity/Creep/creep.cpp
+        GameObject/MovableObject/Entity/Creep/creep_settings.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
@@ -101,8 +103,6 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
-        GameObject/MovableObject/Entity/Creep/creep.cpp
-        GameObject/MovableObject/Entity/Creep/creep_settings.cpp
         )
 
 # If necessary, add resources files
@@ -111,8 +111,9 @@ qt5_add_big_resources(RESOURCES_CLIENT
 qt5_add_big_resources(RESOURCES_SERVER
         )
 qt5_add_big_resources(RESOURCES_COMMON
+        Res/Json/creep_settings.qrc
         Res/Json/weapon_settings.qrc
-        Res/Json/creep_settings.qrc)
+        )
 
 add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
         ${RESOURCES_COMMON})

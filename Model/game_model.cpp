@@ -1,5 +1,4 @@
 #include "game_model.h"
-#include <GameObject/MovableObject/Entity/Creep/creep.h>
 
 GameModel::GameModel(const GameModel& other) {
   for (const auto& [game_object_id, game_object] : other.game_objects_) {

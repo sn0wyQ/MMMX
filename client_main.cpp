@@ -4,7 +4,7 @@
 #include <QFontDatabase>
 
 #include "Client/client_controller.h"
-#include <Client/client_view.h>
+#include "Client/client_view.h"
 #include "MessageHandler/message_handler.h"
 
 MessageHandler message_handler(Constants::kClientEnableIgnoreLevel,

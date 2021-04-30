@@ -15,6 +15,7 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
+#include "GameObject/MovableObject/Entity/Creep/creep_settings.h"
 #include "GameObject/RigidBody/object_collision.h"
 #include "Model/room_game_model.h"
 #include "Server/Room/room_settings.h"

@@ -1,5 +1,4 @@
 #include "room_controller.h"
-#include "GameObject/MovableObject/Entity/Creep/creep_settings.h"
 
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), model_(std::make_shared<RoomGameModel>()),
