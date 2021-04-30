@@ -60,6 +60,7 @@ void RoomController::OnTick(int delta_time) {
                            std::make_shared<RoomGameModel>(*model_)});
   model_ = models_cache_.back().model;
   this->RecalculateModel(models_cache_.back());
+  this->AddCreeps();
   this->SendPlayersStatsToPlayers();
   model_->UpdatePlayerStatsHashes();
   for (const auto& player_id : this->GetAllPlayerIds()) {
@@ -117,14 +118,21 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
         if (hp_to_set == 0) {
           QPointF point_to_spawn =
               model_->GetPointToSpawn(entity->GetBoundingCircleRadius(), true);
-          entity->Revive(point_to_spawn);
-          if (entity->GetType() == GameObjectType::kPlayer) {
-            model_data.model->GetPlayerStatsByPlayerId(
-                entity->GetId())->GetMutableDeaths()++;
-            this->AddEventToSendToSinglePlayer(
-                Event(EventType::kLocalPlayerDied,
-                      point_to_spawn),
-                entity->GetId());
+          switch (entity->GetType()) {
+            case GameObjectType::kPlayer:
+              entity->Revive(point_to_spawn);
+              model_data.model->GetPlayerStatsByPlayerId(
+                  entity->GetId())->GetMutableDeaths()++;
+              this->AddEventToSendToSinglePlayer(
+                  Event(EventType::kLocalPlayerDied, point_to_spawn),
+                  entity->GetId());
+              break;
+            case GameObjectType::kCreep:
+              creeps_count_--;
+              objects_to_delete.emplace_back(entity->GetId());
+              break;
+            default:
+              qWarning() << "Invalid game object type";
           }
           auto killer_id = bullet->GetParentId();
           if (model_data.model->IsGameObjectIdTaken(killer_id)) {
@@ -461,11 +469,11 @@ void RoomController::AddConstantObjects() {
   for (int i = 0; i < 15; i++) {
     this->AddRandomTree(2.f);
   }
-  AddCreeps();
 }
 
 void RoomController::AddCreeps() {
   for (; creeps_count_ < 25; creeps_count_++) {
+    qInfo() << "Creep added";
     QPointF position = model_->GetPointToSpawn(std::max(
         CreepSettings::GetInstance().GetMaxCreepSize().height(),
         CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
