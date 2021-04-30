@@ -3,7 +3,7 @@
 #include <QCoreApplication>
 
 #include "Server/server_controller.h"
-#include "message_handler.h"
+#include "MessageHandler/message_handler.h"
 
 MessageHandler message_handler(Constants::kServerEnableIgnoreLevel,
                                Constants::kServerMessageIgnoreLevel,
@@ -13,7 +13,7 @@ void MessageHandlerWrapper(QtMsgType type,
                            const QMessageLogContext& context,
                            const QString& message) {
   message_handler.Handle(type, context, message);
-};
+}
 
 int main(int argc, char* argv[]) {
   QCoreApplication app(argc, argv);

@@ -1,5 +1,5 @@
-#ifndef MESSAGE_HANDLER_H_
-#define MESSAGE_HANDLER_H_
+#ifndef MESSAGEHANDLER_MESSAGE_HANDLER_H_
+#define MESSAGEHANDLER_MESSAGE_HANDLER_H_
 
 #include <QDebug>
 #include <QFile>
@@ -22,4 +22,4 @@ class MessageHandler {
   static int LevelByMessageType(QtMsgType msg_type);
 };
 
-#endif  // MESSAGE_HANDLER_H_
+#endif  // MESSAGEHANDLER_MESSAGE_HANDLER_H_

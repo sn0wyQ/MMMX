@@ -5,7 +5,7 @@
 
 #include "Client/client_controller.h"
 #include <Client/client_view.h>
-#include "message_handler.h"
+#include "MessageHandler/message_handler.h"
 
 MessageHandler message_handler(Constants::kClientEnableIgnoreLevel,
                                Constants::kClientMessageIgnoreLevel,
@@ -15,7 +15,7 @@ void MessageHandlerWrapper(QtMsgType type,
                            const QMessageLogContext& context,
                            const QString& message) {
   message_handler.Handle(type, context, message);
-};
+}
 
 int main(int argc, char* argv[]) {
   QApplication app(argc, argv);

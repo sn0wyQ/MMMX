@@ -435,7 +435,8 @@ void RoomController::AddRandomTree(float radius) {
 
 void RoomController::AddCreep(float x, float y) {
   float distance = QLineF(QPointF(), QPointF(x, y)).length();
-  auto params = CreepSettings::GetInstance().GetCreepParams(x, y, 0.f, distance);
+  auto params = CreepSettings::GetInstance().GetCreepParams(x, y, 0.f,
+                                                            distance);
   model_->AddGameObject(GameObjectType::kCreep, params);
 }
 

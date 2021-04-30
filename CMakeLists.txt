@@ -85,6 +85,7 @@ set(SOURCES
         Hash/hash_calculator.cpp
         Interpolator/interpolator.cpp
         Math/math.cpp
+        MessageHandler/message_handler.cpp
         Model/client_game_model.cpp
         Model/game_model.cpp
         Model/room_game_model.cpp
@@ -102,7 +103,6 @@ set(SOURCES
         Weapon/weapon.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp
         GameObject/MovableObject/Entity/Creep/creep_settings.cpp
-        message_handler.cpp
         )
 
 # If necessary, add resources files
