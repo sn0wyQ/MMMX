@@ -8,6 +8,22 @@ void Creep::DrawRelatively(Painter* painter) {
                        this->GetHeight() / 2 - 0.1);
 }
 
+void Creep::DrawLevel(Painter* painter) {
+  QPointF translation(0.f, -this->GetHeight() / 2 - 2);
+  painter->Translate(translation);
+  float rect_width = 75.f;
+  float rect_height = 14.f;
+  QFont font{};
+  font.setPointSizeF(7.f);
+  painter->setFont(font);
+  QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
+                   rect_width, rect_height);
+
+  painter->drawText(text_rect, Qt::AlignCenter,
+                    QString::number(this->GetLevel()));
+  painter->Translate(-translation);
+}
+
 GameObjectType Creep::GetType() const {
   return GameObjectType::kCreep;
 }

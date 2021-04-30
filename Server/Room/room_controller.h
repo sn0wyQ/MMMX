@@ -92,7 +92,7 @@ class RoomController : public BaseController {
   void AddRandomBox(float width, float height);
   void AddTree(float x, float y, float radius);
   void AddRandomTree(float radius);
-  void AddCreep(int level, float x, float y);
+  void AddCreep(float x, float y);
   std::vector<GameObjectId> AddBullets(GameObjectId parent_id, float x, float y,
                          float rotation,
                          const std::shared_ptr<Weapon>& weapon);

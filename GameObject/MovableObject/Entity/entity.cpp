@@ -63,7 +63,7 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 }
 
 void Entity::DrawHealthBar(Painter* painter) {
-  QPointF translation(0.f, -GetHeight() * 1.1f);
+  QPointF translation(0.f, -GetHeight() / 2 - 1);
   painter->Translate(translation);
   float rect_width = 75.f;
   float rect_height = 14.f;

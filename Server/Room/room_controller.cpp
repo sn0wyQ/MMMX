@@ -425,12 +425,13 @@ void RoomController::AddRandomTree(float radius) {
   AddTree(position.x(), position.y(), radius);
 }
 
-void RoomController::AddCreep(int level, float x, float y) {
+void RoomController::AddCreep(float x, float y) {
   model_->AddGameObject(GameObjectType::kCreep,
-                        CreepSettings::GetInstance().GetCreepParams(level,
-                                                                    x,
-                                                                    y,
-                                                                    0));
+                        CreepSettings::GetInstance().GetCreepParams(
+                            x,
+                            y,
+                            0.f,
+                            QLineF(QPointF(), QPointF(x, y)).length()));
 }
 
 std::vector<GameObjectId> RoomController::AddBullets(
@@ -465,16 +466,10 @@ void RoomController::AddConstantObjects() {
 
 void RoomController::AddCreeps() {
   for (; creeps_count_ < 15; creeps_count_++) {
-    static std::mt19937 gen(QDateTime::currentMSecsSinceEpoch());
-    static std::uniform_int_distribution<int>
-        uid(1, CreepSettings::GetInstance().GetMaxCreepLevel());
-    int creep_level = uid(gen);
-    qInfo() << creep_level;
     QPointF position = model_->GetPointToSpawn(std::max(
-        CreepSettings::GetInstance().GetCreepSizeByLevel(creep_level).height(),
-        CreepSettings::GetInstance().GetCreepSizeByLevel(creep_level).width())
-            / 2.f);
-    this->AddCreep(creep_level, position.x(), position.y());
+        CreepSettings::GetInstance().GetMaxCreepSize().height(),
+        CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
+    this->AddCreep(position.x(), position.y());
   }
 }
 
