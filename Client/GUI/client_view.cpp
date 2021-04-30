@@ -27,7 +27,7 @@ void ClientView::Update() {
 }
 
 std::shared_ptr<Converter> ClientView::GetConverter() {
-  return view_port_->GetConverter();
+  return game_view_->GetConverter();
 }
 
 void ClientView::SetWindow(ClientWindowType window_type) {

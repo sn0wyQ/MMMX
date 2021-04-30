@@ -19,6 +19,8 @@ class GameView : public QWidget {
   GameView(AbstractClientView* parent,
            std::shared_ptr<ClientController> controller);
 
+  std::shared_ptr<Converter> GetConverter();
+
   void paintEvent(QPaintEvent* event) override;
   void resizeEvent(QResizeEvent* event) override;
 

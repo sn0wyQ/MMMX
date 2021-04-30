@@ -15,6 +15,10 @@ GameView::GameView(AbstractClientView* parent,
   info_label_->setAlignment(Qt::AlignTop);
 }
 
+std::shared_ptr<Converter> GameView::GetConverter() {
+  return view_port_->GetConverter();
+}
+
 void GameView::paintEvent(QPaintEvent* event) {
   auto local_player_position = model_->IsLocalPlayerSet()
                                ? model_->GetLocalPlayer()->GetPosition()
