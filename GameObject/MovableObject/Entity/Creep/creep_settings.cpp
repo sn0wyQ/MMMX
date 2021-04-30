@@ -81,11 +81,11 @@ float CreepSettings::CalculateRegenRate(int level) const {
 }
 
 float CreepSettings::CalculateWidth(int level) const {
-  return std::min(this->GetCreepSetting<float>("max_width"), 0.5f * level);
+  return std::min(this->GetCreepSetting<float>("max_width"), 0.1f * level);
 }
 
 float CreepSettings::CalculateHeight(int level) const {
-  return std::min(this->GetCreepSetting<float>("max_height"), 0.5f * level);
+  return std::min(this->GetCreepSetting<float>("max_height"), 0.1f * level);
 }
 
 std::pair<int, int>
@@ -98,7 +98,7 @@ std::pair<int, int>
       uid2(this->GetCreepSetting<int>("max_creep_level") / 2,
            this->GetCreepSetting<int>("max_creep_level"));
   int res{0};
-  if (distance < 20.f) {
+  if (distance < 30.f) {
     res = uid2(gen);
   } else {
     res = uid1(gen);

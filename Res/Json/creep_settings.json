@@ -1,10 +1,10 @@
 {
-  "max_width": 5,
-  "max_height": 5,
+  "max_width": 2,
+  "max_height": 2,
 
   "min_creep_level": 1,
   "max_creep_level": 10,
-  "hp_regen_rate_multiplier": 0.001,
+  "hp_regen_rate_multiplier": 0.01,
   "rigid_body_type": 0,
   "max_hp_multiplier": 100,
   "default_hp_ratio": 0.8
