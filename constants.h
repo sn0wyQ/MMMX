@@ -101,7 +101,7 @@ constexpr float kRateOfFire = 1.1f;
 constexpr float kBulletRange = 1.3f;
 constexpr float kBulletDamage = 1.1f;
 
-} // namespace LevelingMultipliers
+}  // namespace LevelingMultipliers
 
 }  // namespace Constants
 

@@ -125,7 +125,8 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
         RectWithPercents(first,
                          kPaddingU,
                          picture_width_, kPictureHeight));
-    int get_i = first_part ? i : 3 * Constants::kDefaultLevelingPoints / 2 - 1 - i;
+    int get_i = first_part ? i : 3
+        * Constants::kDefaultLevelingPoints / 2 - 1 - i;
     int current_leveling = leveling_points[get_i];
     painter->setBrush(Qt::darkYellow);
     for (int j = 0; j < Constants::kCountOfLevels; j++) {
@@ -155,7 +156,8 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
                                  0, 0);
     painter->translate(rect.x(), rect.y());
     painter->rotate(45);
-    int get_i = first_part ? i : 3 * Constants::kDefaultLevelingPoints / 2 - 1 - i;
+    int get_i = first_part ? i : 3
+        * Constants::kDefaultLevelingPoints / 2 - 1 - i;
     painter->drawText(
         RectWithPercents(- picture_width_ / 2.f - kIntervalLr / 2.f,
                          - kPictureHeight / 2.f,
@@ -193,7 +195,8 @@ void PlayerBar::MoveButtons() {
     auto rect = RectWithPercents(first,
                                  kPaddingU,
                                  picture_width_, kPictureHeight);
-    int set_i = first_part ? i : 3 * Constants::kDefaultLevelingPoints / 2 - 1 - i;
+    int set_i = first_part ? i : 3
+        * Constants::kDefaultLevelingPoints / 2 - 1 - i;
     buttons_[set_i]->move(rect.x(), rect.y());
     buttons_[set_i]->resize(rect.width(), rect.height());
   }
