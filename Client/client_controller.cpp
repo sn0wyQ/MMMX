@@ -1,7 +1,7 @@
 #include "client_controller.h"
 
-ClientController::ClientController(const QUrl& url) : url_(url),
-  model_(std::make_shared<ClientGameModel>()) {
+ClientController::ClientController(const QUrl& url)
+    : model_(std::make_shared<ClientGameModel>()), url_(url) {
   qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
   connect(&web_socket_, &QWebSocket::connected, this,
           &ClientController::OnConnected);
@@ -12,6 +12,10 @@ ClientController::ClientController(const QUrl& url) : url_(url),
           &ClientController::ShootHolding);
   shoot_check_timer.start(Constants::kShootHoldingCheck);
   this->StartTicking();
+}
+
+void ClientController::ConnectToRoom(RoomId room_id) {
+  
 }
 
 std::shared_ptr<ClientGameModel> ClientController::GetModel() {

@@ -30,9 +30,10 @@ class ClientView : public AbstractClientView {
   explicit ClientView(std::shared_ptr<ClientController> controller);
   ~ClientView() override = default;
 
+  void ConnectToRoom(RoomId room_id = Constants::kNullRoomId) override;
+  void SetWindow(ClientWindowType window_type) override;
   void Update() override;
   std::shared_ptr<Converter> GetConverter() override;
-  void SetWindow(ClientWindowType window_type) override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;
@@ -47,7 +48,7 @@ class ClientView : public AbstractClientView {
   std::shared_ptr<ClientController> controller_;
   std::shared_ptr<ClientGameModel> model_;
 
-  QStackedWidget* stacked_layout_;
+  QStackedWidget* stacked_widget_;
   GameView* game_view_;
   MainMenu* main_menu_;
 };

@@ -14,12 +14,29 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   game_view_ = new GameView(this, controller_);
   main_menu_ = new MainMenu(this);
 
-  stacked_layout_ = new QStackedWidget(this);
-  stacked_layout_->addWidget(game_view_);
-  stacked_layout_->addWidget(main_menu_);
-  stacked_layout_->setCurrentWidget(main_menu_);
+  stacked_widget_ = new QStackedWidget(this);
+  stacked_widget_->addWidget(game_view_);
+  stacked_widget_->addWidget(main_menu_);
+  stacked_widget_->setCurrentWidget(main_menu_);
+  this->setCentralWidget(stacked_widget_);
 
   controller_->SetView(std::shared_ptr<ClientView>(this));
+}
+
+void ClientView::ConnectToRoom(RoomId room_id) {
+  controller_->ConnectToRoom(room_id);
+}
+
+void ClientView::SetWindow(ClientWindowType window_type) {
+  switch (window_type) {
+    case ClientWindowType::kMainMenu:
+      stacked_widget_->setCurrentWidget(main_menu_);
+      break;
+
+    case ClientWindowType::kGameView:
+      stacked_widget_->setCurrentWidget(game_view_);
+      break;
+  }
 }
 
 void ClientView::Update() {
@@ -28,18 +45,6 @@ void ClientView::Update() {
 
 std::shared_ptr<Converter> ClientView::GetConverter() {
   return game_view_->GetConverter();
-}
-
-void ClientView::SetWindow(ClientWindowType window_type) {
-  switch (window_type) {
-    case ClientWindowType::kMainMenu:
-      stacked_layout_->setCurrentWidget(main_menu_);
-      break;
-
-    case ClientWindowType::kGameView:
-      stacked_layout_->setCurrentWidget(game_view_);
-      break;
-  }
 }
 
 void ClientView::focusOutEvent(QFocusEvent* focus_event) {

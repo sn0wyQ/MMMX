@@ -6,11 +6,12 @@ MainMenu::MainMenu(AbstractClientView* parent)
 
   start_game_ = new QPushButton(tr("Start Game"), this);
   connect(start_game_,
-          SIGNAL(clicked),
+          &QPushButton::clicked,
           this,
           &MainMenu::OnStartGameButtonClicked);
 }
 
 void MainMenu::OnStartGameButtonClicked() {
+  parent_->ConnectToRoom();
   parent_->SetWindow(ClientWindowType::kGameView);
 }

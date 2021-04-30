@@ -14,13 +14,13 @@
 #include <QUrl>
 #include <QWebSocket>
 
-#include "GUI/abstract_client_view.h"
+#include "Client/GUI/abstract_client_view.h"
 #include "Controller/base_controller.h"
 #include "Converter/converter.h"
 #include "GameObject/RigidBody/object_collision.h"
+#include "Interpolator/interpolator.h"
 #include "Math/math.h"
 #include "client_game_model.h"
-#include "Interpolator/interpolator.h"
 
 // TODO(Everyone): make class Hotkeys instead of enum Controls
 // (with possibility to rebind keys)
@@ -62,6 +62,8 @@ class ClientController : public BaseController {
  public:
   explicit ClientController(const QUrl& url = Constants::kServerUrl);
   ~ClientController() override = default;
+
+  void ConnectToRoom(RoomId room_id = Constants::kNullRoomId);
 
   QString GetControllerName() const override;
 
@@ -127,11 +129,12 @@ class ClientController : public BaseController {
   void LocalPlayerDiedEvent(const Event& event) override;
   void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
 
+  std::shared_ptr<ClientGameModel> model_;
+  std::shared_ptr<AbstractClientView> view_;
+
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;
   QWebSocket web_socket_;
-  std::shared_ptr<ClientGameModel> model_;
-  std::shared_ptr<AbstractClientView> view_;
   int server_var_{0};
   int room_var_{0};
   int client_var_{0};

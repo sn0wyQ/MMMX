@@ -30,9 +30,10 @@ class AbstractClientView : public QMainWindow {
  public:
   ~AbstractClientView() override = default;
 
+  virtual void ConnectToRoom(RoomId room_id = Constants::kNullRoomId) = 0;
+  virtual void SetWindow(ClientWindowType window_type) = 0;
   virtual void Update() = 0;
   virtual std::shared_ptr<Converter> GetConverter() = 0;
-  virtual void SetWindow(ClientWindowType window_type) = 0;
 };
 
 #endif  // CLIENT_ABSTRACT_CLIENT_VIEW_H_

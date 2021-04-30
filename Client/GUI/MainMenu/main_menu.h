@@ -7,6 +7,8 @@
 #include "Client/GUI/abstract_client_view.h"
 
 class MainMenu : public QWidget {
+  Q_OBJECT
+
  public:
   MainMenu(AbstractClientView* parent);
 
