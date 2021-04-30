@@ -38,7 +38,7 @@ class SharedFrame {
       loaded_svgs_;
   static std::shared_ptr<QTimer> frames_unloader_;
 
-  bool is_exists_ = false;
+  bool is_exists_{false};
   int frame_index_;
   std::shared_ptr<QSvgRenderer>
       svg_renderer_ = std::make_shared<QSvgRenderer>();

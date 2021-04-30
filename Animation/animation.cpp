@@ -118,10 +118,9 @@ void Animation::Update(int delta_time) {
         //  would return more, than one)
         if (frames.size() > 1) {
           frames.pop();
-          SharedFrame next_frame
-              (base_path_,
-               animation_state_,
-               frames.front().GetFrameIndex() + 1);
+          SharedFrame next_frame(base_path_,
+                                 animation_state_,
+                                 frames.front().GetFrameIndex() + 1);
           if (next_frame.IsExists()) {
             frames.push(next_frame);
           } else {

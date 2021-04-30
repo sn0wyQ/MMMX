@@ -27,8 +27,7 @@ void AnimationsHolder::UpdateAnimations(int delta_time) {
 
 void AnimationsHolder::UnloadUnusedAnimations() {
   std::vector<std::unordered_multimap<AnimationType,
-                                      std::shared_ptr<Animation>>::iterator>
-      animations_to_delete;
+                    std::shared_ptr<Animation>>::iterator> animations_to_delete;
 
   for (auto iter = animations_.begin(); iter != animations_.end(); ++iter) {
     if (iter->second.unique()) {
