@@ -7,6 +7,6 @@
   "hp_regen_rate_multiplier": 0.005,
   "rigid_body_type": 0,
   "max_hp_multiplier": 100,
-  "kMinLevelPow": 3,
-  "kMaxLevelPow": 3
+  "kMinLevelPow": 5,
+  "kMaxLevelPow": 4
 }
