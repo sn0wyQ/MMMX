@@ -73,7 +73,7 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 
 void Entity::DrawHealthBar(Painter* painter) {
   painter->save();
-  QPointF translation(0.f, -this->GetHeight() / 2 - 1.f);
+  QPointF translation(0.f, -2.f);
   painter->Translate(translation);
   float rect_width = 75.f;
   float rect_height = 14.f;
@@ -140,7 +140,7 @@ void Entity::TickHealthPoints(int delta_time) {
 
 void Entity::DrawLevel(Painter* painter) {
   painter->save();
-  QPointF translation(0.f, -this->GetHeight() / 2 - 2.f);
+  QPointF translation(0.f,  -3.f);
   painter->Translate(translation);
   painter->setBrush(Qt::black);
   painter->drawEllipse(QPointF(), 10.f, 10.f);
