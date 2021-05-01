@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <queue>
 
 #include <QByteArray>
 #include <QDebug>
@@ -21,9 +22,6 @@
 #include "Math/math.h"
 #include "Model/client_game_model.h"
 #include "Interpolator/interpolator.h"
-
-// TODO(Everyone): make class Hotkeys instead of enum Controls
-// (with possibility to rebind keys)
 
 #ifdef WIN32
 enum class Controls {
