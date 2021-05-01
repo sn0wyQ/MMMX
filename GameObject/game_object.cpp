@@ -164,8 +164,7 @@ GameObjectType GameObject::GetType() const {
 }
 
 bool GameObject::IsFilteredByFov() const {
-  // Temporarily. For testing FOV
-  return true;
+  return false;
 }
 
 std::shared_ptr<GameObject> GameObject::Clone() const {
