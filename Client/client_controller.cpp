@@ -389,7 +389,7 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   if (event_type == EventType::kUpdateGameObjectData) {
     model_->AddInterpolateInfo(game_object_id, game_object_type, sent_time);
   } else if (event_type == EventType::kDeleteGameObject) {
-    args.emplace_back(sent_time);
+    args.emplace_back(static_cast<qint64>(sent_time));
   }
   this->HandleEvent(Event(event_type, args));
 }
