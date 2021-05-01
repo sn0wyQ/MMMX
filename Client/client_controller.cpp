@@ -114,10 +114,14 @@ void ClientController::UpdateInterpolationInfo() {
   auto time_to_interpolate = GetCurrentServerTime()
       - Constants::kInterpolationMSecs;
 
-  for (const auto& game_object : model_->GetAllGameObjects()) {
-    if (game_object->IsDeleteScheduled() &&
-      game_object->GetTimeToDelete() < time_to_interpolate) {
-      auto game_object_id = game_object->GetId();
+  while (!time_to_delete_.empty()) {
+    GameObjectId game_object_id = time_to_delete_.front().first;
+    int64_t time = time_to_delete_.front().second;
+    if (time >= time_to_interpolate) {
+      break;
+    }
+    time_to_delete_.pop();
+    if (model_->IsGameObjectIdTaken(game_object_id)) {
       model_->DeleteGameObject(game_object_id);
       model_->RemoveFromInterpolator(game_object_id);
     }
@@ -370,12 +374,8 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
 
 void ClientController::DeleteGameObjectEvent(const Event& event) {
   auto game_object_id = event.GetArg<GameObjectId>(0);
-  if (!model_->IsGameObjectIdTaken(game_object_id)) {
-    return;
-  }
-  auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-  game_object->SetIsDeleteScheduled(true);
-  game_object->SetTimeToDelete(GetCurrentServerTime());
+  auto delete_time = event.GetArg<int64_t>(1);
+  time_to_delete_.push({game_object_id, delete_time});
 }
 
 void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
@@ -385,10 +385,12 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   auto event_type = event.GetArg<EventType>(3);
   sent_time = std::max(
       GetCurrentServerTime() - Constants::kInterpolationMSecs, sent_time);
+  auto args = event.GetArgsSubVector(4);
   if (event_type == EventType::kUpdateGameObjectData) {
     model_->AddInterpolateInfo(game_object_id, game_object_type, sent_time);
+  } else if(event_type == EventType::kDeleteGameObject) {
+    args.push_back(sent_time);
   }
-  auto args = event.GetArgsSubVector(4);
   this->HandleEvent(Event(event_type, args));
 }
 

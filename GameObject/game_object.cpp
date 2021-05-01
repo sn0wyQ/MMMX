@@ -26,8 +26,7 @@ GameObject::GameObject(const GameObject& other) {
   rigid_body_->SetWidth(GetWidth());
   rigid_body_->SetHeight(GetHeight());
   updated_time_ = other.updated_time_;
-  is_delete_scheduled_ = other.is_delete_scheduled_;
-  time_to_delete_ = other.time_to_delete_;
+  is_need_to_delete_ = other.is_need_to_delete_;
 }
 
 void GameObject::SetParams(std::vector<QVariant> params) {
@@ -181,22 +180,6 @@ int64_t GameObject::GetUpdatedTime() const {
 
 bool GameObject::IsEntity() const {
   return false;
-}
-
-bool GameObject::IsDeleteScheduled() const {
-  return is_delete_scheduled_;
-}
-
-int64_t GameObject::GetTimeToDelete() const {
-  return time_to_delete_;
-}
-
-void GameObject::SetIsDeleteScheduled(bool is_delete_scheduled) {
-  is_delete_scheduled_ = is_delete_scheduled;
-}
-
-void GameObject::SetTimeToDelete(int64_t time_to_delete) {
-  time_to_delete_ = time_to_delete;
 }
 
 float GameObject::GetBoundingCircleRadius() const {

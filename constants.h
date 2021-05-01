@@ -13,7 +13,7 @@ using RoomId = int;
 namespace Constants {
 
 // Build Options
-constexpr bool kRemote = false;
+constexpr bool kRemote = true;
 constexpr bool kClientEnableIgnoreLevel = true;
 constexpr QtMsgType kClientMessageIgnoreLevel = QtDebugMsg;
 constexpr bool kServerEnableIgnoreLevel = true;
@@ -38,7 +38,6 @@ constexpr int kTimeToTick = 1000 / kTickrate;
 const auto kHashAlgorithm = QCryptographicHash::Algorithm::Md5;
 constexpr int kMSecsToStore = 1000;
 constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
-constexpr float kFovMultiplier = 1.7f;
 
 // Map
 constexpr float kDefaultMapWidth = 100.f;
@@ -81,7 +80,7 @@ constexpr int kAccuracy = 10;
 constexpr int kMaxLevel = 30;
 
 constexpr float GetExpForLevel(int level) {
-  return static_cast<float>(1 + level) * 5;
+  return static_cast<float>(1 + level) * 5.f;
 }
 
 constexpr float kExpMultiplier = 5.f;

@@ -78,6 +78,7 @@ enum class EventType {
   kUpdateGameObjectData,
 
   // [0] - <GameObjectId> game_object_id that should be deleted
+  // [1] - <int64_t> sent_time
   kDeleteGameObject,
 
   // ]]]]]]]]]

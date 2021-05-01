@@ -155,6 +155,8 @@ class ClientController : public BaseController {
   };
   QTimer shoot_check_timer;
   bool is_holding_{false};
+
+  std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

@@ -86,12 +86,6 @@ class GameObject {
   void SetUpdatedTime(int64_t updated_time);
   int64_t GetUpdatedTime() const;
 
-  void SetIsDeleteScheduled(bool is_delete_scheduled);
-  bool IsDeleteScheduled() const;
-
-  void SetTimeToDelete(int64_t time_to_delete);
-  int64_t GetTimeToDelete() const;
-
   float GetBoundingCircleRadius() const;
 
  private:
@@ -106,8 +100,6 @@ class GameObject {
   std::shared_ptr<RigidBody> rigid_body_;
   bool is_need_to_delete_{false};
   int64_t updated_time_{};
-  bool is_delete_scheduled_{false};
-  int64_t time_to_delete_{};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_
