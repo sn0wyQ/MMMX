@@ -59,6 +59,7 @@ void RoomController::OnTick(int delta_time) {
                            std::make_shared<RoomGameModel>(*model_)});
   model_ = models_cache_.back().model;
   this->RecalculateModel(models_cache_.back());
+  this->AddCreeps();
   this->SendPlayersStatsToPlayers();
   model_->UpdatePlayerStatsHashes();
   for (const auto& player_id : this->GetAllPlayerIds()) {
@@ -116,30 +117,40 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
         if (hp_to_set == 0) {
           QPointF point_to_spawn =
               model_->GetPointToSpawn(entity->GetBoundingCircleRadius(), true);
-          entity->Revive(point_to_spawn);
-          if (entity->GetType() == GameObjectType::kPlayer) {
-            model_data.model->GetPlayerStatsByPlayerId(
-                entity->GetId())->GetMutableDeaths()++;
-            this->AddEventToSendToSinglePlayer(
-                Event(EventType::kLocalPlayerDied,
-                      point_to_spawn),
-                entity->GetId());
-            auto killer_id = bullet->GetParentId();
-            if (model_data.model->IsGameObjectIdTaken(killer_id)) {
-              auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
-              float receive_exp = static_cast<float>(
-                  std::dynamic_pointer_cast<Player>(entity)->GetLevel())
-                  * Constants::kExpMultiplier;
-              killer->IncreaseExperience(receive_exp);
-              auto killer_stats =
-                  model_data.model->GetPlayerStatsByPlayerId(killer_id);
-              killer_stats->SetKills(killer_stats->GetKills() + 1);
-              killer_stats->SetLevel(killer->GetLevel());
+          switch (entity->GetType()) {
+            case GameObjectType::kPlayer:
+              entity->Revive(point_to_spawn);
+              model_data.model->GetPlayerStatsByPlayerId(
+                  entity->GetId())->GetMutableDeaths()++;
               this->AddEventToSendToSinglePlayer(
-                  Event(EventType::kIncreaseLocalPlayerExperience,
-                        receive_exp),
-                  bullet->GetParentId());
+                  Event(EventType::kLocalPlayerDied, point_to_spawn),
+                  entity->GetId());
+              break;
+
+            case GameObjectType::kCreep:
+              creeps_count_--;
+              objects_to_delete.emplace_back(entity->GetId());
+              break;
+
+            default:
+              qWarning() << "Invalid game object type";
+              break;
+          }
+          auto killer_id = bullet->GetParentId();
+          if (model_data.model->IsGameObjectIdTaken(killer_id)) {
+            auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
+            float receive_exp = entity->GetExpIncrementForKill();
+            killer->IncreaseExperience(receive_exp);
+            auto killer_stats =
+                model_data.model->GetPlayerStatsByPlayerId(killer_id);
+            if (entity->GetType() == GameObjectType::kPlayer) {
+              killer_stats->SetKills(killer_stats->GetKills() + 1);
             }
+            killer_stats->SetLevel(killer->GetLevel());
+            this->AddEventToSendToSinglePlayer(
+                Event(EventType::kIncreaseLocalPlayerExperience,
+                      receive_exp),
+                bullet->GetParentId());
           }
         } else {
           entity->SetHealthPoints(hp_to_set);
@@ -390,9 +401,10 @@ GameObjectId RoomController::AddPlayer() {
       params.emplace_back(static_cast<int>(WeaponType::kShotgun));
       break;
     }
-    default:
+    default: {
       qWarning() << "Invalid player type";
       break;
+    }
   }
   return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
@@ -425,6 +437,13 @@ void RoomController::AddRandomTree(float radius) {
   AddTree(position.x(), position.y(), radius);
 }
 
+void RoomController::AddCreep(float x, float y) {
+  float distance = QLineF(QPointF(), QPointF(x, y)).length();
+  auto params = CreepSettings::GetInstance().GetCreepParams(x, y, 0.f,
+                                                            distance);
+  model_->AddGameObject(GameObjectType::kCreep, params);
+}
+
 std::vector<GameObjectId> RoomController::AddBullets(
     GameObjectId parent_id, float x, float y, float rotation,
     const std::shared_ptr<Weapon>& weapon) {
@@ -451,6 +470,15 @@ void RoomController::AddConstantObjects() {
   }
   for (int i = 0; i < 15; i++) {
     this->AddRandomTree(2.f);
+  }
+}
+
+void RoomController::AddCreeps() {
+  for (; creeps_count_ < 25; creeps_count_++) {
+    QPointF position = model_->GetPointToSpawn(std::max(
+        CreepSettings::GetInstance().GetMaxCreepSize().height(),
+        CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
+    this->AddCreep(position.x(), position.y());
   }
 }
 
