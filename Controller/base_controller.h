@@ -92,7 +92,7 @@ class BaseController : public QObject {
   virtual void UpdateLocalPlayerHealthPointsEvent(const Event& event) {}
   virtual void LocalPlayerDiedEvent(const Event& event) {}
   virtual void IncreaseLocalPlayerExperienceEvent(const Event& event) {}
-  virtual void FailedPacketSendShootingEvent(const Event& event) {}
+  virtual void ShootFailedEvent(const Event& event) {}
 };
 
 #endif  // CONTROLLER_BASE_CONTROLLER_H_

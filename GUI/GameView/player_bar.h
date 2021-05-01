@@ -18,8 +18,7 @@ class PlayerBar : public QWidget {
 
  public:
   PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel>  model,
-            QPoint position,
-            QSize size);
+            QPoint position, QSize size);
 
   void paintEvent(QPaintEvent* paint_event) override;
 

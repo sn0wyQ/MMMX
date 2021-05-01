@@ -86,7 +86,7 @@ constexpr float GetExpForLevel(int level) {
 
 constexpr float kExpMultiplier = 5.f;
 
-constexpr int kDefaultLevelingPoints = 10;
+constexpr int kUpgradeSlots = 10;
 constexpr int kCountOfLevels = 5;
 
 namespace LevelingMultipliers {

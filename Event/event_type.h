@@ -87,7 +87,7 @@ enum class EventType {
   kUpdatePlayersStats,
 
   // [0] - <int64_t> timestamp
-  kFailedPacketSendShooting,
+  kShootFailed,
 
   // [0] - <int64> timestamp
   // [1] - <GameObjectId> sender_player_id,
@@ -102,7 +102,7 @@ enum class EventType {
   kSendPlayerShooting,
 
   // [0] - <GameObjectId> sender_player_id
-  // Constants::kDefaultLevelingPoints times int
+  // Constants::kUpgradeSlots times int
   kSendLevelingPoints,
 
   // [0] - <GameObjectId> player_id

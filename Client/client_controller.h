@@ -121,7 +121,7 @@ class ClientController : public BaseController {
   void AddLocalPlayerGameObjectEvent(const Event& event) override;
   void DeleteGameObjectEvent(const Event& event) override;
   void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
-  void FailedPacketSendShootingEvent(const Event& event) override;
+  void ShootFailedEvent(const Event& event) override;
   void LocalPlayerDiedEvent(const Event& event) override;
   void SendGameInfoToInterpolateEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;

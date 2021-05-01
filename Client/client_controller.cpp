@@ -435,7 +435,7 @@ void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {
   model_->GetLocalPlayer()->IncreaseExperience(experience_to_add);
 }
 
-void ClientController::FailedPacketSendShootingEvent(const Event& event) {
+void ClientController::ShootFailedEvent(const Event& event) {
   auto timestamp = static_cast<int64_t>(event.GetArg<qint64>(0));
   for (const auto& bullet : model_->GetLocalBullets()) {
     if (bullet->GetUpdatedTime() == timestamp) {

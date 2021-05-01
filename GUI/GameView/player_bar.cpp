@@ -1,16 +1,14 @@
 #include "player_bar.h"
 
-PlayerBar::PlayerBar(QWidget* parent,
-                     std::shared_ptr<ClientGameModel> model,
-                     QPoint position,
-                     QSize size)
+PlayerBar::PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel> model,
+                     QPoint position, QSize size)
     : QWidget(parent), model_(std::move(model)),
-    buttons_(Constants::kDefaultLevelingPoints) {
+    buttons_(Constants::kUpgradeSlots) {
   this->move(position);
   this->resize(size);
   this->RecalculateSizes();
 
-  for (int i = 0; i < Constants::kDefaultLevelingPoints; i++) {
+  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
     buttons_[i] = new QPushButton(this);
     auto effect = new QGraphicsOpacityEffect;
     effect->setOpacity(0.f);
@@ -109,15 +107,15 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
   auto free_leveling_points = local_player->GetFreeLevelingPoints();
   auto leveling_points = local_player->GetLevelingPoints();
 
-  for (int i = 0; i < Constants::kDefaultLevelingPoints; i++) {
-    int draw_i = i % (Constants::kDefaultLevelingPoints / 2);
+  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
+    int draw_i = i % (Constants::kUpgradeSlots / 2);
     if (free_leveling_points > 0) {
       QColor clr(Qt::yellow);
       clr.setAlphaF(0.2f);
       painter->setBrush(clr);
     }
     float first = kIntervalLr + (picture_width_ + kIntervalLr) * draw_i;
-    bool first_part = (i < Constants::kDefaultLevelingPoints / 2);
+    bool first_part = (i < Constants::kUpgradeSlots / 2);
     if (!first_part) {
       first = 100 - first - picture_width_;
     }
@@ -126,7 +124,7 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
                          kPaddingU,
                          picture_width_, kPictureHeight));
     int get_i = first_part ? i : 3
-        * Constants::kDefaultLevelingPoints / 2 - 1 - i;
+        * Constants::kUpgradeSlots / 2 - 1 - i;
     int current_leveling = leveling_points[get_i];
     painter->setBrush(Qt::darkYellow);
     for (int j = 0; j < Constants::kCountOfLevels; j++) {
@@ -143,11 +141,11 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
     painter->setBrush(Qt::white);
   }
 
-  for (int i = 0; i < Constants::kDefaultLevelingPoints; i++) {
+  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
     painter->save();
-    int draw_i = i % (Constants::kDefaultLevelingPoints / 2);
+    int draw_i = i % (Constants::kUpgradeSlots / 2);
     float first = kIntervalLr + (picture_width_ + kIntervalLr) * draw_i;
-    bool first_part = (i < Constants::kDefaultLevelingPoints / 2);
+    bool first_part = (i < Constants::kUpgradeSlots / 2);
     if (!first_part) {
       first = 100 - first - picture_width_;
     }
@@ -157,7 +155,7 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
     painter->translate(rect.x(), rect.y());
     painter->rotate(45);
     int get_i = first_part ? i : 3
-        * Constants::kDefaultLevelingPoints / 2 - 1 - i;
+        * Constants::kUpgradeSlots / 2 - 1 - i;
     painter->drawText(
         RectWithPercents(- picture_width_ / 2.f - kIntervalLr / 2.f,
                          - kPictureHeight / 2.f,
@@ -185,10 +183,10 @@ void PlayerBar::Clicked(int index) {
 
 void PlayerBar::MoveButtons() {
   this->RecalculateSizes();
-  for (int i = 0; i < Constants::kDefaultLevelingPoints; i++) {
-    int draw_i = i % (Constants::kDefaultLevelingPoints / 2);
+  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
+    int draw_i = i % (Constants::kUpgradeSlots / 2);
     float first = kIntervalLr + (picture_width_ + kIntervalLr) * draw_i;
-    bool first_part = (i < Constants::kDefaultLevelingPoints / 2);
+    bool first_part = (i < Constants::kUpgradeSlots / 2);
     if (!first_part) {
       first = 100.f - first - picture_width_;
     }
@@ -196,7 +194,7 @@ void PlayerBar::MoveButtons() {
                                  kPaddingU,
                                  picture_width_, kPictureHeight);
     int set_i = first_part ? i : 3
-        * Constants::kDefaultLevelingPoints / 2 - 1 - i;
+        * Constants::kUpgradeSlots / 2 - 1 - i;
     buttons_[set_i]->move(rect.x(), rect.y());
     buttons_[set_i]->resize(rect.width(), rect.height());
   }
