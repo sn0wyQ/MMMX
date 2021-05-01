@@ -42,8 +42,14 @@ std::shared_ptr<GameObject> GameModel::GetNewEmptyGameObject(
     case GameObjectType::kBullet:
       object = std::make_shared<Bullet>(game_object_id);
       break;
+    case GameObjectType::kCreep:
+      object = std::make_shared<Creep>(game_object_id);
+      break;
     case GameObjectType::kMapBorder:
       object = std::make_shared<MapBorder>(game_object_id);
+      break;
+    default:
+      qWarning() << "Invalid game object type";
       break;
   }
   return object;

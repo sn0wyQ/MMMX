@@ -15,6 +15,7 @@
 #include <QString>
 
 #include "Controller/base_controller.h"
+#include "GameObject/MovableObject/Entity/Creep/creep_settings.h"
 #include "GameObject/RigidBody/object_collision.h"
 #include "Model/room_game_model.h"
 #include "Server/Room/room_settings.h"
@@ -80,6 +81,7 @@ class RoomController : public BaseController {
   std::unordered_map<ClientId, GameObjectId> player_ids_;
   std::set<std::pair<GameObjectId, GameObjectId>> is_first_in_fov_of_second_;
   std::vector<Event> events_for_server_;
+  int creeps_count_{0};
 
   void RecalculateModel(const ModelData& model_data);
   void TickObjectsInModel(const ModelData& model_data);
@@ -91,10 +93,12 @@ class RoomController : public BaseController {
   void AddRandomBox(float width, float height);
   void AddTree(float x, float y, float radius);
   void AddRandomTree(float radius);
+  void AddCreep(float x, float y);
   std::vector<GameObjectId> AddBullets(GameObjectId parent_id, float x, float y,
                          float rotation,
                          const std::shared_ptr<Weapon>& weapon);
   void AddConstantObjects();
+  void AddCreeps();
 
   Event GetEventOfGameObjectData(GameObjectId game_object_id) const;
   Event GetEventOfGameObjectLeftFov(GameObjectId game_object_id) const;

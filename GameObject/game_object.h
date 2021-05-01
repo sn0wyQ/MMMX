@@ -28,6 +28,7 @@ Q_NAMESPACE
 // MUST be sorted in alphabet order
 enum class GameObjectType {
   kBullet,
+  kCreep,
   kGameObject,
   kMapBorder,
   kPlayer

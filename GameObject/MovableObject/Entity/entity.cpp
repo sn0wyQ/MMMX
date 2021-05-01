@@ -7,6 +7,7 @@ Entity::Entity(const Entity& other) : MovableObject(other) {
   health_points_ = other.health_points_;
   health_regen_rate_ = other.health_regen_rate_;
   max_health_points_ = other.max_health_points_;
+  level_ = other.level_;
 }
 
 void Entity::SetParams(std::vector<QVariant> params) {
@@ -54,6 +55,14 @@ float Entity::GetMaxHealthPoints() const {
   return max_health_points_;
 }
 
+int Entity::GetLevel() const {
+  return level_;
+}
+
+void Entity::SetLevel(int level) {
+  level_ = level;
+}
+
 bool Entity::IsEntity() const {
   return true;
 }
@@ -63,7 +72,7 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 }
 
 void Entity::DrawHealthBar(Painter* painter) {
-  QPointF translation(0.f, -GetHeight() * 1.1f);
+  QPointF translation(0.f, -GetHeight() / 2.f - 1.f);
   painter->Translate(translation);
   float rect_width = 75.f;
   float rect_height = 14.f;
@@ -103,6 +112,10 @@ void Entity::Revive(QPointF point_to_spawn) {
 
 float Entity::GetHealthRegenRate() const {
   return health_regen_rate_;
+}
+
+float Entity::GetExpIncrementForKill() const {
+  return 0;
 }
 
 void Entity::SetHealthRegenRate(float health_regen_rate) {
