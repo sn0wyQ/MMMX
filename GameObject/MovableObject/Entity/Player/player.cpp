@@ -33,10 +33,8 @@ Player::Player(const Player& other) : Entity(other) {
     default: break;
   }
   current_exp_ = other.current_exp_;
-  level_ = other.level_;
   free_leveling_points_ = other.free_leveling_points_;
   leveling_points_ = other.leveling_points_;
-  need_to_send_leveling_points_ = other.need_to_send_leveling_points_;
 }
 
 void Player::SetParams(std::vector<QVariant> params) {
@@ -69,26 +67,6 @@ std::vector<QVariant> Player::GetParams() const {
   std::vector<QVariant> result = Entity::GetParams();
   result.emplace_back(static_cast<int>(weapon_type_));
   return result;
-}
-
-void Player::DrawLevel(Painter* painter) {
-  painter->save();
-  QPointF translation(0.f, -2.5f);
-  painter->Translate(translation);
-  float rect_width = 75.f;
-  float rect_height = 14.f;
-  QFont font(Constants::Painter::kDefaultFont);
-  font.setPointSizeF(20.f / GetHeight());
-  painter->setFont(font);
-  QPen pen(Constants::Painter::kLevelColor);
-  painter->setPen(pen);
-  QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
-                   rect_width, rect_height);
-
-  painter->drawText(text_rect, Qt::AlignCenter,
-                    QString::number(this->GetLevel()));
-  painter->Translate(-translation);
-  painter->restore();
 }
 
 void Player::DrawRelatively(Painter* painter) {
@@ -136,16 +114,8 @@ const std::shared_ptr<Weapon>& Player::GetWeapon() const {
   return weapon_;
 }
 
-int Player::GetLevel() const {
-  return level_;
-}
-
 float Player::GetCurrentExp() const {
   return current_exp_;
-}
-
-void Player::SetLevel(int level) {
-  level_ = level;
 }
 
 void Player::SetCurrentExp(float current_exp) {
@@ -233,4 +203,8 @@ bool Player::IsNeedToSendLevelingPoints() const {
 
 void Player::SetNeedToSendLevelingPoints(bool need_to_send_leveling_points) {
   need_to_send_leveling_points_ = need_to_send_leveling_points;
+}
+
+float Player::GetExpIncrementForKill() const {
+  return static_cast<float>(this->GetLevel()) * Constants::kExpMultiplier;
 }

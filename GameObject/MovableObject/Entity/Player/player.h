@@ -20,7 +20,6 @@ class Player : public Entity {
   explicit Player(GameObjectId player_id);
   Player(const Player& other);
 
-  void DrawLevel(Painter* painter) override;
   void DrawRelatively(Painter* painter) override;
 
   bool IsLocalPlayer() const;
@@ -36,12 +35,12 @@ class Player : public Entity {
 
   const std::shared_ptr<Weapon>& GetWeapon() const;
 
-  void SetLevel(int level);
-  int GetLevel() const;
   void SetCurrentExp(float current_exp);
   float GetCurrentExp() const;
 
   void IncreaseExperience(float experience_to_add);
+
+  float GetExpIncrementForKill() const override;
 
   std::shared_ptr<GameObject> Clone() const override;
 
@@ -58,7 +57,6 @@ class Player : public Entity {
   bool is_local_player_{false};
   std::shared_ptr<Weapon> weapon_;
   WeaponType weapon_type_;
-  int level_{1};
   float current_exp_{};
   int free_leveling_points_{};
   std::vector<int> leveling_points_;

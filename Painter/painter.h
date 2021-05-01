@@ -14,7 +14,7 @@
 namespace Constants::Painter {
 
 const QFont kDefaultFont("Roboto Mono", -1, QFont::Weight::Normal);
-const QColor kLevelColor(34, 185, 120);
+const QColor kLevelColor(238, 230, 23);
 
 }  // namespace Constants::Painter
 

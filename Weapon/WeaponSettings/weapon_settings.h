@@ -38,6 +38,9 @@ class WeaponSettings {
   template<class T>
   T GetWeaponSetting(WeaponType weapon_type,
                      const QString& setting_name) const {
+    if (!json_object_by_type_.at(weapon_type).contains(setting_name)) {
+      qWarning() << "No such setting name:" << setting_name;
+    }
     return json_object_by_type_.at(weapon_type).value(setting_name)
         .toVariant().value<T>();
   }

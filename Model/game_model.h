@@ -10,6 +10,7 @@
 #include <QMetaEnum>
 #include <QDebug>
 
+#include "GameObject/MovableObject/Entity/Creep/creep.h"
 #include "GameObject/MovableObject/Entity/Player/player.h"
 #include "GameObject/map_border.h"
 #include "PlayerStats/player_stats.h"
