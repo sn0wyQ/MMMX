@@ -13,7 +13,7 @@ using RoomId = int;
 namespace Constants {
 
 // Build Options
-constexpr bool kRemote = true;
+constexpr bool kRemote = false;
 constexpr bool kClientEnableIgnoreLevel = true;
 constexpr QtMsgType kClientMessageIgnoreLevel = QtDebugMsg;
 constexpr bool kServerEnableIgnoreLevel = true;

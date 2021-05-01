@@ -388,8 +388,8 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   auto args = event.GetArgsSubVector(4);
   if (event_type == EventType::kUpdateGameObjectData) {
     model_->AddInterpolateInfo(game_object_id, game_object_type, sent_time);
-  } else if(event_type == EventType::kDeleteGameObject) {
-    args.push_back(sent_time);
+  } else if (event_type == EventType::kDeleteGameObject) {
+    args.emplace_back(sent_time);
   }
   this->HandleEvent(Event(event_type, args));
 }
