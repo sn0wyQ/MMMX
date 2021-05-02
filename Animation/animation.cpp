@@ -120,12 +120,14 @@ void Animation::Update(int delta_time) {
           frames.pop();
           SharedFrame next_frame(base_path_,
                                  animation_state_,
-                                 frames.front().GetFrameIndex() + 1);
+                                 frames.front().GetFrameIndex() + 1,
+                                 frames.front().GetPixmapSize());
           if (next_frame.IsExists()) {
             frames.push(next_frame);
           } else {
             // if frames.front() frame is last in sequence
-            frames.emplace(base_path_, animation_state_, 0);
+            frames.emplace(base_path_, animation_state_, 0,
+                           frames.front().GetPixmapSize());
           }
           if (!frames.front().IsExists()) {
             throw std::runtime_error(
@@ -198,10 +200,24 @@ void Animation::SetAnimationState(AnimationState animation_state,
 
   // Clearing current animation state's frames queue
   // and adding there first frame of sequence
-  animation_frames_.at(animation_state_) = {};
-  animation_frames_.at(animation_state_).emplace(base_path_,
-                                                 animation_state_,
-                                                 0);
+  QSize saved_size;
+  if (!animation_frames_.at(animation_state_).empty()) {
+    if (animation_frames_.at(animation_state_).front().GetFrameIndex() == 0) {
+      SharedFrame saved_frame = animation_frames_.at(animation_state_).front();
+      saved_size = saved_frame.GetPixmapSize();
+      animation_frames_.at(animation_state_) = {};
+      animation_frames_.at(animation_state_).push(saved_frame);
+    } else {
+      saved_size =
+          animation_frames_.at(animation_state_).front().GetPixmapSize();
+
+      animation_frames_.at(animation_state_) = {};
+      animation_frames_.at(animation_state_).emplace(base_path_,
+                                                     animation_state_,
+                                                     0,
+                                                     saved_size);
+    }
+  }
 
   animation_state_ = animation_state;
   animation_instruction_index_ = 0;
@@ -211,7 +227,8 @@ void Animation::SetAnimationState(AnimationState animation_state,
   // (if it exists in storage) and we also want to preload next frame
   animation_frames_.at(animation_state_).emplace(base_path_,
                                                  animation_state_,
-                                                 1);
+                                                 1,
+                                                 saved_size);
 }
 
 void Animation::RenderFrame(Painter* painter, float w, float h) {

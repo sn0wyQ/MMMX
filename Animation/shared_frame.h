@@ -30,10 +30,12 @@ class SharedFrame {
  public:
   explicit SharedFrame(const QString& path,
                        AnimationState animation_state,
-                       int frame_index);
+                       int frame_index,
+                       const QSize& predicted_size = QSize());
 
   bool IsExists() const;
   int GetFrameIndex() const;
+  QSize GetPixmapSize() const;
   std::shared_ptr<QPixmap> GetRenderedPixmap(int w, int h);
 
   static void UnloadUnusedResources();

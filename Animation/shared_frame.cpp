@@ -19,7 +19,8 @@ QString CalcLeadingZeros(int x) {
 
 SharedFrame::SharedFrame(const QString& path,
                          AnimationState animation_state,
-                         int frame_index)
+                         int frame_index,
+                         const QSize& predicted_size)
     : frame_index_(frame_index) {
   path_ = path + kAnimationStateStrings.at(animation_state)
       + CalcLeadingZeros(frame_index_) + QString::number(frame_index_) + ".svg";
@@ -35,12 +36,16 @@ SharedFrame::SharedFrame(const QString& path,
     resource_unloader_->callOnTimeout(SharedFrame::UnloadUnusedResources);
   }
 
-  auto iter = loaded_svgs_.find(path_);
-  if (iter == loaded_svgs_.end()) {
+  auto svg_iter = loaded_svgs_.find(path_);
+  if (svg_iter == loaded_svgs_.end()) {
     auto new_renderer = std::make_shared<QSvgRenderer>(path_);
     svg_renderer_ = loaded_svgs_[path_] = new_renderer;
   } else {
-    svg_renderer_ = iter->second;
+    svg_renderer_ = svg_iter->second;
+  }
+
+  if (predicted_size.isValid()) {
+    GetRenderedPixmap(predicted_size.width(), predicted_size.height());
   }
 }
 
@@ -50,6 +55,10 @@ bool SharedFrame::IsExists() const {
 
 int SharedFrame::GetFrameIndex() const {
   return frame_index_;
+}
+
+QSize SharedFrame::GetPixmapSize() const {
+  return (pixmap_->isNull() ? QSize() : pixmap_->size());
 }
 
 std::shared_ptr<QPixmap> SharedFrame::GetRenderedPixmap(int w, int h) {
