@@ -65,7 +65,7 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
       GetNewEmptyGameObject(game_object_id, type);
   object->SetParams(params);
   game_objects_.emplace(std::make_pair(game_object_id, object));
-  qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Added new GameObject:" << game_object_id
                     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
                         .valueToKey(static_cast<int>(type)));
 }
@@ -98,7 +98,7 @@ void GameModel::DeleteGameObject(GameObjectId game_object_id) {
   }
   GameObjectType type = iter->second->GetType();
   game_objects_.erase(iter);
-  qInfo().noquote() << "[MODEL] Removed GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Removed GameObject:" << game_object_id
     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
         .valueToKey(static_cast<int>(type)));
 }

@@ -121,8 +121,8 @@ void ClientController::UpdateInterpolationInfo() {
     if (time >= time_to_interpolate) {
       break;
     }
-    time_to_delete_.pop();
     if (model_->IsGameObjectIdTaken(game_object_id)) {
+      time_to_delete_.pop();
       model_->DeleteGameObject(game_object_id);
       model_->RemoveFromInterpolator(game_object_id);
     }
