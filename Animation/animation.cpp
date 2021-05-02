@@ -250,8 +250,9 @@ void Animation::RenderFrame(Painter* painter, float w, float h) {
     return;
   }
 
-  SharedFrame& frame_to_render = animation_frames_.at(animation_state_).front();
-  if (!frame_to_render.IsExists()) {
+  SharedFrame*
+      frame_to_render = &animation_frames_.at(animation_state_).front();
+  if (!frame_to_render->IsExists()) {
     return;
   }
   painter->DrawSharedFrame(QPointF(), w, h, frame_to_render);

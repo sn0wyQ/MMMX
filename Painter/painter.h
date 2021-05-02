@@ -64,7 +64,7 @@ class Painter : public QPainter {
   void DrawSharedFrame(QPointF point,
                        float w,
                        float h,
-                       SharedFrame& shared_frame,
+                       SharedFrame* shared_frame,
                        DrawPixmapType draw_pixmap_type =
                            DrawPixmapType::kUsePointAsCenter);
   void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
