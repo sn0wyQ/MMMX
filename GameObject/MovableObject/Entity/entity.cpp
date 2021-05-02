@@ -7,6 +7,7 @@ Entity::Entity(const Entity& other) : MovableObject(other) {
   health_points_ = other.health_points_;
   health_regen_rate_ = other.health_regen_rate_;
   max_health_points_ = other.max_health_points_;
+  level_ = other.level_;
 }
 
 void Entity::SetParams(std::vector<QVariant> params) {
@@ -54,6 +55,14 @@ float Entity::GetMaxHealthPoints() const {
   return max_health_points_;
 }
 
+int Entity::GetLevel() const {
+  return level_;
+}
+
+void Entity::SetLevel(int level) {
+  level_ = level;
+}
+
 bool Entity::IsEntity() const {
   return true;
 }
@@ -63,20 +72,24 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 }
 
 void Entity::DrawHealthBar(Painter* painter) {
-  QPointF translation(0.f, -GetHeight() * 1.1f);
+  painter->save();
+  QPointF translation(0.f, -2.f);
   painter->Translate(translation);
   float rect_width = 75.f;
   float rect_height = 14.f;
-  QFont font{};
-  font.setPointSizeF(7.f);
+  auto cur_hp = static_cast<int>(this->GetHealthPoints());
+  auto max_hp = static_cast<int>(this->GetMaxHealthPoints());
+  QString text = QString::number(cur_hp) + " / " +
+      QString::number(max_hp);
+  QFont font = painter->font();
+  float factor =
+      rect_width * 0.9f / painter->fontMetrics().horizontalAdvance(text);
+  font.setPointSizeF(font.pointSizeF() * factor);
   painter->setFont(font);
   QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
                    rect_width, rect_height);
-  auto cur_hp = static_cast<int>(this->GetHealthPoints());
-  auto max_hp = static_cast<int>(this->GetMaxHealthPoints());
   painter->drawText(text_rect, Qt::AlignCenter,
-                    QString::number(cur_hp) + " / " +
-                    QString::number(max_hp));
+                    text);
   auto pen = painter->pen();
   QColor clr_back = Qt::gray;
   clr_back.setAlphaF(0.4f);
@@ -94,6 +107,7 @@ void Entity::DrawHealthBar(Painter* painter) {
   painter->setBrush(brush);
   painter->setPen(pen);
   painter->Translate(-translation);
+  painter->restore();
 }
 
 void Entity::Revive(QPointF point_to_spawn) {
@@ -103,6 +117,10 @@ void Entity::Revive(QPointF point_to_spawn) {
 
 float Entity::GetHealthRegenRate() const {
   return health_regen_rate_;
+}
+
+float Entity::GetExpIncrementForKill() const {
+  return 0;
 }
 
 void Entity::SetHealthRegenRate(float health_regen_rate) {
@@ -118,4 +136,26 @@ void Entity::TickHealthPoints(int delta_time) {
   health_points_ = std::min(
       health_points_ + health_regen_rate_ * static_cast<float>(delta_time),
       max_health_points_);
+}
+
+void Entity::DrawLevel(Painter* painter) {
+  painter->save();
+  QPointF translation(0.f,  -3.f);
+  painter->Translate(translation);
+  painter->setBrush(Qt::black);
+  painter->drawEllipse(QPointF(), 10.f, 10.f);
+  float rect_width = 75.f;
+  float rect_height = 14.f;
+  QFont font = painter->font();
+  font.setPointSizeF(10.f);
+  painter->setFont(font);
+  QPen pen(Constants::Painter::kLevelColor);
+  painter->setPen(pen);
+  QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
+                   rect_width, rect_height);
+
+  painter->drawText(text_rect, Qt::AlignCenter,
+                    QString::number(this->GetLevel()));
+  painter->Translate(-translation);
+  painter->restore();
 }

@@ -158,8 +158,7 @@ void ServerController::OnSocketDisconnected() {
   }
 }
 
-void ServerController::SendToClient(int client_id,
-                                    const Event& event) {
+void ServerController::SendToClient(int client_id, const Event& event) {
   auto client_ptr = server_model_.GetClientByClientId(client_id);
   if (client_ptr) {
     try {

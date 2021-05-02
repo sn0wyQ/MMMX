@@ -3,13 +3,14 @@
 
 #include <map>
 #include <memory>
-#include <utility>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <QMetaEnum>
 #include <QDebug>
 
+#include "GameObject/MovableObject/Entity/Creep/creep.h"
 #include "GameObject/MovableObject/Entity/Player/player.h"
 #include "GameObject/map_border.h"
 #include "PlayerStats/player_stats.h"
@@ -50,7 +51,7 @@ class GameModel {
   std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;
 
  private:
-  std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
+  std::map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
 };
 
 #endif  // MODEL_GAME_MODEL_H_

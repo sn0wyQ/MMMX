@@ -1,7 +1,7 @@
 #include "game_model.h"
 
 GameModel::GameModel(const GameModel& other) {
-  for (const auto& [game_object_id, game_object] : other.game_objects_) {
+  for (const auto&[game_object_id, game_object] : other.game_objects_) {
     game_objects_.emplace(game_object_id, game_object->Clone());
   }
   for (const auto& [game_object_id, player_stats] : other.players_stats_) {
@@ -42,8 +42,14 @@ std::shared_ptr<GameObject> GameModel::GetNewEmptyGameObject(
     case GameObjectType::kBullet:
       object = std::make_shared<Bullet>(game_object_id);
       break;
+    case GameObjectType::kCreep:
+      object = std::make_shared<Creep>(game_object_id);
+      break;
     case GameObjectType::kMapBorder:
       object = std::make_shared<MapBorder>(game_object_id);
+      break;
+    default:
+      qWarning() << "Invalid game object type";
       break;
   }
   return object;
@@ -59,9 +65,9 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
       GetNewEmptyGameObject(game_object_id, type);
   object->SetParams(params);
   game_objects_.emplace(std::make_pair(game_object_id, object));
-  qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Added new GameObject:" << game_object_id
                     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
-                        .valueToKey(static_cast<uint32_t>(type)));
+                        .valueToKey(static_cast<int>(type)));
 }
 
 std::vector<std::shared_ptr<PlayerStats>>
@@ -92,9 +98,9 @@ void GameModel::DeleteGameObject(GameObjectId game_object_id) {
   }
   GameObjectType type = iter->second->GetType();
   game_objects_.erase(iter);
-  qInfo().noquote() << "[MODEL] Removed GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Removed GameObject:" << game_object_id
     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
-        .valueToKey(static_cast<uint32_t>(type)));
+        .valueToKey(static_cast<int>(type)));
 }
 
 std::vector<std::shared_ptr<Player>> GameModel::GetPlayers() const {
@@ -156,5 +162,5 @@ void GameModel::AttachGameObject(
   game_objects_[game_object_id] = game_object;
   qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
      << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
-         .valueToKey(static_cast<uint32_t>(game_object->GetType())));
+         .valueToKey(static_cast<int>(game_object->GetType())));
 }

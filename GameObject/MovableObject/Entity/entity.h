@@ -5,6 +5,8 @@
 #include <utility>
 #include <vector>
 
+#include <QPainterPath>
+
 #include "GameObject/MovableObject/movable_object.h"
 
 class Entity : public MovableObject {
@@ -16,6 +18,7 @@ class Entity : public MovableObject {
   void TickHealthPoints(int delta_time);
 
   void DrawHealthBar(Painter* painter) override;
+  void DrawLevel(Painter* painter) override;
 
   float GetFovRadius() const;
   void SetFovRadius(float fov_radius);
@@ -29,6 +32,9 @@ class Entity : public MovableObject {
   void SetMaxHealthPoints(float max_health_points);
   float GetMaxHealthPoints() const;
 
+  void SetLevel(int level);
+  int GetLevel() const;
+
   bool IsEntity() const override;
 
   void Revive(QPointF point_to_spawn);
@@ -36,7 +42,12 @@ class Entity : public MovableObject {
   void SetHealthRegenRate(float health_regen_rate);
   float GetHealthRegenRate() const;
 
+  virtual float GetExpIncrementForKill() const;
+
   std::shared_ptr<GameObject> Clone() const override;
+
+ protected:
+  int level_{1};
 
  private:
   float fov_radius_{Constants::kDefaultEntityFov};

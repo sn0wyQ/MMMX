@@ -1,3 +1,6 @@
+# .gitignore
+.gitignores
+
 # C++ objects and libs
 *.slo
 *.lo
@@ -51,14 +54,20 @@ compile_commands.json
 # QtCreator local machine specific files for imported projects
 *creator.user*
 
-#Clion
+# Clion
 .idea/
 
-#Cmake
+# Cmake
 CMakeFiles/
 Build/
 .cmake/
 CMakeLists.txt.user
 
-#Server build folder
+# Server build folder
 build-on-server/
+
+# Temporary files folder
+temp/
+
+# Helpers applications/files
+helpers/

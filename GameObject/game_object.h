@@ -1,32 +1,37 @@
 #ifndef GAMEOBJECT_GAME_OBJECT_H_
 #define GAMEOBJECT_GAME_OBJECT_H_
 
-#include <vector>
-#include <utility>
-#include <memory>
 #include <deque>
+#include <memory>
+#include <utility>
+#include <vector>
 
-#include <QPoint>
 #include <QDebug>
+#include <QPoint>
+#include <QString>
 
-#include "constants.h"
+#include "Animation/animation.h"
+#include "Animation/animations_holder.h"
 #include "Painter/painter.h"
 #include "Math/math.h"
 #include "GameObject/RigidBody/intersect_constants.h"
 #include "GameObject/RigidBody/rigid_body.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
+#include "constants.h"
 
 namespace GameObjectTypeWrapper {
 
 Q_NAMESPACE
 
 // enum for sending events
+// MUST be sorted in alphabet order
 enum class GameObjectType {
   kBullet,
-  kPlayer,
+  kCreep,
   kGameObject,
-  kMapBorder
+  kMapBorder,
+  kPlayer
 };
 
 Q_ENUM_NS(GameObjectType)
@@ -76,9 +81,11 @@ class GameObject {
   bool IsNeedToDelete() const;
   void SetIsNeedToDelete(bool is_need_to_delete);
 
-  bool IsInFov() const;
-  void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
+
+  std::shared_ptr<Animation> GetAnimation();
+  void SetAnimation(AnimationType animation_type);
+  static AnimationsHolder& GetAnimationsHolder();
 
   virtual bool IsEntity() const;
 
@@ -90,7 +97,13 @@ class GameObject {
   float GetBoundingCircleRadius() const;
 
  private:
+  // Holds animations for all GameObjects
+  // Prevents same SharedFrame being loaded into RAM more than once at a time
+  static AnimationsHolder animations_holder_;
+
   GameObjectId id_{Constants::kNullGameObjectId};
+  std::shared_ptr<Animation>
+      animation_ = std::make_shared<Animation>(AnimationType::kNone);
   QPointF position_{0.f, 0.f};
   // 0 is direction from left to right
   // Increasing counterclockwise
@@ -99,7 +112,6 @@ class GameObject {
   float width_{0.f};
   float height_{0.f};
   std::shared_ptr<RigidBody> rigid_body_;
-  bool is_in_fov_{false};
   bool is_need_to_delete_{false};
   int64_t updated_time_{};
 };

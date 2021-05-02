@@ -12,6 +12,28 @@
 #include "Client/client_controller.h"
 #include "Painter/painter.h"
 
+namespace Constants::StatsTable {
+
+const QFont kHeaderFont("Roboto Mono", -1, QFont::Weight::Bold);
+const QFont kTextFont("Roboto Mono");
+
+const QColor kBackgroundColor(86, 86, 86, 180);
+const QColor kHeaderTextColor(95, 255, 62, 180);
+const QColor kTextColor(235, 235, 235, 180);
+const QColor kLocalPLayerTextColor(255, 235, 235, 255);
+const QColor kFrameColor(62, 62, 62, 255);
+const float kPenWidthMultiplier = 0.005f;
+const int kMaxPlayerInTable = 10;
+
+const std::vector<QString> kColumnNames{
+    "Nickname",
+    "Level",
+    "Kills",
+    "Deaths"
+};
+
+}  // namespace Constants::StatsTable
+
 class StatsTable : public QWidget {
   Q_OBJECT
 
