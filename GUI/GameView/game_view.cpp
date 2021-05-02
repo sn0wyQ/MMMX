@@ -13,8 +13,9 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
   Painter painter(this,
                   converter_,
                   model_->IsLocalPlayerSet()
-                  ? model_->GetLocalPlayer()->GetPosition()
-                  : QPointF(0.f, 0.f));
+                    ? model_->GetLocalPlayer()->GetPosition() : QPointF());
+  painter.setRenderHints(
+      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
   std::vector<std::shared_ptr<GameObject>> not_filtered_objects
     = model_->GetNotFilteredByFovObjects();

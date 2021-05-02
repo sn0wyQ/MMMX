@@ -230,7 +230,7 @@ bool RoomController::IsWaitingForClients() const {
 }
 
 int RoomController::GetPlayersCount() const {
-  return player_ids_.size();
+  return static_cast<int>(player_ids_.size());
 }
 
 std::vector<ClientId> RoomController::GetAllClientsIds() const {
@@ -358,6 +358,9 @@ GameObjectId RoomController::AddPlayer() {
                 Constants::kDefaultPlayerRadius * 2,
                 Constants::kDefaultPlayerRadius * 2,
                 static_cast<int>(RigidBodyType::kCircle),
+                Constants::kDefaultPlayerRadius * 2,
+                Constants::kDefaultPlayerRadius * 2,
+                static_cast<int>(AnimationType::kNone),
                 0.f, 0.f, Constants::kDefaultSpeedMultiplier,
                 Constants::kDefaultEntityFov * 2.f,
                 Constants::kDefaultMaxHealthPoints,
@@ -395,7 +398,9 @@ void RoomController::AddBox(float x, float y, float rotation,
                             float width, float height) {
   model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, rotation, width, height,
-                         static_cast<int>(RigidBodyType::kRectangle)});
+                         static_cast<int>(RigidBodyType::kRectangle),
+                         width, height,
+                         static_cast<int>(AnimationType::kNone)});
 }
 
 void RoomController::AddRandomBox(float width, float height) {
@@ -409,9 +414,10 @@ void RoomController::AddRandomBox(float width, float height) {
 
 void RoomController::AddTree(float x, float y, float radius) {
   model_->AddGameObject(GameObjectType::kGameObject,
-                        {x, y, 0.f,
-                         radius * 2.f, radius * 2.f,
-                         static_cast<int>(RigidBodyType::kCircle)});
+                        {x, y, 0.f, radius * 2.f, radius * 2.f,
+                         static_cast<int>(RigidBodyType::kCircle),
+                         radius * 1.45f, radius * 1.45f,
+                         static_cast<int>(AnimationType::kTreeGreen)});
 }
 
 void RoomController::AddRandomTree(float radius) {
@@ -445,13 +451,16 @@ void RoomController::AddConstantObjects() {
                         {0.f, 0.f, 0.f,
                          Constants::kDefaultMapWidth,
                          Constants::kDefaultMapHeight,
-                         static_cast<int>(RigidBodyType::kRectangle)});
+                         static_cast<int>(RigidBodyType::kRectangle),
+                         Constants::kDefaultMapWidth,
+                         Constants::kDefaultMapHeight,
+                         static_cast<int>(AnimationType::kNone)});
 
   for (int i = 0; i < 15; i++) {
-    this->AddRandomBox(5.f, 5.f);
+    this->AddRandomBox(7.f, 7.f);
   }
   for (int i = 0; i < 15; i++) {
-    this->AddRandomTree(2.f);
+    this->AddRandomTree(5.f);
   }
 }
 

@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <QSizeF>
 
+#include "Animation/animation_enums.h"
 #include "constants.h"
 
 class CreepSettings {

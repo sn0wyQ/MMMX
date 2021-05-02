@@ -17,9 +17,15 @@ set(CMAKE_PREFIX_PATH ${Qt_DIR})
 # Set Qt version
 set(QT_VERSION 5)
 # Set necessary Qt modules
-set(REQUIRED_LIBS Core Widgets Multimedia WebSockets Network)
+set(REQUIRED_LIBS Core Multimedia Network Svg WebSockets Widgets)
 # Set corresponding Qt libraries
-set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Widgets Qt5::Multimedia Qt5::WebSockets Qt5::Network)
+set(REQUIRED_LIBS_QUALIFIED
+        Qt5::Core
+        Qt5::Multimedia
+        Qt5::Network
+        Qt5::Svg
+        Qt5::WebSockets
+        Qt5::Widgets)
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -60,6 +66,10 @@ set(UBSAN_FLAGS
 
 # Add code files
 set(SOURCES
+        Animation/animation.cpp
+        Animation/animation_enums.h
+        Animation/animations_holder.cpp
+        Animation/shared_frame.cpp
         Client/abstract_client_view.h
         Client/client_controller.cpp
         Client/client_view.cpp
@@ -122,3 +132,15 @@ target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}
         ${RESOURCES_COMMON})
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
+
+# Synchronize Res with output folder
+if (WIN32)
+    add_custom_command(TARGET MMMX-Client POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E remove_directory
+            ${CMAKE_BINARY_DIR}/Res)
+    add_custom_command(TARGET MMMX-Client POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/Res/ ${CMAKE_BINARY_DIR}/Res)
+else()
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Res DESTINATION ${CMAKE_BINARY_DIR})
+endif (WIN32)

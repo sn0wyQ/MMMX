@@ -30,7 +30,9 @@ Player::Player(const Player& other) : Entity(other) {
           *(std::dynamic_pointer_cast<Shotgun>(other.weapon_)));
       break;
     }
-    default: break;
+
+    default:
+      break;
   }
   current_exp_ = other.current_exp_;
   free_leveling_points_ = other.free_leveling_points_;
@@ -57,7 +59,9 @@ void Player::SetParams(std::vector<QVariant> params) {
       weapon_ = std::make_shared<Shotgun>();
       break;
     }
-    default: break;
+
+    default:
+      break;
   }
   params.pop_back();
   Entity::SetParams(params);
