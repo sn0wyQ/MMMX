@@ -23,9 +23,10 @@ SharedFrame::SharedFrame(const QString& path,
                          const QSize& predicted_size)
     : frame_index_(frame_index) {
   path_ = path + kAnimationStateStrings.at(animation_state)
-      + CalcLeadingZeros(frame_index_) + QString::number(frame_index_) + ".svg";
+      + CalcLeadingZeros(frame_index_) + QString::number(frame_index_)
+      + ".svg";
 
-  if (!QFile::exists(path)) {
+  if (!QFile::exists(path_)) {
     return;
   } else {
     is_exists_ = true;
@@ -38,8 +39,8 @@ SharedFrame::SharedFrame(const QString& path,
 
   auto svg_iter = loaded_svgs_.find(path_);
   if (svg_iter == loaded_svgs_.end()) {
-    auto new_renderer = std::make_shared<QSvgRenderer>(path_);
-    svg_renderer_ = loaded_svgs_[path_] = new_renderer;
+    svg_renderer_ = std::make_shared<QSvgRenderer>(path_);
+    loaded_svgs_[path_] = svg_renderer_;
   } else {
     svg_renderer_ = svg_iter->second;
   }
@@ -67,11 +68,11 @@ std::shared_ptr<QPixmap> SharedFrame::GetRenderedPixmap(int w, int h) {
     if (iter != rendered_pixmaps_.end()) {
       pixmap_ = iter->second;
     } else {
-      auto new_pixmap = std::make_shared<QPixmap>(w, h);
-      new_pixmap->fill(Qt::transparent);
-      QPainter painter(new_pixmap.get());
-      svg_renderer_->render(&painter, new_pixmap->rect());
-      pixmap_ = rendered_pixmaps_[{path_, {w, h}}] = new_pixmap;
+      pixmap_ = std::make_shared<QPixmap>(w, h);
+      pixmap_->fill(Qt::transparent);
+      QPainter painter(pixmap_.get());
+      svg_renderer_->render(&painter, pixmap_->rect());
+      rendered_pixmaps_[{path_, {w, h}}] = pixmap_;
     }
   }
 
