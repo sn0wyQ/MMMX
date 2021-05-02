@@ -115,19 +115,6 @@ void ClientController::UpdateInterpolationInfo() {
   auto time_to_interpolate = GetCurrentServerTime()
       - Constants::kInterpolationMSecs;
 
-  while (!time_to_delete_.empty()) {
-    GameObjectId game_object_id = time_to_delete_.front().first;
-    int64_t time = time_to_delete_.front().second;
-    if (time >= time_to_interpolate) {
-      break;
-    }
-    if (model_->IsGameObjectIdTaken(game_object_id)) {
-      time_to_delete_.pop();
-      model_->DeleteGameObject(game_object_id);
-      model_->RemoveFromInterpolator(game_object_id);
-    }
-  }
-
   // Интерполируем все, о чем есть информация
   for (const auto&[game_object_id, game_object_to_be_interpolated]
     : model_->GetInterpolatorMap()) {
@@ -138,6 +125,19 @@ void ClientController::UpdateInterpolationInfo() {
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
+  }
+
+  while (!time_to_delete_.empty()) {
+    GameObjectId game_object_id = time_to_delete_.front().first;
+    int64_t time = time_to_delete_.front().second;
+    if (time >= time_to_interpolate) {
+      break;
+    }
+    time_to_delete_.pop();
+    if (model_->IsGameObjectIdTaken(game_object_id)) {
+      model_->DeleteGameObject(game_object_id);
+      model_->RemoveFromInterpolator(game_object_id);
+    }
   }
 }
 
