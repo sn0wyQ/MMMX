@@ -59,7 +59,6 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
 
 void ClientController::EndGameEvent(const Event& event) {
   game_state_ = GameState::kGameFinished;
-  view_->Update();
 }
 
 void ClientController::SetPlayerIdToClient(const Event& event) {
@@ -242,7 +241,6 @@ void ClientController::UpdateVarsEvent(const Event& event) {
   server_var_ = event.GetArg<int>(0);
   room_var_ = event.GetArg<int>(1);
   client_var_ = this->GetVar();
-  view_->Update();
 }
 
 QVector2D ClientController::GetKeyForce() const {
@@ -405,7 +403,6 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_->DeletePlayerStats(player_id);
   model_->RemoveFromInterpolator(player_id);
   game_state_ = GameState::kGameNotStarted;
-  view_->Update();
 }
 
 void ClientController::UpdatePlayersStatsEvent(const Event& event) {
