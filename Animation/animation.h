@@ -55,7 +55,7 @@ class Animation {
   void Update(int delta_time);
   void SetAnimationState(AnimationState animation_state, bool restart = false);
 
-  void RenderFrame(Painter* painter, float w, float h) const;
+  void RenderFrame(Painter* painter, float w, float h);
 
   AnimationType GetType() const;
 

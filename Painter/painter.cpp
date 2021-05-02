@@ -71,6 +71,24 @@ void Painter::DrawRect(float x, float y, float width, float height) {
                   converter_->ScaleFromGameToScreen(height)));
 }
 
+void Painter::DrawSharedFrame(QPointF point,
+                              float w,
+                              float h,
+                              SharedFrame& shared_frame,
+                              DrawPixmapType draw_pixmap_type) {
+  converter_->ScaleFromGameToScreen(&point);
+  converter_->ScaleFromGameToScreen(&w);
+  converter_->ScaleFromGameToScreen(&h);
+
+  if (draw_pixmap_type == DrawPixmapType::kUsePointAsCenter) {
+    point.rx() -= (w / 2.f);
+    point.ry() -= (h / 2.f);
+  }
+
+  drawPixmap(point, *shared_frame.GetRenderedPixmap(static_cast<int>(w),
+                                                         static_cast<int>(h)));
+}
+
 void Painter::DrawTriangle(const QPointF& p1,
                            const QPointF& p2,
                            const QPointF& p3) {

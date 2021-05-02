@@ -214,19 +214,16 @@ void Animation::SetAnimationState(AnimationState animation_state,
                                                  1);
 }
 
-void Animation::RenderFrame(Painter* painter, float w, float h) const {
+void Animation::RenderFrame(Painter* painter, float w, float h) {
   if (animation_frames_.at(animation_state_).empty()) {
     return;
   }
 
-  const SharedFrame&
-      frame_to_render = animation_frames_.at(animation_state_).front();
-
+  SharedFrame& frame_to_render = animation_frames_.at(animation_state_).front();
   if (!frame_to_render.IsExists()) {
     return;
   }
-
-  painter->RenderSvg(QPointF(), w, h, frame_to_render.GetSvgRenderer());
+  painter->DrawSharedFrame(QPointF(), w, h, frame_to_render);
 }
 
 AnimationType Animation::GetType() const {
