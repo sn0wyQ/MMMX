@@ -83,7 +83,7 @@ constexpr int kAccuracy = 10;
 constexpr int kMaxLevel = 30;
 
 constexpr float GetExpForLevel(int level) {
-  return static_cast<float>(1 + level) * 5.f;
+  return static_cast<float>(level) * 5.f;
 }
 
 constexpr float kExpMultiplier = 5.f;

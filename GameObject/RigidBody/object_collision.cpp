@@ -195,4 +195,13 @@ std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
   return nullptr;
 }
 
+bool IsCollided(const std::shared_ptr<GameObject>& main,
+                const std::shared_ptr<GameObject>& object) {
+  QVector2D offset(object->GetX() - main->GetX(),
+                   object->GetY() - main->GetY());
+  float rotation = object->GetRotation() - main->GetRotation();
+  return !IntersectChecker::GetIntersectPointsBodies(
+      main->GetRigidBody(), object->GetRigidBody(), offset, rotation).empty();
+}
+
 }  // namespace ObjectCollision

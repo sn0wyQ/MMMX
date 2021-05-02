@@ -36,6 +36,10 @@ std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
     const std::vector<std::shared_ptr<GameObject>>& objects,
     int delta_time, bool on_local);
 
+bool IsCollided(
+    const std::shared_ptr<GameObject>& main,
+    const std::shared_ptr<GameObject>& object);
+
 }  // namespace ObjectCollision
 
 #endif  // GAMEOBJECT_RIGIDBODY_OBJECT_COLLISION_H_

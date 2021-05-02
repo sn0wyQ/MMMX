@@ -42,6 +42,7 @@ class CreepSettings {
   float CalculateRegenRate(int level) const;
   float CalculateWidth(int level) const;
   float CalculateHeight(int level) const;
+  float CalculateSpeed(int level) const;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_SETTINGS_H_

@@ -57,9 +57,9 @@ std::vector<QVariant>
   // MovableObject params
   params.emplace_back(0);  // velocity_x
   params.emplace_back(0);  // velocity_y
-  params.emplace_back(0.f);  // speed multiplier
+  params.emplace_back(this->CalculateSpeed(creep_level));  // speed multiplier
   // Entity params
-  params.emplace_back(0.f);  // FOV for creep is always 0
+  params.emplace_back(this->GetCreepSetting<float>("fov_radius"));
   params.emplace_back(this->CalculateMaxHp(creep_level));
   params.emplace_back(this->CalculateRegenRate(creep_level));
   params.emplace_back(this->CalculateMaxHp(creep_level));
@@ -111,4 +111,8 @@ std::pair<int, int>
 QSizeF CreepSettings::GetMaxCreepSize() const {
   return QSizeF(this->GetCreepSetting<float>("max_width"),
                 this->GetCreepSetting<float>("max_height"));
+}
+
+float CreepSettings::CalculateSpeed(int level) const {
+  return 0.007f;
 }

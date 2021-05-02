@@ -1,12 +1,13 @@
 {
-  "max_width": 1,
-  "max_height": 1,
+  "max_width": 4,
+  "max_height": 4,
 
   "min_creep_level": 23,
   "max_creep_level": 30,
   "hp_regen_rate_multiplier": 0.005,
   "rigid_body_type": 0,
   "max_hp_multiplier": 100,
+  "fov_radius":  15.0,
   "kMinLevelPow": 5,
   "kMaxLevelPow": 4
 }
