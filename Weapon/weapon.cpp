@@ -87,6 +87,8 @@ std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
   velocity *= this->GetBulletSpeed();
   return {x, y, 0.f, radius * 2.f, radius * 2.f,
           static_cast<int>(RigidBodyType::kCircle),
+          radius * 2.f, radius * 2.f,
+          static_cast<int>(AnimationType::kNone),
           static_cast<float>(velocity.x()),
           static_cast<float>(velocity.y()),
           parent_id, x, y,
@@ -131,7 +133,9 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
                           bullet_radius));
       break;
     }
-    default: break;
+
+    default:
+      break;
   }
   return bullets_params;
 }

@@ -25,7 +25,7 @@ void InterpolateObject(const std::shared_ptr<GameObject>& object,
   auto object_params = object->GetParams();
   auto future_object_params = future_object->GetParams();
   if (object_params.size() != future_object_params.size()) {
-    throw std::runtime_error("Interpolation: size of params differs. Maybe "
+    throw std::runtime_error("[INTERPOLATION] Size of params differs. Maybe "
                              "you send game objects with different classes?");
   }
 
@@ -55,7 +55,7 @@ QVariant GetInterpolatedParam(const QVariant& object_param,
                               int64_t get_on_time) {
   QVariant result;
   if (object_param.type() != future_object_param.type()) {
-    throw std::runtime_error("Interpolation: type of param differs. Maybe "
+    throw std::runtime_error("[INTERPOLATION] Type of param differs. Maybe "
                              "you send game objects with different classes?");
   }
   if (object_updated_time == future_object_updated_time) {
