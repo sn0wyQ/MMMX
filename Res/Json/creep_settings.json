@@ -1,6 +1,6 @@
 {
-  "max_width": 4,
-  "max_height": 4,
+  "max_width": 3,
+  "max_height": 3,
 
   "min_creep_level": 23,
   "max_creep_level": 30,
