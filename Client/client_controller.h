@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <queue>
 
 #include <QByteArray>
 #include <QDebug>
@@ -21,9 +22,6 @@
 #include "Math/math.h"
 #include "Model/client_game_model.h"
 #include "Interpolator/interpolator.h"
-
-// TODO(Everyone): make class Hotkeys instead of enum Controls
-// (with possibility to rebind keys)
 
 #ifdef WIN32
 enum class Controls {
@@ -120,13 +118,14 @@ class ClientController : public BaseController {
   // ------------------- GAME EVENTS -------------------
 
   void AddLocalPlayerGameObjectEvent(const Event& event) override;
-  void GameObjectLeftFovEvent(const Event& event) override;
+  void DeleteGameObjectEvent(const Event& event) override;
+  void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
+  void ShootFailedEvent(const Event& event) override;
+  void LocalPlayerDiedEvent(const Event& event) override;
   void SendGameInfoToInterpolateEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;
   void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;
-  void LocalPlayerDiedEvent(const Event& event) override;
-  void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;
@@ -155,6 +154,8 @@ class ClientController : public BaseController {
   };
   QTimer shoot_check_timer;
   bool is_holding_{false};
+
+  std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

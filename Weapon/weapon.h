@@ -24,7 +24,7 @@ class Weapon {
 
   virtual void DrawWeapon(Painter* painter) = 0;
 
-  void SetBulletDamage(float base_bullet_damage);
+  void SetBulletDamage(float bullet_damage);
   float GetBulletDamage() const;
 
   void SetBulletSpeed(float bullet_speed);

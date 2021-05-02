@@ -25,7 +25,8 @@ class MovableObject : public GameObject {
                                        int delta_time) const;
   void ApplyVelocity(int delta_time);
 
-  float GetCurrentSpeed() const;
+  void SetSpeedMultiplier(float speed_multiplier);
+  float GetSpeedMultiplier() const;
 
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
@@ -38,6 +39,7 @@ class MovableObject : public GameObject {
 
  private:
   QVector2D velocity_{};
+  float speed_multiplier_{};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_

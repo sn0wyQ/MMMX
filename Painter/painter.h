@@ -15,6 +15,13 @@
 
 #include "Converter/converter.h"
 
+namespace Constants::Painter {
+
+const QFont kDefaultFont("Roboto Mono", -1, QFont::Weight::Normal);
+const QColor kLevelColor(238, 230, 23);
+
+}  // namespace Constants::Painter
+
 namespace PainterEnumsWrapper {
 
 Q_NAMESPACE
@@ -47,8 +54,6 @@ class Painter : public QPainter {
 
   void Translate(const QPointF& delta);
 
-  float GetScaledFloat(float x) const;
-
   void DrawEllipse(const QPointF& center, float rx, float ry);
   void DrawPixmap(QPointF point,
                   float w,
@@ -57,7 +62,6 @@ class Painter : public QPainter {
                   DrawPixmapType draw_image_type =
                       DrawPixmapType::kUsePointAsCenter);
   void DrawRect(float x, float y, float width, float height);
-  void DrawText(QRectF rect, int flags, const QString& str);
   void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
 
   void RenderSvg(QPointF point,

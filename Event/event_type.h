@@ -77,14 +77,18 @@ enum class EventType {
   // [1+] - game_object_args : relative SetParams
   kUpdateGameObjectData,
 
+  // [0] - <GameObjectId> game_object_id that should be deleted
+  // [1] - <int64_t> sent_time
+  kDeleteGameObject,
+
+  // ]]]]]]]]]
+
   // [0] - <GameObjectId> player_id
   // [1+] - player_stats_args
   kUpdatePlayersStats,
 
-  // [0] - <GameObjectId> game_object_id that left receiver player FOV
-  kGameObjectLeftFov,
-
-  // ]]]]]]]]]
+  // [0] - <int64_t> timestamp
+  kShootFailed,
 
   // [0] - <int64> timestamp
   // [1] - <GameObjectId> sender_player_id,
@@ -97,6 +101,10 @@ enum class EventType {
   // [0] - <int64> timestamp
   // [1] - <GameObjectId> sender_player_id
   kSendPlayerShooting,
+
+  // [0] - <GameObjectId> sender_player_id
+  // Constants::kUpgradeSlots times int
+  kSendLevelingPoints,
 
   // [0] - <GameObjectId> player_id
   // [1] - player_args

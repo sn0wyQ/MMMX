@@ -1,6 +1,10 @@
 #include "player.h"
 
-Player::Player(GameObjectId player_id) : Entity(player_id) {}
+Player::Player(GameObjectId player_id)
+    : Entity(player_id),
+      leveling_points_(Constants::kUpgradeSlots) {
+  free_leveling_points_ = 5;
+}
 
 Player::Player(const Player& other) : Entity(other) {
   is_local_player_ = other.is_local_player_;
@@ -31,6 +35,8 @@ Player::Player(const Player& other) : Entity(other) {
       break;
   }
   current_exp_ = other.current_exp_;
+  free_leveling_points_ = other.free_leveling_points_;
+  leveling_points_ = other.leveling_points_;
 }
 
 void Player::SetParams(std::vector<QVariant> params) {
@@ -65,22 +71,6 @@ std::vector<QVariant> Player::GetParams() const {
   std::vector<QVariant> result = Entity::GetParams();
   result.emplace_back(static_cast<int>(weapon_type_));
   return result;
-}
-
-void Player::DrawLevel(Painter* painter) {
-  QPointF translation(0.f, -GetHeight() * 1.7f);
-  painter->Translate(translation);
-  float rect_width = 75.f;
-  float rect_height = 14.f;
-  QFont font{};
-  font.setPointSizeF(7.f);
-  painter->setFont(font);
-  QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
-                   rect_width, rect_height);
-
-  painter->drawText(text_rect, Qt::AlignCenter,
-                    QString::number(this->GetLevel()));
-  painter->Translate(-translation);
 }
 
 void Player::DrawRelatively(Painter* painter) {
@@ -138,10 +128,85 @@ void Player::SetCurrentExp(float current_exp) {
 
 void Player::IncreaseExperience(float experience_to_add) {
   current_exp_ += experience_to_add;
-  while (current_exp_ >= Constants::kExpForLevel[level_ - 1]) {
-    current_exp_ -= Constants::kExpForLevel[level_ - 1];
+  while (current_exp_ >= Constants::GetExpForLevel(level_)) {
+    if (level_ + 1 > Constants::kMaxLevel) {
+      break;
+    }
+    current_exp_ -= Constants::GetExpForLevel(level_);
+    free_leveling_points_++;
     level_++;
   }
+  current_exp_ = std::min(current_exp_, Constants::GetExpForLevel(level_));
+}
+
+int Player::GetFreeLevelingPoints() const {
+  return free_leveling_points_;
+}
+
+const std::vector<int>& Player::GetLevelingPoints() const {
+  return leveling_points_;
+}
+
+void Player::SetFreeLevelingPoints(int free_leveling_points) {
+  free_leveling_points_ = free_leveling_points;
+}
+
+void Player::IncreaseLevelingPoint(int index) {
+  switch (index) {
+    case 0: {
+      float part_to_set = GetHealthPoints() / GetMaxHealthPoints();
+      SetMaxHealthPoints(GetMaxHealthPoints()
+        * Constants::LevelingMultipliers::kMaxHp);
+      SetHealthPoints(GetMaxHealthPoints() * part_to_set);
+      break;
+    }
+    case 1:
+      SetHealthRegenRate(GetHealthRegenRate()
+      * Constants::LevelingMultipliers::kHealthRegenRate);
+      break;
+    case 2:
+      SetSpeedMultiplier(GetSpeedMultiplier()
+      * Constants::LevelingMultipliers::kSpeed);
+      break;
+    case 3:
+      SetFovRadius(GetFovRadius()
+      * Constants::LevelingMultipliers::kFovRadius);
+      break;
+    case 4:
+      break;
+    case 5:
+      weapon_->SetBulletSpeed(weapon_->GetBulletSpeed()
+      * Constants::LevelingMultipliers::kBulletSpeed);
+      break;
+    case 6:
+      weapon_->SetRateOfFire(
+          static_cast<int>(
+              static_cast<float>(weapon_->GetRateOfFire())
+              * Constants::LevelingMultipliers::kRateOfFire));
+      break;
+    case 7:
+      weapon_->SetBulletRange(weapon_->GetBulletRange()
+      * Constants::LevelingMultipliers::kBulletRange);
+      break;
+    case 8:
+      weapon_->SetBulletDamage(weapon_->GetBulletDamage()
+      * Constants::LevelingMultipliers::kBulletDamage);
+      break;
+    case 9:
+      break;
+    default:
+      break;
+  }
+  leveling_points_[index]++;
+  need_to_send_leveling_points_ = true;
+}
+
+bool Player::IsNeedToSendLevelingPoints() const {
+  return need_to_send_leveling_points_;
+}
+
+void Player::SetNeedToSendLevelingPoints(bool need_to_send_leveling_points) {
+  need_to_send_leveling_points_ = need_to_send_leveling_points;
 }
 
 float Player::GetExpIncrementForKill() const {

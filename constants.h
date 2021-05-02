@@ -38,7 +38,6 @@ constexpr int kTimeToTick = 1000 / kTickrate;
 const auto kHashAlgorithm = QCryptographicHash::Algorithm::Md5;
 constexpr int kMSecsToStore = 1000;
 constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
-constexpr float kFovMultiplier = 1.7f;
 
 // Map
 constexpr float kDefaultMapWidth = 100.f;
@@ -70,21 +69,41 @@ constexpr int kUnloadAnimationCheckTime = 30;
 constexpr float kDefaultMaxHealthPoints = 100.f;
 
 // MovableObject
-constexpr float kDefaultMovableObjectSpeed = 0.01f;
+constexpr float kDefaultSpeedMultiplier = 0.01f;
 
 // Player
 constexpr float kDefaultEntityFov = 12.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
-constexpr float kDefaultHealthRegenSpeed = 0.001f;
+constexpr float kDefaultHealthRegenSpeed = 0.002f;
 
 // Bullet collision
 constexpr int kAccuracy = 10;
 
-constexpr float kExpForLevel[] = {
-    10, 15, 20, 25, 30, 35, 40, 45, 50, 55
-};
+constexpr int kMaxLevel = 30;
+
+constexpr float GetExpForLevel(int level) {
+  return static_cast<float>(1 + level) * 5.f;
+}
+
 constexpr float kExpMultiplier = 5.f;
+
+constexpr int kUpgradeSlots = 10;
+constexpr int kCountOfLevels = 5;
+
+namespace LevelingMultipliers {
+
+constexpr float kMaxHp = 1.5f;
+constexpr float kHealthRegenRate = 2.1f;
+constexpr float kSpeed = 1.1f;
+constexpr float kFovRadius = 1.3f;
+
+constexpr float kBulletSpeed = 1.2f;
+constexpr float kRateOfFire = 1.1f;
+constexpr float kBulletRange = 1.3f;
+constexpr float kBulletDamage = 1.1f;
+
+}  // namespace LevelingMultipliers
 
 }  // namespace Constants
 

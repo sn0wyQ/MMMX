@@ -60,12 +60,12 @@ void RoomController::OnTick(int delta_time) {
   model_ = models_cache_.back().model;
   this->RecalculateModel(models_cache_.back());
   this->AddCreeps();
-  this->SendPlayersStatsToPlayers();
-  model_->UpdatePlayerStatsHashes();
   for (const auto& player_id : this->GetAllPlayerIds()) {
-    // Рассказываем НАМ о других с учетом FOV
+    // Рассказываем НАМ о других
     SendGameObjectsDataToPlayer(player_id);
   }
+  this->SendPlayersStatsToPlayers();
+  model_->UpdatePlayerStatsHashes();
   model_->UpdateGameObjectHashes();
   if (models_cache_.size() > Constants::kTicksToStore) {
     models_cache_.pop_front();
@@ -84,7 +84,7 @@ void RoomController::DeleteReadyToBeDeletedObjects(
   for (const auto& game_object : game_objects) {
     if (game_object->IsNeedToDelete()) {
       this->AddEventToSendToAllPlayers(
-          GetEventOfGameObjectLeftFov(game_object->GetId()));
+          GetEventOfDeleteGameObject(game_object->GetId()));
       model_data.model->DeleteGameObject(game_object->GetId());
     }
   }
@@ -165,7 +165,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
   }
   for (const auto& game_object_id : objects_to_delete) {
     this->AddEventToSendToAllPlayers(
-        GetEventOfGameObjectLeftFov(game_object_id));
+        GetEventOfDeleteGameObject(game_object_id));
     model_data.model->DeleteGameObject(game_object_id);
   }
 }
@@ -182,8 +182,9 @@ void RoomController::AddClient(ClientId client_id) {
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
   auto player = model_->GetPlayerByPlayerId(player_id);
   model_->AddPlayerStats(player_id,
-                         QString("Player#") + QString::number(player_id),
-                         player->GetLevel());
+                        QString("Player#") + QString::number(player_id),
+                        player->GetLevel());
+  this->SendGameObjectsDataToPlayer(player_id, true);
   this->ForceSendPlayersStatsToPlayer(player_id);
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
@@ -290,21 +291,21 @@ Event RoomController::GetEventOfGameObjectData(
   return event;
 }
 
-Event RoomController::GetEventOfGameObjectLeftFov(
+Event RoomController::GetEventOfDeleteGameObject(
     GameObjectId game_object_id) const {
   auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
   Event event(EventType::kSendGameInfoToInterpolate,
               game_object_id,
               static_cast<int>(game_object->GetType()),
               static_cast<qint64>(GetCurrentServerTime()),
-              static_cast<int>(EventType::kGameObjectLeftFov),
+              static_cast<int>(EventType::kDeleteGameObject),
               game_object_id);
   return event;
 }
 
-void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
+void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id,
+                                                 bool force_sending) {
   for (const auto& object : model_->GetAllGameObjects()) {
-    auto sender_receiver_pair = std::make_pair(object->GetId(), player_id);
     if (object->GetId() == player_id) {
       continue;
     }
@@ -316,19 +317,10 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
       }
     }
 
-    if (this->IsGameObjectInFov(object->GetId(), player_id)) {
-      if (is_first_in_fov_of_second_.find(sender_receiver_pair)
-          == is_first_in_fov_of_second_.end() ||
-          model_->IsNeededToSendGameObjectData(object->GetId())) {
-        this->AddEventToSendToSinglePlayer(
-            GetEventOfGameObjectData(object->GetId()), player_id);
-      }
-      is_first_in_fov_of_second_.insert(sender_receiver_pair);
-    } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
-        != is_first_in_fov_of_second_.end()) {
-      is_first_in_fov_of_second_.erase(sender_receiver_pair);
+    if (force_sending ||
+      model_->IsNeededToSendGameObjectData(object->GetId())) {
       this->AddEventToSendToSinglePlayer(
-          GetEventOfGameObjectLeftFov(object->GetId()), player_id);
+          GetEventOfGameObjectData(object->GetId()), player_id);
     }
   }
 }
@@ -355,17 +347,6 @@ void RoomController::SendPlayersStatsToPlayers() {
   }
 }
 
-bool RoomController::IsGameObjectInFov(GameObjectId game_object_id,
-                                       GameObjectId player_id) {
-  auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-  auto player = model_->GetPlayerByPlayerId(player_id);
-  if (!game_object->IsFilteredByFov()) {
-    return true;
-  }
-  return player->GetShortestDistance(game_object) <
-      player->GetFovRadius() * Constants::kFovMultiplier;
-}
-
 // Temporary -> AddPlayer(PlayerType)
 GameObjectId RoomController::AddPlayer() {
   QPointF point =
@@ -380,7 +361,8 @@ GameObjectId RoomController::AddPlayer() {
                 Constants::kDefaultPlayerRadius * 2,
                 Constants::kDefaultPlayerRadius * 2,
                 static_cast<int>(AnimationType::kNone),
-                0.f, 0.f, Constants::kDefaultEntityFov * 2.f,
+                0.f, 0.f, Constants::kDefaultSpeedMultiplier,
+                Constants::kDefaultEntityFov * 2.f,
                 Constants::kDefaultMaxHealthPoints,
                 Constants::kDefaultHealthRegenSpeed,
                 Constants::kDefaultMaxHealthPoints};
@@ -498,6 +480,12 @@ int RoomController::GetModelIdByTimestamp(int64_t timestamp) const {
   return static_cast<int>(models_cache_.size()) - 1 - latency_in_ticks;
 }
 
+void RoomController::SendNicknameEvent(const Event& event) {
+  auto player_id = event.GetArg<GameObjectId>(0);
+  auto nickname = event.GetArg<QString>(1);
+  model_->GetPlayerStatsByPlayerId(player_id)->SetNickname(nickname);
+}
+
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendControlsEvent(const Event& event) {
@@ -538,21 +526,19 @@ void RoomController::SendControlsEvent(const Event& event) {
 void RoomController::SendPlayerShootingEvent(const Event& event) {
   auto timestamp = event.GetArg<int64_t>(0);
   auto model_id = GetModelIdByTimestamp(timestamp);
-  // Проигнорим, если чел нам прислал то, что он сделал очень давно
+  auto player_id = event.GetArg<GameObjectId>(1);
   if (model_id < 0) {
+    this->AddEventToSendToSinglePlayer(
+        Event(EventType::kShootFailed,
+              static_cast<qint64>(timestamp)), player_id);
     return;
   }
   auto current_model_data = models_cache_[model_id];
-  auto player_id = event.GetArg<GameObjectId>(1);
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
   auto player_in_model =
       current_model_data.model->GetPlayerByPlayerId(player_id);
-
-  if (!player_in_model->GetWeapon()->IsPossibleToShoot(timestamp)) {
-    return;
-  }
 
   std::vector<GameObjectId> bullet_ids =
       AddBullets(player_id, player_in_model->GetX(), player_in_model->GetY(),
@@ -588,8 +574,23 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
     }
   }
 }
-void RoomController::SendNicknameEvent(const Event& event) {
+
+void RoomController::SendLevelingPointsEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
-  auto nickname = event.GetArg<QString>(1);
-  model_->GetPlayerStatsByPlayerId(player_id)->SetNickname(nickname);
+  if (!model_->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  auto player = model_->GetPlayerByPlayerId(player_id);
+  std::vector<int> leveling_points;
+  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
+    auto param = event.GetArg<int>(1 + i);
+    leveling_points.push_back(param);
+  }
+  auto was_leveling_points = player->GetLevelingPoints();
+  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
+    while (was_leveling_points[i] < leveling_points[i]) {
+      player->IncreaseLevelingPoint(i);
+      was_leveling_points[i]++;
+    }
+  }
 }

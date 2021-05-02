@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_
 
+#include <algorithm>
 #include <vector>
 #include <memory>
 
@@ -19,7 +20,6 @@ class Player : public Entity {
   explicit Player(GameObjectId player_id);
   Player(const Player& other);
 
-  void DrawLevel(Painter* painter) override;
   void DrawRelatively(Painter* painter) override;
 
   bool IsLocalPlayer() const;
@@ -44,11 +44,23 @@ class Player : public Entity {
 
   std::shared_ptr<GameObject> Clone() const override;
 
+  void SetFreeLevelingPoints(int free_leveling_points);
+  int GetFreeLevelingPoints() const;
+
+  const std::vector<int>& GetLevelingPoints() const;
+  void IncreaseLevelingPoint(int index);
+
+  void SetNeedToSendLevelingPoints(bool need_to_send_leveling_points);
+  bool IsNeedToSendLevelingPoints() const;
+
  private:
   bool is_local_player_{false};
   std::shared_ptr<Weapon> weapon_;
   WeaponType weapon_type_;
   float current_exp_{};
+  int free_leveling_points_{};
+  std::vector<int> leveling_points_;
+  bool need_to_send_leveling_points_{false};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_H_

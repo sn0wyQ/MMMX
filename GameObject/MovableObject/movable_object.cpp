@@ -6,9 +6,12 @@ MovableObject::MovableObject(GameObjectId game_object_id)
 MovableObject::MovableObject(const MovableObject& other)
   : GameObject(other) {
   velocity_ = other.velocity_;
+  speed_multiplier_ = other.speed_multiplier_;
 }
 
 void MovableObject::SetParams(std::vector<QVariant> params) {
+  SetSpeedMultiplier(params.back().toFloat());
+  params.pop_back();
   float vel_y = params.back().toFloat();
   params.pop_back();
   float vel_x = params.back().toFloat();
@@ -21,6 +24,7 @@ std::vector<QVariant> MovableObject::GetParams() const {
   std::vector<QVariant> result = GameObject::GetParams();
   result.emplace_back(velocity_.x());
   result.emplace_back(velocity_.y());
+  result.emplace_back(GetSpeedMultiplier());
   return result;
 }
 
@@ -47,18 +51,13 @@ QVector2D MovableObject::GetVelocityByDeltaPosition(
   if (delta_time == 0) {
     return QVector2D(0.f, 0.f);
   }
-  return position / GetCurrentSpeed() / static_cast<float>(delta_time);
+  return position / GetSpeedMultiplier() / static_cast<float>(delta_time);
 }
 
 QVector2D MovableObject::GetAppliedDeltaPosition(
     int delta_time) const {
-  return GetVelocity() * GetCurrentSpeed()
+  return GetVelocity() * GetSpeedMultiplier()
     * static_cast<float>(delta_time);
-}
-
-float MovableObject::GetCurrentSpeed() const {
-  // Temporary code
-  return Constants::kDefaultMovableObjectSpeed;
 }
 
 bool MovableObject::IsMovable() const {
@@ -109,4 +108,12 @@ float MovableObject::GetShortestDistance(
 
 std::shared_ptr<GameObject> MovableObject::Clone() const {
   return std::make_shared<MovableObject>(*this);
+}
+
+float MovableObject::GetSpeedMultiplier() const {
+  return speed_multiplier_;
+}
+
+void MovableObject::SetSpeedMultiplier(float speed_multiplier) {
+  speed_multiplier_ = speed_multiplier;
 }

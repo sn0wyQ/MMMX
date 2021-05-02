@@ -99,15 +99,3 @@ void Painter::RenderSvg(QPointF point,
       (point, QSize(static_cast<int>(w), static_cast<int>(h)));
   svg_renderer->render(this, pixmap_frame);
 }
-
-void Painter::DrawText(QRectF rect, int flags, const QString& str) {
-  QRectF new_rect(converter_->ScaleFromGameToScreen(rect.x()),
-                  converter_->ScaleFromGameToScreen(rect.y()),
-                  converter_->ScaleFromGameToScreen(rect.width()),
-                  converter_->ScaleFromGameToScreen(rect.height()));
-  drawText(new_rect, flags, str);
-}
-
-float Painter::GetScaledFloat(float x) const {
-  return converter_->ScaleFromGameToScreen(x);
-}

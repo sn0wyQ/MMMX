@@ -18,22 +18,29 @@ void MessageHandler::Handle(QtMsgType type,
   if (enable_ignore_level_) {
     if (LevelByMessageType(type) > LevelByMessageType(ignore_level_)) {
       switch (type) {
-        case QtDebugMsg:txt = QString("Debug: %1").arg(message);
+        case QtDebugMsg:
+          txt = QString("Debug: %1").arg(message);
           break;
 
-        case QtInfoMsg:txt = message;
+        case QtInfoMsg:
+          txt = message;
           break;
 
-        case QtWarningMsg:txt = QString("Warning: %1").arg(message);
+        case QtWarningMsg:
+          txt = QString("Warning: %1").arg(message);
           break;
 
-        case QtCriticalMsg:txt = QString("Critical: %1").arg(message);
+        case QtCriticalMsg:
+          txt = QString("Critical: %1").arg(message);
           break;
 
-        case QtFatalMsg:txt = QString("Fatal: %1").arg(message);
+        case QtFatalMsg:
+          txt = QString("Fatal: %1").arg(message);
           break;
       }
     }
+  } else {
+    txt = message;
   }
   if (txt.isEmpty()) {
     return;

@@ -3,8 +3,9 @@
 ClientView::ClientView(std::shared_ptr<ClientController> controller)
     : AbstractClientView(),
       controller_(std::move(controller)) {
-  resize(700, 700);
-  setMinimumSize(310, 70);
+  resize(1400, 960);
+  height_of_bar_ = static_cast<int>(0.15f * static_cast<float>(height()));
+  setMinimumSize(1300, 700);
   setWindowTitle(Constants::kWindowTitle);
   setMouseTracking(true);
   setFocusPolicy(Qt::StrongFocus);
@@ -15,7 +16,9 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   game_view_->setMouseTracking(true);
 
   // Player Bar
-  player_bar_ = new PlayerBar(this, controller_->GetModel());
+  player_bar_ = new PlayerBar(this, controller_->GetModel(),
+                              QPoint(0, height() - height_of_bar_),
+                              QSize(width(), height_of_bar_));
 
   // Info Label
   info_label_ = new QLabel(this);
@@ -89,14 +92,13 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
   game_view_->resize(resize_event->size());
-  int height_of_bar = static_cast<int>(0.15f * static_cast<float>(height()));
-  player_bar_->resize(width(), height_of_bar);
-  player_bar_->move(0, height() - height_of_bar);
+  player_bar_->resize(width(), height_of_bar_);
+  player_bar_->move(0, height() - height_of_bar_);
   stats_table_->resize(this->width() * 0.9f,
-                       (this->height() - height_of_bar) * 0.9f);
+                       (this->height() - height_of_bar_) * 0.9f);
   stats_table_->move(
       (this->width() - stats_table_->width()) / 2.f,
-      (this->height() - stats_table_->height() - height_of_bar) / 2.f);
+      (this->height() - stats_table_->height() - height_of_bar_) / 2.f);
 }
 
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {

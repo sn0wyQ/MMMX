@@ -5,6 +5,8 @@
 #include <utility>
 #include <vector>
 
+#include <QPainterPath>
+
 #include "GameObject/MovableObject/movable_object.h"
 
 class Entity : public MovableObject {
@@ -16,6 +18,7 @@ class Entity : public MovableObject {
   void TickHealthPoints(int delta_time);
 
   void DrawHealthBar(Painter* painter) override;
+  void DrawLevel(Painter* painter) override;
 
   float GetFovRadius() const;
   void SetFovRadius(float fov_radius);

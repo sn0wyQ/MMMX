@@ -47,6 +47,7 @@ class ClientView : public AbstractClientView {
   PlayerBar* player_bar_;
   StatsTable* stats_table_;
   QLabel* info_label_;
+  int height_of_bar_{};
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_

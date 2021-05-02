@@ -28,8 +28,8 @@ GameObject::GameObject(const GameObject& other) {
   SetRotation(other.GetRotation());
   SetY(other.GetY());
   SetX(other.GetX());
-  is_in_fov_ = other.is_in_fov_;
   updated_time_ = other.updated_time_;
+  is_need_to_delete_ = other.is_need_to_delete_;
 }
 
 void GameObject::SetParams(std::vector<QVariant> params) {
@@ -173,21 +173,12 @@ void GameObject::SetIsNeedToDelete(bool is_need_to_delete) {
   is_need_to_delete_ = is_need_to_delete;
 }
 
-bool GameObject::IsInFov() const {
-  return is_in_fov_;
-}
-
-void GameObject::SetIsInFov(bool is_in_fov) {
-  is_in_fov_ = is_in_fov;
-}
-
 GameObjectType GameObject::GetType() const {
   return GameObjectType::kGameObject;
 }
 
 bool GameObject::IsFilteredByFov() const {
-  // Temporarily. For testing FOV
-  return true;
+  return false;
 }
 
 std::shared_ptr<Animation> GameObject::GetAnimation() {

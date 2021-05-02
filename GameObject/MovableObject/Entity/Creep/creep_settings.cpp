@@ -51,9 +51,13 @@ std::vector<QVariant>
   params.emplace_back(this->CalculateWidth(creep_level));
   params.emplace_back(this->CalculateHeight(creep_level));
   params.emplace_back(json_object_.value("rigid_body_type").toInt());
+  params.emplace_back(this->CalculateWidth(creep_level));
+  params.emplace_back(this->CalculateHeight(creep_level));
+  params.emplace_back(static_cast<int>(AnimationType::kNone));
   // MovableObject params
   params.emplace_back(0);  // velocity_x
   params.emplace_back(0);  // velocity_y
+  params.emplace_back(0.f);  // speed multiplier
   // Entity params
   params.emplace_back(0.f);  // FOV for creep is always 0
   params.emplace_back(this->CalculateMaxHp(creep_level));
