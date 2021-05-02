@@ -59,7 +59,6 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
 
 void ClientController::EndGameEvent(const Event& event) {
   game_state_ = GameState::kGameFinished;
-  view_->Update();
 }
 
 void ClientController::SetPlayerIdToClient(const Event& event) {
@@ -115,6 +114,18 @@ void ClientController::UpdateInterpolationInfo() {
   auto time_to_interpolate = GetCurrentServerTime()
       - Constants::kInterpolationMSecs;
 
+  // Интерполируем все, о чем есть информация
+  for (const auto&[game_object_id, game_object_to_be_interpolated]
+    : model_->GetInterpolatorMap()) {
+    if (!model_->IsGameObjectIdTaken(game_object_id)) {
+      model_->AttachGameObject(game_object_id,
+                               game_object_to_be_interpolated->Clone());
+    }
+    auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+    Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
+                                    time_to_interpolate);
+  }
+
   while (!time_to_delete_.empty()) {
     GameObjectId game_object_id = time_to_delete_.front().first;
     int64_t time = time_to_delete_.front().second;
@@ -126,18 +137,6 @@ void ClientController::UpdateInterpolationInfo() {
       model_->DeleteGameObject(game_object_id);
       model_->RemoveFromInterpolator(game_object_id);
     }
-  }
-
-  // Интерполируем все, о чем есть информация
-  for (const auto&[game_object_id, game_object_to_be_interpolated]
-    : model_->GetInterpolatorMap()) {
-    if (!model_->IsGameObjectIdTaken(game_object_id)) {
-      model_->AttachGameObject(game_object_id,
-                               game_object_to_be_interpolated->Clone());
-    }
-    auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-    Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
-                                    time_to_interpolate);
   }
 }
 
@@ -242,7 +241,6 @@ void ClientController::UpdateVarsEvent(const Event& event) {
   server_var_ = event.GetArg<int>(0);
   room_var_ = event.GetArg<int>(1);
   client_var_ = this->GetVar();
-  view_->Update();
 }
 
 QVector2D ClientController::GetKeyForce() const {
@@ -405,7 +403,6 @@ void ClientController::PlayerDisconnectedEvent(const Event& event) {
   model_->DeletePlayerStats(player_id);
   model_->RemoveFromInterpolator(player_id);
   game_state_ = GameState::kGameNotStarted;
-  view_->Update();
 }
 
 void ClientController::UpdatePlayersStatsEvent(const Event& event) {
