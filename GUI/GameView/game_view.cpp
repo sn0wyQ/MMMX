@@ -11,12 +11,18 @@ std::shared_ptr<Converter> GameView::GetConverter() {
 
 void GameView::paintEvent(QPaintEvent* paint_event) {
   this->UpdateLocalCenter();
-  Painter painter(this, converter_, local_center_);
+  auto player_bar_offset =
+      this->GetConverter()->ScaleFromScreenToGame(
+          Constants::kPlayerBarHeightRatio * this->height() / 2.f);
+  Painter painter(this,
+                  converter_,
+                  local_center_ + QPointF(0, player_bar_offset));
+
   painter.setRenderHints(
       QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
   std::vector<std::shared_ptr<GameObject>> not_filtered_objects
-    = model_->GetNotFilteredByFovObjects();
+      = model_->GetNotFilteredByFovObjects();
   for (const auto& object : not_filtered_objects) {
     if (!object->IsMovable()) {
       object->Draw(&painter);
@@ -33,7 +39,8 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
     return;
   }
 
-  converter_->UpdateCoefficient(model_->GetLocalPlayer()->GetFovRadius());
+  converter_->UpdateCoefficient(
+      model_->GetLocalPlayer()->GetFovRadius() + player_bar_offset);
 
   // Temporary FOV show
   const auto& local_player = model_->GetLocalPlayer();
