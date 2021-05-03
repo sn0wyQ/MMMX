@@ -76,7 +76,10 @@ void GameView::resizeEvent(QResizeEvent* resize_event) {
 
 QPointF GameView::GetPlayerToCenterOffset() const {
   if (model_->IsLocalPlayerSet()) {
-    return (local_center_ - model_->GetLocalPlayer()->GetPosition());
+    auto player_bar_offset = converter_->ScaleFromScreenToGame(
+            Constants::kPlayerBarHeightRatio * this->height() / 2.f);
+    return (local_center_ - model_->GetLocalPlayer()->GetPosition() +
+        QPointF(0, player_bar_offset));
   }
   return QPoint();
 }

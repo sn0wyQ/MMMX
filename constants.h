@@ -79,7 +79,7 @@ constexpr float kDefaultPlayerRadius = 1.f;
 constexpr float kDefaultHealthRegenSpeed = 0.002f;
 
 // View
-constexpr float kCameraStiffness = 0.003f;
+constexpr float kCameraStiffness = 0.008f;
 constexpr float kCameraFrictionForce = 0.15f;
 
 // Bullet collision
