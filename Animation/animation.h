@@ -62,6 +62,7 @@ class Animation {
   static void SetNumberOfFramesToPreloadInActiveSequence(int number_of_frames);
   static void SetNumberOfFramesToPreloadInInactiveSequences(
       int number_of_frames);
+  
  private:
   void ParseAnimationDescription(const QString& description_path);
 
