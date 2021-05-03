@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
+#include <string>
+
 #include <QCryptographicHash>
 #include <QString>
 #include <QMetaEnum>
