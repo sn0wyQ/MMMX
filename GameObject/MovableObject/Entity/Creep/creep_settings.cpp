@@ -119,7 +119,12 @@ float CreepSettings::CalculateSpeed(int level) const {
 }
 
 float CreepSettings::CalculateFov(int level) const {
-  return 20.f;
+  int random = QRandomGenerator::global()->bounded(1, 10);
+  if (random <= 3) {
+    return 0.1f;
+  } else {
+    return 20.f;
+  }
 }
 
 float CreepSettings::CalculateDamage(int level) const {

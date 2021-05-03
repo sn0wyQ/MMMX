@@ -7,6 +7,7 @@
 
 #include <QJsonObject>
 #include <QSizeF>
+#include <QRandomGenerator>
 
 #include "Animation/animation_enums.h"
 #include "constants.h"
