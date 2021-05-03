@@ -118,8 +118,13 @@ void ClientController::UpdateInterpolationInfo() {
   for (const auto&[game_object_id, game_object_to_be_interpolated]
     : model_->GetInterpolatorMap()) {
     if (!model_->IsGameObjectIdTaken(game_object_id)) {
+      if (game_object_to_be_interpolated->GetCreatedTime() >=
+        time_to_interpolate) {
+        continue;
+      }
       model_->AttachGameObject(game_object_id,
                                game_object_to_be_interpolated->Clone());
+      continue;
     }
     auto local_player = model_->GetLocalPlayer();
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
@@ -364,7 +369,7 @@ void ClientController::ShootHolding() {
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
     model_->AddLocalBullets(timestamp);
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
-                               static_cast<qint64>(GetCurrentServerTime()),
+                               static_cast<qint64>(timestamp),
                                local_player->GetId()));
   }
 }

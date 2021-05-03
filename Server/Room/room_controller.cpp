@@ -74,7 +74,7 @@ void RoomController::OnTick(int delta_time) {
 
 void RoomController::RecalculateModel(const ModelData& model_data) {
   this->ProcessBulletsHits(model_data);
-  this->TickCreepsIntelligence(model_data);
+  // this->TickCreepsIntelligence(model_data);
   this->TickObjectsInModel(model_data);
   this->DeleteReadyToBeDeletedObjects(model_data);
 }
@@ -122,10 +122,6 @@ void RoomController::TickCreepsIntelligence(
     if (closer_player != nullptr) {
       force = QVector2D(closer_player->GetX() - creep->GetX(),
                          closer_player->GetY() - creep->GetY());
-      // if (force.length() <=
-      //   creep->GetBoundingCircleRadius() + closer_player->GetBoundingCircleRadius()) {
-      //   force = QVector2D();
-      // }
       force.normalize();
     }
     ObjectCollision::MoveWithSlidingCollision(
@@ -544,7 +540,6 @@ void RoomController::SendControlsEvent(const Event& event) {
   auto rotation = event.GetArg<float>(5);
   // А теперь с учетом этого проталкиваем его пересечение на будущее
   // учитывая velocity и rotation
-  // bool need_force = false;
   while (model_id != static_cast<int>(models_cache_.size())) {
     auto cur_model = models_cache_[model_id].model;
     if (!cur_model->IsGameObjectIdTaken(player_id)) {
@@ -554,21 +549,11 @@ void RoomController::SendControlsEvent(const Event& event) {
         = cur_model->GetPlayerByPlayerId(player_id);
     player_in_model->SetPosition(position_to_set);
     player_in_model->SetVelocity(velocity);
-    // ObjectCollision::MoveWithSlidingCollision(
-    //     player_in_model, model_->GetAllGameObjects(), velocity,
-    //     models_cache_[model_id].delta_time);
-    // if (velocity != player_in_model->GetVelocity()) {
-    //   need_force = true;
-    // }
     player_in_model->SetRotation(rotation);
     player_in_model->MovableObject::OnTick(models_cache_[model_id].delta_time);
     position_to_set = player_in_model->GetPosition();
     model_id++;
   }
-  // if (need_force) {
-  //   this->AddEventToSendToSinglePlayer(GetEventOfGameObjectData(player_id),
-  //                                      player_id);
-  // }
 }
 
 void RoomController::SendPlayerShootingEvent(const Event& event) {

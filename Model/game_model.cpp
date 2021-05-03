@@ -172,7 +172,7 @@ void GameModel::AttachGameObject(
     GameObjectId game_object_id,
     const std::shared_ptr<GameObject>& game_object) {
   game_objects_[game_object_id] = game_object;
-  qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Added new GameObject:" << game_object_id
      << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
          .valueToKey(static_cast<int>(game_object->GetType())));
 }

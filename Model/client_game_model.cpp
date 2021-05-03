@@ -25,11 +25,16 @@ void ClientGameModel::AddInterpolateInfo(GameObjectId game_object_id,
                                          int64_t server_time) {
   std::shared_ptr<GameObject> game_object;
   if (this->IsGameObjectIdTaken(game_object_id)) {
-    game_object =
-        this->GetGameObjectByGameObjectId(game_object_id)->Clone();
+    game_object = this->GetGameObjectByGameObjectId(game_object_id)->Clone();
   } else {
-    game_object =
-        this->GetNewEmptyGameObject(game_object_id, game_object_type);
+    if (this->IsGameObjectInInterpolation(game_object_id)) {
+      game_object =
+          this->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id)->Clone();
+    } else {
+      game_object =
+          this->GetNewEmptyGameObject(game_object_id, game_object_type);
+      game_object->SetCreatedTime(server_time);
+    }
   }
   game_object->SetUpdatedTime(server_time);
   interpolator_[game_object_id] = game_object;

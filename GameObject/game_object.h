@@ -96,6 +96,9 @@ class GameObject {
 
   float GetBoundingCircleRadius() const;
 
+  void SetCreatedTime(int64_t created_time);
+  int64_t GetCreatedTime() const;
+
  private:
   // Holds animations for all GameObjects
   // Prevents same SharedFrame being loaded into RAM more than once at a time
@@ -114,6 +117,7 @@ class GameObject {
   std::shared_ptr<RigidBody> rigid_body_;
   bool is_need_to_delete_{false};
   int64_t updated_time_{};
+  int64_t created_time_{};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_
