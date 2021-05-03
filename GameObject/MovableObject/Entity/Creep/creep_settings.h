@@ -32,11 +32,14 @@ class CreepSettings {
     return json_object_.value(setting_name).toVariant().value<T>();
   }
 
+  float CalculateFov(int level) const;
+  float CalculateDamage(int level) const;
+
  private:
   CreepSettings();
   static CreepSettings* instance_;
-  QJsonObject json_object_;
 
+  QJsonObject json_object_;
   float CalculateExpIncrement(int level) const;
   float CalculateMaxHp(int level) const;
   float CalculateRegenRate(int level) const;

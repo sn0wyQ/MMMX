@@ -74,7 +74,7 @@ void RoomController::OnTick(int delta_time) {
 
 void RoomController::RecalculateModel(const ModelData& model_data) {
   this->ProcessBulletsHits(model_data);
-  // this->TickCreepsIntelligence(model_data);
+  this->TickCreepsIntelligence(model_data);
   this->TickObjectsInModel(model_data);
   this->DeleteReadyToBeDeletedObjects(model_data);
 }
@@ -119,13 +119,60 @@ void RoomController::TickCreepsIntelligence(
     }
 
     QVector2D force;
-    if (closer_player != nullptr) {
+    float distance_from_spawn =
+        Math::DistanceBetweenPoints(
+            creep->GetPosition(),
+            QPointF(creep->GetSpawnX(), creep->GetSpawnY()));
+    if (creep->IsGoingToSpawn()) {
+      if (distance_from_spawn < creep->GetBoundingCircleRadius()) {
+        creep->SetIsGoingToSpawn(false);
+      }
+    } else if (distance_from_spawn > creep->GetFovRadius()) {
+        creep->SetIsGoingToSpawn(true);
+    }
+    if (creep->IsGoingToSpawn()) {
+      force = QVector2D(creep->GetSpawnX() - creep->GetX(),
+                        creep->GetSpawnY() - creep->GetY());
+    }
+    else if (closer_player != nullptr) {
       force = QVector2D(closer_player->GetX() - creep->GetX(),
                          closer_player->GetY() - creep->GetY());
-      force.normalize();
+    } else {
+      force = QVector2D();
     }
+    force.normalize();
     ObjectCollision::MoveWithSlidingCollision(
         creep, model_->GetAllGameObjects(), force, model_data.delta_time);
+
+    if (closer_player != nullptr) {
+      auto timestamp = GetCurrentServerTime();
+      if (creep->IsPossibleToAttack(timestamp)) {
+        float distance = Math::DistanceBetweenPoints(
+            creep->GetPosition(), closer_player->GetPosition());
+        if (distance - closer_player->GetBoundingCircleRadius()
+            - creep->GetBoundingCircleRadius() < creep->GetAttackDistance()) {
+          float cur_entity_hp = closer_player->GetHealthPoints();
+          float hp_to_set = std::max(0.f,
+                                     cur_entity_hp - creep->GetDamage());
+          if (hp_to_set == 0.f) {
+            QPointF point_to_spawn = model_->GetPointToSpawn(
+                closer_player->GetBoundingCircleRadius(), true);
+            closer_player->Revive(point_to_spawn);
+            model_data.model->GetPlayerStatsByPlayerId(
+                closer_player->GetId())->GetMutableDeaths()++;
+            this->AddEventToSendToSinglePlayer(
+                Event(EventType::kLocalPlayerDied, point_to_spawn),
+                closer_player->GetId());
+          } else {
+            closer_player->SetHealthPoints(hp_to_set);
+            this->AddEventToSendToSinglePlayer(
+                Event(EventType::kUpdateLocalPlayerHealthPoints, hp_to_set),
+                closer_player->GetId());
+          }
+          creep->SetLastAttackedTime(timestamp);
+        }
+      }
+    }
   }
 }
 
@@ -462,7 +509,20 @@ void RoomController::AddCreep(float x, float y) {
   float distance = QLineF(QPointF(), QPointF(x, y)).length();
   auto params = CreepSettings::GetInstance().GetCreepParams(x, y, 0.f,
                                                             distance);
-  model_->AddGameObject(GameObjectType::kCreep, params);
+  auto game_object_id =
+      model_->AddGameObject(GameObjectType::kCreep, params);
+  auto creep = std::dynamic_pointer_cast<Creep>(
+      model_->GetGameObjectByGameObjectId(game_object_id));
+  creep->SetSpawnX(x);
+  creep->SetSpawnY(y);
+  int creep_level = creep->GetLevel();
+  creep->SetFovRadius(
+      CreepSettings::GetInstance().CalculateFov(creep_level));
+  creep->SetAttackDistance(
+      CreepSettings::GetInstance().GetCreepSetting<float>("attack_distance"));
+  creep->SetDamage(CreepSettings::GetInstance().CalculateDamage(creep_level));
+  creep->SetReloadingTime(
+      CreepSettings::GetInstance().GetCreepSetting<float>("reloading_time"));
 }
 
 std::vector<GameObjectId> RoomController::AddBullets(
