@@ -60,13 +60,13 @@ class Animation {
   AnimationType GetType() const;
 
   static void SetNumberOfFramesToPreloadInActiveSequence(int number_of_frames);
-  static void SetNumberOfFramesToPreloadInOtherSequences(int number_of_frames);
-
+  static void SetNumberOfFramesToPreloadInInactiveSequences(
+      int number_of_frames);
  private:
   void ParseAnimationDescription(const QString& description_path);
 
   static int frames_to_preload_in_active_sequence_;
-  static int frames_to_preload_in_other_sequences_;
+  static int frames_to_preload_in_inactive_sequences_;
 
   QString base_path_;
 

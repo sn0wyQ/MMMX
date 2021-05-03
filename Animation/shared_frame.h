@@ -28,7 +28,7 @@ const std::unordered_map<AnimationState, QString> kAnimationStateStrings {
 
 class SharedFrame {
  public:
-  explicit SharedFrame(const QString& path,
+  explicit SharedFrame(const QString& path_prefix,
                        AnimationState animation_state,
                        int frame_index,
                        const QSize& predicted_size = QSize());

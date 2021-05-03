@@ -17,12 +17,12 @@ QString CalcLeadingZeros(int x) {
   }
 }
 
-SharedFrame::SharedFrame(const QString& path,
+SharedFrame::SharedFrame(const QString& path_prefix,
                          AnimationState animation_state,
                          int frame_index,
                          const QSize& predicted_size)
     : frame_index_(frame_index) {
-  path_ = path + kAnimationStateStrings.at(animation_state)
+  path_ = path_prefix + kAnimationStateStrings.at(animation_state)
       + CalcLeadingZeros(frame_index_) + QString::number(frame_index_)
       + ".svg";
 

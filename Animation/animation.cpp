@@ -1,7 +1,7 @@
 #include "animation.h"
 
 int Animation::frames_to_preload_in_active_sequence_ = 5;
-int Animation::frames_to_preload_in_other_sequences_ = 2;
+int Animation::frames_to_preload_in_inactive_sequences_ = 2;
 
 Animation::Animation(AnimationType animation_type)
     : animation_type_(animation_type) {
@@ -17,12 +17,16 @@ Animation::Animation(AnimationType animation_type)
     while (animation_state < AnimationState::SIZE) {
       std::queue<SharedFrame> first_frames_of_state;
       first_frames_of_state.emplace(base_path_, animation_state, 0);
-      if (first_frames_of_state.front().IsExists()) {
-        if (animation_state == animation_state_) {
-          first_frames_of_state.emplace(base_path_, animation_state, 1);
-        }
-        animation_frames_.insert({animation_state, first_frames_of_state});
+      int current_frame_index = 0;
+      while ((first_frames_of_state.empty()
+              || first_frames_of_state.back().IsExists())
+             && current_frame_index < (animation_state == AnimationState::kIdle
+                               ? frames_to_preload_in_active_sequence_
+                                 : frames_to_preload_in_inactive_sequences_)) {
+          first_frames_of_state.emplace(
+              base_path_, animation_state, current_frame_index++);
       }
+      animation_frames_.insert({animation_state, first_frames_of_state});
       ++animation_state_index;
       animation_state = static_cast<AnimationState>(animation_state_index);
     }
@@ -98,10 +102,18 @@ void Animation::Update(int delta_time) {
   if (animation_type_ == AnimationType::kNone) {
     return;
   }
+
+  InstructionList&
+      current_instruction_list = animation_instructions_.at(animation_state_);
+
+  if (current_instruction_list.size() == 1
+      && current_instruction_list.at(0).type
+         == AnimationInstructionType::kLoop) {
+    return;
+  }
+
   current_animation_time_ += delta_time;
   while (current_animation_time_ >= go_to_next_instruction_time_) {
-    InstructionList&
-        current_instruction_list = animation_instructions_.at(animation_state_);
     switch (current_instruction_list.at(animation_instruction_index_).type) {
       case AnimationInstructionType::kEnd: {
         SetAnimationState(AnimationState::kIdle, true);
@@ -220,7 +232,7 @@ void Animation::SetAnimationState(AnimationState animation_state,
 
     int current_frame_index = 1;
     while (current_sequence.back().IsExists()
-           && current_frame_index < frames_to_preload_in_other_sequences_) {
+           && current_frame_index < frames_to_preload_in_inactive_sequences_) {
       current_sequence.emplace(base_path_,
                                animation_state_,
                                current_frame_index++,
@@ -264,21 +276,21 @@ AnimationType Animation::GetType() const {
 
 void Animation::SetNumberOfFramesToPreloadInActiveSequence(
     int number_of_frames) {
-  assert(number_of_frames > 0
-         && "[ANIMATION] Can not disable preloading current frame!");
+  qCritical() << "[ANIMATION] Can not disable preloading current frame!";
   frames_to_preload_in_active_sequence_ = number_of_frames;
   if (frames_to_preload_in_active_sequence_
-      < frames_to_preload_in_other_sequences_) {
+      < frames_to_preload_in_inactive_sequences_) {
     qWarning() << "[ANIMATION] It is highly recommended for"
                   "number of frames in active sequence to be NOT less than"
                   "number of frames in other sequences!";
   }
 }
-void Animation::SetNumberOfFramesToPreloadInOtherSequences(
+
+void Animation::SetNumberOfFramesToPreloadInInactiveSequences(
     int number_of_frames) {
-  frames_to_preload_in_other_sequences_ = number_of_frames;
+  frames_to_preload_in_inactive_sequences_ = number_of_frames;
   if (frames_to_preload_in_active_sequence_
-      < frames_to_preload_in_other_sequences_) {
+      < frames_to_preload_in_inactive_sequences_) {
     qWarning() << "[ANIMATION] It is highly recommended for"
                   "number of frames in active sequence to be NOT less than"
                   "number of frames in other sequences!";
