@@ -152,6 +152,7 @@ class ClientController : public BaseController {
       {Direction::kDown, false},
       {Direction::kLeft, false}
   };
+  QPointF last_mouse_position_;
   QTimer shoot_check_timer;
   bool is_holding_{false};
 

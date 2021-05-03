@@ -10,10 +10,8 @@ std::shared_ptr<Converter> GameView::GetConverter() {
 }
 
 void GameView::paintEvent(QPaintEvent* paint_event) {
-  Painter painter(this,
-                  converter_,
-                  model_->IsLocalPlayerSet()
-                    ? model_->GetLocalPlayer()->GetPosition() : QPointF());
+  this->UpdateLocalCenter();
+  Painter painter(this, converter_, local_center_);
   painter.setRenderHints(
       QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
@@ -67,4 +65,38 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
 
 void GameView::resizeEvent(QResizeEvent* resize_event) {
   converter_->UpdateCoefficient();
+}
+
+QPointF GameView::GetPlayerToCenterOffset() const {
+  if (model_->IsLocalPlayerSet()) {
+    return (local_center_ - model_->GetLocalPlayer()->GetPosition());
+  }
+  return QPoint();
+}
+
+void GameView::UpdateLocalCenter() {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto player_pos = model_->GetLocalPlayer()->GetPosition();
+  auto time = QDateTime::currentMSecsSinceEpoch();
+  if (last_paint_event_time_ == -1) {
+    local_center_ = player_pos;
+    last_paint_event_time_ = time;
+  }
+
+  // Lets divide dt by 10 so the constants wont be too small
+  float delta_time = static_cast<float>(time - last_paint_event_time_) / 10.f;
+  last_paint_event_time_ = time;
+  QVector2D camera_dot(local_center_);
+  QVector2D player_dot(player_pos);
+
+  // By the Hooke's Law: F = -k * x where x = |A - B| - l_0.
+  // Owr "spring's" length is 0, so l_0 = 0
+  QVector2D f = -Constants::kCameraStiffness * (camera_dot - player_dot);
+  // v = F*dt/m (let m = 1)
+  camera_velocity_ += f * delta_time;
+  camera_velocity_ -=
+      camera_velocity_ * Constants::kCameraFrictionForce * delta_time;
+  local_center_ += (camera_velocity_ * delta_time).toPointF();
 }

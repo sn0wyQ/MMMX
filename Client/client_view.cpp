@@ -104,3 +104,7 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
   controller_->MouseReleaseEvent(mouse_event);
 }
+
+QPointF ClientView::GetPlayerToCenterOffset() const {
+  return game_view_->GetPlayerToCenterOffset();
+}

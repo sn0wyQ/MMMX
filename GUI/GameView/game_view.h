@@ -24,9 +24,17 @@ class GameView : public QWidget {
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
+  QPointF GetPlayerToCenterOffset() const;
+
  private:
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<Converter> converter_;
+
+  void UpdateLocalCenter();
+
+  QPointF local_center_;
+  qint64 last_paint_event_time_ = -1;
+  QVector2D camera_velocity_;
 };
 
 #endif  // GUI_GAMEVIEW_GAME_VIEW_H_
