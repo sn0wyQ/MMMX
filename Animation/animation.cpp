@@ -1,5 +1,8 @@
 #include "animation.h"
 
+int Animation::frames_to_preload_in_active_sequence_ = 5;
+int Animation::frames_to_preload_in_inactive_sequences_ = 2;
+
 Animation::Animation(AnimationType animation_type)
     : animation_type_(animation_type) {
   if (animation_type == AnimationType::kNone) {
@@ -14,12 +17,16 @@ Animation::Animation(AnimationType animation_type)
     while (animation_state < AnimationState::SIZE) {
       std::queue<SharedFrame> first_frames_of_state;
       first_frames_of_state.emplace(base_path_, animation_state, 0);
-      if (first_frames_of_state.front().IsExists()) {
-        if (animation_state == animation_state_) {
-          first_frames_of_state.emplace(base_path_, animation_state, 1);
-        }
-        animation_frames_.insert({animation_state, first_frames_of_state});
+      int current_frame_index = 0;
+      while ((first_frames_of_state.empty()
+              || first_frames_of_state.back().IsExists())
+             && current_frame_index < (animation_state == AnimationState::kIdle
+                               ? frames_to_preload_in_active_sequence_
+                                 : frames_to_preload_in_inactive_sequences_)) {
+          first_frames_of_state.emplace(
+              base_path_, animation_state, current_frame_index++);
       }
+      animation_frames_.insert({animation_state, first_frames_of_state});
       ++animation_state_index;
       animation_state = static_cast<AnimationState>(animation_state_index);
     }
@@ -42,9 +49,9 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
       QStringList
           parts = current_line.split(QRegExp("[\n\r\t ]"), Qt::SkipEmptyParts);
 
-      if (parts.empty() || parts[0].startsWith('#')) {
+      if (parts.empty() || parts.at(0).startsWith('#')) {
         // Just do nothing - empty line or line with comment
-      } else if (auto label_iter = kAnimationStateLabels.find(parts[0]);
+      } else if (auto label_iter = kAnimationStateLabels.find(parts.at(0));
                  label_iter != kAnimationStateLabels.end()) {
         animation_state = label_iter->second;
       } else {
@@ -60,7 +67,8 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
           animation_instructions_.insert({animation_state, InstructionList()});
         }
 
-        auto instruction_iter = kAnimationCommandsToInstructions.find(parts[0]);
+        auto instruction_iter = kAnimationCommandsToInstructions.find(
+                                                                parts.at(0));
         if (instruction_iter != kAnimationCommandsToInstructions.end()) {
           animation_instructions_.at(animation_state)
               .push_back({instruction_iter->second, {}});
@@ -77,9 +85,10 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
 
         // If we met '#' that means that comment started
         for (int index = 1;
-             index < parts.size() && !parts[index].startsWith('#'); ++index) {
+             index < parts.size() && !parts.at(index).startsWith('#');
+             ++index) {
           animation_instructions_.at(animation_state)
-              .back().args.push_back(parts[index].toInt());
+              .back().args.push_back(parts.at(index).toInt());
         }
       }
       ++line_index;
@@ -94,10 +103,17 @@ void Animation::Update(int delta_time) {
     return;
   }
 
+  InstructionList&
+      current_instruction_list = animation_instructions_.at(animation_state_);
+
+  if (current_instruction_list.size() == 1
+      && current_instruction_list.at(0).type
+         == AnimationInstructionType::kLoop) {
+    return;
+  }
+
   current_animation_time_ += delta_time;
   while (current_animation_time_ >= go_to_next_instruction_time_) {
-    InstructionList&
-        current_instruction_list = animation_instructions_.at(animation_state_);
     switch (current_instruction_list.at(animation_instruction_index_).type) {
       case AnimationInstructionType::kEnd: {
         SetAnimationState(AnimationState::kIdle, true);
@@ -118,14 +134,19 @@ void Animation::Update(int delta_time) {
         //  would return more, than one)
         if (frames.size() > 1) {
           frames.pop();
-          SharedFrame next_frame(base_path_,
-                                 animation_state_,
-                                 frames.front().GetFrameIndex() + 1);
-          if (next_frame.IsExists()) {
-            frames.push(next_frame);
-          } else {
-            // if frames.front() frame is last in sequence
-            frames.emplace(base_path_, animation_state_, 0);
+          while (static_cast<int>(frames.size())
+                 < frames_to_preload_in_active_sequence_) {
+            SharedFrame next_frame(base_path_,
+                                   animation_state_,
+                                   frames.back().GetFrameIndex() + 1,
+                                   frames.back().GetPixmapSize());
+            if (next_frame.IsExists()) {
+              frames.push(next_frame);
+            } else {
+              // if frames.front() frame is last in sequence
+              frames.emplace(base_path_, animation_state_, 0,
+                             frames.back().GetPixmapSize());
+            }
           }
           if (!frames.front().IsExists()) {
             throw std::runtime_error(
@@ -192,43 +213,86 @@ void Animation::Update(int delta_time) {
 
 void Animation::SetAnimationState(AnimationState animation_state,
                                   bool restart) {
-  if (!restart && animation_state_ == animation_state) {
+  std::queue<SharedFrame>&
+      current_sequence = animation_frames_.at(animation_state_);
+
+  if (animation_state_ == animation_state
+      && (!restart || (!current_sequence.empty()
+                       && current_sequence.front().GetFrameIndex() == 0))) {
     return;
   }
 
   // Clearing current animation state's frames queue
   // and adding there first frame of sequence
-  animation_frames_.at(animation_state_) = {};
-  animation_frames_.at(animation_state_).emplace(base_path_,
-                                                 animation_state_,
-                                                 0);
+  QSize saved_size;
+  if (!current_sequence.empty()) {
+    saved_size = current_sequence.front().GetPixmapSize();
+    current_sequence = {};
+    current_sequence.emplace(base_path_, animation_state_, 0, saved_size);
+
+    int current_frame_index = 1;
+    while (current_sequence.back().IsExists()
+           && current_frame_index < frames_to_preload_in_inactive_sequences_) {
+      current_sequence.emplace(base_path_,
+                               animation_state_,
+                               current_frame_index++,
+                               saved_size);
+    }
+  }
 
   animation_state_ = animation_state;
+  current_sequence = animation_frames_.at(animation_state_);
   animation_instruction_index_ = 0;
   go_to_next_instruction_time_ = current_animation_time_;
 
   // We guarantee that we always already have 0th frame
-  // (if it exists in storage) and we also want to preload next frame
-  animation_frames_.at(animation_state_).emplace(base_path_,
-                                                 animation_state_,
-                                                 1);
+  // (if it exists in storage) and we also want to preload more frames
+  int current_frame_index = 1;
+  while (current_sequence.back().IsExists()
+         && current_frame_index < frames_to_preload_in_active_sequence_) {
+    current_sequence.emplace(base_path_,
+                             animation_state_,
+                             current_frame_index++,
+                             saved_size);
+  }
 }
 
-void Animation::RenderFrame(Painter* painter, float w, float h) const {
+void Animation::RenderFrame(Painter* painter, float w, float h) {
   if (animation_frames_.at(animation_state_).empty()) {
     return;
   }
 
-  const SharedFrame&
-      frame_to_render = animation_frames_.at(animation_state_).front();
-
-  if (!frame_to_render.IsExists()) {
+  SharedFrame*
+      frame_to_render = &animation_frames_.at(animation_state_).front();
+  if (!frame_to_render->IsExists()) {
     return;
   }
-
-  painter->RenderSvg(QPointF(), w, h, frame_to_render.GetSvgRenderer());
+  painter->DrawSharedFrame(QPointF(), w, h, frame_to_render);
 }
 
 AnimationType Animation::GetType() const {
   return animation_type_;
+}
+
+void Animation::SetNumberOfFramesToPreloadInActiveSequence(
+    int number_of_frames) {
+  qCritical() << "[ANIMATION] Can not disable preloading current frame!";
+  frames_to_preload_in_active_sequence_ = number_of_frames;
+  if (frames_to_preload_in_active_sequence_
+      < frames_to_preload_in_inactive_sequences_) {
+    qWarning() << "[ANIMATION] It is highly recommended for"
+                  "number of frames in active sequence to be NOT less than"
+                  "number of frames in other sequences!";
+  }
+}
+
+void Animation::SetNumberOfFramesToPreloadInInactiveSequences(
+    int number_of_frames) {
+  frames_to_preload_in_inactive_sequences_ = number_of_frames;
+  if (frames_to_preload_in_active_sequence_
+      < frames_to_preload_in_inactive_sequences_) {
+    qWarning() << "[ANIMATION] It is highly recommended for"
+                  "number of frames in active sequence to be NOT less than"
+                  "number of frames in other sequences!";
+  }
 }
