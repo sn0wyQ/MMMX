@@ -8,6 +8,7 @@
 #include <QLineF>
 
 #include "creep_settings.h"
+#include "GameObject/RigidBody/rigid_body.h"
 
 CreepSettings* CreepSettings::instance_{nullptr};
 
@@ -50,7 +51,9 @@ std::vector<QVariant>
   params.emplace_back(rotation);
   params.emplace_back(this->CalculateWidth(creep_level));
   params.emplace_back(this->CalculateHeight(creep_level));
-  params.emplace_back(json_object_.value("rigid_body_type").toInt());
+  params.emplace_back(static_cast<int>(
+      Constants::GetEnumValueFromString<RigidBodyType>(
+          json_object_.value("rigid_body_type").toString())));
   params.emplace_back(this->CalculateWidth(creep_level));
   params.emplace_back(this->CalculateHeight(creep_level));
   params.emplace_back(static_cast<int>(AnimationType::kNone));

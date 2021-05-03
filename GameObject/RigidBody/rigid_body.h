@@ -5,10 +5,22 @@
 
 #include "Painter/painter.h"
 
+namespace RigidBodyTypeWrapper {
+
+Q_NAMESPACE
+
 enum class RigidBodyType {
   kCircle,
   kRectangle
 };
+
+Q_ENUM_NS(RigidBodyType)
+
+}  // namespace RigidBodyTypeWrapper
+
+using RigidBodyType = RigidBodyTypeWrapper::RigidBodyType;
+
+Q_DECLARE_METATYPE(RigidBodyType)
 
 class RigidBody {
  public:

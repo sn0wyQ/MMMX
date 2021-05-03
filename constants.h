@@ -3,6 +3,7 @@
 
 #include <QCryptographicHash>
 #include <QString>
+#include <QMetaEnum>
 #include <QUrl>
 
 // code_readability++;
@@ -104,6 +105,13 @@ constexpr float kBulletRange = 1.3f;
 constexpr float kBulletDamage = 1.1f;
 
 }  // namespace LevelingMultipliers
+
+template<class T>
+T GetEnumValueFromString(const QString& string) {
+  auto weapon_type_index =
+      QMetaEnum::fromType<T>().keyToValue(string.toStdString().c_str());
+  return static_cast<T>(weapon_type_index);
+}
 
 }  // namespace Constants
 
