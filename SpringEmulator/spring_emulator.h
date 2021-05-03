@@ -34,6 +34,12 @@ void SpringEmulator<T>::MakeStep(const T& new_value) {
   auto delta_time = static_cast<float>(time - last_time_updated_) / 10.f;
   last_time_updated_ = time;
 
+  if (delta_time > 5.f) {
+    qWarning() << "So big delta_time, cant make step";
+    value_ = new_value;
+    return;
+  }
+
   // By the Hooke's Law: F = -k * x where x = |A - B| - l_0.
   // Owr "spring's" length is 0, so l_0 = 0
   T f = -stiffness_ratio_ * (value_ - new_value);
