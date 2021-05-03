@@ -22,6 +22,7 @@ SharedFrame::SharedFrame(QString path,
   path += kAnimationStateStrings.at(animation_state)
       + CalcLeadingZeros(frame_index_) + QString::number(frame_index_) + ".svg";
 
+  qInfo() << path;
   if (!QFile::exists(path)) {
     return;
   } else {

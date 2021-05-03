@@ -128,8 +128,8 @@ void Entity::SetHealthRegenRate(float health_regen_rate) {
 }
 
 void Entity::OnTick(int delta_time) {
-  MovableObject::OnTick(delta_time);
   TickHealthPoints(delta_time);
+  MovableObject::OnTick(delta_time);
 }
 
 void Entity::TickHealthPoints(int delta_time) {

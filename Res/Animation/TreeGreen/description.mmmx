@@ -1,12 +1,6 @@
-# TreeYoungRichGreen
+# TreeGreen
 
 idle:
-	waitrand	8000	20000
-	playframes  400 16
+	wait_rand	8000	20000
+	play_frames  400 16
 loop
-
-move:
-end
-
-shoot:
-end

@@ -1,0 +1,16 @@
+# JoCost
+
+idle:
+loop
+
+move:
+	play_frames 39 16
+loop
+
+shoot_to_idle:
+	play_frames 29 16
+end
+
+shoot_to_move:
+	play_frames 29 16
+end

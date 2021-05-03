@@ -14,6 +14,7 @@ Animation::Animation(AnimationType animation_type)
     while (animation_state < AnimationState::SIZE) {
       std::queue<SharedFrame> first_frames_of_state;
       first_frames_of_state.emplace(base_path_, animation_state, 0);
+      qInfo() << animation_type << animation_state << first_frames_of_state.front().IsExists();
       if (first_frames_of_state.front().IsExists()) {
         if (animation_state == animation_state_) {
           first_frames_of_state.emplace(base_path_, animation_state, 1);
@@ -84,6 +85,11 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
       }
       ++line_index;
     }
+
+    if (animation_state != AnimationState::SIZE) {
+      throw std::runtime_error("[ANIMATION] Invalid animation instruction"
+                               "format - no end found");
+    }
   } else {
     qWarning() << "[ANIMATION] Error while opening " << description_path;
   }
@@ -94,10 +100,18 @@ void Animation::Update(int delta_time) {
     return;
   }
 
+  InstructionList&
+      current_instruction_list = animation_instructions_.at(animation_state_);
+
+  // If we have only one instruction we don't do update
+  if (current_instruction_list.size() == 1
+      && current_instruction_list.at(0).type
+         == AnimationInstructionType::kLoop) {
+    return;
+  }
+
   current_animation_time_ += delta_time;
   while (current_animation_time_ >= go_to_next_instruction_time_) {
-    InstructionList&
-        current_instruction_list = animation_instructions_.at(animation_state_);
     switch (current_instruction_list.at(animation_instruction_index_).type) {
       case AnimationInstructionType::kEnd: {
         SetAnimationState(AnimationState::kIdle, true);
@@ -215,6 +229,15 @@ void Animation::SetAnimationState(AnimationState animation_state,
 }
 
 void Animation::RenderFrame(Painter* painter, float w, float h) const {
+  if (animation_type_ == AnimationType::kJoCost) {
+    //qInfo() << animation_state_;
+    if (animation_frames_.at(animation_state_).empty()) {
+      qInfo() << animation_frames_.at(animation_state_).front().GetFrameIndex();
+    } else {
+      //qInfo() << "pzdc";
+    }
+  }
+
   if (animation_frames_.at(animation_state_).empty()) {
     return;
   }

@@ -85,6 +85,8 @@ class GameObject {
 
   std::shared_ptr<Animation> GetAnimation();
   void SetAnimation(AnimationType animation_type);
+  void SetAnimationState(AnimationState animation_state,
+                         bool restart = false);
   static AnimationsHolder& GetAnimationsHolder();
 
   virtual bool IsEntity() const;

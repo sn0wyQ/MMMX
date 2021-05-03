@@ -351,39 +351,28 @@ void RoomController::SendPlayersStatsToPlayers() {
 GameObjectId RoomController::AddPlayer() {
   QPointF point =
       model_->GetPointToSpawn(Constants::kDefaultPlayerRadius, true);
-  std::vector<QVariant>
-      params = {point.x(),
-                point.y(),
-                Constants::kDefaultPlayerRotation,
-                Constants::kDefaultPlayerRadius * 2,
-                Constants::kDefaultPlayerRadius * 2,
-                static_cast<int>(RigidBodyType::kCircle),
-                Constants::kDefaultPlayerRadius * 2,
-                Constants::kDefaultPlayerRadius * 2,
-                static_cast<int>(AnimationType::kNone),
-                0.f, 0.f, Constants::kDefaultSpeedMultiplier,
-                Constants::kDefaultEntityFov * 2.f,
-                Constants::kDefaultMaxHealthPoints,
-                Constants::kDefaultHealthRegenSpeed,
-                Constants::kDefaultMaxHealthPoints};
+
+  AnimationType animation_type = AnimationType::kNone;
+  WeaponType weapon_type = WeaponType::kAssaultRifle;
   // Temporary
   int players_type =
       this->GetPlayersCount() % static_cast<int>(WeaponType::SIZE);
   switch (players_type) {
     case 0: {
-      params.emplace_back(static_cast<int>(WeaponType::kAssaultRifle));
+      animation_type = AnimationType::kJoCost;
+      weapon_type = WeaponType::kAssaultRifle;
       break;
     }
     case 1: {
-      params.emplace_back(static_cast<int>(WeaponType::kCrossbow));
+      weapon_type = WeaponType::kCrossbow;
       break;
     }
     case 2: {
-      params.emplace_back(static_cast<int>(WeaponType::kMachineGun));
+      weapon_type = WeaponType::kMachineGun;
       break;
     }
     case 3: {
-      params.emplace_back(static_cast<int>(WeaponType::kShotgun));
+      weapon_type = WeaponType::kShotgun;
       break;
     }
     default: {
@@ -391,6 +380,24 @@ GameObjectId RoomController::AddPlayer() {
       break;
     }
   }
+
+  std::vector<QVariant>
+      params = {point.x(),
+                point.y(),
+                Constants::kDefaultPlayerRotation,
+                Constants::kDefaultPlayerRadius * 8.f,
+                Constants::kDefaultPlayerRadius * 8.f,
+                static_cast<int>(RigidBodyType::kCircle),
+                Constants::kDefaultPlayerRadius * 2.f,
+                Constants::kDefaultPlayerRadius * 2.f,
+                static_cast<int>(animation_type),
+                0.f, 0.f, Constants::kDefaultSpeedMultiplier,
+                Constants::kDefaultEntityFov * 2.f,
+                Constants::kDefaultMaxHealthPoints,
+                Constants::kDefaultHealthRegenSpeed,
+                Constants::kDefaultMaxHealthPoints,
+                static_cast<int>(weapon_type)};
+
   return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
 

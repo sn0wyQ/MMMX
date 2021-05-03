@@ -189,6 +189,14 @@ void GameObject::SetAnimation(AnimationType animation_type) {
   animation_ = animations_holder_.GetAnimation(animation_type);
 }
 
+void GameObject::SetAnimationState(AnimationState animation_state,
+                                   bool restart) {
+  if (!animation_.get()) {
+    return;
+  }
+  animation_->SetAnimationState(animation_state, restart);
+}
+
 AnimationsHolder& GameObject::GetAnimationsHolder() {
   return animations_holder_;
 }

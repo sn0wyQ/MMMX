@@ -20,6 +20,7 @@
 #include "Painter/painter.h"
 
 const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
+    { AnimationType::kJoCost, "JoCost" },
     { AnimationType::kTreeGreen, "TreeGreen" }
 };
 
@@ -27,17 +28,18 @@ const std::unordered_map<QString, AnimationState> kAnimationStateLabels {
     { "destroy:", AnimationState::kDestroy },
     { "idle:", AnimationState::kIdle },
     { "move:", AnimationState::kMove },
-    { "shoot:", AnimationState::kShoot }
+    { "shoot_to_idle:", AnimationState::kShootToIdle },
+    { "shoot_to_move:", AnimationState::kShootToMove }
 };
 
 const std::unordered_map<QString, AnimationInstructionType>
     kAnimationCommandsToInstructions {
     { "end", AnimationInstructionType::kEnd },
     { "loop", AnimationInstructionType::kLoop },
-    { "nextframe", AnimationInstructionType::kNextFrame },
-    { "playframes", AnimationInstructionType::kPlayFrames },
+    { "next_frame", AnimationInstructionType::kNextFrame },
+    { "play_frames", AnimationInstructionType::kPlayFrames },
     { "wait", AnimationInstructionType::kWait },
-    { "waitrand", AnimationInstructionType::kWaitRand }
+    { "wait_rand", AnimationInstructionType::kWaitRand }
 };
 
 struct Instruction {

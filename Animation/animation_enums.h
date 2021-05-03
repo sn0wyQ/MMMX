@@ -57,7 +57,8 @@ enum class AnimationState {
   kDestroy = 0,
   kIdle,
   kMove,
-  kShoot,
+  kShootToIdle,
+  kShootToMove,
 
   SIZE
 };
@@ -69,6 +70,7 @@ enum class AnimationType {
   // Used for objects without images (that are just drawn for example)
   kNone = -1,
 
+  kJoCost,
   kTreeGreen
 };
 

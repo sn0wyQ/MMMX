@@ -11,7 +11,8 @@
 
 const std::unordered_map<AnimationType, bool> kIsSynchronizedAllOfThisType {
     { AnimationType::kNone, true },
-    { AnimationType::kTreeGreen, true }
+    { AnimationType::kJoCost, false },
+    { AnimationType::kTreeGreen, true },
 };
 
 class AnimationsHolder {

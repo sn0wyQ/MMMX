@@ -20,6 +20,8 @@ void Converter::UpdateCoefficient(float fov) {
   coefficient_ =
       static_cast<float>(widget_->height()) / Constants::kBaseViewHeight;
   coefficient_ *= (Constants::kDefaultEntityFov / fov);
+  coefficient_ /=
+      ((Constants::kDefaultEntityFov * 1.9f) / Constants::kBaseViewHeight);
   screen_center_ = QPointF(static_cast<float>(widget_->width()) / 2.f,
                            static_cast<float>(widget_->height()) / 2.f);
 }

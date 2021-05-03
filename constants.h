@@ -72,7 +72,7 @@ constexpr float kDefaultMaxHealthPoints = 100.f;
 constexpr float kDefaultSpeedMultiplier = 0.01f;
 
 // Player
-constexpr float kDefaultEntityFov = 12.f;
+constexpr float kDefaultEntityFov = 8.f;  // 12.f
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
 constexpr float kDefaultHealthRegenSpeed = 0.002f;
