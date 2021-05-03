@@ -107,7 +107,8 @@ void RoomController::TickCreepsIntelligence(
     std::shared_ptr<Player> closer_player{nullptr};
     for (const auto& player : players) {
       float distance =
-          Math::DistanceBetweenPoints(creep->GetPosition(), player->GetPosition());
+          Math::DistanceBetweenPoints(creep->GetPosition(),
+                                      player->GetPosition());
       if (closer_player == nullptr) {
         if (distance < creep->GetFovRadius()) {
           closer_player = player;
