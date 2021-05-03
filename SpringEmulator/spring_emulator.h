@@ -46,6 +46,7 @@ void SpringEmulator<T>::MakeStep(const T& new_value) {
 template<class T>
 void SpringEmulator<T>::SetValue(const T& last_value) {
   value_ = last_value;
+  last_time_updated_ = QDateTime::currentMSecsSinceEpoch();
 }
 
 template<class T>

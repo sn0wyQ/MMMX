@@ -113,7 +113,7 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
-        SpringEmulator/spring_emulator.cpp SpringEmulator/spring_emulator.h)
+        )
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
