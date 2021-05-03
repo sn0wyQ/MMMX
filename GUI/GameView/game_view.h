@@ -11,6 +11,7 @@
 
 #include "Client/client_controller.h"
 #include "Converter/converter.h"
+#include "SpringEmulator/spring_emulator.h"
 #include "Painter/painter.h"
 
 class GameView : public QWidget {
@@ -32,9 +33,9 @@ class GameView : public QWidget {
 
   void UpdateLocalCenter();
 
-  QPointF local_center_;
-  qint64 last_paint_event_time_ = -1;
-  QVector2D camera_velocity_;
+  bool was_player_set_;
+  SpringEmulator<QVector2D> camera_motion_emulator_;
+  SpringEmulator<float> fov_change_emulator_;
 };
 
 #endif  // GUI_GAMEVIEW_GAME_VIEW_H_
