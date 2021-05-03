@@ -133,8 +133,7 @@ void RoomController::TickCreepsIntelligence(
     if (creep->IsGoingToSpawn()) {
       force = QVector2D(creep->GetSpawnX() - creep->GetX(),
                         creep->GetSpawnY() - creep->GetY());
-    }
-    else if (closer_player != nullptr) {
+    } else if (closer_player != nullptr) {
       force = QVector2D(closer_player->GetX() - creep->GetX(),
                          closer_player->GetY() - creep->GetY());
     } else {

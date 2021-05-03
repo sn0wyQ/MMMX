@@ -28,8 +28,9 @@ void ClientGameModel::AddInterpolateInfo(GameObjectId game_object_id,
     game_object = this->GetGameObjectByGameObjectId(game_object_id)->Clone();
   } else {
     if (this->IsGameObjectInInterpolation(game_object_id)) {
-      game_object =
-          this->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id)->Clone();
+      auto game_object_to_be_interpolated =
+          this->GetGameObjectByGameObjectIdToBeInterpolated(game_object_id);
+      game_object = game_object_to_be_interpolated->Clone();
     } else {
       game_object =
           this->GetNewEmptyGameObject(game_object_id, game_object_type);
