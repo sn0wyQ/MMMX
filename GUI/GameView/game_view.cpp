@@ -9,8 +9,7 @@ GameView::GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model)
       fov_change_emulator_(Constants::kFovStiffnessRatio,
                            Constants::kFovFrictionRatio),
       canvas_(std::make_unique<QPixmap>(this->size())),
-      painter_(std::make_unique<Painter>(canvas_.get(), converter_)) {
-}
+      painter_(std::make_unique<Painter>(canvas_.get(), converter_)) {}
 
 std::shared_ptr<Converter> GameView::GetConverter() {
   return converter_;
@@ -88,6 +87,7 @@ void GameView::Update() {
   for (const auto& object : model_->GetLocalBullets()) {
     object->Draw(painter_.get());
   }
+
   painter_->ResetClip();
   painter_->translate(-translation);
 }
