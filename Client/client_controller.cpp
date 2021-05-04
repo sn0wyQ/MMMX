@@ -28,11 +28,14 @@ void ClientController::OnConnected() {
           this,
           &ClientController::OnByteArrayReceived);
 
-  connect(&timer_for_server_var_, &QTimer::timeout, this,
-          &ClientController::UpdateVarsAndPing);
-  timer_for_server_var_.start(Constants::kTimeToUpdateVarsAndPing);
-  connect(&web_socket_, &QWebSocket::pong, this,
-          &ClientController::SetPing);
+  connect(&server_var_timer_, &QTimer::timeout,
+          this, &ClientController::UpdateVarsAndPing);
+  server_var_timer_.start(Constants::kTimeToUpdateVarsAndPing);
+  connect(&view_update_timer_, &QTimer::timeout,
+          view_.get(), &AbstractClientView::Update);
+  view_update_timer_.start(1000 / Constants::kFpsMax);
+  connect(&web_socket_, &QWebSocket::pong,
+          this, &ClientController::SetPing);
 
   // TODO(Everyone): Send nickname to server after connection
 
@@ -94,8 +97,6 @@ void ClientController::OnTick(int delta_time) {
       this->OnTickGameNotStarted(delta_time);
       break;
   }
-
-  view_->Update();
 }
 
 void ClientController::OnTickGameNotStarted(int delta_time) {

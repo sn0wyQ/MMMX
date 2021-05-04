@@ -37,6 +37,9 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 
 void ClientView::Update() {
   auto time = QDateTime::currentMSecsSinceEpoch();
+  if (last_frame_times_.empty()) {
+    last_updated_time_ = time;
+  }
   last_frame_times_.push_back(static_cast<int>(time - last_updated_time_));
   if (last_frame_times_.size() > Constants::kAverageFpsFrames) {
     last_frame_times_.pop_front();
@@ -84,12 +87,13 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
                                : QPointF(0.f, 0.f);
 
   int64_t average_frame_time = 0;
+  int64_t fps = 0;
   if (!last_frame_times_.empty()) {
-    average_frame_time = std::accumulate(last_frame_times_.begin(),
-                    last_frame_times_.end(), 0LL) /
+    average_frame_time = std::accumulate(
+        last_frame_times_.begin(),last_frame_times_.end(), 0LL) /
                           static_cast<int64_t>(last_frame_times_.size());
+    fps = 1000 / (average_frame_time + 1);
   }
-  int64_t fps = 1000 / (average_frame_time + 1);
 
   info_label_->setText(QString(tr("Server Var: %1\n"
                                   "Room Var: %2\n"

@@ -136,7 +136,8 @@ class ClientController : public BaseController {
   int room_var_{0};
   int client_var_{0};
   int ping_{0};
-  QTimer timer_for_server_var_;
+  QTimer server_var_timer_;
+  QTimer view_update_timer_;
   std::shared_ptr<Converter> converter_;
   bool is_time_difference_set_{false};
   int64_t time_difference_{0};
