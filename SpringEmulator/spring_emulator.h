@@ -35,7 +35,7 @@ void SpringEmulator<T>::MakeStep(const T& new_value) {
   last_time_updated_ = time;
 
   if (delta_time > 5.f) {
-    qWarning() << "[SPRING EMULATOR] So big delta_time, cant make step";
+    qWarning() << "[SPRING EMULATOR] delta_time is too big to make step";
     value_ = new_value;
     return;
   }
