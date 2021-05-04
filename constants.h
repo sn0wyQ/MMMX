@@ -60,6 +60,7 @@ constexpr int kShootHoldingCheck = 30;
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
+constexpr float kPlayerBarHeightRatio = 0.15f;
 constexpr bool kRigidBodyShow = true;
 
 // Animations
@@ -76,6 +77,12 @@ constexpr float kDefaultEntityFov = 12.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
 constexpr float kDefaultHealthRegenSpeed = 0.002f;
+
+// View
+constexpr float kCameraStiffnessRatio = 0.008f;
+constexpr float kCameraFrictionRatio = 0.15f;
+constexpr float kFovStiffnessRatio = 0.007f;
+constexpr float kFovFrictionRatio = 0.15f;
 
 // Bullet collision
 constexpr int kAccuracy = 10;

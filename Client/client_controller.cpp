@@ -147,6 +147,12 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   auto local_player = model_->GetLocalPlayer();
 
+  float rotation = Math::VectorAngle(local_player->GetPosition() -
+                                         view_->GetPlayerToCenterOffset(),
+                                     converter_->PointFromScreenToGame(
+                                         last_mouse_position_));
+  local_player->SetRotation(rotation);
+
   std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding;
   for (const auto& game_object : model_->GetAllGameObjects()) {
     if (game_object->GetType() != GameObjectType::kBullet &&
@@ -318,13 +324,7 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
-  if (model_->IsLocalPlayerSet()) {
-    auto local_player = model_->GetLocalPlayer();
-    float rotation = Math::VectorAngle(local_player->GetPosition(),
-                                       converter_->PointFromScreenToGame(
-                                           mouse_event->pos()));
-    local_player->SetRotation(rotation);
-  }
+  last_mouse_position_ = mouse_event->pos();
 }
 
 void ClientController::MousePressEvent(QMouseEvent*) {

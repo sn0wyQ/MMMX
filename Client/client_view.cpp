@@ -4,7 +4,8 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
     : AbstractClientView(),
       controller_(std::move(controller)) {
   resize(1400, 960);
-  height_of_bar_ = static_cast<int>(0.15f * static_cast<float>(height()));
+  height_of_bar_ = static_cast<int>(
+      Constants::kPlayerBarHeightRatio * static_cast<float>(height()));
   setMinimumSize(1300, 700);
   setWindowTitle(Constants::kWindowTitle);
   setMouseTracking(true);
@@ -103,4 +104,8 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
 
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
   controller_->MouseReleaseEvent(mouse_event);
+}
+
+QPointF ClientView::GetPlayerToCenterOffset() const {
+  return game_view_->GetPlayerToCenterOffset();
 }
