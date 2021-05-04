@@ -59,4 +59,5 @@ jobs:
 
     - name: Build
       working-directory: ${{runner.workspace}}/${{github.event.repository.name}}
-      run: cmake --build . -j2
+      run: cmake --build . -j4
+      
