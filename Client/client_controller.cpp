@@ -81,7 +81,6 @@ void ClientController::SendEvent(const Event& event) {
 }
 
 void ClientController::OnTick(int delta_time) {
-  // qInfo() << "Tick1";
   if (!is_time_difference_set_) {
     return;
   }
@@ -98,7 +97,6 @@ void ClientController::OnTick(int delta_time) {
       this->OnTickGameNotStarted(delta_time);
       break;
   }
-  // qInfo() << "Tick2";
 }
 
 void ClientController::OnTickGameNotStarted(int delta_time) {

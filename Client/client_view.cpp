@@ -85,7 +85,6 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
   auto local_player_position = model_->IsLocalPlayerSet()
                                ? model_->GetLocalPlayer()->GetPosition()
                                : QPointF(0.f, 0.f);
-
   int64_t average_frame_time = 0;
   int64_t fps = 0;
   if (!last_frame_times_.empty()) {
