@@ -73,18 +73,32 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
   auto local_player_position = model_->IsLocalPlayerSet()
                                ? model_->GetLocalPlayer()->GetPosition()
                                : QPointF(0.f, 0.f);
+  auto time = QDateTime::currentMSecsSinceEpoch();
+  int frame_time = static_cast<int>(time - last_updated_time_);
+  last_frame_times_.push_back(frame_time);
+  if (last_frame_times_.size() > Constants::kAverageFpsFrames) {
+    last_frame_times_.pop_front();
+  }
+  last_updated_time_ = time;
+  frame_time = std::accumulate(last_frame_times_.begin(),
+                               last_frame_times_.end(),0) /
+                                   static_cast<int>(last_frame_times_.size());
+  int fps = 1000 / (frame_time + 1);
 
   info_label_->setText(QString(tr("Server Var: %1\n"
                                   "Room Var: %2\n"
                                   "Client Var: %3\n"
                                   "Ping: %4\n"
-                                  "X: %5, \tY: %6\n"))
+                                  "X: %5, \tY: %6\n"
+                                  "Fps: %7 (%8ms)\n"))
                            .arg(controller_->GetServerVar())
                            .arg(controller_->GetRoomVar())
                            .arg(controller_->GetClientVar())
                            .arg(controller_->GetPing())
                            .arg(local_player_position.x())
-                           .arg(local_player_position.y()));
+                           .arg(local_player_position.y())
+                           .arg(fps)
+                           .arg(frame_time));
   info_label_->adjustSize();
 
   qDebug().noquote().nospace() << "[VIEW] Repainted";

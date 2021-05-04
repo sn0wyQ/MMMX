@@ -61,6 +61,7 @@ constexpr int kShootHoldingCheck = 30;
 constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
 constexpr bool kRigidBodyShow = true;
+constexpr int kAverageFpsFrames = 50;
 
 // Animations
 constexpr int kUnloadAnimationCheckTime = 30;
