@@ -1,14 +1,9 @@
 #include "painter.h"
 
 Painter::Painter(QPixmap* device,
-                 std::shared_ptr<Converter> converter,
-                 const QPointF& local_centre)
+                 std::shared_ptr<Converter> converter)
     : QPainter(device),
-      converter_(std::move(converter)) {
-  this->setBrush(QBrush(Qt::white));
-  this->drawRect(0, 0,
-                 device->size().width(), device->size().height());
-}
+      converter_(std::move(converter)) {}
 
 void Painter::SetClipCircle(float x,
                             float y,
@@ -24,7 +19,11 @@ void Painter::SetClipCircle(float x,
                  doubled_r_scaled,
                  doubled_r_scaled,
                  QRegion::Ellipse);
-  setClipRegion(region, clip_operation);
+  this->setClipRegion(region, clip_operation);
+}
+
+void Painter::ResetClip() {
+  this->setClipRect(QRect(), Qt::NoClip);
 }
 
 void Painter::RotateClockWise(float degree) {

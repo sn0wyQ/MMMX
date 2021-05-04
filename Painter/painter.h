@@ -40,13 +40,11 @@ Q_DECLARE_METATYPE(DrawPixmapType)
 class Painter : public QPainter {
  public:
   Painter(QPixmap* device,
-          std::shared_ptr<Converter> converter,
-          const QPointF& local_centre);
+          std::shared_ptr<Converter> converter);
 
-  void SetClipCircle(float x,
-                     float y,
-                     float r,
+  void SetClipCircle(float x, float y, float r,
                      Qt::ClipOperation clip_operation = Qt::ReplaceClip);
+  void ResetClip();
 
   void RotateClockWise(float degree);
   void RotateCounterClockWise(float degree);
@@ -54,24 +52,17 @@ class Painter : public QPainter {
   void Translate(const QPointF& delta);
 
   void DrawEllipse(const QPointF& center, float rx, float ry);
-  void DrawPixmap(QPointF point,
-                  float w,
-                  float h,
-                  const QPixmap& pixmap,
+  void DrawPixmap(QPointF point, float w, float h, const QPixmap& pixmap,
                   DrawPixmapType draw_image_type =
                       DrawPixmapType::kUsePointAsCenter);
   void DrawRect(float x, float y, float width, float height);
-  void DrawSharedFrame(QPointF point,
-                       float w,
-                       float h,
+  void DrawSharedFrame(QPointF point, float w, float h,
                        SharedFrame* shared_frame,
                        DrawPixmapType draw_pixmap_type =
                            DrawPixmapType::kUsePointAsCenter);
   void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
 
-  void RenderSvg(QPointF point,
-                 float w,
-                 float h,
+  void RenderSvg(QPointF point, float w, float h,
                  const std::shared_ptr<QSvgRenderer>& svg_renderer,
                  DrawPixmapType draw_pixmap_type =
                      DrawPixmapType::kUsePointAsCenter);

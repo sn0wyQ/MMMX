@@ -9,7 +9,7 @@ GameView::GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model)
       fov_change_emulator_(Constants::kFovStiffnessRatio,
                            Constants::kFovFrictionRatio),
       canvas_(std::make_unique<QPixmap>(this->size())),
-      painter_(std::make_unique<Painter>(canvas_.get(), converter_, QPointF())) {
+      painter_(std::make_unique<Painter>(canvas_.get(), converter_)) {
 }
 
 std::shared_ptr<Converter> GameView::GetConverter() {
@@ -17,6 +17,9 @@ std::shared_ptr<Converter> GameView::GetConverter() {
 }
 
 void GameView::Update() {
+  painter_->setRenderHints(
+      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+
   // If LocalPlayer isn't set we don't want to draw anything
   if (!model_->IsLocalPlayerSet()) {
     was_player_set_ = false;
@@ -40,14 +43,13 @@ void GameView::Update() {
       this->GetConverter()->ScaleFromScreenToGame(
           Constants::kPlayerBarHeightRatio * this->height() / 2.f);
   converter_->UpdateCoefficient(last_player_fov + player_bar_offset);
-  // canvas_ = std::make_unique<QPixmap>(this->size());
+
   // Setting screen centre to Player's position
-  painter_->translate((QPointF(this->width(), this->height()) / 2.f)
-                - converter_->ScaleFromGameToScreen(local_center));
+  auto translation = QPointF(this->width(), this->height()) / 2.f
+      - converter_->ScaleFromGameToScreen(
+          local_center + QPointF(0, player_bar_offset));
+  painter_->translate(translation);
   canvas_->fill();
-  painter_->setBrush(QBrush(QColor(0, 0, 0, 0)));
-  painter_->setRenderHints(
-      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
   std::vector<std::shared_ptr<GameObject>> not_filtered_objects
       = model_->GetNotFilteredByFovObjects();
@@ -66,9 +68,9 @@ void GameView::Update() {
   painter_->DrawEllipse(local_player->GetPosition(),
                       last_player_fov,
                       last_player_fov);
-  // painter_->SetClipCircle(local_player->GetX(),
-  //                       local_player->GetY(),
-  //                       last_player_fov);
+  painter_->SetClipCircle(local_player->GetX(),
+                        local_player->GetY(),
+                        last_player_fov);
 
   std::vector<std::shared_ptr<GameObject>> filtered_objects
       = model_->GetFilteredByFovObjects();
@@ -86,8 +88,8 @@ void GameView::Update() {
   for (const auto& object : model_->GetLocalBullets()) {
     object->Draw(painter_.get());
   }
-  painter_->translate(-((QPointF(this->width(), this->height()) / 2.f)
-                          - converter_->ScaleFromGameToScreen(local_center)));
+  painter_->ResetClip();
+  painter_->translate(-translation);
 }
 
 void GameView::paintEvent(QPaintEvent* paint_event) {
