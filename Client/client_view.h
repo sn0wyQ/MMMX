@@ -1,6 +1,7 @@
 #ifndef CLIENT_CLIENT_VIEW_H_
 #define CLIENT_CLIENT_VIEW_H_
 
+#include <deque>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -49,6 +50,9 @@ class ClientView : public AbstractClientView {
   StatsTable* stats_table_;
   QLabel* info_label_;
   int height_of_bar_{};
+
+  int64_t last_updated_time_{};
+  std::deque<int64_t> last_frame_times_{};
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_
