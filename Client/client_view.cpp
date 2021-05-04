@@ -79,11 +79,11 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
     last_frame_times_.pop_front();
   }
   last_updated_time_ = time;
-  int average_frame_time =
+  int64_t average_frame_time =
       std::accumulate(last_frame_times_.begin(),
                       last_frame_times_.end(), 0) /
-          static_cast<int>(last_frame_times_.size());
-  int fps = 1000 / (average_frame_time + 1);
+          static_cast<int64_t>(last_frame_times_.size());
+  int64_t fps = 1000 / (average_frame_time + 1);
 
   info_label_->setText(QString(tr("Server Var: %1\n"
                                   "Room Var: %2\n"

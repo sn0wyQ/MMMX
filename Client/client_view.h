@@ -50,8 +50,8 @@ class ClientView : public AbstractClientView {
   QLabel* info_label_;
   int height_of_bar_{};
 
-  qint64 last_updated_time_{};
-  std::deque<int> last_frame_times_{};
+  int64_t last_updated_time_{};
+  std::deque<int64_t> last_frame_times_{};
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_
