@@ -67,11 +67,11 @@ constexpr int kAverageFpsFrames = 50;
 // Animations
 constexpr int kUnloadAnimationCheckTime = 30;
 
-// GameObject
-constexpr float kDefaultMaxHealthPoints = 100.f;
-
 // MovableObject
 constexpr float kDefaultSpeedMultiplier = 0.01f;
+
+// Entity
+constexpr float kDefaultMaxHealthPoints = 100.f;
 
 // Player
 constexpr float kDefaultEntityFov = 12.f;
@@ -112,6 +112,8 @@ constexpr float kBulletRange = 1.3f;
 constexpr float kBulletDamage = 1.1f;
 
 }  // namespace LevelingMultipliers
+
+constexpr int64_t kReviveTime = 5000;
 
 }  // namespace Constants
 

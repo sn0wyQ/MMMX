@@ -73,9 +73,33 @@ void RoomController::OnTick(int delta_time) {
 }
 
 void RoomController::RecalculateModel(const ModelData& model_data) {
+  this->ReviveEntities(model_data);
   this->ProcessBulletsHits(model_data);
   this->TickObjectsInModel(model_data);
   this->DeleteReadyToBeDeletedObjects(model_data);
+}
+
+void RoomController::ReviveEntities(
+    const RoomController::ModelData& model_data) {
+  while (!revive_entity_at_.empty()) {
+    int64_t revive_at = revive_entity_at_.front().second;
+    if (revive_at <= GetCurrentServerTime()) {
+      auto game_object_id = revive_entity_at_.front().first;
+      auto entity = std::dynamic_pointer_cast<Entity>(
+          model_data.model->GetGameObjectByGameObjectId(game_object_id));
+      QPointF point_to_spawn =
+          model_->GetPointToSpawn(entity->GetBoundingCircleRadius(), true);
+      entity->Revive(point_to_spawn);
+      if (entity->GetType() == GameObjectType::kPlayer) {
+        this->AddEventToSendToSinglePlayer(
+            Event(EventType::kReviveLocalPlayer, point_to_spawn),
+            game_object_id);
+      }
+      revive_entity_at_.pop();
+    } else {
+      break;
+    }
+  }
 }
 
 void RoomController::DeleteReadyToBeDeletedObjects(
@@ -115,15 +139,16 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                                    cur_entity_hp - bullet->GetBulletDamage());
 
         if (hp_to_set == 0) {
-          QPointF point_to_spawn =
-              model_->GetPointToSpawn(entity->GetBoundingCircleRadius(), true);
           switch (entity->GetType()) {
             case GameObjectType::kPlayer:
-              entity->Revive(point_to_spawn);
+              entity->SetIsVisible(false);
+              revive_entity_at_.emplace(
+                  entity->GetId(),
+                  GetCurrentServerTime() + Constants::kReviveTime);
               model_data.model->GetPlayerStatsByPlayerId(
                   entity->GetId())->GetMutableDeaths()++;
               this->AddEventToSendToSinglePlayer(
-                  Event(EventType::kLocalPlayerDied, point_to_spawn),
+                  Event(EventType::kLocalPlayerDied),
                   entity->GetId());
               break;
 
@@ -152,13 +177,12 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
                       receive_exp),
                 bullet->GetParentId());
           }
-        } else {
-          entity->SetHealthPoints(hp_to_set);
-          if (entity->GetType() == GameObjectType::kPlayer) {
-            this->AddEventToSendToSinglePlayer(
-                Event(EventType::kUpdateLocalPlayerHealthPoints, hp_to_set),
-                entity->GetId());
-          }
+        }
+        entity->SetHealthPoints(hp_to_set);
+        if (entity->GetType() == GameObjectType::kPlayer) {
+          this->AddEventToSendToSinglePlayer(
+              Event(EventType::kUpdateLocalPlayerHealthPoints, hp_to_set),
+              entity->GetId());
         }
       }
     }
@@ -361,6 +385,7 @@ GameObjectId RoomController::AddPlayer() {
                 Constants::kDefaultPlayerRadius * 2,
                 Constants::kDefaultPlayerRadius * 2,
                 static_cast<int>(AnimationType::kNone),
+                true,
                 0.f, 0.f, Constants::kDefaultSpeedMultiplier,
                 Constants::kDefaultEntityFov * 2.f,
                 Constants::kDefaultMaxHealthPoints,
@@ -400,7 +425,8 @@ void RoomController::AddBox(float x, float y, float rotation,
                         {x, y, rotation, width, height,
                          static_cast<int>(RigidBodyType::kRectangle),
                          width, height,
-                         static_cast<int>(AnimationType::kNone)});
+                         static_cast<int>(AnimationType::kNone),
+                         true});
 }
 
 void RoomController::AddRandomBox(float width, float height) {
@@ -417,7 +443,8 @@ void RoomController::AddTree(float x, float y, float radius) {
                         {x, y, 0.f, radius * 2.f, radius * 2.f,
                          static_cast<int>(RigidBodyType::kCircle),
                          radius * 1.45f, radius * 1.45f,
-                         static_cast<int>(AnimationType::kTreeGreen)});
+                         static_cast<int>(AnimationType::kTreeGreen),
+                         true});
 }
 
 void RoomController::AddRandomTree(float radius) {
@@ -454,7 +481,8 @@ void RoomController::AddConstantObjects() {
                          static_cast<int>(RigidBodyType::kRectangle),
                          Constants::kDefaultMapWidth,
                          Constants::kDefaultMapHeight,
-                         static_cast<int>(AnimationType::kNone)});
+                         static_cast<int>(AnimationType::kNone),
+                         true});
 
   for (int i = 0; i < 15; i++) {
     this->AddRandomBox(7.f, 7.f);

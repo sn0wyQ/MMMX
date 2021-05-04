@@ -50,6 +50,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendLevelingPointsEvent, this, _1));
   SetFunctionForEventType(EventType::kShootFailed,
     std::bind(&BaseController::ShootFailedEvent, this, _1));
+  SetFunctionForEventType(EventType::kReviveLocalPlayer,
+    std::bind(&BaseController::ReviveLocalPlayerEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

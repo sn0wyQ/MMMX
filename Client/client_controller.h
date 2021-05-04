@@ -122,6 +122,7 @@ class ClientController : public BaseController {
   void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
   void ShootFailedEvent(const Event& event) override;
   void LocalPlayerDiedEvent(const Event& event) override;
+  void ReviveLocalPlayerEvent(const Event& event) override;
   void SendGameInfoToInterpolateEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;
@@ -155,6 +156,7 @@ class ClientController : public BaseController {
   QPointF last_mouse_position_;
   QTimer shoot_check_timer;
   bool is_holding_{false};
+  bool is_controls_blocked_{false};
 
   std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;
 };

@@ -181,6 +181,9 @@ std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
           continue;
         }
       }
+      if (!object->IsVisible()) {
+        continue;
+      }
       QVector2D offset = QVector2D(object->GetX() - bullet_clone->GetX(),
                                    object->GetY() - bullet_clone->GetY());
       float rotation = object->GetRotation();

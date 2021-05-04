@@ -291,6 +291,9 @@ int64_t ClientController::GetCurrentServerTime() const {
 // -------------------- CONTROLS --------------------
 
 void ClientController::FocusOutEvent(QFocusEvent*) {
+  if (is_controls_blocked_) {
+    return;
+  }
   for (const auto& [key, direction] : key_to_direction_) {
     is_direction_by_keys_[direction] = false;
   }
@@ -302,6 +305,9 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
+  if (is_controls_blocked_) {
+    return;
+  }
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
@@ -313,6 +319,9 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
+  if (is_controls_blocked_) {
+    return;
+  }
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = false;
@@ -324,14 +333,23 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
+  if (is_controls_blocked_) {
+    return;
+  }
   last_mouse_position_ = mouse_event->pos();
 }
 
 void ClientController::MousePressEvent(QMouseEvent*) {
+  if (is_controls_blocked_) {
+    return;
+  }
   is_holding_ = true;
 }
 
 void ClientController::MouseReleaseEvent(QMouseEvent*) {
+  if (is_controls_blocked_) {
+    return;
+  }
   is_holding_ = false;
 }
 
@@ -427,8 +445,19 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
+  is_controls_blocked_ = true;
+  is_holding_ = false;
+  model_->GetLocalPlayer()->SetIsVisible(false);
+}
+
+void ClientController::ReviveLocalPlayerEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  is_controls_blocked_ = false;
   auto spawn_point = event.GetArg<QPointF>(0);
   model_->GetLocalPlayer()->Revive(spawn_point);
+  model_->GetLocalPlayer()->SetIsVisible(true);
 }
 
 void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {

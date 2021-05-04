@@ -30,9 +30,12 @@ GameObject::GameObject(const GameObject& other) {
   SetX(other.GetX());
   updated_time_ = other.updated_time_;
   is_need_to_delete_ = other.is_need_to_delete_;
+  visibility_ = other.visibility_;
 }
 
 void GameObject::SetParams(std::vector<QVariant> params) {
+  SetVisibility(params.back().toFloat());
+  params.pop_back();
   auto animation_type = static_cast<AnimationType>(params.back().toInt());
   SetAnimation(animation_type);
   params.pop_back();
@@ -80,10 +83,14 @@ std::vector<QVariant> GameObject::GetParams() const {
   result.emplace_back(rigid_body_->GetWidth());
   result.emplace_back(rigid_body_->GetHeight());
   result.emplace_back(static_cast<int>(animation_->GetType()));
+  result.emplace_back(GetVisibility());
   return result;
 }
 
 void GameObject::Draw(Painter* painter) {
+  if (!IsVisible()) {
+    return;
+  }
   painter->save();
   painter->Translate(position_);
   this->DrawHealthBar(painter);
@@ -213,4 +220,20 @@ float GameObject::GetBoundingCircleRadius() const {
   return Math::DistanceBetweenPoints(
       QPointF(), QPointF(this->GetWidth() / 2.f,
                          this->GetHeight() / 2.f));
+}
+
+float GameObject::GetVisibility() const {
+  return visibility_;
+}
+
+void GameObject::SetVisibility(float visibility) {
+  visibility_ = visibility;
+}
+
+bool GameObject::IsVisible() const {
+  return visibility_ >= 1.f;
+}
+
+void GameObject::SetIsVisible(bool visible) {
+  visibility_ = (visible ? 1.f : 0.f);
 }

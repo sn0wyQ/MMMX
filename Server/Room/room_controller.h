@@ -81,8 +81,10 @@ class RoomController : public BaseController {
   std::unordered_map<ClientId, GameObjectId> player_ids_;
   std::vector<Event> events_for_server_;
   int creeps_count_{0};
+  std::queue<std::pair<GameObjectId, int64_t>> revive_entity_at_;
 
   void RecalculateModel(const ModelData& model_data);
+  void ReviveEntities(const ModelData& model_data);
   void TickObjectsInModel(const ModelData& model_data);
   void ProcessBulletsHits(const ModelData& model_data);
   void DeleteReadyToBeDeletedObjects(const ModelData& model_data);

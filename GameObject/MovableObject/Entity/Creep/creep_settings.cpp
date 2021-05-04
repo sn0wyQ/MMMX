@@ -54,6 +54,7 @@ std::vector<QVariant>
   params.emplace_back(this->CalculateWidth(creep_level));
   params.emplace_back(this->CalculateHeight(creep_level));
   params.emplace_back(static_cast<int>(AnimationType::kNone));
+  params.emplace_back(true);
   // MovableObject params
   params.emplace_back(0);  // velocity_x
   params.emplace_back(0);  // velocity_y

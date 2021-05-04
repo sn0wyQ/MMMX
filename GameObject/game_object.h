@@ -96,7 +96,13 @@ class GameObject {
 
   float GetBoundingCircleRadius() const;
 
+  bool IsVisible() const;
+  void SetIsVisible(bool visible);
+
  private:
+  void SetVisibility(float visibility);
+  float GetVisibility() const;
+
   // Holds animations for all GameObjects
   // Prevents same SharedFrame being loaded into RAM more than once at a time
   static AnimationsHolder animations_holder_;
@@ -114,6 +120,7 @@ class GameObject {
   std::shared_ptr<RigidBody> rigid_body_;
   bool is_need_to_delete_{false};
   int64_t updated_time_{};
+  float visibility_{1.f};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_
