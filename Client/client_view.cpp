@@ -81,7 +81,7 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
   }
   last_updated_time_ = time;
   frame_time = std::accumulate(last_frame_times_.begin(),
-                               last_frame_times_.end(),0) /
+                               last_frame_times_.end(), 0) /
                                    static_cast<int>(last_frame_times_.size());
   int fps = 1000 / (frame_time + 1);
 
