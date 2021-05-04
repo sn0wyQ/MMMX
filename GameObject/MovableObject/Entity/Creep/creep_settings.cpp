@@ -117,8 +117,8 @@ QSizeF CreepSettings::GetMaxCreepSize() const {
 }
 
 float CreepSettings::CalculateSpeed(int level) const {
-  float max_level =  this->GetCreepSetting<int>("max_creep_level");
-  return (max_level - level) * 0.0003f;
+  float max_level = this->GetCreepSetting<int>("max_creep_level");
+  return (max_level - level) * this->GetCreepSetting<float>("speed_multiplier");
 }
 
 float CreepSettings::CalculateFov(int level) const {
@@ -131,5 +131,18 @@ float CreepSettings::CalculateFov(int level) const {
 }
 
 float CreepSettings::CalculateDamage(int level) const {
-  return 1.f * level;
+  return this->GetCreepSetting<float>("damage_multiplier") * level;
+}
+
+void CreepSettings::SetStaticParams(const std::shared_ptr<Creep>& creep) {
+  creep->SetSpawnX(creep->GetX());
+  creep->SetSpawnY(creep->GetY());
+  int creep_level = creep->GetLevel();
+  creep->SetFovRadius(
+      CreepSettings::GetInstance().CalculateFov(creep_level));
+  creep->SetAttackDistance(
+      CreepSettings::GetInstance().GetCreepSetting<float>("attack_distance"));
+  creep->SetDamage(CreepSettings::GetInstance().CalculateDamage(creep_level));
+  creep->SetReloadingTime(
+      CreepSettings::GetInstance().GetCreepSetting<float>("reloading_time"));
 }

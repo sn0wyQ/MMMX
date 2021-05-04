@@ -130,14 +130,14 @@ void ClientController::UpdateInterpolationInfo() {
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
     bool was_collided = false;
     QPointF delta_pos = game_object->GetPosition();
-    if (ObjectCollision::IsCollided(local_player, game_object)) {
+    if (ObjectCollision::AreCollided(local_player, game_object)) {
       was_collided = true;
     }
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
 
     if (!was_collided &&
-      ObjectCollision::IsCollided(local_player, game_object)) {
+        ObjectCollision::AreCollided(local_player, game_object)) {
       delta_pos = game_object->GetPosition() - delta_pos;
       local_player->SetPosition(local_player->GetPosition() + delta_pos);
     }

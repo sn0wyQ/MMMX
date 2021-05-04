@@ -87,6 +87,8 @@ class RoomController : public BaseController {
   void TickCreepsIntelligence(const ModelData& model_data);
   void TickObjectsInModel(const ModelData& model_data);
   void DeleteReadyToBeDeletedObjects(const ModelData& model_data);
+  void EntityReceiveDamage(const ModelData& model_data,
+                           const std::shared_ptr<Entity>& entity, float damage);
 
   GameObjectId AddPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);

@@ -10,6 +10,7 @@
 #include <QRandomGenerator>
 
 #include "Animation/animation_enums.h"
+#include "GameObject/MovableObject/Entity/Creep/creep.h"
 #include "constants.h"
 
 class CreepSettings {
@@ -35,6 +36,8 @@ class CreepSettings {
 
   float CalculateFov(int level) const;
   float CalculateDamage(int level) const;
+
+  static void SetStaticParams(const std::shared_ptr<Creep>& creep);
 
  private:
   CreepSettings();
