@@ -22,6 +22,7 @@ class GameView : public QWidget {
 
   std::shared_ptr<Converter> GetConverter();
 
+  void Update();
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
@@ -31,11 +32,11 @@ class GameView : public QWidget {
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<Converter> converter_;
 
-  void UpdateLocalCenter();
-
   bool was_player_set_;
   SpringEmulator<QVector2D> camera_motion_emulator_;
   SpringEmulator<float> fov_change_emulator_;
+  std::unique_ptr<QPixmap> canvas_;
+  std::unique_ptr<Painter> painter_;
 };
 
 #endif  // GUI_GAMEVIEW_GAME_VIEW_H_

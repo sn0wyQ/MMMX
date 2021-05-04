@@ -39,7 +39,7 @@ Q_DECLARE_METATYPE(DrawPixmapType)
 
 class Painter : public QPainter {
  public:
-  Painter(QPaintDevice* device,
+  Painter(QPixmap* device,
           std::shared_ptr<Converter> converter,
           const QPointF& local_centre);
 

@@ -3,18 +3,20 @@
 GameView::GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model)
     : QWidget(parent),
       model_(std::move(model)),
+      converter_(std::make_shared<Converter>(this)),
       camera_motion_emulator_(Constants::kCameraStiffnessRatio,
                               Constants::kCameraFrictionRatio),
       fov_change_emulator_(Constants::kFovStiffnessRatio,
-                           Constants::kFovFrictionRatio) {
-  converter_ = std::make_shared<Converter>(this);
+                           Constants::kFovFrictionRatio),
+      canvas_(std::make_unique<QPixmap>(this->size())),
+      painter_(std::make_unique<Painter>(canvas_.get(), converter_, QPointF())) {
 }
 
 std::shared_ptr<Converter> GameView::GetConverter() {
   return converter_;
 }
 
-void GameView::paintEvent(QPaintEvent* paint_event) {
+void GameView::Update() {
   // If LocalPlayer isn't set we don't want to draw anything
   if (!model_->IsLocalPlayerSet()) {
     was_player_set_ = false;
@@ -38,53 +40,64 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
       this->GetConverter()->ScaleFromScreenToGame(
           Constants::kPlayerBarHeightRatio * this->height() / 2.f);
   converter_->UpdateCoefficient(last_player_fov + player_bar_offset);
-  Painter painter(this,
-                  converter_,
-                  local_center + QPointF(0, player_bar_offset));
-
-  painter.setRenderHints(
+  // canvas_ = std::make_unique<QPixmap>(this->size());
+  // Setting screen centre to Player's position
+  painter_->translate((QPointF(this->width(), this->height()) / 2.f)
+                - converter_->ScaleFromGameToScreen(local_center));
+  canvas_->fill();
+  painter_->setBrush(QBrush(QColor(0, 0, 0, 0)));
+  painter_->setRenderHints(
       QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
   std::vector<std::shared_ptr<GameObject>> not_filtered_objects
       = model_->GetNotFilteredByFovObjects();
   for (const auto& object : not_filtered_objects) {
     if (!object->IsMovable()) {
-      object->Draw(&painter);
+      object->Draw(painter_.get());
     }
   }
   for (const auto& object : not_filtered_objects) {
     if (object->IsMovable()) {
-      object->Draw(&painter);
+      object->Draw(painter_.get());
     }
   }
 
   // Temporary FOV show
-  painter.DrawEllipse(local_player->GetPosition(),
+  painter_->DrawEllipse(local_player->GetPosition(),
                       last_player_fov,
                       last_player_fov);
-  painter.SetClipCircle(local_player->GetX(),
-                        local_player->GetY(),
-                        last_player_fov);
+  // painter_->SetClipCircle(local_player->GetX(),
+  //                       local_player->GetY(),
+  //                       last_player_fov);
 
   std::vector<std::shared_ptr<GameObject>> filtered_objects
       = model_->GetFilteredByFovObjects();
   for (const auto& object : filtered_objects) {
     if (!object->IsMovable()) {
-      object->Draw(&painter);
+      object->Draw(painter_.get());
     }
   }
   for (const auto& object : filtered_objects) {
     if (object->IsMovable()) {
-      object->Draw(&painter);
+      object->Draw(painter_.get());
     }
   }
 
   for (const auto& object : model_->GetLocalBullets()) {
-    object->Draw(&painter);
+    object->Draw(painter_.get());
   }
+  painter_->translate(-((QPointF(this->width(), this->height()) / 2.f)
+                          - converter_->ScaleFromGameToScreen(local_center)));
+}
+
+void GameView::paintEvent(QPaintEvent* paint_event) {
+  QPainter painter(this);
+  painter.drawPixmap(0, 0, *canvas_);
 }
 
 void GameView::resizeEvent(QResizeEvent* resize_event) {
+  canvas_ = std::make_unique<QPixmap>(resize_event->size());
+  painter_ = std::make_unique<Painter>(canvas_.get(), converter_, QPointF());
   converter_->UpdateCoefficient();
 }
 
@@ -97,7 +110,4 @@ QPointF GameView::GetPlayerToCenterOffset() const {
         QPointF(0, player_bar_offset));
   }
   return QPoint();
-}
-
-void GameView::UpdateLocalCenter() {
 }

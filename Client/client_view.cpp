@@ -36,6 +36,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 }
 
 void ClientView::Update() {
+  game_view_->Update();
   this->update();
 }
 
