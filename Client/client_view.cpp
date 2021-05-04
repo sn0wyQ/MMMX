@@ -89,10 +89,12 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
   int64_t average_frame_time = 0;
   int64_t fps = 0;
   if (!last_frame_times_.empty()) {
+    // Weird maths with divide to avoid accuracy loss
     average_frame_time = std::accumulate(
-        last_frame_times_.begin(),last_frame_times_.end(), 0LL) /
-                          static_cast<int64_t>(last_frame_times_.size());
-    fps = 1000 / (average_frame_time + 1);
+        last_frame_times_.begin(),last_frame_times_.end(), 0LL);
+    fps = static_cast<int64_t>(last_frame_times_.size()) * 1000 /
+        (average_frame_time + 1);
+    average_frame_time /= static_cast<int64_t>(last_frame_times_.size());
   }
 
   info_label_->setText(QString(tr("Server Var: %1\n"
