@@ -153,13 +153,8 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
                                          last_mouse_position_));
   local_player->SetRotation(rotation);
 
-  std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding;
-  for (const auto& game_object : model_->GetAllGameObjects()) {
-    if (game_object->GetType() != GameObjectType::kBullet &&
-        game_object->GetType() != GameObjectType::kPlayer) {
-      game_objects_to_move_with_sliding.push_back(game_object);
-    }
-  }
+  std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding =
+      model_->GetGameObjectsPlayerCollide();
   ObjectCollision::MoveWithSlidingCollision(
       local_player, game_objects_to_move_with_sliding,
       this->GetKeyForce(), delta_time);

@@ -164,3 +164,25 @@ void GameModel::AttachGameObject(
      << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
          .valueToKey(static_cast<int>(game_object->GetType())));
 }
+
+bool GameModel::IsGameObjectCollideWithPlayer(
+    const std::shared_ptr<GameObject>& game_object) const {
+  if (!game_object->IsVisible()) {
+    return false;
+  }
+  if (game_object->GetType() == GameObjectType::kBullet) {
+    return false;
+  }
+  return true;
+}
+
+std::vector<std::shared_ptr<GameObject>>
+  GameModel::GetGameObjectsPlayerCollide() const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& game_object : GetAllGameObjects()) {
+    if (IsGameObjectCollideWithPlayer(game_object)) {
+      result.emplace_back(game_object);
+    }
+  }
+  return result;
+}

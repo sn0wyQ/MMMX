@@ -231,7 +231,7 @@ void GameObject::SetVisibility(float visibility) {
 }
 
 bool GameObject::IsVisible() const {
-  return visibility_ >= 1.f;
+  return visibility_ > 0.0001f;
 }
 
 void GameObject::SetIsVisible(bool visible) {

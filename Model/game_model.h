@@ -24,6 +24,10 @@ class GameModel {
   std::shared_ptr<GameObject> GetGameObjectByGameObjectId(
       GameObjectId game_object_id) const;
 
+  bool IsGameObjectCollideWithPlayer(
+      const std::shared_ptr<GameObject>& game_object) const;
+  std::vector<std::shared_ptr<GameObject>> GetGameObjectsPlayerCollide() const;
+
   std::vector<std::shared_ptr<GameObject>> GetAllGameObjects() const;
   std::vector<std::shared_ptr<Bullet>> GetAllBullets() const;
 
