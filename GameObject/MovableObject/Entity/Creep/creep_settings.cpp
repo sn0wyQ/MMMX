@@ -8,6 +8,7 @@
 #include <QLineF>
 
 #include "creep_settings.h"
+#include "GameObject/RigidBody/rigid_body.h"
 
 CreepSettings* CreepSettings::instance_{nullptr};
 
@@ -50,16 +51,18 @@ std::vector<QVariant>
   params.emplace_back(rotation);
   params.emplace_back(this->CalculateWidth(creep_level));
   params.emplace_back(this->CalculateHeight(creep_level));
-  params.emplace_back(json_object_.value("rigid_body_type").toInt());
+  params.emplace_back(static_cast<int>(
+      Constants::GetEnumValueFromString<RigidBodyType>(
+          json_object_.value("rigid_body_type").toString())));
   params.emplace_back(this->CalculateWidth(creep_level));
   params.emplace_back(this->CalculateHeight(creep_level));
   params.emplace_back(static_cast<int>(AnimationType::kNone));
   // MovableObject params
   params.emplace_back(0);  // velocity_x
   params.emplace_back(0);  // velocity_y
-  params.emplace_back(0.f);  // speed multiplier
+  params.emplace_back(this->CalculateSpeed(creep_level));
   // Entity params
-  params.emplace_back(0.f);  // FOV for creep is always 0
+  params.emplace_back(this->CalculateFov(creep_level));
   params.emplace_back(this->CalculateMaxHp(creep_level));
   params.emplace_back(this->CalculateRegenRate(creep_level));
   params.emplace_back(this->CalculateMaxHp(creep_level));
@@ -111,4 +114,35 @@ std::pair<int, int>
 QSizeF CreepSettings::GetMaxCreepSize() const {
   return QSizeF(this->GetCreepSetting<float>("max_width"),
                 this->GetCreepSetting<float>("max_height"));
+}
+
+float CreepSettings::CalculateSpeed(int level) const {
+  float max_level = this->GetCreepSetting<int>("max_creep_level");
+  return (max_level - level) * this->GetCreepSetting<float>("speed_multiplier");
+}
+
+float CreepSettings::CalculateFov(int level) const {
+  int random = QRandomGenerator::global()->bounded(1, 10);
+  if (random <= 3) {
+    return 0.1f;
+  } else {
+    return 20.f;
+  }
+}
+
+float CreepSettings::CalculateDamage(int level) const {
+  return this->GetCreepSetting<float>("damage_multiplier") * level;
+}
+
+void CreepSettings::SetStaticParams(const std::shared_ptr<Creep>& creep) {
+  creep->SetSpawnX(creep->GetX());
+  creep->SetSpawnY(creep->GetY());
+  int creep_level = creep->GetLevel();
+  creep->SetFovRadius(
+      CreepSettings::GetInstance().CalculateFov(creep_level));
+  creep->SetAttackDistance(
+      CreepSettings::GetInstance().GetCreepSetting<float>("attack_distance"));
+  creep->SetDamage(CreepSettings::GetInstance().CalculateDamage(creep_level));
+  creep->SetReloadingTime(
+      CreepSettings::GetInstance().GetCreepSetting<float>("reloading_time"));
 }

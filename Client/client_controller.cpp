@@ -118,12 +118,29 @@ void ClientController::UpdateInterpolationInfo() {
   for (const auto&[game_object_id, game_object_to_be_interpolated]
     : model_->GetInterpolatorMap()) {
     if (!model_->IsGameObjectIdTaken(game_object_id)) {
+      if (game_object_to_be_interpolated->GetCreatedTime() >=
+        time_to_interpolate) {
+        continue;
+      }
       model_->AttachGameObject(game_object_id,
                                game_object_to_be_interpolated->Clone());
+      continue;
     }
+    auto local_player = model_->GetLocalPlayer();
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+    bool was_collided = false;
+    QPointF delta_pos = game_object->GetPosition();
+    if (ObjectCollision::AreCollided(local_player, game_object)) {
+      was_collided = true;
+    }
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
+
+    if (!was_collided &&
+        ObjectCollision::AreCollided(local_player, game_object)) {
+      delta_pos = game_object->GetPosition() - delta_pos;
+      local_player->SetPosition(local_player->GetPosition() + delta_pos);
+    }
   }
 
   while (!time_to_delete_.empty()) {
@@ -155,8 +172,7 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
 
   std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding;
   for (const auto& game_object : model_->GetAllGameObjects()) {
-    if (game_object->GetType() != GameObjectType::kBullet &&
-        game_object->GetType() != GameObjectType::kPlayer) {
+    if (game_object->GetType() != GameObjectType::kBullet) {
       game_objects_to_move_with_sliding.push_back(game_object);
     }
   }
@@ -353,7 +369,7 @@ void ClientController::ShootHolding() {
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
     model_->AddLocalBullets(timestamp);
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
-                               static_cast<qint64>(GetCurrentServerTime()),
+                               static_cast<qint64>(timestamp),
                                local_player->GetId()));
   }
 }

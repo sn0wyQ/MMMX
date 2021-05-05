@@ -1,7 +1,10 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
+#include <string>
+
 #include <QCryptographicHash>
+#include <QMetaEnum>
 #include <QString>
 #include <QUrl>
 
@@ -91,7 +94,7 @@ constexpr int kAccuracy = 10;
 constexpr int kMaxLevel = 30;
 
 constexpr float GetExpForLevel(int level) {
-  return static_cast<float>(1 + level) * 5.f;
+  return static_cast<float>(level) * 5.f;
 }
 
 constexpr float kExpMultiplier = 5.f;
@@ -112,6 +115,13 @@ constexpr float kBulletRange = 1.3f;
 constexpr float kBulletDamage = 1.1f;
 
 }  // namespace LevelingMultipliers
+
+template<class T>
+T GetEnumValueFromString(const QString& string) {
+  auto weapon_type_index =
+      QMetaEnum::fromType<T>().keyToValue(string.toLocal8Bit().constData());
+  return static_cast<T>(weapon_type_index);
+}
 
 }  // namespace Constants
 

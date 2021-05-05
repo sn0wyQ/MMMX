@@ -31,6 +31,7 @@ class GameModel {
   std::vector<std::shared_ptr<GameObject>> GetNotFilteredByFovObjects() const;
 
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
+  std::vector<std::shared_ptr<Creep>> GetCreeps() const;
 
   bool IsGameObjectIdTaken(GameObjectId game_object_id) const;
 
