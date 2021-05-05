@@ -176,3 +176,11 @@ void GameModel::AttachGameObject(
      << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
          .valueToKey(static_cast<int>(game_object->GetType())));
 }
+
+bool GameModel::IsGameObjectCollideWithPlayer(
+    const std::shared_ptr<GameObject>& game_object) const {
+  if (game_object->GetType() == GameObjectType::kBullet) {
+    return false;
+  }
+  return true;
+}

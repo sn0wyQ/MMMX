@@ -48,6 +48,9 @@ class GameModel {
   void AttachGameObject(GameObjectId game_object_id,
                         const std::shared_ptr<GameObject>& game_object);
 
+  bool IsGameObjectCollideWithPlayer(
+      const std::shared_ptr<GameObject>& game_object) const;
+
  protected:
   std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;
 

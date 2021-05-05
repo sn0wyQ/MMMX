@@ -534,16 +534,16 @@ void RoomController::AddConstantObjects() {
                          Constants::kDefaultMapHeight,
                          static_cast<int>(AnimationType::kNone)});
 
-  for (int i = 0; i < 15; i++) {
+  for (int i = 0; i < 5; i++) {
     this->AddRandomBox(7.f, 7.f);
   }
-  for (int i = 0; i < 15; i++) {
+  for (int i = 0; i < 5; i++) {
     this->AddRandomTree(5.f);
   }
 }
 
 void RoomController::AddCreeps() {
-  for (; creeps_count_ < 25; creeps_count_++) {
+  for (; creeps_count_ < 5; creeps_count_++) {
     QPointF position = model_->GetPointToSpawn(std::max(
         CreepSettings::GetInstance().GetMaxCreepSize().height(),
         CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
