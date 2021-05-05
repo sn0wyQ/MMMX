@@ -1,7 +1,10 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
+#include <string>
+
 #include <QCryptographicHash>
+#include <QMetaEnum>
 #include <QString>
 #include <QUrl>
 
@@ -13,7 +16,6 @@ using RoomId = int;
 namespace Constants {
 
 // Build Options
-constexpr bool kRemote = false;
 constexpr bool kClientEnableIgnoreLevel = true;
 constexpr QtMsgType kClientMessageIgnoreLevel = QtDebugMsg;
 constexpr bool kServerEnableIgnoreLevel = true;
@@ -30,9 +32,6 @@ const QString kVersionString = QString::number(kMajorVersion)
 // Server
 const QString kServerName = "MMMX Server";
 constexpr int kServerPort = 1337;
-const QString kServerIp = kRemote ? "188.120.224.70" : "localhost";
-const QUrl kServerUrl =
-    QUrl(QString("ws://") + kServerIp + ":" + QString::number(kServerPort));
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 const auto kHashAlgorithm = QCryptographicHash::Algorithm::Md5;
@@ -92,7 +91,7 @@ constexpr int kAccuracy = 10;
 constexpr int kMaxLevel = 30;
 
 constexpr float GetExpForLevel(int level) {
-  return static_cast<float>(1 + level) * 5.f;
+  return static_cast<float>(level) * 5.f;
 }
 
 constexpr float kExpMultiplier = 5.f;
@@ -113,6 +112,13 @@ constexpr float kBulletRange = 1.3f;
 constexpr float kBulletDamage = 1.1f;
 
 }  // namespace LevelingMultipliers
+
+template<class T>
+T GetEnumValueFromString(const QString& string) {
+  auto weapon_type_index =
+      QMetaEnum::fromType<T>().keyToValue(string.toLocal8Bit().constData());
+  return static_cast<T>(weapon_type_index);
+}
 
 }  // namespace Constants
 

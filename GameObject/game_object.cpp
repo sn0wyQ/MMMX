@@ -30,6 +30,7 @@ GameObject::GameObject(const GameObject& other) {
   SetX(other.GetX());
   updated_time_ = other.updated_time_;
   is_need_to_delete_ = other.is_need_to_delete_;
+  created_time_ = other.created_time_;
 }
 
 void GameObject::SetParams(std::vector<QVariant> params) {
@@ -219,4 +220,12 @@ float GameObject::GetBoundingCircleRadius() const {
   return Math::DistanceBetweenPoints(
       QPointF(), QPointF(this->GetWidth() / 2.f,
                          this->GetHeight() / 2.f));
+}
+
+int64_t GameObject::GetCreatedTime() const {
+  return created_time_;
+}
+
+void GameObject::SetCreatedTime(int64_t created_time) {
+  created_time_ = created_time;
 }

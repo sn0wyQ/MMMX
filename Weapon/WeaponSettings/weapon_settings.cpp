@@ -36,10 +36,8 @@ WeaponSettings::WeaponSettings() {
     params.emplace_back(object.value("clip_size"));
     params.emplace_back(object.value("rate_of_fire"));
     params.emplace_back(object.value("reloading_time"));
-    auto weapon_type_index =
-        QMetaEnum::fromType<WeaponType>().keyToValue(
-            object.value("type").toString().toStdString().c_str());
-    auto weapon_type = static_cast<WeaponType>(weapon_type_index);
+    auto weapon_type = Constants::GetEnumValueFromString<WeaponType>(
+        object.value("type").toString());
     weapon_params_by_type_[weapon_type] = std::move(params);
     json_object_by_type_[weapon_type] = object;
   }

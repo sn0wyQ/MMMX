@@ -19,6 +19,14 @@ void MessageHandlerWrapper(QtMsgType type,
 }
 
 int main(int argc, char* argv[]) {
+  bool is_remote = true;
+  if (argc > 1 && strcmp(argv[1], "-local") == 0) {
+    is_remote = false;
+  }
+  QString server_ip = is_remote ? "188.120.224.70" : "localhost";
+  QUrl server_url =
+      QUrl(QString("ws://") + server_ip + ":" +
+      QString::number(Constants::kServerPort));
   QApplication app(argc, argv);
   QFontDatabase::addApplicationFont(":Res/Fonts/CynthoNext-Bold.ttf");
   QFontDatabase::addApplicationFont(":Res/Fonts/RobotoMono-Regular.ttf");
@@ -27,7 +35,7 @@ int main(int argc, char* argv[]) {
   qInstallMessageHandler(MessageHandlerWrapper);
 
   auto client_controller = std::make_shared<ClientController>(
-      QApplication::primaryScreen()->refreshRate());
+      server_url, QApplication::primaryScreen()->refreshRate());
   auto client_view = new ClientView(client_controller);
   client_view->show();
 

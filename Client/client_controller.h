@@ -58,8 +58,8 @@ class ClientController : public BaseController {
   Q_OBJECT
 
  public:
-  explicit ClientController(int fps_max = Constants::kDefaultFpsMax,
-                            const QUrl& url = Constants::kServerUrl);
+  ClientController(const QUrl& url,
+                   int fps_max = Constants::kDefaultFpsMax);
   ~ClientController() override = default;
 
   QString GetControllerName() const override;
