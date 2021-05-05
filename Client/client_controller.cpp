@@ -136,6 +136,7 @@ void ClientController::UpdateInterpolationInfo() {
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
 
+    // TODO(kmekhovich): when merging respawn_button change checking
     if (!was_collided &&
         ObjectCollision::AreCollided(local_player, game_object)) {
       delta_pos = game_object->GetPosition() - delta_pos;
