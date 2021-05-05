@@ -1,11 +1,9 @@
 #ifndef CONSTANTS_H_
 #define CONSTANTS_H_
 
-#include <string>
-
 #include <QCryptographicHash>
-#include <QString>
 #include <QMetaEnum>
+#include <QString>
 #include <QUrl>
 
 // code_readability++;
@@ -111,7 +109,7 @@ constexpr float kBulletDamage = 1.1f;
 template<class T>
 T GetEnumValueFromString(const QString& string) {
   auto weapon_type_index =
-      QMetaEnum::fromType<T>().keyToValue(string.toStdString().c_str());
+      QMetaEnum::fromType<T>().keyToValue(string.toLocal8Bit().constData());
   return static_cast<T>(weapon_type_index);
 }
 

@@ -60,7 +60,7 @@ std::vector<QVariant>
   // MovableObject params
   params.emplace_back(0);  // velocity_x
   params.emplace_back(0);  // velocity_y
-  params.emplace_back(this->CalculateSpeed(creep_level));  // speed multiplier
+  params.emplace_back(this->CalculateSpeed(creep_level));
   // Entity params
   params.emplace_back(this->CalculateFov(creep_level));
   params.emplace_back(this->CalculateMaxHp(creep_level));

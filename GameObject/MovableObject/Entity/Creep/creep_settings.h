@@ -2,12 +2,13 @@
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_SETTINGS_H_
 
 #include <map>
+#include <memory>
 #include <utility>
 #include <vector>
 
+#include <QRandomGenerator>
 #include <QJsonObject>
 #include <QSizeF>
-#include <QRandomGenerator>
 
 #include "Animation/animation_enums.h"
 #include "GameObject/MovableObject/Entity/Creep/creep.h"
