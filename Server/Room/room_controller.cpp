@@ -138,7 +138,6 @@ void RoomController::TickCreepsIntelligence(
   for (auto& creep : creeps) {
     std::shared_ptr<Player> closer_player{nullptr};
     auto creep_position = creep->GetPosition();
-    auto was_going_to_spawn = creep->IsGoingToSpawn();
     for (const auto& player : players) {
       float distance =
           Math::DistanceBetweenPoints(creep_position,
