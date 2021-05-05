@@ -48,8 +48,10 @@ class GameModel {
   void AttachGameObject(GameObjectId game_object_id,
                         const std::shared_ptr<GameObject>& game_object);
 
-  bool IsGameObjectCollideWithPlayer(
+  bool IsGameObjectCollideMoveWithSliding(
       const std::shared_ptr<GameObject>& game_object) const;
+  std::vector<std::shared_ptr<GameObject>>
+    GetGameObjectsToMoveWithSliding() const;
 
  protected:
   std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;

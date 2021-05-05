@@ -177,10 +177,21 @@ void GameModel::AttachGameObject(
          .valueToKey(static_cast<int>(game_object->GetType())));
 }
 
-bool GameModel::IsGameObjectCollideWithPlayer(
+bool GameModel::IsGameObjectCollideMoveWithSliding(
     const std::shared_ptr<GameObject>& game_object) const {
   if (game_object->GetType() == GameObjectType::kBullet) {
     return false;
   }
   return true;
+}
+
+std::vector<std::shared_ptr<GameObject>>
+  GameModel::GetGameObjectsToMoveWithSliding() const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& game_object : GetAllGameObjects()) {
+    if (IsGameObjectCollideMoveWithSliding(game_object)) {
+      result.emplace_back(game_object);
+    }
+  }
+  return result;
 }

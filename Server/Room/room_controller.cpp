@@ -98,7 +98,6 @@ void RoomController::TickObjectsInModel(const ModelData& model_data) {
   }
 }
 
-
 bool RoomController::EntityReceiveDamage(
     const ModelData& model_data,
     const std::shared_ptr<Entity>& entity, float damage) {
@@ -140,9 +139,10 @@ void RoomController::TickCreepsIntelligence(
   for (auto& creep : creeps) {
     std::shared_ptr<Player> closer_player{nullptr};
     auto creep_position = creep->GetPosition();
+    auto creep_spawn_position = QPointF(creep->GetSpawnX(), creep->GetSpawnY());
     for (const auto& player : players) {
       float distance =
-          Math::DistanceBetweenPoints(creep_position,
+          Math::DistanceBetweenPoints(creep_spawn_position,
                                       player->GetPosition())
                                       - player->GetBoundingCircleRadius()
               - creep->GetBoundingCircleRadius();
@@ -151,7 +151,7 @@ void RoomController::TickCreepsIntelligence(
           closer_player = player;
         }
       } else if (distance < Math::DistanceBetweenPoints(
-          creep->GetPosition(), closer_player->GetPosition())) {
+          creep_position, closer_player->GetPosition())) {
         closer_player = player;
       }
     }
@@ -159,8 +159,7 @@ void RoomController::TickCreepsIntelligence(
     QVector2D force;
     float distance_from_spawn =
         Math::DistanceBetweenPoints(
-            creep_position,
-            QPointF(creep->GetSpawnX(), creep->GetSpawnY()));
+            creep_position, creep_spawn_position);
     if (creep->IsGoingToSpawn()) {
       if (distance_from_spawn < creep->GetBoundingCircleRadius()) {
         creep->SetIsGoingToSpawn(false);
@@ -176,7 +175,8 @@ void RoomController::TickCreepsIntelligence(
     }
     force.normalize();
     ObjectCollision::MoveWithSlidingCollision(
-        creep, model_->GetAllGameObjects(), force, model_data.delta_time);
+        creep, model_->GetGameObjectsToMoveWithSliding(),
+        force, model_data.delta_time);
 
     if (closer_player) {
       auto timestamp = GetCurrentServerTime();
