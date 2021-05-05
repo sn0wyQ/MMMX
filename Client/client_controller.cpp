@@ -111,10 +111,16 @@ void ClientController::OnTickGameInProgress(int delta_time) {
 }
 
 void ClientController::UpdateInterpolationInfo() {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
   auto time_to_interpolate = GetCurrentServerTime()
       - Constants::kInterpolationMSecs;
 
   // Интерполируем все, о чем есть информация
+  int count_changed_collision = 0;
+  auto local_player = model_->GetLocalPlayer();
+  QPointF delta_pos;
   for (const auto&[game_object_id, game_object_to_be_interpolated]
     : model_->GetInterpolatorMap()) {
     if (!model_->IsGameObjectIdTaken(game_object_id)) {
@@ -126,10 +132,9 @@ void ClientController::UpdateInterpolationInfo() {
                                game_object_to_be_interpolated->Clone());
       continue;
     }
-    auto local_player = model_->GetLocalPlayer();
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+    QPointF buf_pos = game_object->GetPosition();
     bool was_collided = false;
-    QPointF delta_pos = game_object->GetPosition();
     if (ObjectCollision::AreCollided(local_player, game_object)) {
       was_collided = true;
     }
@@ -139,9 +144,12 @@ void ClientController::UpdateInterpolationInfo() {
     // TODO(kmekhovich): when merging respawn_button change checking
     if (!was_collided &&
         ObjectCollision::AreCollided(local_player, game_object)) {
-      delta_pos = game_object->GetPosition() - delta_pos;
-      local_player->SetPosition(local_player->GetPosition() + delta_pos);
+      count_changed_collision++;
+      delta_pos = game_object->GetPosition() - buf_pos;
     }
+  }
+  if (count_changed_collision == 1) {
+    local_player->SetPosition(local_player->GetPosition() + delta_pos);
   }
 
   while (!time_to_delete_.empty()) {
