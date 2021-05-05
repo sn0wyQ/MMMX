@@ -15,7 +15,7 @@
 #include "Painter/painter.h"
 
 class GameView : public QWidget {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model);

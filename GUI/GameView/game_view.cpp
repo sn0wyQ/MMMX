@@ -104,8 +104,9 @@ QPointF GameView::GetPlayerToCenterOffset() const {
   return QPoint();
 }
 
-void GameView::DrawObjects(const std::vector<std::shared_ptr<GameObject>>& objects,
-                           const QRectF& view_rect) {
+void GameView::DrawObjects(
+    const std::vector<std::shared_ptr<GameObject>>& objects,
+    const QRectF& view_rect) {
   for (const auto& object : objects) {
     if (!object->IsMovable()) {
       if (view_rect.intersects(object->GetBoundingRect())) {

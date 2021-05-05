@@ -58,7 +58,8 @@ class ClientController : public BaseController {
   Q_OBJECT
 
  public:
-  explicit ClientController(const QUrl& url = Constants::kServerUrl);
+  explicit ClientController(int fps_max = Constants::kDefaultFpsMax,
+                            const QUrl& url = Constants::kServerUrl);
   ~ClientController() override = default;
 
   QString GetControllerName() const override;
@@ -138,6 +139,7 @@ class ClientController : public BaseController {
   int room_var_{0};
   int client_var_{0};
   int ping_{0};
+  int fps_max_{Constants::kDefaultFpsMax};
   QTimer server_var_timer_;
   QTimer view_update_timer_;
   std::shared_ptr<Converter> converter_;

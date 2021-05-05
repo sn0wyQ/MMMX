@@ -1,8 +1,12 @@
 #include "client_controller.h"
 
-ClientController::ClientController(const QUrl& url) : url_(url),
-  model_(std::make_shared<ClientGameModel>()) {
+ClientController::ClientController(int fps_max,
+                                   const QUrl& url) :
+    url_(url),
+    model_(std::make_shared<ClientGameModel>()),
+    fps_max_(fps_max) {
   qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
+  qInfo() << "[CLIENT] Set fps_max to" << fps_max;
   connect(&web_socket_, &QWebSocket::connected, this,
           &ClientController::OnConnected);
   connect(&web_socket_, &QWebSocket::disconnected, this,
@@ -33,7 +37,7 @@ void ClientController::OnConnected() {
   server_var_timer_.start(Constants::kTimeToUpdateVarsAndPing);
   connect(&view_update_timer_, &QTimer::timeout,
           this, &ClientController::UpdateView);
-  view_update_timer_.start(1000 / Constants::kFpsMax);
+  view_update_timer_.start(1000 / fps_max_);
   connect(&web_socket_, &QWebSocket::pong,
           this, &ClientController::SetPing);
 
