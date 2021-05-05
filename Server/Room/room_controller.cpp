@@ -497,13 +497,14 @@ void RoomController::AddCreep(float x, float y) {
 }
 
 std::vector<GameObjectId> RoomController::AddBullets(
+    const std::shared_ptr<RoomGameModel>& model,
     GameObjectId parent_id, float x, float y, float rotation,
     const std::shared_ptr<Weapon>& weapon) {
   std::vector<std::vector<QVariant>> bullets_params =
       weapon->GetBulletsParams(parent_id, x, y, rotation);
   std::vector<GameObjectId> bullet_ids(bullets_params.size());
   for (const std::vector<QVariant>& bullet_params : bullets_params) {
-    bullet_ids.emplace_back(model_->AddGameObject(
+    bullet_ids.emplace_back(model->AddGameObject(
         GameObjectType::kBullet,
         bullet_params));
   }
@@ -605,7 +606,8 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
       current_model_data.model->GetPlayerByPlayerId(player_id);
 
   std::vector<GameObjectId> bullet_ids =
-      AddBullets(player_id, player_in_model->GetX(), player_in_model->GetY(),
+      AddBullets(current_model_data.model,
+                 player_id, player_in_model->GetX(), player_in_model->GetY(),
                  player_in_model->GetRotation(), player_in_model->GetWeapon());
 
   for (int bullet_id_from_bullets_id : bullet_ids) {
