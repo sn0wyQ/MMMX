@@ -502,11 +502,13 @@ std::vector<GameObjectId> RoomController::AddBullets(
     const std::shared_ptr<Weapon>& weapon) {
   std::vector<std::vector<QVariant>> bullets_params =
       weapon->GetBulletsParams(parent_id, x, y, rotation);
-  std::vector<GameObjectId> bullet_ids(bullets_params.size());
+  std::vector<GameObjectId> bullet_ids;
   for (const std::vector<QVariant>& bullet_params : bullets_params) {
-    bullet_ids.emplace_back(model->AddGameObject(
+    int bullet_id = model_->GenerateNextUnusedBulletId(parent_id);
+    model->GameModel::AddGameObject(bullet_id,
         GameObjectType::kBullet,
-        bullet_params));
+        bullet_params);
+    bullet_ids.emplace_back(bullet_id);
   }
   return bullet_ids;
 }
@@ -598,36 +600,29 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
               static_cast<qint64>(timestamp)), player_id);
     return;
   }
-  auto current_model_data = models_cache_[model_id];
-  if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
+  auto start_model = models_cache_[model_id].model;
+  if (!start_model->IsGameObjectIdTaken(player_id)) {
     return;
   }
   auto player_in_model =
-      current_model_data.model->GetPlayerByPlayerId(player_id);
+      start_model->GetPlayerByPlayerId(player_id);
 
   std::vector<GameObjectId> bullet_ids =
-      AddBullets(current_model_data.model,
+      AddBullets(start_model,
                  player_id, player_in_model->GetX(), player_in_model->GetY(),
                  player_in_model->GetRotation(), player_in_model->GetWeapon());
-
-  for (int bullet_id_from_bullets_id : bullet_ids) {
-    GameObjectId bullet_id = bullet_id_from_bullets_id;
-
-    QPointF position_to_set =
-        {player_in_model->GetX(), player_in_model->GetY()};
-    bool break_bullet = false;
+  for (int bullet_id : bullet_ids) {
     bool break_player = false;
+    auto prev_bullet = start_model->GetGameObjectByGameObjectId(bullet_id);
+    auto start_player = start_model->GetPlayerByPlayerId(player_id);
+    start_player->GetWeapon()->SetLastTimeShot(timestamp);
+    model_id++;
     while (model_id != static_cast<int>(models_cache_.size())) {
       auto cur_model = models_cache_[model_id].model;
-      if (!break_bullet && cur_model->IsGameObjectIdTaken(bullet_id)) {
-        auto bullet_in_model =
-            cur_model->GetGameObjectByGameObjectId(bullet_id);
-        bullet_in_model->SetPosition(position_to_set);
-        bullet_in_model->OnTick(models_cache_[model_id].delta_time);
-        position_to_set = bullet_in_model->GetPosition();
-      } else {
-        break_bullet = true;
-      }
+      auto new_bullet = prev_bullet->Clone();
+      cur_model->AttachGameObject(bullet_id, new_bullet);
+      new_bullet->OnTick(models_cache_[model_id].delta_time);
+      prev_bullet = new_bullet;
 
       if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
         auto player = cur_model->GetPlayerByPlayerId(player_id);

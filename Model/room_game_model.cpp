@@ -7,6 +7,7 @@ RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {
   next_game_object_id_ = model.next_game_object_id_;
   last_object_hash_ = model.last_object_hash_;
   last_player_stats_hash_ = model.last_player_stats_hash_;
+  next_bullet_id_ = model.next_bullet_id_;
 }
 
 GameObjectId RoomGameModel::GenerateNextUnusedGameObjectId() {
@@ -119,4 +120,13 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
     }
   }
   return best_point;
+}
+
+GameObjectId RoomGameModel::GenerateNextUnusedBulletId(GameObjectId player_id) {
+  if (next_bullet_id_.find(player_id) == next_bullet_id_.end()) {
+    next_bullet_id_[player_id] = 1;
+  } else {
+    next_bullet_id_[player_id]++;
+  }
+  return player_id * Constants::kMaxPlayerBullets + next_bullet_id_[player_id];
 }
