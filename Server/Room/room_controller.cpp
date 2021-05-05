@@ -138,6 +138,7 @@ void RoomController::TickCreepsIntelligence(
   for (auto& creep : creeps) {
     std::shared_ptr<Player> closer_player{nullptr};
     auto creep_position = creep->GetPosition();
+    auto was_going_to_spawn = creep->IsGoingToSpawn();
     for (const auto& player : players) {
       float distance =
           Math::DistanceBetweenPoints(creep_position,
@@ -171,6 +172,12 @@ void RoomController::TickCreepsIntelligence(
           QPointF(creep->GetSpawnX(), creep->GetSpawnY()) - creep_position);
     } else if (closer_player) {
       force = QVector2D(closer_player->GetPosition() - creep_position);
+    }
+    auto runaway_hp = CreepSettings::GetInstance().GetCreepSetting<float>
+        ("runaway_hp_ratio") * creep->GetMaxHealthPoints();
+    if (!creep->IsGoingToSpawn() &&
+        creep->GetHealthPoints() < runaway_hp) {
+      force *= -1;
     }
     force.normalize();
     ObjectCollision::MoveWithSlidingCollision(
