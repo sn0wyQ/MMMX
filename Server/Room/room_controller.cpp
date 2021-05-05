@@ -99,7 +99,7 @@ void RoomController::TickObjectsInModel(const ModelData& model_data) {
 }
 
 
-void RoomController::EntityReceiveDamage(
+bool RoomController::EntityReceiveDamage(
     const ModelData& model_data,
     const std::shared_ptr<Entity>& entity, float damage) {
   float cur_entity_hp = entity->GetHealthPoints();
@@ -121,6 +121,7 @@ void RoomController::EntityReceiveDamage(
       creeps_count_--;
       entity->SetIsNeedToDelete(true);
     }
+    return true;
   } else {
     entity->SetHealthPoints(hp_to_set);
     if (is_player) {
@@ -128,6 +129,7 @@ void RoomController::EntityReceiveDamage(
           Event(EventType::kUpdateLocalPlayerHealthPoints, hp_to_set),
           entity->GetId());
     }
+    return false;
   }
 }
 
@@ -215,21 +217,21 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
           model_data.model->GetGameObjectByGameObjectId(object_collided_id);
       if (actual_object_collided->IsEntity()) {
         auto entity = std::dynamic_pointer_cast<Entity>(actual_object_collided);
-        EntityReceiveDamage(model_data, entity, bullet->GetBulletDamage());
+        bool is_killed =
+            EntityReceiveDamage(model_data, entity, bullet->GetBulletDamage());
 
-        if (entity->GetHealthPoints() == 0.f &&
-          entity->GetType() == GameObjectType::kPlayer) {
+        if (is_killed) {
           auto killer_id = bullet->GetParentId();
-
           if (model_data.model->IsGameObjectIdTaken(killer_id)) {
             auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
             float receive_exp = entity->GetExpIncrementForKill();
             killer->IncreaseExperience(receive_exp);
-            auto killer_stats =
-                model_data.model->GetPlayerStatsByPlayerId(killer_id);
-
-            killer_stats->SetKills(killer_stats->GetKills() + 1);
-            killer_stats->SetLevel(killer->GetLevel());
+            if (entity->GetType() == GameObjectType::kPlayer) {
+              auto killer_stats =
+                  model_data.model->GetPlayerStatsByPlayerId(killer_id);
+              killer_stats->SetKills(killer_stats->GetKills() + 1);
+              killer_stats->SetLevel(killer->GetLevel());
+            }
             this->AddEventToSendToSinglePlayer(
                 Event(EventType::kIncreaseLocalPlayerExperience,
                       receive_exp),
