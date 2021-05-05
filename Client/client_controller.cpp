@@ -262,6 +262,11 @@ QVector2D ClientController::GetKeyForce() const {
   return key_force;
 }
 
+void ClientController::SendVisibleRoomsInfoEvent(const Event& event) {
+  model_->SetRoomsInfo(event.GetArg<QList<QVariant>>(0));
+  view_->UpdateRoomsInfoList();
+}
+
 void ClientController::SetTimeDifferenceEvent(const Event& event) {
   auto client_sent_time = event.GetArg<int64_t>(0);
   auto server_received_time = event.GetArg<int64_t>(1);

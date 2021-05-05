@@ -71,6 +71,7 @@ class BaseController : public QObject {
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
   virtual void SendNicknameEvent(const Event& event) {}
+  virtual void SendVisibleRoomsInfoEvent(const Event& event) {}
   virtual void SetPlayerIdToClient(const Event& event) {}
   virtual void SetTimeDifferenceEvent(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}

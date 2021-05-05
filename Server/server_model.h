@@ -7,7 +7,9 @@
 #include <utility>
 
 #include <QAbstractSocket>
+#include <QList>
 #include <QObject>
+#include <QVariant>
 #include <QWebSocket>
 #include <QWebSocketServer>
 
@@ -27,17 +29,20 @@ class ServerModel {
     RoomId room_id = Constants::kNullRoomId;
   };
 
-  RoomId AddNewRoom();
+  RoomId AddNewRoom(RoomSettings room_settings = RoomSettings());
 
   std::shared_ptr<ConnectedClient>
     GetClientByClientId(ClientId client_id) const;
   std::map<RoomId, std::shared_ptr<RoomController>>& GetRooms();
   std::shared_ptr<RoomController> GetRoomByRoomId(RoomId room_id) const;
   std::shared_ptr<RoomController> GetRoomByClientId(ClientId client_id) const;
+  RoomId GetRoomIdByClientId(ClientId client_id) const;
 
   ClientId GetClientIdByWebSocket(QWebSocket* web_socket) const;
 
   ClientId GetNextUnusedClientId() const;
+
+  QList<QVariant> GetVisibleRoomsInfo(ClientId client_id) const;
 
   void DeleteRoom(RoomId room_id);
 

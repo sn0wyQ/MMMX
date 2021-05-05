@@ -12,6 +12,12 @@
 #include "Controller/base_controller.h"
 #include "server_model.h"
 
+namespace Constants::ServerController {
+
+constexpr int kMinimumNumberOfPublicRoomsWithFreePlace = 3;
+
+}  // namespace Constants::ServerController
+
 class ServerController : public BaseController {
   Q_OBJECT
 
@@ -23,6 +29,8 @@ class ServerController : public BaseController {
 
   void SendEvent(const Event& event) override;
   void OnTick(int delta_time) override;
+
+  void SendVisibleRoomsInfo(ClientId client_id);
 
   public Q_SLOTS:
   void OnByteArrayReceived(const QByteArray& message);

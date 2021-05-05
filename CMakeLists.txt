@@ -63,6 +63,8 @@ set(SOURCES
         Client/GUI/GameView/PlayerBar/player_bar.cpp
         Client/GUI/GameView/ViewPort/viewport.cpp
         Client/GUI/GameView/game_view.cpp
+        Client/GUI/MainMenu/RoomsInfoList/SingleRoomInfo/single_room_info.cpp
+        Client/GUI/MainMenu/RoomsInfoList/rooms_info_list.cpp
         Client/GUI/MainMenu/main_menu.cpp
         Client/GUI/abstract_client_view.h
         Client/GUI/client_view.cpp
@@ -93,6 +95,7 @@ set(SOURCES
         Painter/painter.cpp
         PlayerStats/player_stats.cpp
         Server/Room/room_controller.cpp
+        Server/Room/room_info.h
         Server/Room/room_settings.cpp
         Server/server_controller.cpp
         Weapon/AssaultRifle/assault_rifle.cpp

@@ -33,6 +33,7 @@ class AbstractClientView : public QMainWindow {
   virtual void ConnectToRoom(RoomId room_id = Constants::kNullRoomId) = 0;
   virtual void SetWindow(ClientWindowType window_type) = 0;
   virtual void Update() = 0;
+  virtual void UpdateRoomsInfoList() = 0;
   virtual std::shared_ptr<Converter> GetConverter() = 0;
 };
 

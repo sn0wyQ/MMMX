@@ -17,6 +17,14 @@ RoomSettings::RoomSettings(QString name,
   this->SetRandomKeyCode();
 }
 
+QString RoomSettings::GetName() const {
+  return name_;
+}
+
+void RoomSettings::SetName(const QString& name) {
+  name_ = name;
+}
+
 void RoomSettings::SetRandomName() {
   static std::uniform_int_distribution<int> uid_first_part
       (0, kFirstPartsOfTheName.size() - 1);
@@ -38,12 +46,12 @@ void RoomSettings::SetRandomName() {
           + kSecondPartsOfTheName.at(preposition).at(second_part_index);
 }
 
-void RoomSettings::SetName(const QString& name) {
-  name_ = name;
+ClientId RoomSettings::GetOwnersClientId() const {
+  return owners_client_id_;
 }
 
-QString RoomSettings::GetName() const {
-  return name_;
+void RoomSettings::SetOwnersClientId(ClientId new_owner_id) {
+  owners_client_id_ = new_owner_id;
 }
 
 bool RoomSettings::IsPublic() const {

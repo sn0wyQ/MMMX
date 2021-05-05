@@ -12,7 +12,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   this->setFocusPolicy(Qt::StrongFocus);
 
   game_view_ = new GameView(this, controller_);
-  main_menu_ = new MainMenu(this);
+  main_menu_ = new MainMenu(this, controller_);
 
   stacked_widget_ = new QStackedWidget(this);
   stacked_widget_->addWidget(game_view_);
@@ -41,6 +41,10 @@ void ClientView::SetWindow(ClientWindowType window_type) {
 
 void ClientView::Update() {
   this->update();
+}
+
+void ClientView::UpdateRoomsInfoList() {
+  main_menu_->UpdateRoomsInfoList();
 }
 
 std::shared_ptr<Converter> ClientView::GetConverter() {

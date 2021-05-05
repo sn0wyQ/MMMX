@@ -55,6 +55,9 @@ class RoomSettings {
   void SetName(const QString& name);
   void SetRandomName();
 
+  ClientId GetOwnersClientId() const;
+  void SetOwnersClientId(ClientId new_owner_id);
+
   int GetMaxClients() const;
   void SetMaxClients(int max_clients);
 

@@ -27,11 +27,14 @@ std::shared_ptr<RoomController>
 
 std::shared_ptr<RoomController>
     ServerModel::GetRoomByClientId(ClientId client_id) const {
+  return rooms_.at(GetRoomIdByClientId(client_id));
+}
+
+RoomId ServerModel::GetRoomIdByClientId(ClientId client_id) const {
   if (client_id == Constants::kNullClientId) {
     throw std::runtime_error("[MODEL] Invalid client ID");
   }
-  RoomId room_id = connected_clients_.at(client_id)->room_id;
-  return rooms_.at(room_id);
+  return connected_clients_.at(client_id)->room_id;
 }
 
 ClientId ServerModel::GetClientIdByWebSocket(QWebSocket* web_socket) const {
@@ -45,6 +48,14 @@ ClientId ServerModel::GetClientIdByWebSocket(QWebSocket* web_socket) const {
 ClientId ServerModel::GetNextUnusedClientId() const {
   return (connected_clients_.empty() ?
             1 : connected_clients_.rbegin()->first + 1);
+}
+
+QList<QVariant> ServerModel::GetVisibleRoomsInfo(ClientId client_id) const {
+  QList<QVariant> rooms_info;
+  for (const auto& [id, room] : rooms_) {
+    rooms_info.push_back(room->GetRoomInfo().GetVariantList());
+  }
+  return rooms_info;
 }
 
 void ServerModel::DeleteRoom(RoomId room_id) {
@@ -75,13 +86,13 @@ void ServerModel::RemoveClient(ClientId client_id) {
   if (connected_clients_.find(client_id) == connected_clients_.end()) {
     throw std::runtime_error("[MODEL] Invalid client ID");
   }
-  client_ids_.erase(connected_clients_[client_id]->socket.get());
+  client_ids_.erase(connected_clients_.at(client_id)->socket.get());
   connected_clients_.erase(client_id);
 }
 
-RoomId ServerModel::AddNewRoom() {
+RoomId ServerModel::AddNewRoom(RoomSettings room_settings) {
   RoomId room_id = (rooms_.empty() ? 1 : rooms_.rbegin()->first + 1);
-  auto room = new RoomController(room_id, RoomSettings());
+  auto room = new RoomController(room_id, room_settings);
   rooms_.emplace(room_id, std::shared_ptr<RoomController>(room));
   qInfo().noquote().nospace() << "[SERVER] Created new RoomController (ID: "
                               << room_id << ")";

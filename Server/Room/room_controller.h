@@ -16,7 +16,8 @@
 
 #include "Controller/base_controller.h"
 #include "GameObject/RigidBody/object_collision.h"
-#include "room_game_model.h"
+#include "Server/Room/room_game_model.h"
+#include "Server/Room/room_info.h"
 #include "Server/Room/room_settings.h"
 #include "constants.h"
 
@@ -55,6 +56,10 @@ class RoomController : public BaseController {
   bool HasPlayers() const;
   bool IsGameInProgress() const;
   bool IsWaitingForClients() const;
+  bool IsPublic() const;
+
+  void SetRoomState(RoomState room_state);
+  void StartGame();
 
   int GetPlayersCount() const;
 
@@ -66,6 +71,8 @@ class RoomController : public BaseController {
 
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
   std::vector<Event> ClaimEventsForServer();
+
+  RoomInfo GetRoomInfo() const;
 
  private:
   RoomId id_;

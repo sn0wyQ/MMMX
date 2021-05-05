@@ -212,6 +212,19 @@ bool RoomController::IsWaitingForClients() const {
   return room_state_ == RoomState::kWaitingForClients;
 }
 
+bool RoomController::IsPublic() const {
+  return room_settings_.IsPublic();
+}
+
+void RoomController::SetRoomState(RoomState room_state) {
+  room_state_ = room_state;
+}
+
+void RoomController::StartGame() {
+  this->SetRoomState(RoomState::kGameInProgress);
+  this->AddEventToHandle(Event(EventType::kStartGame));
+}
+
 int RoomController::GetPlayersCount() const {
   return player_ids_.size();
 }
@@ -259,6 +272,19 @@ ClientId RoomController::PlayerIdToClientId(GameObjectId player_id) const {
 
 std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
+}
+
+RoomInfo RoomController::GetRoomInfo() const {
+  RoomInfo room_info;
+  room_info.id = id_;
+  room_info.name = room_settings_.GetName();
+  room_info.max_clients = room_settings_.GetMaxClients();
+  room_info.owners_client_id = room_settings_.GetOwnersClientId();
+  room_info.is_public = room_settings_.IsPublic();
+  for (const auto& [client_id, player_id] : player_ids_) {
+    room_info.clients.push_back(client_id);
+  }
+  return room_info;
 }
 
 Event RoomController::GetEventOfGameObjectData(

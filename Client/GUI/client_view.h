@@ -33,6 +33,7 @@ class ClientView : public AbstractClientView {
   void ConnectToRoom(RoomId room_id = Constants::kNullRoomId) override;
   void SetWindow(ClientWindowType window_type) override;
   void Update() override;
+  void UpdateRoomsInfoList() override;
   std::shared_ptr<Converter> GetConverter() override;
 
  private:

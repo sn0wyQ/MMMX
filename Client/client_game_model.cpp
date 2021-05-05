@@ -151,7 +151,7 @@ void ClientGameModel::AddLocalBullets() {
     local_bullets_.emplace(std::make_pair(bullet_id_to_set_, bullet));
     qDebug().noquote() << "[MODEL] Added new local bullet:"
       << bullet_id_to_set_;
-    bullet_id_to_set_++;
+    ++bullet_id_to_set_;
   }
 }
 
@@ -170,4 +170,16 @@ void ClientGameModel::DeleteLocalBullet(GameObjectId bullet_id) {
   }
   local_bullets_.erase(iter);
   qDebug().noquote() << "[MODEL] Removed local bullet:" << bullet_id;
+}
+
+const QList<RoomInfo>& ClientGameModel::GetRoomsInfo() const {
+  return rooms_info_;
+}
+
+void ClientGameModel::SetRoomsInfo(const QList<QVariant>& rooms_info) {
+  rooms_info_.clear();
+  for (const auto& variant : rooms_info) {
+    rooms_info_.push_back(
+        RoomInfo::GetRoomInfoFromVariantList(variant.toList()));
+  }
 }

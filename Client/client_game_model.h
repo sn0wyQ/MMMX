@@ -7,7 +7,11 @@
 #include <utility>
 #include <vector>
 
+#include <QList>
+#include <QVariant>
+
 #include "Model/game_model.h"
+#include "Server/Room/room_info.h"
 
 enum class Variable {
   kIsInFov,
@@ -51,6 +55,9 @@ class ClientGameModel : public GameModel {
   std::vector<std::shared_ptr<Bullet>> GetLocalBullets() const;
   void DeleteLocalBullet(GameObjectId bullet_id);
 
+  const QList<RoomInfo>& GetRoomsInfo() const;
+  void SetRoomsInfo(const QList<QVariant>& rooms_info);
+
  private:
   GameObjectId local_player_id_{Constants::kNullGameObjectId};
   std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> interpolator_;
@@ -66,6 +73,8 @@ class ClientGameModel : public GameModel {
 
   std::unordered_map<GameObjectId, std::shared_ptr<Bullet>> local_bullets_;
   int bullet_id_to_set_{1};
+
+  QList<RoomInfo> rooms_info_;
 };
 
 #endif  // MODEL_CLIENT_GAME_MODEL_H_
