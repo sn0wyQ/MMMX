@@ -16,7 +16,6 @@ using RoomId = int;
 namespace Constants {
 
 // Build Options
-constexpr bool kRemote = false;
 constexpr bool kClientEnableIgnoreLevel = true;
 constexpr QtMsgType kClientMessageIgnoreLevel = QtDebugMsg;
 constexpr bool kServerEnableIgnoreLevel = true;
@@ -33,9 +32,6 @@ const QString kVersionString = QString::number(kMajorVersion)
 // Server
 const QString kServerName = "MMMX Server";
 constexpr int kServerPort = 1337;
-const QString kServerIp = kRemote ? "188.120.224.70" : "localhost";
-const QUrl kServerUrl =
-    QUrl(QString("ws://") + kServerIp + ":" + QString::number(kServerPort));
 constexpr int kTickrate = 64;
 constexpr int kTimeToTick = 1000 / kTickrate;
 const auto kHashAlgorithm = QCryptographicHash::Algorithm::Md5;

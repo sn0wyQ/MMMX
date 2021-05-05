@@ -58,7 +58,7 @@ class ClientController : public BaseController {
   Q_OBJECT
 
  public:
-  explicit ClientController(const QUrl& url = Constants::kServerUrl);
+  explicit ClientController(const QUrl& url);
   ~ClientController() override = default;
 
   QString GetControllerName() const override;
