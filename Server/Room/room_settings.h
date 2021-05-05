@@ -1,13 +1,22 @@
 #ifndef SERVER_ROOM_ROOM_SETTINGS_H_
 #define SERVER_ROOM_ROOM_SETTINGS_H_
 
+#include <algorithm>
 #include <random>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <QDateTime>
+#include <QDebug>
 
 #include "constants.h"
+
+namespace Constants::RoomSettings {
+
+constexpr int kKeyCodeLength = 5;
+
+}  // namespace Constants::RoomSettings
 
 struct FirstPartOfTheName {
   // Should be somewhat close to 'battle' (by sense)
@@ -37,23 +46,32 @@ const std::unordered_map<QString, std::vector<QString>> kSecondPartsOfTheName {
 
 class RoomSettings {
  public:
-  explicit RoomSettings(const QString& name = "",
+  explicit RoomSettings(QString name = "",
                         ClientId owners_client_id = Constants::kNullClientId,
                         int max_clients = Constants::kDefaultMaxClients,
                         bool is_public = true);
 
+  QString GetName() const;
+  void SetName(const QString& name);
+  void SetRandomName();
+
   int GetMaxClients() const;
   void SetMaxClients(int max_clients);
 
-  void SetRandomName();
+  bool IsPublic() const;
+  void SetPublicity(bool is_public);
+
+  QString GetKeyCode() const;
+  void SetRandomKeyCode();
 
  private:
+  static std::mt19937 gen_;
+
   QString name_;
   // If owner's ClientId is kNullClientId than owner of this room is server
   ClientId owners_client_id_{};
   int max_clients_{};
   bool is_public_{true};
-  // You can connect by QString(key_code + ) even to public room
   QString key_code_;
 };
 
