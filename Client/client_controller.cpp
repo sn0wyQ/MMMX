@@ -32,7 +32,7 @@ void ClientController::OnConnected() {
           this, &ClientController::UpdateVarsAndPing);
   server_var_timer_.start(Constants::kTimeToUpdateVarsAndPing);
   connect(&view_update_timer_, &QTimer::timeout,
-          view_.get(), &AbstractClientView::Update);
+          this, &ClientController::UpdateView);
   view_update_timer_.start(1000 / Constants::kFpsMax);
   connect(&web_socket_, &QWebSocket::pong,
           this, &ClientController::SetPing);
@@ -104,11 +104,31 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
   this->OnTickGameInProgress(delta_time);
 }
 
+void ClientController::SendPLayerDataToServer() {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto local_player = model_->GetLocalPlayer();
+  this->AddEventToSend(Event(EventType::kSendControls,
+                             static_cast<qint64>(GetCurrentServerTime()),
+                             local_player->GetId(),
+                             local_player->GetX(),
+                             local_player->GetY(),
+                             local_player->GetVelocity(),
+                             local_player->GetRotation()));
+
+  if (local_player->IsNeedToSendLevelingPoints()) {
+    Event event(EventType::kSendLevelingPoints, local_player->GetId());
+    for (const auto& item : local_player->GetLevelingPoints()) {
+      event.PushBackArg(item);
+    }
+    this->AddEventToSend(event);
+    local_player->SetNeedToSendLevelingPoints(false);
+  }
+}
+
 void ClientController::OnTickGameInProgress(int delta_time) {
-  this->UpdateInterpolationInfo();
-  this->UpdateLocalPlayer(delta_time);
-  this->UpdateLocalBullets(delta_time);
-  this->UpdateAnimations(delta_time);
+  this->SendPLayerDataToServer();
 }
 
 void ClientController::UpdateInterpolationInfo() {
@@ -168,23 +188,6 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
   local_player->OnTick(delta_time);
 
   converter_->UpdateGameCenter(local_player->GetPosition());
-
-  this->AddEventToSend(Event(EventType::kSendControls,
-                        static_cast<qint64>(GetCurrentServerTime()),
-                        local_player->GetId(),
-                        local_player->GetX(),
-                        local_player->GetY(),
-                        local_player->GetVelocity(),
-                        local_player->GetRotation()));
-
-  if (local_player->IsNeedToSendLevelingPoints()) {
-    Event event(EventType::kSendLevelingPoints, local_player->GetId());
-    for (const auto& item : local_player->GetLevelingPoints()) {
-      event.PushBackArg(item);
-    }
-    this->AddEventToSend(event);
-    local_player->SetNeedToSendLevelingPoints(false);
-  }
 }
 
 void ClientController::UpdateAnimations(int delta_time) {
@@ -213,6 +216,20 @@ void ClientController::UpdateLocalBullets(int delta_time) {
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
   view_ = std::move(view);
   converter_ = view_->GetConverter();
+}
+
+void ClientController::UpdateView() {
+  auto time = QDateTime::currentMSecsSinceEpoch();
+  auto delta_time = time - last_view_update_time_;
+  last_view_update_time_ = time;
+  if (delta_time == 0) {
+    return;
+  }
+  this->UpdateInterpolationInfo();
+  this->UpdateLocalPlayer(delta_time);
+  this->UpdateLocalBullets(delta_time);
+  this->UpdateAnimations(delta_time);
+  view_->Update();
 }
 
 QString ClientController::GetControllerName() const {

@@ -72,6 +72,7 @@ class GameObject {
   float GetHeight() const;
   void SetWidth(float width);
   void SetHeight(float height);
+  QRectF GetBoundingRect() const;
 
   virtual GameObjectType GetType() const;
 

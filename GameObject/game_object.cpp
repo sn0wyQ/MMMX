@@ -161,6 +161,12 @@ void GameObject::SetHeight(float height) {
   height_ = height;
 }
 
+QRectF GameObject::GetBoundingRect() const {
+  QPointF offset(this->GetWidth(), this->GetHeight());
+  return QRectF(QPointF(this->GetPosition() - offset / 2.f),
+                QPointF(this->GetPosition() + offset / 2.f));
+}
+
 bool GameObject::IsMovable() const {
   return false;
 }

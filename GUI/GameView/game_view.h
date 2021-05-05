@@ -15,7 +15,7 @@
 #include "Painter/painter.h"
 
 class GameView : public QWidget {
-  Q_OBJECT
+ Q_OBJECT
 
  public:
   GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model);
@@ -31,6 +31,9 @@ class GameView : public QWidget {
  private:
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<Converter> converter_;
+
+  void DrawObjects(const std::vector<std::shared_ptr<GameObject>>& objects,
+                   const QRectF& view_rect);
 
   bool was_player_set_;
   SpringEmulator<QVector2D> camera_motion_emulator_;
