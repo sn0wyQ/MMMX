@@ -107,6 +107,7 @@ bool RoomController::EntityReceiveDamage(
                              cur_entity_hp - damage);
   bool is_player = entity->GetType() == GameObjectType::kPlayer;
   bool is_creep = entity->GetType() == GameObjectType::kCreep;
+  entity->SetHealthPoints(hp_to_set);
   if (hp_to_set == 0.f) {
     QPointF point_to_spawn = model_->GetPointToSpawn(
         entity->GetBoundingCircleRadius(), is_player);
@@ -123,7 +124,6 @@ bool RoomController::EntityReceiveDamage(
     }
     return true;
   } else {
-    entity->SetHealthPoints(hp_to_set);
     if (is_player) {
       this->AddEventToSendToSinglePlayer(
           Event(EventType::kUpdateLocalPlayerHealthPoints, hp_to_set),
@@ -626,13 +626,34 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
                  player_in_model->GetRotation(), player_in_model->GetWeapon());
   for (int bullet_id : bullet_ids) {
     bool break_player = false;
-    auto prev_bullet = start_model->GetGameObjectByGameObjectId(bullet_id);
+    auto prev_bullet =
+        std::dynamic_pointer_cast<Bullet>(
+            start_model->GetGameObjectByGameObjectId(bullet_id));
+
+    Event event_to_send(EventType::kSendGameInfoToInterpolate,
+                bullet_id,
+                static_cast<int>(GameObjectType::kBullet),
+                static_cast<qint64>(timestamp),
+                static_cast<int>(EventType::kUpdateGameObjectData),
+                bullet_id);
+    event_to_send.PushBackArgs(prev_bullet->GetParams());
+    auto players = start_model->GetPlayers();
+    std::vector<GameObjectId> player_list;
+    for (const auto& player : players) {
+      if (prev_bullet->GetParentId() == player->GetId()) {
+        continue;
+      }
+      player_list.push_back(player->GetId());
+    }
+    this->AddEventToSendToPlayerList(event_to_send, player_list);
+
     auto start_player = start_model->GetPlayerByPlayerId(player_id);
     start_player->GetWeapon()->SetLastTimeShot(timestamp);
     model_id++;
     while (model_id != static_cast<int>(models_cache_.size())) {
       auto cur_model = models_cache_[model_id].model;
-      auto new_bullet = prev_bullet->Clone();
+      auto new_bullet =
+          std::dynamic_pointer_cast<Bullet>(prev_bullet->Clone());
       cur_model->AttachGameObject(bullet_id, new_bullet);
       new_bullet->OnTick(models_cache_[model_id].delta_time);
       prev_bullet = new_bullet;

@@ -130,8 +130,10 @@ void ClientController::UpdateInterpolationInfo() {
       }
       model_->AttachGameObject(game_object_id,
                                game_object_to_be_interpolated->Clone());
+      // TODO(kmekhovich): in respawn_button add is visible false
       continue;
     }
+    // TODO(kmekhovich): in respawn_button add is visible true
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
     QPointF buf_pos = game_object->GetPosition();
     bool was_collided = false;
