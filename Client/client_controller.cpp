@@ -1,8 +1,12 @@
 #include "client_controller.h"
 
-ClientController::ClientController(const QUrl& url) : url_(url),
-  model_(std::make_shared<ClientGameModel>()) {
+ClientController::ClientController(const QUrl& url,
+                                   int fps_max) :
+    url_(url),
+    model_(std::make_shared<ClientGameModel>()),
+    fps_max_(fps_max) {
   qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
+  qInfo() << "[CLIENT] Set fps_max to" << fps_max;
   connect(&web_socket_, &QWebSocket::connected, this,
           &ClientController::OnConnected);
   connect(&web_socket_, &QWebSocket::disconnected, this,
@@ -28,11 +32,14 @@ void ClientController::OnConnected() {
           this,
           &ClientController::OnByteArrayReceived);
 
-  connect(&timer_for_server_var_, &QTimer::timeout, this,
-          &ClientController::UpdateVarsAndPing);
-  timer_for_server_var_.start(Constants::kTimeToUpdateVarsAndPing);
-  connect(&web_socket_, &QWebSocket::pong, this,
-          &ClientController::SetPing);
+  connect(&server_var_timer_, &QTimer::timeout,
+          this, &ClientController::UpdateVarsAndPing);
+  server_var_timer_.start(Constants::kTimeToUpdateVarsAndPing);
+  connect(&view_update_timer_, &QTimer::timeout,
+          this, &ClientController::UpdateView);
+  view_update_timer_.start(1000 / fps_max_);
+  connect(&web_socket_, &QWebSocket::pong,
+          this, &ClientController::SetPing);
 
   // TODO(Everyone): Send nickname to server after connection
 
@@ -94,8 +101,6 @@ void ClientController::OnTick(int delta_time) {
       this->OnTickGameNotStarted(delta_time);
       break;
   }
-
-  view_->Update();
 }
 
 void ClientController::OnTickGameNotStarted(int delta_time) {
@@ -103,11 +108,31 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
   this->OnTickGameInProgress(delta_time);
 }
 
+void ClientController::SendPLayerDataToServer() {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto local_player = model_->GetLocalPlayer();
+  this->AddEventToSend(Event(EventType::kSendControls,
+                             static_cast<qint64>(GetCurrentServerTime()),
+                             local_player->GetId(),
+                             local_player->GetX(),
+                             local_player->GetY(),
+                             local_player->GetVelocity(),
+                             local_player->GetRotation()));
+
+  if (local_player->IsNeedToSendLevelingPoints()) {
+    Event event(EventType::kSendLevelingPoints, local_player->GetId());
+    for (const auto& item : local_player->GetLevelingPoints()) {
+      event.PushBackArg(item);
+    }
+    this->AddEventToSend(event);
+    local_player->SetNeedToSendLevelingPoints(false);
+  }
+}
+
 void ClientController::OnTickGameInProgress(int delta_time) {
-  this->UpdateInterpolationInfo();
-  this->UpdateLocalPlayer(delta_time);
-  this->UpdateLocalBullets(delta_time);
-  this->UpdateAnimations(delta_time);
+  this->SendPLayerDataToServer();
 }
 
 void ClientController::UpdateInterpolationInfo() {
@@ -190,23 +215,6 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
   local_player->OnTick(delta_time);
 
   converter_->UpdateGameCenter(local_player->GetPosition());
-
-  this->AddEventToSend(Event(EventType::kSendControls,
-                        static_cast<qint64>(GetCurrentServerTime()),
-                        local_player->GetId(),
-                        local_player->GetX(),
-                        local_player->GetY(),
-                        local_player->GetVelocity(),
-                        local_player->GetRotation()));
-
-  if (local_player->IsNeedToSendLevelingPoints()) {
-    Event event(EventType::kSendLevelingPoints, local_player->GetId());
-    for (const auto& item : local_player->GetLevelingPoints()) {
-      event.PushBackArg(item);
-    }
-    this->AddEventToSend(event);
-    local_player->SetNeedToSendLevelingPoints(false);
-  }
 }
 
 void ClientController::UpdateAnimations(int delta_time) {
@@ -235,6 +243,20 @@ void ClientController::UpdateLocalBullets(int delta_time) {
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
   view_ = std::move(view);
   converter_ = view_->GetConverter();
+}
+
+void ClientController::UpdateView() {
+  auto time = QDateTime::currentMSecsSinceEpoch();
+  auto delta_time = time - last_view_update_time_;
+  last_view_update_time_ = time;
+  if (delta_time == 0) {
+    return;
+  }
+  this->UpdateInterpolationInfo();
+  this->UpdateLocalPlayer(delta_time);
+  this->UpdateLocalBullets(delta_time);
+  this->UpdateAnimations(delta_time);
+  view_->Update();
 }
 
 QString ClientController::GetControllerName() const {

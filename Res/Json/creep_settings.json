@@ -12,5 +12,6 @@
   "speed_multiplier": 0.0003,
   "damage_multiplier": 1.0,
   "kMinLevelPow": 5,
-  "kMaxLevelPow": 4
+  "kMaxLevelPow": 4,
+  "runaway_hp_ratio": 0.4
 }

@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QFontDatabase>
+#include <QScreen>
 
 #include "Client/client_controller.h"
 #include "Client/client_view.h"
@@ -33,7 +34,8 @@ int main(int argc, char* argv[]) {
   QFile::remove("client.log");
   qInstallMessageHandler(MessageHandlerWrapper);
 
-  auto client_controller = std::make_shared<ClientController>(server_url);
+  auto client_controller = std::make_shared<ClientController>(
+      server_url, QApplication::primaryScreen()->refreshRate());
   auto client_view = new ClientView(client_controller);
   client_view->show();
 

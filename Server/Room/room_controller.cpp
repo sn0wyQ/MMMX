@@ -173,6 +173,12 @@ void RoomController::TickCreepsIntelligence(
     } else if (closer_player) {
       force = QVector2D(closer_player->GetPosition() - creep_position);
     }
+    auto runaway_hp = CreepSettings::GetInstance().GetCreepSetting<float>
+        ("runaway_hp_ratio") * creep->GetMaxHealthPoints();
+    if (!creep->IsGoingToSpawn() &&
+        creep->GetHealthPoints() < runaway_hp) {
+      force *= -1;
+    }
     force.normalize();
     ObjectCollision::MoveWithSlidingCollision(
         creep, model_->GetGameObjectsToMoveWithSliding(),

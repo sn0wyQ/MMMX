@@ -1,14 +1,9 @@
 #include "painter.h"
 
-Painter::Painter(QPaintDevice* device,
-                 std::shared_ptr<Converter> converter,
-                 const QPointF& local_centre)
+Painter::Painter(QPixmap* device,
+                 std::shared_ptr<Converter> converter)
     : QPainter(device),
-      converter_(std::move(converter)) {
-  // Setting screen centre to Player's position
-  translate((QPointF(device->width(), device->height()) / 2.f)
-                - converter_->ScaleFromGameToScreen(local_centre));
-}
+      converter_(std::move(converter)) {}
 
 void Painter::SetClipCircle(float x,
                             float y,
@@ -24,7 +19,11 @@ void Painter::SetClipCircle(float x,
                  doubled_r_scaled,
                  doubled_r_scaled,
                  QRegion::Ellipse);
-  setClipRegion(region, clip_operation);
+  this->setClipRegion(region, clip_operation);
+}
+
+void Painter::ResetClip() {
+  this->setClipRect(QRect(), Qt::NoClip);
 }
 
 void Painter::RotateClockWise(float degree) {

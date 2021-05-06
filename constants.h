@@ -83,6 +83,7 @@ constexpr float kCameraStiffnessRatio = 0.008f;
 constexpr float kCameraFrictionRatio = 0.15f;
 constexpr float kFovStiffnessRatio = 0.007f;
 constexpr float kFovFrictionRatio = 0.15f;
+constexpr int kDefaultFpsMax = 60;
 
 // Bullet collision
 constexpr int kAccuracy = 10;
