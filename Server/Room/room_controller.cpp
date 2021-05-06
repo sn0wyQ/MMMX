@@ -193,6 +193,49 @@ void RoomController::TickCreepsIntelligence(
   }
 }
 
+void RoomController::ProcessBulletHits(
+    const RoomController::ModelData& model_data_bullet,
+    const std::shared_ptr<Bullet>& bullet,
+    const std::vector<std::shared_ptr<GameObject>>& game_objects) {
+  auto old_object_collided =
+      ObjectCollision::GetObjectBulletCollidedWith(
+          bullet, game_objects, model_data_bullet.delta_time, false);
+  if (old_object_collided) {
+    bullet->SetIsNeedToDelete(true);
+
+    auto object_collided_id = old_object_collided->GetId();
+    if (!model_data_bullet.model->IsGameObjectIdTaken(object_collided_id)) {
+      return;
+    }
+    auto actual_object_collided =
+        model_data_bullet.model->GetGameObjectByGameObjectId(object_collided_id);
+    if (actual_object_collided->IsEntity()) {
+      auto entity = std::dynamic_pointer_cast<Entity>(actual_object_collided);
+      bool is_killed =
+          EntityReceiveDamage(model_data_bullet, entity,
+                              bullet->GetBulletDamage());
+
+      if (is_killed) {
+        auto killer_id = bullet->GetParentId();
+        if (model_data_bullet.model->IsGameObjectIdTaken(killer_id)) {
+          auto killer = model_data_bullet.model->GetPlayerByPlayerId(killer_id);
+          float receive_exp = entity->GetExpIncrementForKill();
+          killer->IncreaseExperience(receive_exp);
+          if (entity->GetType() == GameObjectType::kPlayer) {
+            auto killer_stats =
+                model_data_bullet.model->GetPlayerStatsByPlayerId(killer_id);
+            killer_stats->SetKills(killer_stats->GetKills() + 1);
+            killer_stats->SetLevel(killer->GetLevel());
+          }
+          this->AddEventToSendToSinglePlayer(
+              Event(EventType::kIncreaseLocalPlayerExperience,
+                    receive_exp),
+              bullet->GetParentId());
+        }
+      }
+    }
+  }
+}
 
 void RoomController::ProcessBulletsHits(const ModelData& model_data) {
   auto timestamp = GetCurrentServerTime() - Constants::kInterpolationMSecs;
@@ -203,43 +246,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
   auto game_objects = models_cache_[model_id].model->GetAllGameObjects();
   auto bullets = model_data.model->GetAllBullets();
   for (const auto& bullet : bullets) {
-    auto old_object_collided =
-        ObjectCollision::GetObjectBulletCollidedWith(
-            bullet, game_objects, model_data.delta_time, false);
-    if (old_object_collided) {
-      bullet->SetIsNeedToDelete(true);
-
-      auto object_collided_id = old_object_collided->GetId();
-      if (!model_data.model->IsGameObjectIdTaken(object_collided_id)) {
-        continue;
-      }
-      auto actual_object_collided =
-          model_data.model->GetGameObjectByGameObjectId(object_collided_id);
-      if (actual_object_collided->IsEntity()) {
-        auto entity = std::dynamic_pointer_cast<Entity>(actual_object_collided);
-        bool is_killed =
-            EntityReceiveDamage(model_data, entity, bullet->GetBulletDamage());
-
-        if (is_killed) {
-          auto killer_id = bullet->GetParentId();
-          if (model_data.model->IsGameObjectIdTaken(killer_id)) {
-            auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
-            float receive_exp = entity->GetExpIncrementForKill();
-            killer->IncreaseExperience(receive_exp);
-            if (entity->GetType() == GameObjectType::kPlayer) {
-              auto killer_stats =
-                  model_data.model->GetPlayerStatsByPlayerId(killer_id);
-              killer_stats->SetKills(killer_stats->GetKills() + 1);
-              killer_stats->SetLevel(killer->GetLevel());
-            }
-            this->AddEventToSendToSinglePlayer(
-                Event(EventType::kIncreaseLocalPlayerExperience,
-                      receive_exp),
-                bullet->GetParentId());
-          }
-        }
-      }
-    }
+    this->ProcessBulletHits(model_data, bullet, game_objects);
   }
 }
 
@@ -649,15 +656,24 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
 
     auto start_player = start_model->GetPlayerByPlayerId(player_id);
     start_player->GetWeapon()->SetLastTimeShot(timestamp);
+    auto interpolation_msecs_model_before = timestamp -
+        Constants::kInterpolationMSecs;
     model_id++;
+    interpolation_msecs_model_before += Constants::kTimeToTick;
     while (model_id != static_cast<int>(models_cache_.size())) {
       auto cur_model = models_cache_[model_id].model;
       auto new_bullet =
           std::dynamic_pointer_cast<Bullet>(prev_bullet->Clone());
       cur_model->AttachGameObject(bullet_id, new_bullet);
+      auto prev_model_id =
+          GetModelIdByTimestamp(interpolation_msecs_model_before);
+      if (prev_model_id >= 0) {
+        this->ProcessBulletHits(
+            models_cache_[model_id], new_bullet,
+            models_cache_[prev_model_id].model->GetAllGameObjects());
+      }
       new_bullet->OnTick(models_cache_[model_id].delta_time);
       prev_bullet = new_bullet;
-
       if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
         auto player = cur_model->GetPlayerByPlayerId(player_id);
         player->GetWeapon()->SetLastTimeShot(timestamp);
@@ -666,6 +682,7 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
       }
 
       model_id++;
+      interpolation_msecs_model_before += Constants::kTimeToTick;
     }
   }
 }

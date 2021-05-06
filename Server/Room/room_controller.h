@@ -83,6 +83,10 @@ class RoomController : public BaseController {
   int creeps_count_{0};
 
   void RecalculateModel(const ModelData& model_data);
+  void ProcessBulletHits(
+      const RoomController::ModelData& model_data_bullet,
+      const std::shared_ptr<Bullet>& bullet,
+      const std::vector<std::shared_ptr<GameObject>>& game_objects);
   void ProcessBulletsHits(const ModelData& model_data);
   void TickCreepsIntelligence(const ModelData& model_data);
   void TickObjectsInModel(const ModelData& model_data);
