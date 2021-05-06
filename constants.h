@@ -53,7 +53,7 @@ constexpr RoomId kNullRoomId = -1;
 // Client
 const QString kWindowTitle = "MMMX | Version " + kVersionString;
 constexpr int kTimeToUpdateVarsAndPing = 1000;
-constexpr int64_t kInterpolationMSecs = 200;
+constexpr int64_t kInterpolationMSecs = 100;
 constexpr int kShootHoldingCheck = 30;
 
 // Graphics
