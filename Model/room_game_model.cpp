@@ -91,7 +91,8 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
                   point, game_object->GetPosition()));
         }
       }
-      float bounding_circle_radius = game_object->GetBoundingCircleRadius();
+      float bounding_circle_radius =
+          game_object->GetRigidBodyBoundingCircleRadius();
       if (Math::DistanceBetweenPoints(point, game_object->GetPosition()) <
           radius_from_object + bounding_circle_radius) {
         regenerate = true;

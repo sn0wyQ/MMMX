@@ -143,14 +143,15 @@ void ClientController::UpdateInterpolationInfo() {
       - Constants::kInterpolationMSecs;
 
   auto local_player = model_->GetLocalPlayer();
-  std::unordered_map<GameObjectId, std::pair<QPointF, bool>> buffer;
+  std::unordered_map<GameObjectId, QPointF> old_objects_positions;
   for (const auto& game_object : model_->GetAllGameObjects()) {
-    if (!model_->IsGameObjectCollideMoveWithSliding(game_object)) {
+    if (!model_->DoesObjectCollideByMoveWithSliding(game_object)) {
       continue;
     }
-    buffer[game_object->GetId()] =
-        {game_object->GetPosition(),
-         ObjectCollision::AreCollided(local_player, game_object)};
+    if (ObjectCollision::AreCollided(local_player, game_object)) {
+      continue;
+    }
+    old_objects_positions[game_object->GetId()] = game_object->GetPosition();
   }
 
   // Интерполируем все, о чем есть информация
@@ -172,22 +173,20 @@ void ClientController::UpdateInterpolationInfo() {
                                     time_to_interpolate);
   }
 
-  int count_was = 0;
-  QPointF delta_pos;
-  for (const auto&[game_object_id, pair] : buffer) {
-    if (pair.second) {
-      continue;
-    }
+  int count_collisions_with_local_player = 0;
+  QPointF player_position_offset;
+  for (const auto&[game_object_id, prev_pos] : old_objects_positions) {
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
     auto new_pos = game_object->GetPosition();
-    if (new_pos != pair.first &&
+    if (new_pos != prev_pos &&
       ObjectCollision::AreCollided(local_player, game_object)) {
-      count_was++;
-      delta_pos = game_object->GetPosition() - pair.first;
+      count_collisions_with_local_player++;
+      player_position_offset = new_pos - prev_pos;
     }
   }
-  if (count_was == 1) {
-    local_player->SetPosition(local_player->GetPosition() + delta_pos);
+  if (count_collisions_with_local_player == 1) {
+    local_player->SetPosition(
+        local_player->GetPosition() + player_position_offset);
   }
 
   while (!time_to_delete_.empty()) {
@@ -347,7 +346,6 @@ int64_t ClientController::GetCurrentServerTime() const {
 // -------------------- CONTROLS --------------------
 
 void ClientController::FocusOutEvent(QFocusEvent*) {
-  return;
   for (const auto& [key, direction] : key_to_direction_) {
     is_direction_by_keys_[direction] = false;
   }

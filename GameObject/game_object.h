@@ -95,7 +95,7 @@ class GameObject {
   void SetUpdatedTime(int64_t updated_time);
   int64_t GetUpdatedTime() const;
 
-  float GetBoundingCircleRadius() const;
+  float GetRigidBodyBoundingCircleRadius() const;
 
   void SetCreatedTime(int64_t created_time);
   int64_t GetCreatedTime() const;

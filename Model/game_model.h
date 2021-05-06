@@ -48,7 +48,7 @@ class GameModel {
   void AttachGameObject(GameObjectId game_object_id,
                         const std::shared_ptr<GameObject>& game_object);
 
-  bool IsGameObjectCollideMoveWithSliding(
+  bool DoesObjectCollideByMoveWithSliding(
       const std::shared_ptr<GameObject>& game_object) const;
   std::vector<std::shared_ptr<GameObject>>
     GetGameObjectsToMoveWithSliding() const;

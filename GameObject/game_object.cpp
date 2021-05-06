@@ -216,7 +216,7 @@ bool GameObject::IsEntity() const {
   return false;
 }
 
-float GameObject::GetBoundingCircleRadius() const {
+float GameObject::GetRigidBodyBoundingCircleRadius() const {
   return Math::DistanceBetweenPoints(
       QPointF(), QPointF(this->GetRigidBody()->GetWidth() / 2.f,
                          this->GetRigidBody()->GetHeight() / 2.f));

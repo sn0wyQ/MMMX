@@ -98,9 +98,9 @@ void RoomController::TickObjectsInModel(const ModelData& model_data) {
   }
 }
 
-bool RoomController::EntityReceiveDamage(
-    const ModelData& model_data,
-    const std::shared_ptr<Entity>& entity, float damage) {
+void RoomController::EntityReceiveDamage(const ModelData& model_data,
+                                         const std::shared_ptr<Entity>& entity,
+                                         float damage, bool* is_killed) {
   float cur_entity_hp = entity->GetHealthPoints();
   float hp_to_set = std::max(0.f,
                              cur_entity_hp - damage);
@@ -109,7 +109,7 @@ bool RoomController::EntityReceiveDamage(
   entity->SetHealthPoints(hp_to_set);
   if (hp_to_set == 0.f) {
     QPointF point_to_spawn = model_->GetPointToSpawn(
-        entity->GetBoundingCircleRadius(), is_player);
+        entity->GetRigidBodyBoundingCircleRadius(), is_player);
     entity->Revive(point_to_spawn);
     if (is_player) {
       model_data.model->GetPlayerStatsByPlayerId(
@@ -121,14 +121,14 @@ bool RoomController::EntityReceiveDamage(
       creeps_count_--;
       entity->SetIsNeedToDelete(true);
     }
-    return true;
+    *is_killed = true;
   } else {
     if (is_player) {
       this->AddEventToSendToSinglePlayer(
           Event(EventType::kUpdateLocalPlayerHealthPoints, hp_to_set),
           entity->GetId());
     }
-    return false;
+    *is_killed = false;
   }
 }
 
@@ -144,8 +144,8 @@ void RoomController::TickCreepsIntelligence(
       float distance =
           Math::DistanceBetweenPoints(creep_spawn_position,
                                       player->GetPosition())
-                                      - player->GetBoundingCircleRadius()
-              - creep->GetBoundingCircleRadius();
+                                      - player->GetRigidBodyBoundingCircleRadius()
+              - creep->GetRigidBodyBoundingCircleRadius();
       if (!closer_player) {
         if (distance < creep->GetFovRadius()) {
           closer_player = player;
@@ -158,10 +158,9 @@ void RoomController::TickCreepsIntelligence(
 
     QVector2D force;
     float distance_from_spawn =
-        Math::DistanceBetweenPoints(
-            creep_position, creep_spawn_position);
+        Math::DistanceBetweenPoints(creep_position, creep_spawn_position);
     if (creep->IsGoingToSpawn()) {
-      if (distance_from_spawn < creep->GetBoundingCircleRadius()) {
+      if (distance_from_spawn < creep->GetRigidBodyBoundingCircleRadius()) {
         creep->SetIsGoingToSpawn(false);
       }
     } else if (distance_from_spawn > creep->GetFovRadius()) {
@@ -189,9 +188,11 @@ void RoomController::TickCreepsIntelligence(
       if (creep->IsPossibleToAttack(timestamp)) {
         float distance = Math::DistanceBetweenPoints(
             creep_position, closer_player->GetPosition());
-        if (distance - closer_player->GetBoundingCircleRadius()
-            - creep->GetBoundingCircleRadius() < creep->GetAttackDistance()) {
-          EntityReceiveDamage(model_data, closer_player, creep->GetDamage());
+        if (distance - closer_player->GetRigidBodyBoundingCircleRadius()
+            - creep->GetRigidBodyBoundingCircleRadius() < creep->GetAttackDistance()) {
+          bool is_killed;
+          EntityReceiveDamage(model_data, closer_player, creep->GetDamage(),
+                              &is_killed);
           creep->SetLastAttackedTime(timestamp);
         }
       }
@@ -218,9 +219,9 @@ void RoomController::ProcessBulletHits(
             object_collided_id);
     if (actual_object_collided->IsEntity()) {
       auto entity = std::dynamic_pointer_cast<Entity>(actual_object_collided);
-      bool is_killed =
-          EntityReceiveDamage(model_data_bullet, entity,
-                              bullet->GetBulletDamage());
+      bool is_killed;
+      EntityReceiveDamage(model_data_bullet, entity,
+                          bullet->GetBulletDamage(), &is_killed);
 
       if (is_killed) {
         auto killer_id = bullet->GetParentId();
