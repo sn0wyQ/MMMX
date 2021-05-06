@@ -142,10 +142,18 @@ void ClientController::UpdateInterpolationInfo() {
   auto time_to_interpolate = GetCurrentServerTime()
       - Constants::kInterpolationMSecs;
 
-  // Интерполируем все, о чем есть информация
-  int count_changed_collision = 0;
   auto local_player = model_->GetLocalPlayer();
-  QPointF delta_pos;
+  std::unordered_map<GameObjectId, std::pair<QPointF, bool>> buffer;
+  for (const auto& game_object : model_->GetAllGameObjects()) {
+    if (!model_->IsGameObjectCollideMoveWithSliding(game_object)) {
+      continue;
+    }
+    buffer[game_object->GetId()] =
+        {game_object->GetPosition(),
+         ObjectCollision::AreCollided(local_player, game_object)};
+  }
+
+  // Интерполируем все, о чем есть информация
   for (const auto&[game_object_id, game_object_to_be_interpolated]
     : model_->GetInterpolatorMap()) {
     if (!model_->IsGameObjectIdTaken(game_object_id)) {
@@ -160,22 +168,25 @@ void ClientController::UpdateInterpolationInfo() {
     }
     // TODO(kmekhovich): in respawn_button add is visible true
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-    QPointF buf_pos = game_object->GetPosition();
-    bool was_collided = false;
-    if (ObjectCollision::AreCollided(local_player, game_object)) {
-      was_collided = true;
-    }
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
+  }
 
-    if (!was_collided &&
-        ObjectCollision::AreCollided(local_player, game_object) &&
-        model_->IsGameObjectCollideMoveWithSliding(game_object)) {
-      count_changed_collision++;
-      delta_pos = game_object->GetPosition() - buf_pos;
+  int count_was = 0;
+  QPointF delta_pos;
+  for (const auto&[game_object_id, pair] : buffer) {
+    if (pair.second) {
+      continue;
+    }
+    auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+    auto new_pos = game_object->GetPosition();
+    if (new_pos != pair.first &&
+      ObjectCollision::AreCollided(local_player, game_object)) {
+      count_was++;
+      delta_pos = game_object->GetPosition() - pair.first;
     }
   }
-  if (count_changed_collision == 1) {
+  if (count_was == 1) {
     local_player->SetPosition(local_player->GetPosition() + delta_pos);
   }
 
@@ -336,6 +347,7 @@ int64_t ClientController::GetCurrentServerTime() const {
 // -------------------- CONTROLS --------------------
 
 void ClientController::FocusOutEvent(QFocusEvent*) {
+  return;
   for (const auto& [key, direction] : key_to_direction_) {
     is_direction_by_keys_[direction] = false;
   }
