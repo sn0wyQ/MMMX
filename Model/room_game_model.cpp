@@ -124,10 +124,12 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
 }
 
 GameObjectId RoomGameModel::GenerateNextUnusedBulletId(GameObjectId player_id) {
-  if (next_bullet_id_for_player_.find(player_id) == next_bullet_id_for_player_.end()) {
+  if (next_bullet_id_for_player_.find(player_id) ==
+    next_bullet_id_for_player_.end()) {
     next_bullet_id_for_player_[player_id] = 1;
   } else {
     next_bullet_id_for_player_[player_id]++;
   }
-  return player_id * Constants::kMaxPlayerBullets + next_bullet_id_for_player_[player_id];
+  return player_id * Constants::kMaxPlayerBullets +
+    next_bullet_id_for_player_[player_id];
 }
