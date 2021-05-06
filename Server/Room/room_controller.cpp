@@ -142,9 +142,10 @@ void RoomController::TickCreepsIntelligence(
     auto creep_spawn_position = QPointF(creep->GetSpawnX(), creep->GetSpawnY());
     for (const auto& player : players) {
       float distance =
-          Math::DistanceBetweenPoints(creep_spawn_position,
-                                      player->GetPosition())
-                                      - player->GetRigidBodyBoundingCircleRadius()
+          Math::DistanceBetweenPoints(
+              creep_spawn_position,
+              player->GetPosition())
+              - player->GetRigidBodyBoundingCircleRadius()
               - creep->GetRigidBodyBoundingCircleRadius();
       if (!closer_player) {
         if (distance < creep->GetFovRadius()) {
@@ -189,7 +190,8 @@ void RoomController::TickCreepsIntelligence(
         float distance = Math::DistanceBetweenPoints(
             creep_position, closer_player->GetPosition());
         if (distance - closer_player->GetRigidBodyBoundingCircleRadius()
-            - creep->GetRigidBodyBoundingCircleRadius() < creep->GetAttackDistance()) {
+            - creep->GetRigidBodyBoundingCircleRadius()
+            < creep->GetAttackDistance()) {
           bool is_killed;
           EntityReceiveDamage(model_data, closer_player, creep->GetDamage(),
                               &is_killed);
