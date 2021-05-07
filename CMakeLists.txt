@@ -79,6 +79,7 @@ set(SOURCES
         Event/event_type.h
         GUI/GameView/game_view.cpp
         GUI/GameView/player_bar.cpp
+        GUI/GameView/reloading_field.cpp
         GUI/GameView/stats_table.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp

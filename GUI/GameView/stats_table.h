@@ -1,6 +1,7 @@
 #ifndef GUI_GAMEVIEW_STATS_TABLE_H_
 #define GUI_GAMEVIEW_STATS_TABLE_H_
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 #include <vector>

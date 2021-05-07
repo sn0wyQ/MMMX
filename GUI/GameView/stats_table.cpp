@@ -1,8 +1,5 @@
 #include "stats_table.h"
 
-#include <algorithm>
-#include <utility>
-
 StatsTable::StatsTable(QWidget* parent,
                        std::shared_ptr<ClientGameModel> model) :
     QWidget(parent),
