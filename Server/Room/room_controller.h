@@ -82,13 +82,22 @@ class RoomController : public BaseController {
   std::unordered_map<ClientId, GameObjectId> player_ids_;
   std::vector<Event> events_for_server_;
   int creeps_count_{0};
-  std::queue<std::pair<GameObjectId, int64_t>> revive_entity_at_;
+  std::queue<std::pair<GameObjectId, int64_t>> revive_player_at_;
+  std::unordered_map<GameObjectId, bool> is_controls_blocked_;
 
   void RecalculateModel(const ModelData& model_data);
-  void ReviveEntities(const ModelData& model_data);
+  void RevivePlayers(const ModelData& model_data);
   void TickObjectsInModel(const ModelData& model_data);
+  void ProcessBulletHits(
+      const RoomController::ModelData& model_data_bullet,
+      const std::shared_ptr<Bullet>& bullet,
+      const std::vector<std::shared_ptr<GameObject>>& game_objects);
   void ProcessBulletsHits(const ModelData& model_data);
+  void TickCreepsIntelligence(const ModelData& model_data);
   void DeleteReadyToBeDeletedObjects(const ModelData& model_data);
+  void EntityReceiveDamage(const ModelData& model_data,
+                           const std::shared_ptr<Entity>& entity,
+                           float damage, bool* is_killed);
 
   GameObjectId AddPlayer();
   void AddBox(float x, float y, float rotation, float width, float height);
@@ -96,9 +105,11 @@ class RoomController : public BaseController {
   void AddTree(float x, float y, float radius);
   void AddRandomTree(float radius);
   void AddCreep(float x, float y);
-  std::vector<GameObjectId> AddBullets(GameObjectId parent_id, float x, float y,
-                         float rotation,
-                         const std::shared_ptr<Weapon>& weapon);
+  std::vector<GameObjectId> AddBullets(
+      const std::shared_ptr<RoomGameModel>& model,
+      GameObjectId parent_id, float x, float y,
+      float rotation,
+      const std::shared_ptr<Weapon>& weapon);
   void AddConstantObjects();
   void AddCreeps();
 

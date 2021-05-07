@@ -112,9 +112,21 @@ std::vector<std::shared_ptr<Player>> GameModel::GetPlayers() const {
   }
   return result;
 }
+
+std::vector<std::shared_ptr<Creep>> GameModel::GetCreeps() const {
+  std::vector<std::shared_ptr<Creep>> result;
+  for (const auto& game_object : game_objects_) {
+    if (game_object.second->GetType() == GameObjectType::kCreep) {
+      result.push_back(std::dynamic_pointer_cast<Creep>(game_object.second));
+    }
+  }
+  return result;
+}
+
 bool GameModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return game_objects_.find(game_object_id) != game_objects_.end();
 }
+
 std::vector<std::shared_ptr<GameObject>>
   GameModel::GetAllGameObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;
@@ -160,14 +172,18 @@ void GameModel::AttachGameObject(
     GameObjectId game_object_id,
     const std::shared_ptr<GameObject>& game_object) {
   game_objects_[game_object_id] = game_object;
-  qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Added new GameObject:" << game_object_id
      << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
          .valueToKey(static_cast<int>(game_object->GetType())));
 }
 
-bool GameModel::IsGameObjectCollideWithPlayer(
+bool GameModel::DoesObjectCollideByMoveWithSliding(
     const std::shared_ptr<GameObject>& game_object) const {
   if (!game_object->IsVisible()) {
+    return false;
+  }
+  if (game_object->IsEntity() &&
+    !std::dynamic_pointer_cast<Entity>(game_object)->IsAlive()) {
     return false;
   }
   if (game_object->GetType() == GameObjectType::kBullet) {
@@ -177,11 +193,34 @@ bool GameModel::IsGameObjectCollideWithPlayer(
 }
 
 std::vector<std::shared_ptr<GameObject>>
-  GameModel::GetGameObjectsPlayerCollide() const {
+  GameModel::GetGameObjectsToMoveWithSliding() const {
   std::vector<std::shared_ptr<GameObject>> result;
-  for (const auto& game_object : GetAllGameObjects()) {
-    if (IsGameObjectCollideWithPlayer(game_object)) {
+  for (const auto& game_object : GetAllExistGameObjects()) {
+    if (DoesObjectCollideByMoveWithSliding(game_object)) {
       result.emplace_back(game_object);
+    }
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<GameObject>>
+  GameModel::GetAllExistGameObjects() const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& game_object : game_objects_) {
+    if (game_object.second->IsEntity() &&
+      !std::dynamic_pointer_cast<Entity>(game_object.second)->IsAlive()) {
+      continue;
+    }
+    result.emplace_back(game_object.second);
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<Player>> GameModel::GetAlivePlayers() const {
+  std::vector<std::shared_ptr<Player>> result;
+  for (const auto& player : GetPlayers()) {
+    if (player->IsAlive()) {
+      result.push_back(player);
     }
   }
   return result;

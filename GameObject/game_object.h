@@ -72,6 +72,7 @@ class GameObject {
   float GetHeight() const;
   void SetWidth(float width);
   void SetHeight(float height);
+  QRectF GetBoundingRect() const;
 
   virtual GameObjectType GetType() const;
 
@@ -94,7 +95,13 @@ class GameObject {
   void SetUpdatedTime(int64_t updated_time);
   int64_t GetUpdatedTime() const;
 
-  float GetBoundingCircleRadius() const;
+  float GetRigidBodyBoundingCircleRadius() const;
+
+  void SetCreatedTime(int64_t created_time);
+  int64_t GetCreatedTime() const;
+
+  void SetIsInterpolatedOnce(bool is_interpolated_once);
+  bool IsInterpolatedOnce() const;
 
   bool IsVisible() const;
   void SetIsVisible(bool visible);
@@ -106,7 +113,6 @@ class GameObject {
   // Holds animations for all GameObjects
   // Prevents same SharedFrame being loaded into RAM more than once at a time
   static AnimationsHolder animations_holder_;
-
   GameObjectId id_{Constants::kNullGameObjectId};
   std::shared_ptr<Animation>
       animation_ = std::make_shared<Animation>(AnimationType::kNone);
@@ -121,6 +127,11 @@ class GameObject {
   bool is_need_to_delete_{false};
   int64_t updated_time_{};
   float visibility_{1.f};
+  int64_t created_time_{};
+  // Если мы только привязали объект к модели из интерполятора -
+  // не можем его правильно проинтерполировать
+  // мы не должны его рисовать
+  bool is_interpolated_once_{false};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_

@@ -14,8 +14,7 @@ void DoPressurePhase(
       continue;
     }
 
-    QVector2D offset = QVector2D(object->GetX() - main->GetX(),
-                                 object->GetY() - main->GetY());
+    QVector2D offset(object->GetPosition() - main->GetPosition());
     float rotation = object->GetRotation();
 
     std::vector<QPointF> intersect_points_in_future
@@ -55,8 +54,7 @@ std::vector<QVector2D> GetTangents(const std::shared_ptr<MovableObject>& main,
       continue;
     }
 
-    QVector2D offset = QVector2D(object->GetX() - main->GetX(),
-                                 object->GetY() - main->GetY());
+    QVector2D offset(object->GetPosition() - main->GetPosition());
     float rotation = object->GetRotation();
     std::vector<QPointF> intersect_points_now
         = IntersectChecker::GetIntersectPointsBodies(
@@ -184,8 +182,7 @@ std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
       if (!object->IsVisible()) {
         continue;
       }
-      QVector2D offset = QVector2D(object->GetX() - bullet_clone->GetX(),
-                                   object->GetY() - bullet_clone->GetY());
+      QVector2D offset(object->GetPosition() - bullet_clone->GetPosition());
       float rotation = object->GetRotation();
       if (!IntersectChecker::GetIntersectPointsBodies(
           bullet_clone->GetRigidBody(), object->GetRigidBody(),
@@ -196,6 +193,15 @@ std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
     bullet_clone->OnTick(delta_time);
   }
   return nullptr;
+}
+
+bool AreCollided(const std::shared_ptr<GameObject>& object1,
+                 const std::shared_ptr<GameObject>& object2) {
+  QVector2D offset(object2->GetPosition() - object1->GetPosition());
+  float rotation = object2->GetRotation() - object1->GetRotation();
+  return !IntersectChecker::GetIntersectPointsBodies(
+      object1->GetRigidBody(), object2->GetRigidBody(),
+      offset, rotation).empty();
 }
 
 }  // namespace ObjectCollision

@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QFontDatabase>
+#include <QScreen>
 
 #include "Client/client_controller.h"
 #include "Client/client_view.h"
@@ -18,6 +19,14 @@ void MessageHandlerWrapper(QtMsgType type,
 }
 
 int main(int argc, char* argv[]) {
+  bool is_remote = true;
+  if (argc > 1 && strcmp(argv[1], "-local") == 0) {
+    is_remote = false;
+  }
+  QString server_ip = is_remote ? "188.120.224.70" : "localhost";
+  QUrl server_url =
+      QUrl(QString("ws://") + server_ip + ":" +
+      QString::number(Constants::kServerPort));
   QApplication app(argc, argv);
   QFontDatabase::addApplicationFont(":Res/Fonts/CynthoNext-Bold.ttf");
   QFontDatabase::addApplicationFont(":Res/Fonts/RobotoMono-Regular.ttf");
@@ -25,7 +34,8 @@ int main(int argc, char* argv[]) {
   QFile::remove("client.log");
   qInstallMessageHandler(MessageHandlerWrapper);
 
-  auto client_controller = std::make_shared<ClientController>();
+  auto client_controller = std::make_shared<ClientController>(
+      server_url, QApplication::primaryScreen()->refreshRate());
   auto client_view = new ClientView(client_controller);
   client_view->show();
 

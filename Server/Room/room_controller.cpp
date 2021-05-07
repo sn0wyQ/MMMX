@@ -73,29 +73,29 @@ void RoomController::OnTick(int delta_time) {
 }
 
 void RoomController::RecalculateModel(const ModelData& model_data) {
-  this->ReviveEntities(model_data);
   this->ProcessBulletsHits(model_data);
+  this->TickCreepsIntelligence(model_data);
   this->TickObjectsInModel(model_data);
   this->DeleteReadyToBeDeletedObjects(model_data);
+  this->RevivePlayers(model_data);
 }
 
-void RoomController::ReviveEntities(
+void RoomController::RevivePlayers(
     const RoomController::ModelData& model_data) {
-  while (!revive_entity_at_.empty()) {
-    int64_t revive_at = revive_entity_at_.front().second;
+  while (!revive_player_at_.empty()) {
+    int64_t revive_at = revive_player_at_.front().second;
     if (revive_at <= GetCurrentServerTime()) {
-      auto game_object_id = revive_entity_at_.front().first;
-      auto entity = std::dynamic_pointer_cast<Entity>(
-          model_data.model->GetGameObjectByGameObjectId(game_object_id));
+      auto player_id = revive_player_at_.front().first;
+      auto player = model_data.model->GetPlayerByPlayerId(player_id);
       QPointF point_to_spawn =
-          model_->GetPointToSpawn(entity->GetBoundingCircleRadius(), true);
-      entity->Revive(point_to_spawn);
-      if (entity->GetType() == GameObjectType::kPlayer) {
-        this->AddEventToSendToSinglePlayer(
-            Event(EventType::kReviveLocalPlayer, point_to_spawn),
-            game_object_id);
-      }
-      revive_entity_at_.pop();
+          model_->GetPointToSpawn(player->GetRigidBodyBoundingCircleRadius(),
+                                  true);
+      player->Revive(point_to_spawn);
+      this->AddEventToSendToSinglePlayer(
+          Event(EventType::kReviveLocalPlayer, point_to_spawn),
+          player_id);
+      is_controls_blocked_[player_id] = false;
+      revive_player_at_.pop();
     } else {
       break;
     }
@@ -121,82 +121,173 @@ void RoomController::TickObjectsInModel(const ModelData& model_data) {
   }
 }
 
-void RoomController::ProcessBulletsHits(const ModelData& model_data) {
-  auto game_objects = model_data.model->GetAllGameObjects();
-  auto bullets = model_data.model->GetAllBullets();
-  std::vector<GameObjectId> objects_to_delete;
-  for (const auto& bullet : bullets) {
-    auto object_collided =
-        ObjectCollision::GetObjectBulletCollidedWith(
-            bullet, game_objects, model_data.delta_time, false);
-    if (object_collided != nullptr) {
-      objects_to_delete.push_back(bullet->GetId());
+void RoomController::EntityReceiveDamage(const ModelData& model_data,
+                                         const std::shared_ptr<Entity>& entity,
+                                         float damage, bool* is_killed) {
+  float cur_entity_hp = entity->GetHealthPoints();
+  float hp_to_set = std::max(0.f, cur_entity_hp - damage);
+  bool is_player = entity->GetType() == GameObjectType::kPlayer;
+  bool is_creep = entity->GetType() == GameObjectType::kCreep;
+  entity->SetHealthPoints(hp_to_set);
+  if (hp_to_set == 0.f) {
+    if (is_player) {
+      model_data.model->GetPlayerStatsByPlayerId(
+          entity->GetId())->GetMutableDeaths()++;
+      this->AddEventToSendToSinglePlayer(
+          Event(EventType::kLocalPlayerDied),
+          entity->GetId());
+      revive_player_at_.push({entity->GetId(),
+                              GetCurrentServerTime() + Constants::kReviveTime});
+      is_controls_blocked_[entity->GetId()] = true;
+    } else if (is_creep) {
+      creeps_count_--;
+      entity->SetIsNeedToDelete(true);
+    }
+    *is_killed = true;
+  } else {
+    *is_killed = false;
+  }
+  if (is_player) {
+    this->AddEventToSendToSinglePlayer(
+        Event(EventType::kUpdateLocalPlayerHealthPoints, hp_to_set),
+        entity->GetId());
+  }
+}
 
-      if (object_collided->IsEntity()) {
-        auto entity = std::dynamic_pointer_cast<Entity>(object_collided);
-        float cur_entity_hp = entity->GetHealthPoints();
-        float hp_to_set = std::max(0.f,
-                                   cur_entity_hp - bullet->GetBulletDamage());
-
-        if (hp_to_set == 0) {
-          switch (entity->GetType()) {
-            case GameObjectType::kPlayer:
-              entity->SetIsVisible(false);
-              revive_entity_at_.emplace(
-                  entity->GetId(),
-                  GetCurrentServerTime() + Constants::kReviveTime);
-              model_data.model->GetPlayerStatsByPlayerId(
-                  entity->GetId())->GetMutableDeaths()++;
-              this->AddEventToSendToSinglePlayer(
-                  Event(EventType::kLocalPlayerDied),
-                  entity->GetId());
-              break;
-
-            case GameObjectType::kCreep:
-              creeps_count_--;
-              objects_to_delete.emplace_back(entity->GetId());
-              break;
-
-            default:
-              qWarning() << "Invalid game object type";
-              break;
-          }
-          auto killer_id = bullet->GetParentId();
-          if (model_data.model->IsGameObjectIdTaken(killer_id)) {
-            auto killer = model_data.model->GetPlayerByPlayerId(killer_id);
-            float receive_exp = entity->GetExpIncrementForKill();
-            killer->IncreaseExperience(receive_exp);
-            auto killer_stats =
-                model_data.model->GetPlayerStatsByPlayerId(killer_id);
-            if (entity->GetType() == GameObjectType::kPlayer) {
-              killer_stats->SetKills(killer_stats->GetKills() + 1);
-            }
-            killer_stats->SetLevel(killer->GetLevel());
-            this->AddEventToSendToSinglePlayer(
-                Event(EventType::kIncreaseLocalPlayerExperience,
-                      receive_exp),
-                bullet->GetParentId());
-          }
+void RoomController::TickCreepsIntelligence(
+    const RoomController::ModelData& model_data) {
+  auto creeps = model_data.model->GetCreeps();
+  auto players = model_data.model->GetAlivePlayers();
+  for (auto& creep : creeps) {
+    std::shared_ptr<Player> closer_player{nullptr};
+    auto creep_position = creep->GetPosition();
+    auto creep_spawn_position = QPointF(creep->GetSpawnX(), creep->GetSpawnY());
+    for (const auto& player : players) {
+      float distance =
+          Math::DistanceBetweenPoints(
+              creep_spawn_position,
+              player->GetPosition())
+              - player->GetRigidBodyBoundingCircleRadius()
+              - creep->GetRigidBodyBoundingCircleRadius();
+      if (!closer_player) {
+        if (distance < creep->GetFovRadius()) {
+          closer_player = player;
         }
-        entity->SetHealthPoints(hp_to_set);
-        if (entity->GetType() == GameObjectType::kPlayer) {
-          this->AddEventToSendToSinglePlayer(
-              Event(EventType::kUpdateLocalPlayerHealthPoints, hp_to_set),
-              entity->GetId());
+      } else if (distance < Math::DistanceBetweenPoints(
+          creep_position, closer_player->GetPosition())) {
+        closer_player = player;
+      }
+    }
+
+    QVector2D force;
+    float distance_from_spawn =
+        Math::DistanceBetweenPoints(creep_position, creep_spawn_position);
+    if (creep->IsGoingToSpawn()) {
+      if (distance_from_spawn < creep->GetRigidBodyBoundingCircleRadius()) {
+        creep->SetIsGoingToSpawn(false);
+      }
+    } else if (distance_from_spawn > creep->GetFovRadius()) {
+      creep->SetIsGoingToSpawn(true);
+    }
+    if (creep->IsGoingToSpawn()) {
+      force = QVector2D(
+          QPointF(creep->GetSpawnX(), creep->GetSpawnY()) - creep_position);
+    } else if (closer_player) {
+      force = QVector2D(closer_player->GetPosition() - creep_position);
+    }
+    auto runaway_hp = CreepSettings::GetInstance().GetCreepSetting<float>
+        ("runaway_hp_ratio") * creep->GetMaxHealthPoints();
+    if (!creep->IsGoingToSpawn() &&
+        creep->GetHealthPoints() < runaway_hp) {
+      force *= -1;
+    }
+    force.normalize();
+    ObjectCollision::MoveWithSlidingCollision(
+        creep, model_->GetGameObjectsToMoveWithSliding(),
+        force, model_data.delta_time);
+
+    if (closer_player) {
+      auto timestamp = GetCurrentServerTime();
+      if (creep->IsPossibleToAttack(timestamp)) {
+        float distance = Math::DistanceBetweenPoints(
+            creep_position, closer_player->GetPosition());
+        if (distance - closer_player->GetRigidBodyBoundingCircleRadius()
+            - creep->GetRigidBodyBoundingCircleRadius()
+            < creep->GetAttackDistance()) {
+          bool is_killed;
+          EntityReceiveDamage(model_data, closer_player, creep->GetDamage(),
+                              &is_killed);
+          creep->SetLastAttackedTime(timestamp);
         }
       }
     }
   }
-  for (const auto& game_object_id : objects_to_delete) {
-    this->AddEventToSendToAllPlayers(
-        GetEventOfDeleteGameObject(game_object_id));
-    model_data.model->DeleteGameObject(game_object_id);
+}
+
+
+void RoomController::ProcessBulletHits(
+    const RoomController::ModelData& model_data_bullet,
+    const std::shared_ptr<Bullet>& bullet,
+    const std::vector<std::shared_ptr<GameObject>>& game_objects) {
+  auto old_object_collided =
+      ObjectCollision::GetObjectBulletCollidedWith(
+          bullet, game_objects, model_data_bullet.delta_time, false);
+  if (old_object_collided) {
+    bullet->SetIsNeedToDelete(true);
+
+    auto object_collided_id = old_object_collided->GetId();
+    if (!model_data_bullet.model->IsGameObjectIdTaken(object_collided_id)) {
+      return;
+    }
+    auto actual_object_collided =
+        model_data_bullet.model->GetGameObjectByGameObjectId(
+            object_collided_id);
+    if (actual_object_collided->IsEntity()) {
+      auto entity = std::dynamic_pointer_cast<Entity>(actual_object_collided);
+      bool is_killed;
+      EntityReceiveDamage(model_data_bullet, entity,
+                          bullet->GetBulletDamage(), &is_killed);
+
+      if (is_killed) {
+        auto killer_id = bullet->GetParentId();
+        if (model_data_bullet.model->IsGameObjectIdTaken(killer_id)) {
+          auto killer = model_data_bullet.model->GetPlayerByPlayerId(killer_id);
+          float receive_exp = entity->GetExpIncrementForKill();
+          killer->IncreaseExperience(receive_exp);
+          if (entity->GetType() == GameObjectType::kPlayer) {
+            auto killer_stats =
+                model_data_bullet.model->GetPlayerStatsByPlayerId(killer_id);
+            killer_stats->SetKills(killer_stats->GetKills() + 1);
+            killer_stats->SetLevel(killer->GetLevel());
+            this->AddEventToSendToSinglePlayer(
+                Event(EventType::kIncreaseLocalPlayerExperience,
+                      receive_exp),
+                killer_id);
+          }
+        }
+      }
+    }
+  }
+}
+
+void RoomController::ProcessBulletsHits(const ModelData& model_data) {
+  auto timestamp = GetCurrentServerTime() - Constants::kInterpolationMSecs;
+  auto model_id = GetModelIdByTimestamp(timestamp);
+  if (model_id < 0) {
+    return;
+  }
+  auto game_objects =
+      models_cache_[model_id].model->GetAllExistGameObjects();
+  auto bullets = model_data.model->GetAllBullets();
+  for (const auto& bullet : bullets) {
+    this->ProcessBulletHits(model_data, bullet, game_objects);
   }
 }
 
 void RoomController::AddClient(ClientId client_id) {
   GameObjectId player_id = AddPlayer();
   player_ids_[client_id] = player_id;
+  is_controls_blocked_[player_id] = false;
 
   Event event_add_local_player(EventType::kAddLocalPlayerGameObject, player_id);
   event_add_local_player.PushBackArgs(
@@ -226,6 +317,7 @@ void RoomController::RemoveClient(ClientId client_id) {
     throw std::runtime_error(
         "[ROOM ID:" + std::to_string(id_) + "] Invalid client ID");
   }
+  is_controls_blocked_.erase(player_id);
   model_->DeleteGameObject(player_id);
   model_->DeletePlayerStats(player_id);
   this->AddEventToSendToAllClients(Event(EventType::kPlayerDisconnected,
@@ -456,19 +548,26 @@ void RoomController::AddCreep(float x, float y) {
   float distance = QLineF(QPointF(), QPointF(x, y)).length();
   auto params = CreepSettings::GetInstance().GetCreepParams(x, y, 0.f,
                                                             distance);
-  model_->AddGameObject(GameObjectType::kCreep, params);
+  auto game_object_id =
+      model_->AddGameObject(GameObjectType::kCreep, params);
+  auto creep = std::dynamic_pointer_cast<Creep>(
+      model_->GetGameObjectByGameObjectId(game_object_id));
+  CreepSettings::SetStaticParams(creep);
 }
 
 std::vector<GameObjectId> RoomController::AddBullets(
+    const std::shared_ptr<RoomGameModel>& model,
     GameObjectId parent_id, float x, float y, float rotation,
     const std::shared_ptr<Weapon>& weapon) {
   std::vector<std::vector<QVariant>> bullets_params =
       weapon->GetBulletsParams(parent_id, x, y, rotation);
-  std::vector<GameObjectId> bullet_ids(bullets_params.size());
+  std::vector<GameObjectId> bullet_ids;
   for (const std::vector<QVariant>& bullet_params : bullets_params) {
-    bullet_ids.emplace_back(model_->AddGameObject(
+    int bullet_id = model_->GenerateNextUnusedBulletId(parent_id);
+    model->GameModel::AddGameObject(bullet_id,
         GameObjectType::kBullet,
-        bullet_params));
+        bullet_params);
+    bullet_ids.emplace_back(bullet_id);
   }
   return bullet_ids;
 }
@@ -484,16 +583,16 @@ void RoomController::AddConstantObjects() {
                          static_cast<int>(AnimationType::kNone),
                          true});
 
-  for (int i = 0; i < 15; i++) {
+  for (int i = 0; i < 5; i++) {
     this->AddRandomBox(7.f, 7.f);
   }
-  for (int i = 0; i < 15; i++) {
+  for (int i = 0; i < 5; i++) {
     this->AddRandomTree(5.f);
   }
 }
 
 void RoomController::AddCreeps() {
-  for (; creeps_count_ < 25; creeps_count_++) {
+  for (; creeps_count_ < 5; creeps_count_++) {
     QPointF position = model_->GetPointToSpawn(std::max(
         CreepSettings::GetInstance().GetMaxCreepSize().height(),
         CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
@@ -525,6 +624,9 @@ void RoomController::SendControlsEvent(const Event& event) {
   }
   auto current_model_data = models_cache_[model_id];
   auto player_id = event.GetArg<GameObjectId>(1);
+  if (is_controls_blocked_[player_id]) {
+    return;
+  }
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
@@ -561,36 +663,61 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
               static_cast<qint64>(timestamp)), player_id);
     return;
   }
-  auto current_model_data = models_cache_[model_id];
-  if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
+  auto start_model = models_cache_[model_id].model;
+  if (!start_model->IsGameObjectIdTaken(player_id)) {
     return;
   }
   auto player_in_model =
-      current_model_data.model->GetPlayerByPlayerId(player_id);
+      start_model->GetPlayerByPlayerId(player_id);
 
   std::vector<GameObjectId> bullet_ids =
-      AddBullets(player_id, player_in_model->GetX(), player_in_model->GetY(),
+      AddBullets(start_model,
+                 player_id, player_in_model->GetX(), player_in_model->GetY(),
                  player_in_model->GetRotation(), player_in_model->GetWeapon());
-
-  for (int bullet_id_from_bullets_id : bullet_ids) {
-    GameObjectId bullet_id = bullet_id_from_bullets_id;
-
-    QPointF position_to_set =
-        {player_in_model->GetX(), player_in_model->GetY()};
-    bool break_bullet = false;
+  for (int bullet_id : bullet_ids) {
     bool break_player = false;
+    auto prev_bullet =
+        std::dynamic_pointer_cast<Bullet>(
+            start_model->GetGameObjectByGameObjectId(bullet_id));
+
+    Event event_to_send(EventType::kSendGameInfoToInterpolate,
+                bullet_id,
+                static_cast<int>(GameObjectType::kBullet),
+                static_cast<qint64>(timestamp),
+                static_cast<int>(EventType::kUpdateGameObjectData),
+                bullet_id);
+    event_to_send.PushBackArgs(prev_bullet->GetParams());
+    auto players = start_model->GetPlayers();
+    std::vector<GameObjectId> player_list;
+    for (const auto& player : players) {
+      if (prev_bullet->GetParentId() == player->GetId()) {
+        continue;
+      }
+      player_list.push_back(player->GetId());
+    }
+    this->AddEventToSendToPlayerList(event_to_send, player_list);
+
+    auto start_player = start_model->GetPlayerByPlayerId(player_id);
+    start_player->GetWeapon()->SetLastTimeShot(timestamp);
+    auto interpolation_msecs_model_before = timestamp -
+        Constants::kInterpolationMSecs;
+    model_id++;
+    interpolation_msecs_model_before += Constants::kTimeToTick;
     while (model_id != static_cast<int>(models_cache_.size())) {
       auto cur_model = models_cache_[model_id].model;
-      if (!break_bullet && cur_model->IsGameObjectIdTaken(bullet_id)) {
-        auto bullet_in_model =
-            cur_model->GetGameObjectByGameObjectId(bullet_id);
-        bullet_in_model->SetPosition(position_to_set);
-        bullet_in_model->OnTick(models_cache_[model_id].delta_time);
-        position_to_set = bullet_in_model->GetPosition();
-      } else {
-        break_bullet = true;
+      auto new_bullet =
+          std::dynamic_pointer_cast<Bullet>(prev_bullet->Clone());
+      cur_model->AttachGameObject(bullet_id, new_bullet);
+      auto prev_model_id =
+          GetModelIdByTimestamp(interpolation_msecs_model_before);
+      if (prev_model_id >= 0) {
+        auto prev_model = models_cache_[prev_model_id].model;
+        this->ProcessBulletHits(
+            models_cache_[model_id], new_bullet,
+            prev_model->GetAllExistGameObjects());
       }
-
+      new_bullet->OnTick(models_cache_[model_id].delta_time);
+      prev_bullet = new_bullet;
       if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
         auto player = cur_model->GetPlayerByPlayerId(player_id);
         player->GetWeapon()->SetLastTimeShot(timestamp);
@@ -599,6 +726,7 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
       }
 
       model_id++;
+      interpolation_msecs_model_before += Constants::kTimeToTick;
     }
   }
 }

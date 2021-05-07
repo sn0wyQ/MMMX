@@ -31,6 +31,7 @@ class Entity : public MovableObject {
 
   void SetMaxHealthPoints(float max_health_points);
   float GetMaxHealthPoints() const;
+  bool IsAlive() const;
 
   void SetLevel(int level);
   int GetLevel() const;

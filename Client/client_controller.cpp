@@ -1,8 +1,12 @@
 #include "client_controller.h"
 
-ClientController::ClientController(const QUrl& url) : url_(url),
-  model_(std::make_shared<ClientGameModel>()) {
+ClientController::ClientController(const QUrl& url,
+                                   int fps_max) :
+    url_(url),
+    model_(std::make_shared<ClientGameModel>()),
+    fps_max_(fps_max) {
   qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
+  qInfo() << "[CLIENT] Set fps_max to" << fps_max;
   connect(&web_socket_, &QWebSocket::connected, this,
           &ClientController::OnConnected);
   connect(&web_socket_, &QWebSocket::disconnected, this,
@@ -28,11 +32,14 @@ void ClientController::OnConnected() {
           this,
           &ClientController::OnByteArrayReceived);
 
-  connect(&timer_for_server_var_, &QTimer::timeout, this,
-          &ClientController::UpdateVarsAndPing);
-  timer_for_server_var_.start(Constants::kTimeToUpdateVarsAndPing);
-  connect(&web_socket_, &QWebSocket::pong, this,
-          &ClientController::SetPing);
+  connect(&server_var_timer_, &QTimer::timeout,
+          this, &ClientController::UpdateVarsAndPing);
+  server_var_timer_.start(Constants::kTimeToUpdateVarsAndPing);
+  connect(&view_update_timer_, &QTimer::timeout,
+          this, &ClientController::UpdateView);
+  view_update_timer_.start(1000 / fps_max_);
+  connect(&web_socket_, &QWebSocket::pong,
+          this, &ClientController::SetPing);
 
   // TODO(Everyone): Send nickname to server after connection
 
@@ -94,8 +101,6 @@ void ClientController::OnTick(int delta_time) {
       this->OnTickGameNotStarted(delta_time);
       break;
   }
-
-  view_->Update();
 }
 
 void ClientController::OnTickGameNotStarted(int delta_time) {
@@ -103,27 +108,85 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
   this->OnTickGameInProgress(delta_time);
 }
 
+void ClientController::SendPLayerDataToServer() {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto local_player = model_->GetLocalPlayer();
+  this->AddEventToSend(Event(EventType::kSendControls,
+                             static_cast<qint64>(GetCurrentServerTime()),
+                             local_player->GetId(),
+                             local_player->GetX(),
+                             local_player->GetY(),
+                             local_player->GetVelocity(),
+                             local_player->GetRotation()));
+
+  if (local_player->IsNeedToSendLevelingPoints()) {
+    Event event(EventType::kSendLevelingPoints, local_player->GetId());
+    for (const auto& item : local_player->GetLevelingPoints()) {
+      event.PushBackArg(item);
+    }
+    this->AddEventToSend(event);
+    local_player->SetNeedToSendLevelingPoints(false);
+  }
+}
+
 void ClientController::OnTickGameInProgress(int delta_time) {
-  this->UpdateInterpolationInfo();
-  this->UpdateLocalPlayer(delta_time);
-  this->UpdateLocalBullets(delta_time);
-  this->UpdateAnimations(delta_time);
+  this->SendPLayerDataToServer();
 }
 
 void ClientController::UpdateInterpolationInfo() {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
   auto time_to_interpolate = GetCurrentServerTime()
       - Constants::kInterpolationMSecs;
+
+  auto local_player = model_->GetLocalPlayer();
+  std::unordered_map<GameObjectId, QPointF> old_objects_positions;
+  for (const auto& game_object : model_->GetAllGameObjects()) {
+    if (!model_->DoesObjectCollideByMoveWithSliding(game_object)) {
+      continue;
+    }
+    if (ObjectCollision::AreCollided(local_player, game_object)) {
+      continue;
+    }
+    old_objects_positions[game_object->GetId()] = game_object->GetPosition();
+  }
 
   // Интерполируем все, о чем есть информация
   for (const auto&[game_object_id, game_object_to_be_interpolated]
     : model_->GetInterpolatorMap()) {
     if (!model_->IsGameObjectIdTaken(game_object_id)) {
-      model_->AttachGameObject(game_object_id,
-                               game_object_to_be_interpolated->Clone());
+      if (game_object_to_be_interpolated->GetCreatedTime() >=
+        time_to_interpolate) {
+        continue;
+      }
+      auto game_object = game_object_to_be_interpolated->Clone();
+      model_->AttachGameObject(game_object_id, game_object);
+      game_object->SetIsInterpolatedOnce(true);
+      continue;
     }
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+    game_object->SetIsInterpolatedOnce(false);
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
+  }
+
+  int count_collisions_with_local_player = 0;
+  QPointF player_position_offset;
+  for (const auto&[game_object_id, prev_pos] : old_objects_positions) {
+    auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+    auto new_pos = game_object->GetPosition();
+    if (new_pos != prev_pos &&
+      ObjectCollision::AreCollided(local_player, game_object)) {
+      count_collisions_with_local_player++;
+      player_position_offset = new_pos - prev_pos;
+    }
+  }
+  if (count_collisions_with_local_player == 1) {
+    local_player->SetPosition(
+        local_player->GetPosition() + player_position_offset);
   }
 
   while (!time_to_delete_.empty()) {
@@ -154,7 +217,7 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
   local_player->SetRotation(rotation);
 
   std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding =
-      model_->GetGameObjectsPlayerCollide();
+      model_->GetGameObjectsToMoveWithSliding();
   ObjectCollision::MoveWithSlidingCollision(
       local_player, game_objects_to_move_with_sliding,
       this->GetKeyForce(), delta_time);
@@ -162,23 +225,6 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
   local_player->OnTick(delta_time);
 
   converter_->UpdateGameCenter(local_player->GetPosition());
-
-  this->AddEventToSend(Event(EventType::kSendControls,
-                        static_cast<qint64>(GetCurrentServerTime()),
-                        local_player->GetId(),
-                        local_player->GetX(),
-                        local_player->GetY(),
-                        local_player->GetVelocity(),
-                        local_player->GetRotation()));
-
-  if (local_player->IsNeedToSendLevelingPoints()) {
-    Event event(EventType::kSendLevelingPoints, local_player->GetId());
-    for (const auto& item : local_player->GetLevelingPoints()) {
-      event.PushBackArg(item);
-    }
-    this->AddEventToSend(event);
-    local_player->SetNeedToSendLevelingPoints(false);
-  }
 }
 
 void ClientController::UpdateAnimations(int delta_time) {
@@ -189,7 +235,8 @@ void ClientController::UpdateLocalBullets(int delta_time) {
   std::vector<GameObjectId> is_need_to_delete;
   for (const auto& bullet : model_->GetLocalBullets()) {
     auto object_collided = ObjectCollision::GetObjectBulletCollidedWith(
-            bullet, model_->GetAllGameObjects(), delta_time, true);
+            bullet, model_->GetAllExistGameObjects(),
+            delta_time, true);
     if (object_collided != nullptr) {
       bullet->SetIsNeedToDelete(true);
     }
@@ -207,6 +254,20 @@ void ClientController::UpdateLocalBullets(int delta_time) {
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
   view_ = std::move(view);
   converter_ = view_->GetConverter();
+}
+
+void ClientController::UpdateView() {
+  auto time = QDateTime::currentMSecsSinceEpoch();
+  auto delta_time = time - last_view_update_time_;
+  last_view_update_time_ = time;
+  if (delta_time == 0) {
+    return;
+  }
+  this->UpdateInterpolationInfo();
+  this->UpdateLocalPlayer(delta_time);
+  this->UpdateLocalBullets(delta_time);
+  this->UpdateAnimations(delta_time);
+  view_->Update();
 }
 
 QString ClientController::GetControllerName() const {
@@ -366,7 +427,7 @@ void ClientController::ShootHolding() {
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
     model_->AddLocalBullets(timestamp);
     this->AddEventToSend(Event(EventType::kSendPlayerShooting,
-                               static_cast<qint64>(GetCurrentServerTime()),
+                               static_cast<qint64>(timestamp),
                                local_player->GetId()));
   }
 }

@@ -129,6 +129,9 @@ void Entity::SetHealthRegenRate(float health_regen_rate) {
 }
 
 void Entity::OnTick(int delta_time) {
+  if (!IsAlive()) {
+    return;
+  }
   MovableObject::OnTick(delta_time);
   TickHealthPoints(delta_time);
 }
@@ -159,4 +162,8 @@ void Entity::DrawLevel(Painter* painter) {
                     QString::number(this->GetLevel()));
   painter->Translate(-translation);
   painter->restore();
+}
+
+bool Entity::IsAlive() const {
+  return GetHealthPoints() > 0;
 }

@@ -31,6 +31,8 @@ GameObject::GameObject(const GameObject& other) {
   updated_time_ = other.updated_time_;
   is_need_to_delete_ = other.is_need_to_delete_;
   visibility_ = other.visibility_;
+  created_time_ = other.created_time_;
+  is_interpolated_once_ = other.is_interpolated_once_;
 }
 
 void GameObject::SetParams(std::vector<QVariant> params) {
@@ -89,6 +91,9 @@ std::vector<QVariant> GameObject::GetParams() const {
 
 void GameObject::Draw(Painter* painter) {
   if (!IsVisible()) {
+    return;
+  }
+  if (this->IsInterpolatedOnce()) {
     return;
   }
   painter->save();
@@ -168,6 +173,12 @@ void GameObject::SetHeight(float height) {
   height_ = height;
 }
 
+QRectF GameObject::GetBoundingRect() const {
+  QPointF offset(this->GetWidth(), this->GetHeight());
+  return QRectF(QPointF(this->GetPosition() - offset / 2.f),
+                QPointF(this->GetPosition() + offset / 2.f));
+}
+
 bool GameObject::IsMovable() const {
   return false;
 }
@@ -216,10 +227,26 @@ bool GameObject::IsEntity() const {
   return false;
 }
 
-float GameObject::GetBoundingCircleRadius() const {
+float GameObject::GetRigidBodyBoundingCircleRadius() const {
   return Math::DistanceBetweenPoints(
-      QPointF(), QPointF(this->GetWidth() / 2.f,
-                         this->GetHeight() / 2.f));
+      QPointF(), QPointF(this->GetRigidBody()->GetWidth() / 2.f,
+                         this->GetRigidBody()->GetHeight() / 2.f));
+}
+
+int64_t GameObject::GetCreatedTime() const {
+  return created_time_;
+}
+
+void GameObject::SetCreatedTime(int64_t created_time) {
+  created_time_ = created_time;
+}
+
+bool GameObject::IsInterpolatedOnce() const {
+  return is_interpolated_once_;
+}
+
+void GameObject::SetIsInterpolatedOnce(bool is_interpolated_once) {
+  is_interpolated_once_ = is_interpolated_once;
 }
 
 float GameObject::GetVisibility() const {
