@@ -136,8 +136,23 @@ void ClientController::OnTickGameInProgress(int delta_time) {
 }
 
 void ClientController::UpdateInterpolationInfo() {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
   auto time_to_interpolate = GetCurrentServerTime()
       - Constants::kInterpolationMSecs;
+
+  auto local_player = model_->GetLocalPlayer();
+  std::unordered_map<GameObjectId, QPointF> old_objects_positions;
+  for (const auto& game_object : model_->GetAllGameObjects()) {
+    if (!model_->DoesObjectCollideByMoveWithSliding(game_object)) {
+      continue;
+    }
+    if (ObjectCollision::AreCollided(local_player, game_object)) {
+      continue;
+    }
+    old_objects_positions[game_object->GetId()] = game_object->GetPosition();
+  }
 
   // Интерполируем все, о чем есть информация
   for (const auto&[game_object_id, game_object_to_be_interpolated]
@@ -147,25 +162,31 @@ void ClientController::UpdateInterpolationInfo() {
         time_to_interpolate) {
         continue;
       }
-      model_->AttachGameObject(game_object_id,
-                               game_object_to_be_interpolated->Clone());
+      auto game_object = game_object_to_be_interpolated->Clone();
+      model_->AttachGameObject(game_object_id, game_object);
+      game_object->SetIsInterpolatedOnce(true);
       continue;
     }
-    auto local_player = model_->GetLocalPlayer();
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
-    bool was_collided = false;
-    QPointF delta_pos = game_object->GetPosition();
-    if (ObjectCollision::AreCollided(local_player, game_object)) {
-      was_collided = true;
-    }
+    game_object->SetIsInterpolatedOnce(false);
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
+  }
 
-    if (!was_collided &&
-        ObjectCollision::AreCollided(local_player, game_object)) {
-      delta_pos = game_object->GetPosition() - delta_pos;
-      local_player->SetPosition(local_player->GetPosition() + delta_pos);
+  int count_collisions_with_local_player = 0;
+  QPointF player_position_offset;
+  for (const auto&[game_object_id, prev_pos] : old_objects_positions) {
+    auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+    auto new_pos = game_object->GetPosition();
+    if (new_pos != prev_pos &&
+      ObjectCollision::AreCollided(local_player, game_object)) {
+      count_collisions_with_local_player++;
+      player_position_offset = new_pos - prev_pos;
     }
+  }
+  if (count_collisions_with_local_player == 1) {
+    local_player->SetPosition(
+        local_player->GetPosition() + player_position_offset);
   }
 
   while (!time_to_delete_.empty()) {
@@ -195,12 +216,8 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
                                          last_mouse_position_));
   local_player->SetRotation(rotation);
 
-  std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding;
-  for (const auto& game_object : model_->GetAllGameObjects()) {
-    if (game_object->GetType() != GameObjectType::kBullet) {
-      game_objects_to_move_with_sliding.push_back(game_object);
-    }
-  }
+  std::vector<std::shared_ptr<GameObject>> game_objects_to_move_with_sliding =
+      model_->GetGameObjectsToMoveWithSliding();
   ObjectCollision::MoveWithSlidingCollision(
       local_player, game_objects_to_move_with_sliding,
       this->GetKeyForce(), delta_time);

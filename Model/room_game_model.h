@@ -17,6 +17,7 @@ class RoomGameModel : public GameModel {
   RoomGameModel(const RoomGameModel& model);
 
   GameObjectId GenerateNextUnusedGameObjectId();
+  GameObjectId GenerateNextUnusedBulletId(GameObjectId player_id);
 
   GameObjectId AddGameObject(GameObjectType type,
                              const std::vector<QVariant>& params);
@@ -31,6 +32,7 @@ class RoomGameModel : public GameModel {
                           bool for_player = false) const;
 
  private:
+  std::unordered_map<GameObjectId, GameObjectId> next_bullet_id_for_player_;
   GameObjectId next_game_object_id_{1};
   std::unordered_map<GameObjectId, QByteArray> last_object_hash_;
   std::unordered_map<GameObjectId, QByteArray> last_player_stats_hash_;

@@ -88,6 +88,9 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
 }
 
 void GameView::resizeEvent(QResizeEvent* resize_event) {
+  painter_->end();
+  // waiting for painter to finish before deleting it
+  while (painter_->isActive()) {}
   canvas_ = std::make_unique<QPixmap>(resize_event->size());
   painter_ = std::make_unique<Painter>(canvas_.get(), converter_);
   converter_->UpdateCoefficient();
