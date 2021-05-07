@@ -112,9 +112,21 @@ std::vector<std::shared_ptr<Player>> GameModel::GetPlayers() const {
   }
   return result;
 }
+
+std::vector<std::shared_ptr<Creep>> GameModel::GetCreeps() const {
+  std::vector<std::shared_ptr<Creep>> result;
+  for (const auto& game_object : game_objects_) {
+    if (game_object.second->GetType() == GameObjectType::kCreep) {
+      result.push_back(std::dynamic_pointer_cast<Creep>(game_object.second));
+    }
+  }
+  return result;
+}
+
 bool GameModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return game_objects_.find(game_object_id) != game_objects_.end();
 }
+
 std::vector<std::shared_ptr<GameObject>>
   GameModel::GetAllGameObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;
@@ -160,7 +172,26 @@ void GameModel::AttachGameObject(
     GameObjectId game_object_id,
     const std::shared_ptr<GameObject>& game_object) {
   game_objects_[game_object_id] = game_object;
-  qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Added new GameObject:" << game_object_id
      << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
          .valueToKey(static_cast<int>(game_object->GetType())));
+}
+
+bool GameModel::DoesObjectCollideByMoveWithSliding(
+    const std::shared_ptr<GameObject>& game_object) const {
+  if (game_object->GetType() == GameObjectType::kBullet) {
+    return false;
+  }
+  return true;
+}
+
+std::vector<std::shared_ptr<GameObject>>
+  GameModel::GetGameObjectsToMoveWithSliding() const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& game_object : GetAllGameObjects()) {
+    if (DoesObjectCollideByMoveWithSliding(game_object)) {
+      result.emplace_back(game_object);
+    }
+  }
+  return result;
 }

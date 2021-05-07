@@ -20,11 +20,11 @@ const QPoint kDefaultPos = QPoint(10, 10);
 const int kNodes = 5;
 
 const QPolygonF reloading_picture(QVector<QPointF> {
-    QPointF(8.0, 70.0),
-    QPointF(70.0, 70.0),
-    QPointF(70.0, 80.0),
-    QPointF(8.0, 80.0),
-    QPointF(0.0, 75.0)
+    QPointF(8.0, 90.0),
+    QPointF(70.0, 90.0),
+    QPointF(70.0, 100.0),
+    QPointF(8.0, 100.0),
+    QPointF(0.0, 95.0)
 });
 
 }  // namespace Constants::ReloadingField

@@ -1,14 +1,9 @@
 #include "painter.h"
 
-Painter::Painter(QPaintDevice* device,
-                 std::shared_ptr<Converter> converter,
-                 const QPointF& local_centre)
+Painter::Painter(QPixmap* device,
+                 std::shared_ptr<Converter> converter)
     : QPainter(device),
-      converter_(std::move(converter)) {
-  // Setting screen centre to Player's position
-  translate((QPointF(device->width(), device->height()) / 2.f)
-                - converter_->ScaleFromGameToScreen(local_centre));
-}
+      converter_(std::move(converter)) {}
 
 void Painter::SetClipCircle(float x,
                             float y,
@@ -24,7 +19,11 @@ void Painter::SetClipCircle(float x,
                  doubled_r_scaled,
                  doubled_r_scaled,
                  QRegion::Ellipse);
-  setClipRegion(region, clip_operation);
+  this->setClipRegion(region, clip_operation);
+}
+
+void Painter::ResetClip() {
+  this->setClipRect(QRect(), Qt::NoClip);
 }
 
 void Painter::RotateClockWise(float degree) {
@@ -69,6 +68,24 @@ void Painter::DrawRect(float x, float y, float width, float height) {
                   converter_->ScaleFromGameToScreen(y),
                   converter_->ScaleFromGameToScreen(width),
                   converter_->ScaleFromGameToScreen(height)));
+}
+
+void Painter::DrawSharedFrame(QPointF point,
+                              float w,
+                              float h,
+                              SharedFrame* shared_frame,
+                              DrawPixmapType draw_pixmap_type) {
+  converter_->ScaleFromGameToScreen(&point);
+  converter_->ScaleFromGameToScreen(&w);
+  converter_->ScaleFromGameToScreen(&h);
+
+  if (draw_pixmap_type == DrawPixmapType::kUsePointAsCenter) {
+    point.rx() -= (w / 2.f);
+    point.ry() -= (h / 2.f);
+  }
+
+  drawPixmap(point, *shared_frame->GetRenderedPixmap(static_cast<int>(w),
+                                                     static_cast<int>(h)));
 }
 
 void Painter::DrawTriangle(const QPointF& p1,

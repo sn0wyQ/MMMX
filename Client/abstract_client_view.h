@@ -15,6 +15,7 @@ class AbstractClientView : public QMainWindow {
 
   virtual void Update() = 0;
   virtual std::shared_ptr<Converter> GetConverter() = 0;
+  virtual QPointF GetPlayerToCenterOffset() const = 0;
 };
 
 #endif  // CLIENT_ABSTRACT_CLIENT_VIEW_H_

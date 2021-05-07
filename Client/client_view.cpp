@@ -4,7 +4,8 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
     : AbstractClientView(),
       controller_(std::move(controller)) {
   resize(1400, 960);
-  height_of_bar_ = static_cast<int>(0.15f * static_cast<float>(height()));
+  height_of_bar_ = static_cast<int>(
+      Constants::kPlayerBarHeightRatio * static_cast<float>(height()));
   setMinimumSize(1300, 700);
   setWindowTitle(Constants::kWindowTitle);
   setMouseTracking(true);
@@ -38,6 +39,17 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 }
 
 void ClientView::Update() {
+  auto time = QDateTime::currentMSecsSinceEpoch();
+  if (last_frame_times_.empty()) {
+    last_updated_time_ = time;
+  }
+  last_frame_times_.push_back(time - last_updated_time_);
+  if (last_frame_times_.size() > Constants::kAverageFpsFrames) {
+    last_frame_times_.pop_front();
+  }
+  last_updated_time_ = time;
+
+  game_view_->Update();
   this->update();
 }
 
@@ -76,18 +88,31 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
   auto local_player_position = model_->IsLocalPlayerSet()
                                ? model_->GetLocalPlayer()->GetPosition()
                                : QPointF(0.f, 0.f);
+  int64_t average_frame_time = 0;
+  int64_t fps = 0;
+  if (!last_frame_times_.empty()) {
+    // Weird maths with divide to avoid accuracy loss
+    average_frame_time = std::accumulate(
+        last_frame_times_.begin(), last_frame_times_.end(), 0LL);
+    fps = static_cast<int64_t>(last_frame_times_.size()) * 1000 /
+        (average_frame_time + 1);
+    average_frame_time /= static_cast<int64_t>(last_frame_times_.size());
+  }
 
   info_label_->setText(QString(tr("Server Var: %1\n"
                                   "Room Var: %2\n"
                                   "Client Var: %3\n"
                                   "Ping: %4\n"
-                                  "X: %5, \tY: %6\n"))
+                                  "X: %5, \tY: %6\n"
+                                  "Fps: %7 (%8ms)\n"))
                            .arg(controller_->GetServerVar())
                            .arg(controller_->GetRoomVar())
                            .arg(controller_->GetClientVar())
                            .arg(controller_->GetPing())
                            .arg(local_player_position.x())
-                           .arg(local_player_position.y()));
+                           .arg(local_player_position.y())
+                           .arg(fps)
+                           .arg(average_frame_time));
   info_label_->adjustSize();
 
   qDebug().noquote().nospace() << "[VIEW] Repainted";
@@ -109,4 +134,8 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
 
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
   controller_->MouseReleaseEvent(mouse_event);
+}
+
+QPointF ClientView::GetPlayerToCenterOffset() const {
+  return game_view_->GetPlayerToCenterOffset();
 }

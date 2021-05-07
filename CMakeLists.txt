@@ -143,5 +143,6 @@ if (WIN32)
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/Res/ ${CMAKE_BINARY_DIR}/Res)
 else()
+    file(REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/Res)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Res DESTINATION ${CMAKE_BINARY_DIR})
 endif (WIN32)

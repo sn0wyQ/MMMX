@@ -38,7 +38,7 @@ void ReloadingField::DrawInPercents(QPainter* painter) {
   int clip_size = local_player->GetWeapon()->GetClipSize();
   int bullets_in_clip = local_player->GetWeapon()->GetCurrentBulletsInClip();
   painter->setBrush(Qt::blue);
-  painter->drawRect(8, 70, 62, 50 * bullets_in_clip / clip_size);
+  painter->drawRect(8, 90, 62, 50 * bullets_in_clip / clip_size);
   painter->restore();
 }
 

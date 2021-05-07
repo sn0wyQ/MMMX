@@ -62,7 +62,8 @@ class ClientController : public BaseController {
   Q_OBJECT
 
  public:
-  explicit ClientController(const QUrl& url = Constants::kServerUrl);
+  ClientController(const QUrl& url,
+                   int fps_max = Constants::kDefaultFpsMax);
   ~ClientController() override = default;
 
   QString GetControllerName() const override;
@@ -73,6 +74,7 @@ class ClientController : public BaseController {
   void OnTickGameFinished(int) {}
   void OnTickGameInProgress(int delta_time);
   void OnTickGameNotStarted(int delta_time);
+  void SendPLayerDataToServer();
 
   std::shared_ptr<ClientGameModel> GetModel();
   int GetServerVar() const;
@@ -83,6 +85,7 @@ class ClientController : public BaseController {
   bool IsGameInProgress() const;
 
   void SetView(std::shared_ptr<AbstractClientView> view);
+  void UpdateView();
 
   void UpdateAnimations(int delta_time);
   void UpdateLocalPlayer(int delta_time);
@@ -140,10 +143,13 @@ class ClientController : public BaseController {
   int room_var_{0};
   int client_var_{0};
   int ping_{0};
-  QTimer timer_for_server_var_;
+  int fps_max_{Constants::kDefaultFpsMax};
+  QTimer server_var_timer_;
+  QTimer view_update_timer_;
   std::shared_ptr<Converter> converter_;
   bool is_time_difference_set_{false};
   int64_t time_difference_{0};
+  int64_t last_view_update_time_{-1};
   std::unordered_map<Controls, Direction> key_to_direction_{
       {Controls::kKeyW, Direction::kUp},
       {Controls::kKeyD, Direction::kRight},
@@ -156,6 +162,7 @@ class ClientController : public BaseController {
       {Direction::kDown, false},
       {Direction::kLeft, false}
   };
+  QPointF last_mouse_position_;
   QTimer shoot_check_timer;
   bool is_holding_{false};
 
