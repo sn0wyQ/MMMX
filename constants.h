@@ -120,6 +120,8 @@ T GetEnumValueFromString(const QString& string) {
   return static_cast<T>(weapon_type_index);
 }
 
+constexpr int kMaxPlayerBullets = 100000;
+
 }  // namespace Constants
 
 #endif  // CONSTANTS_H_

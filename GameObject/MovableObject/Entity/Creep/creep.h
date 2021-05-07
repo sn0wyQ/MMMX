@@ -53,7 +53,7 @@ class Creep : public Entity {
   bool is_going_to_spawn_{false};
   float attack_distance_;
   float damage_;
-  int64_t last_attacked_time_;
+  int64_t last_attacked_time_{0};
   int64_t reloading_time_;
 };
 
