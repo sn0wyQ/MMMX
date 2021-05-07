@@ -11,6 +11,7 @@
 
 #include "Client/client_controller.h"
 #include "Painter/painter.h"
+#include "SpringEmulator/spring_emulator.h"
 
 namespace Constants::StatsTable {
 
@@ -44,6 +45,7 @@ class StatsTable : public QWidget {
   void Show();
   void Hide();
 
+  void Resize(const QSize& size);
   void paintEvent(QPaintEvent* event) override;
 
  private:
@@ -56,6 +58,8 @@ class StatsTable : public QWidget {
   int column_count_;
   float inner_width_{};
   float inner_height_{};
+  QSize full_size_;
+  SpringEmulator<QSizeF> size_emulator_;
 };
 
 #endif  // GUI_GAMEVIEW_STATS_TABLE_H_

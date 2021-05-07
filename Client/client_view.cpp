@@ -119,8 +119,8 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
   game_view_->resize(resize_event->size());
   player_bar_->resize(width(), height_of_bar_);
   player_bar_->move(0, height() - height_of_bar_);
-  stats_table_->resize(this->width() * 0.9f,
-                       (this->height() - height_of_bar_) * 0.9f);
+  stats_table_->Resize(QSize(this->width() * 0.9f,
+                             (this->height() - height_of_bar_) * 0.9f));
   stats_table_->move(
       (this->width() - stats_table_->width()) / 2.f,
       (this->height() - stats_table_->height() - height_of_bar_) / 2.f);

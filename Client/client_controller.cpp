@@ -452,6 +452,20 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   this->HandleEvent(Event(event_type, args));
 }
 
+void ClientController::PlayerKilledNotificationEvent(const Event& event) {
+  auto killer_id = event.GetArg<GameObjectId>(1);
+  auto killed_id = event.GetArg<GameObjectId>(0);
+  auto weapon_type = event.GetArg<WeaponType>(2);
+  auto killer_name = QString::number(killer_id);
+  if (model_->GetGameObjectByGameObjectId(killer_id)->GetType() ==
+                                                GameObjectType::kPlayer) {
+    killer_name = model_->GetPlayerStatsByPlayerId(killer_id)->GetNickname();
+  }
+  auto killed_name = model_->GetPlayerStatsByPlayerId(killed_id)->GetNickname();
+  qInfo() << killer_name << "killed" <<
+                              killed_name << "with" << weapon_type;
+}
+
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   model_->DeleteGameObject(player_id);

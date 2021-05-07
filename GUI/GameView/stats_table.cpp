@@ -6,7 +6,8 @@
 StatsTable::StatsTable(QWidget* parent,
                        std::shared_ptr<ClientGameModel> model) :
     QWidget(parent),
-    model_{std::move(model)} {
+    model_{std::move(model)},
+    size_emulator_(0.05, 0.05) {
   column_count_ = static_cast<int>(Constants::StatsTable::kColumnNames.size());
 }
 
@@ -134,4 +135,9 @@ void StatsTable::Show() {
   auto effect = new QGraphicsOpacityEffect;
   effect->setOpacity(1.f);
   this->setGraphicsEffect(effect);
+}
+
+void StatsTable::Resize(const QSize& size) {
+  full_size_ = size;
+  this->resize(size);
 }
