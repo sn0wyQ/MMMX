@@ -162,13 +162,13 @@ void ClientController::UpdateInterpolationInfo() {
         time_to_interpolate) {
         continue;
       }
-      model_->AttachGameObject(game_object_id,
-                               game_object_to_be_interpolated->Clone());
-      // TODO(kmekhovich): in respawn_button add is visible false
+      auto game_object = game_object_to_be_interpolated->Clone();
+      model_->AttachGameObject(game_object_id, game_object);
+      game_object->SetIsInterpolatedOnce(true);
       continue;
     }
-    // TODO(kmekhovich): in respawn_button add is visible true
     auto game_object = model_->GetGameObjectByGameObjectId(game_object_id);
+    game_object->SetIsInterpolatedOnce(false);
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
   }

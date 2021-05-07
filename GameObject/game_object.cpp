@@ -31,6 +31,7 @@ GameObject::GameObject(const GameObject& other) {
   updated_time_ = other.updated_time_;
   is_need_to_delete_ = other.is_need_to_delete_;
   created_time_ = other.created_time_;
+  is_interpolated_once_ = other.is_interpolated_once_;
 }
 
 void GameObject::SetParams(std::vector<QVariant> params) {
@@ -85,6 +86,9 @@ std::vector<QVariant> GameObject::GetParams() const {
 }
 
 void GameObject::Draw(Painter* painter) {
+  if (this->IsInterpolatedOnce()) {
+    return;
+  }
   painter->save();
   painter->Translate(position_);
   this->DrawHealthBar(painter);
@@ -228,4 +232,12 @@ int64_t GameObject::GetCreatedTime() const {
 
 void GameObject::SetCreatedTime(int64_t created_time) {
   created_time_ = created_time;
+}
+
+bool GameObject::IsInterpolatedOnce() const {
+  return is_interpolated_once_;
+}
+
+void GameObject::SetIsInterpolatedOnce(bool is_interpolated_once) {
+  is_interpolated_once_ = is_interpolated_once;
 }
