@@ -96,6 +96,7 @@ class RoomController : public BaseController {
   void TickCreepsIntelligence(const ModelData& model_data);
   void DeleteReadyToBeDeletedObjects(const ModelData& model_data);
   void EntityReceiveDamage(const ModelData& model_data,
+                           const std::shared_ptr<Entity>& killer,
                            const std::shared_ptr<Entity>& entity,
                            float damage, bool* is_killed);
 
@@ -128,6 +129,7 @@ class RoomController : public BaseController {
   void SendPlayerShootingEvent(const Event& event) override;
   void SendControlsEvent(const Event& event) override;
   void SendLevelingPointsEvent(const Event& event) override;
+  void ReviveConfirmedEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

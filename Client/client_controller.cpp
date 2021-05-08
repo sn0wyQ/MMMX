@@ -510,10 +510,13 @@ void ClientController::ReviveLocalPlayerEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
-  is_controls_blocked_ = false;
+  auto local_player = model_->GetLocalPlayer();
   auto spawn_point = event.GetArg<QPointF>(0);
-  model_->GetLocalPlayer()->Revive(spawn_point);
-  model_->GetLocalPlayer()->SetIsVisible(true);
+  local_player->Revive(spawn_point);
+  local_player->SetIsVisible(true);
+  this->AddEventToSend(Event(EventType::kReviveConfirmed,
+                             local_player->GetId()));
+  is_controls_blocked_ = false;
 }
 
 void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {

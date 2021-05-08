@@ -96,6 +96,9 @@ void GameObject::Draw(Painter* painter) {
   if (this->IsInterpolatedOnce()) {
     return;
   }
+  if (!IsAlive()) {
+    return;
+  }
   painter->save();
   painter->Translate(position_);
   this->DrawHealthBar(painter);
@@ -228,6 +231,10 @@ bool GameObject::IsEntity() const {
 }
 
 float GameObject::GetRigidBodyBoundingCircleRadius() const {
+  if (GetRigidBody()->GetType() == RigidBodyType::kCircle) {
+    return std::dynamic_pointer_cast<RigidBodyCircle>(
+        GetRigidBody())->GetRadius();
+  }
   return Math::DistanceBetweenPoints(
       QPointF(), QPointF(this->GetRigidBody()->GetWidth() / 2.f,
                          this->GetRigidBody()->GetHeight() / 2.f));
@@ -263,4 +270,8 @@ bool GameObject::IsVisible() const {
 
 void GameObject::SetIsVisible(bool visible) {
   visibility_ = (visible ? 1.f : 0.f);
+}
+
+bool GameObject::IsAlive() const {
+  return true;
 }

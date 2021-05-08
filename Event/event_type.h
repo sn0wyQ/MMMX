@@ -118,8 +118,11 @@ enum class EventType {
 
   kLocalPlayerDied,
 
-  // [0] - <QPointF> - point_to_spawn
+  // [0] - <QPointF> point_to_spawn
   kReviveLocalPlayer,
+
+  // [0] - <GameObjectId> player_id
+  kReviveConfirmed,
 
   // [0] - <float> health_points
   kUpdateLocalPlayerHealthPoints,

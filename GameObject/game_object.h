@@ -109,6 +109,8 @@ class GameObject {
   void SetVisibility(float visibility);
   float GetVisibility() const;
 
+  virtual bool IsAlive() const;
+
  private:
   // Holds animations for all GameObjects
   // Prevents same SharedFrame being loaded into RAM more than once at a time
