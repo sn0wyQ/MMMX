@@ -1,8 +1,9 @@
-#include <QPainter>
-#include <QGraphicsOpacityEffect>
-#include "kill_feed_notification.h"
+#include <utility>
 
-#include "QDebug"
+#include <QGraphicsOpacityEffect>
+#include <QPainter>
+
+#include "kill_feed_notification.h"
 
 using Constants::KillFeedNotification::kOpacityAnimationStiffnessRatio;
 using Constants::KillFeedNotification::kOpacityAnimationFrictionRatio;

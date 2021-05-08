@@ -29,7 +29,8 @@ void GameView::Update() {
   auto player_pos = local_player->GetPosition();
   if (!was_player_set_) {
     was_player_set_ = true;
-    camera_motion_emulator_.SetCurrentValue(QVector2D(local_player->GetPosition()));
+    camera_motion_emulator_.SetCurrentValue(
+        QVector2D(local_player->GetPosition()));
     fov_change_emulator_.SetCurrentValue(local_player->GetFovRadius() / 1.2f);
   }
 

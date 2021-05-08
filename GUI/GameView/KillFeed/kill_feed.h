@@ -1,11 +1,12 @@
 #ifndef GUI_GAMEVIEW_KILLFEED_KILL_FEED_H_
 #define GUI_GAMEVIEW_KILLFEED_KILL_FEED_H_
 
-#include "GUI/GameView/KillFeed/kill_feed_notification.h"
-#include "SpringEmulator/spring_emulator.h"
+#include <deque>
 
 #include <QWidget>
-#include <deque>
+
+#include "GUI/GameView/KillFeed/kill_feed_notification.h"
+#include "SpringEmulator/spring_emulator.h"
 
 namespace Constants::KillFeed {
 
@@ -21,7 +22,7 @@ const float kAnimationFrictionRatio = 0.1f;
 }  // namespace Constants::KillFeed
 
 class KillFeed : public QWidget {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   explicit KillFeed(QWidget* parent);

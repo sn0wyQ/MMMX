@@ -1,12 +1,10 @@
-//
-// Created by matvey on 8.05.21.
-//
+#include <cmath>
+#include <utility>
 
 #include <QPainter>
-#include <Weapon/WeaponSettings/weapon_settings.h>
-#include <cmath>
+
 #include "kill_feed.h"
-#include "QDebug"
+#include "Weapon/WeaponSettings/weapon_settings.h"
 
 using Constants::KillFeed::kOutOfScreenAnimationOffset;
 using Constants::KillFeed::kNotificationHeight;

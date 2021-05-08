@@ -1,11 +1,11 @@
 #ifndef GUI_GAMEVIEW_KILLFEED_KILL_FEED_NOTIFICATION_H_
 #define GUI_GAMEVIEW_KILLFEED_KILL_FEED_NOTIFICATION_H_
 
-#include <Weapon/WeaponSettings/weapon_settings.h>
-#include "SpringEmulator/spring_emulator.h"
-
 #include <QWidget>
 #include <QTimer>
+
+#include "SpringEmulator/spring_emulator.h"
+#include "Weapon/WeaponSettings/weapon_settings.h"
 
 namespace Constants::KillFeedNotification {
 
@@ -20,7 +20,7 @@ const float kRoundedRectYRadius = 5.f;
 }  // namespace Constants::KillFeedNotification
 
 class KillFeedNotification : public QWidget {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   KillFeedNotification(QWidget* parent,

@@ -1,9 +1,11 @@
 #ifndef SPRINGEMULATOR_SPRING_EMULATOR_H_
 #define SPRINGEMULATOR_SPRING_EMULATOR_H_
 
-#include <QVector2D>
+#include <algorithm>
+
 #include <QDateTime>
 #include <QDebug>
+#include <QVector2D>
 
 template <class T, bool DoSetBounds>
 class SpringEmulator {
