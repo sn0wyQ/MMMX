@@ -606,8 +606,8 @@ void RoomController::SendPlayerReloadingEvent(const Event& event) {
       break;
     }
   }
-  this->AddEventToSendToPlayerList(Event(
-      EventType::kSendPlayerReloading, timestamp, player_id), players_ids);
+  this->AddEventToSendToPlayerList(Event( EventType::kSendPlayerReloading,
+                      static_cast<qint64>(timestamp), player_id), players_ids);
 }
 
 void RoomController::SendPlayerShootingEvent(const Event& event) {
