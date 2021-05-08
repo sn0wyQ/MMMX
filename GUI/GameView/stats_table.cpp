@@ -13,13 +13,15 @@ using Constants::StatsTable::kMaximumSizeRatio;
 StatsTable::StatsTable(QWidget* parent,
                        std::shared_ptr<ClientGameModel> model) :
     QWidget(parent),
+    opacity_effect_(new QGraphicsOpacityEffect(this)),
     model_{std::move(model)},
     size_ratio_emulator_(kSizeAnimationStiffnessRatio,
                          kSizeAnimationFrictionRatio),
-    opacity_ratio_emulator_(kOpacityAnimationStiffnessRatio,
-                            kOpacityAnimationFrictionRatio) {
-  opacity_ratio_emulator_.SetBounds(0.01, 1);
-  opacity_ratio_emulator_.SetCurrentValue(0.f);
+    opacity_emulator_(kOpacityAnimationStiffnessRatio,
+                      kOpacityAnimationFrictionRatio) {
+  this->setGraphicsEffect(opacity_effect_);
+  opacity_emulator_.SetBounds(0.01, 1);
+  opacity_emulator_.SetCurrentValue(0.f);
   size_ratio_emulator_.SetCurrentValue(kMinimumSizeRatio);
   target_opacity_ratio_ = 0.f;
   target_size_ratio_ = kMinimumSizeRatio;
@@ -32,7 +34,7 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
   }
 
   size_ratio_emulator_.MakeStepTo(target_size_ratio_);
-  opacity_ratio_emulator_.MakeStepTo(target_opacity_ratio_);
+  opacity_emulator_.MakeStepTo(target_opacity_ratio_);
   auto dist_x = this->size().width() *
       (1 - size_ratio_emulator_.GetCurrentValue());
   auto dist_y = this->size().height() *
@@ -50,12 +52,7 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
   this->DrawTable(&painter);
   this->DrawPlayersStats(&painter);
 
-  static QGraphicsOpacityEffect* effect = nullptr;
-  if (!effect) {
-    effect = new QGraphicsOpacityEffect(this);
-    this->setGraphicsEffect(effect);
-  }
-  effect->setOpacity(opacity_ratio_emulator_.GetCurrentValue());
+  opacity_effect_->setOpacity(opacity_emulator_.GetCurrentValue());
 }
 
 void StatsTable::DrawTable(QPainter* painter) {

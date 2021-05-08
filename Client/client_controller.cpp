@@ -453,20 +453,13 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
 }
 
 void ClientController::PlayerKilledNotificationEvent(const Event& event) {
-  auto killed_id = event.GetArg<GameObjectId>(0);
+  auto victim_id = event.GetArg<GameObjectId>(0);
   auto killer_id = event.GetArg<GameObjectId>(1);
-  bool is_killed_by_player = event.GetArg<bool>(2);
-  auto weapon_type = (is_killed_by_player ? event.GetArg<WeaponType>(3) :
-      WeaponType::kNull);
+  auto weapon_type = event.GetArg<WeaponType>(2);
 
-  QString killer_name;
-  if (is_killed_by_player) {
-    killer_name = model_->GetPlayerStatsByPlayerId(killer_id)->GetNickname();
-  } else {
-    killer_name = "Creep";
-  }
-  auto killed_name = model_->GetPlayerStatsByPlayerId(killed_id)->GetNickname();
-  view_->AddKillFeedNotification(killer_name, killed_name, weapon_type);
+  QString killer_name = this->GetKillerNickname(killer_id);
+  auto victim_name = model_->GetPlayerStatsByPlayerId(victim_id)->GetNickname();
+  view_->AddKillFeedNotification(killer_name, victim_name, weapon_type);
 }
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
@@ -517,5 +510,15 @@ void ClientController::ShootFailedEvent(const Event& event) {
     if (bullet->GetUpdatedTime() == timestamp) {
       bullet->SetIsNeedToDelete(true);
     }
+  }
+}
+
+QString ClientController::GetKillerNickname(GameObjectId game_object_id) const {
+  auto killer_object_type =
+      model_->GetGameObjectByGameObjectId(game_object_id)->GetType();
+  if (killer_object_type == GameObjectType::kPlayer) {
+    return model_->GetPlayerStatsByPlayerId(game_object_id)->GetNickname();
+  } else {
+    return "Creep";
   }
 }

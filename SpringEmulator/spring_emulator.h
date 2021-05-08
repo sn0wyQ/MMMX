@@ -18,12 +18,12 @@ class SpringEmulator {
   T GetCurrentValue() const;
 
   void SetBounds(T min, T max);
-  T value_{};
+
  private:
   float stiffness_ratio_;
   float friction_ratio_;
   qint64 last_time_updated_{0};
-
+  T value_{};
   T velocity_{};
   T min_value_{};
   T max_value_{};

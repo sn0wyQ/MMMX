@@ -58,6 +58,7 @@ class StatsTable : public QWidget {
  private:
   void HideImmediately();
 
+  QGraphicsOpacityEffect* opacity_effect_;
   std::shared_ptr<ClientGameModel> model_;
   void DrawTable(QPainter* painter);
   void DrawPlayersStats(QPainter* painter);
@@ -70,7 +71,7 @@ class StatsTable : public QWidget {
   float target_size_ratio_;
   float target_opacity_ratio_;
   SpringEmulator<float, false> size_ratio_emulator_;
-  SpringEmulator<float, true> opacity_ratio_emulator_;
+  SpringEmulator<float, true> opacity_emulator_;
 };
 
 #endif  // GUI_GAMEVIEW_STATS_TABLE_H_

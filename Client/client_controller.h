@@ -131,6 +131,8 @@ class ClientController : public BaseController {
   void UpdatePlayersStatsEvent(const Event& event) override;
   void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;
 
+  QString GetKillerNickname(GameObjectId game_object_id) const;
+
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;
   QWebSocket web_socket_;

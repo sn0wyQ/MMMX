@@ -33,7 +33,7 @@ class ClientView : public AbstractClientView {
   std::shared_ptr<Converter> GetConverter() override;
   QPointF GetPlayerToCenterOffset() const override;
   void AddKillFeedNotification(QString killer_name,
-                               QString killed_name,
+                               QString victim_name,
                                WeaponType weapon_type) override;
 
  private:

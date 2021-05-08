@@ -28,7 +28,7 @@ class KillFeed : public QWidget {
   explicit KillFeed(QWidget* parent);
 
   void AddNotification(QString killer_name,
-                       QString killed_name,
+                       QString victim_name,
                        WeaponType weapon_type);
 
   void paintEvent(QPaintEvent* paint_event) override;

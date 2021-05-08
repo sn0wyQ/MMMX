@@ -198,7 +198,8 @@ void RoomController::TickCreepsIntelligence(
           if (is_killed) {
             this->AddEventToSendToAllPlayers(
                 Event(EventType::kPlayerKilledNotification,
-                      closer_player->GetId(), creep->GetId(), false));
+                      closer_player->GetId(), creep->GetId(),
+                      static_cast<int>(WeaponType::kNull)));
           }
           creep->SetLastAttackedTime(timestamp);
         }
@@ -241,7 +242,6 @@ void RoomController::ProcessBulletHits(
                 Event(EventType::kPlayerKilledNotification,
                       entity->GetId(),
                       killer_id,
-                      true,
                       static_cast<int>(killer->GetWeapon()->GetWeaponType())));
             auto killer_stats =
                 model_data_bullet.model->GetPlayerStatsByPlayerId(killer_id);

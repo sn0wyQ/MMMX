@@ -1,9 +1,15 @@
+#include <cmath>
 #include <utility>
 
 #include <QGraphicsOpacityEffect>
 #include <QPainter>
 
 #include "kill_feed_notification.h"
+
+using Constants::KillFeedNotification::kBackgroundOutlineColor;
+using Constants::KillFeedNotification::kTextColor;
+using Constants::KillFeedNotification::kBackgroundColor;
+using Constants::KillFeedNotification::kBackgroundOpacityMultiplier;
 
 using Constants::KillFeedNotification::kOpacityAnimationStiffnessRatio;
 using Constants::KillFeedNotification::kOpacityAnimationFrictionRatio;
@@ -15,11 +21,11 @@ using Constants::KillFeedNotification::kRoundedRectYRadius;
 
 KillFeedNotification::KillFeedNotification(QWidget* parent,
                                            QString killer_name,
-                                           QString killed_name,
+                                           QString victim_name,
                                            WeaponType weapon_type) :
     QWidget(parent),
     killer_name_(std::move(killer_name)),
-    killed_name_(std::move(killed_name)),
+    victim_name_(std::move(victim_name)),
     weapon_type_(weapon_type),
     opacity_emulator_(kOpacityAnimationStiffnessRatio,
                       kOpacityAnimationFrictionRatio) {
@@ -28,31 +34,26 @@ KillFeedNotification::KillFeedNotification(QWidget* parent,
   disappear_timer_.start(kDisappearMsecs);
   disappear_timer_.setSingleShot(true);
   connect(&disappear_timer_, &QTimer::timeout,
-          this, &KillFeedNotification::Disappear);
+          this, &KillFeedNotification::Hide);
 }
 
 void KillFeedNotification::Draw(QPainter* painter) {
   painter->save();
   opacity_emulator_.MakeStepTo(opacity_target_);
 
-  QColor pen_color(Qt::black);
-  pen_color.setAlpha(static_cast<int>(opacity_emulator_.GetCurrentValue()));
-  painter->setPen(QPen(pen_color));
-  QColor brush_color(Qt::cyan);
-  brush_color.setAlpha(static_cast<int>(kBackgroundOpacityRatio *
-      opacity_emulator_.GetCurrentValue()));
-  painter->setBrush(QBrush(brush_color));
-
-  auto pen = painter->pen();
-  pen.setWidthF(kBackgroundOutlineWidth);
-  painter->setPen(pen);
+  painter->setBrush(QBrush(this->GetColorWithOpacity(kBackgroundColor,
+         opacity_emulator_.GetCurrentValue() * kBackgroundOpacityMultiplier)));
+  painter->setPen(QPen(this->GetColorWithOpacity(kBackgroundOutlineColor),
+                       kBackgroundOutlineWidth));
 
   painter->drawRoundedRect(QRect(0, 0, this->width(), this->height()),
                            kRoundedRectXRadius, kRoundedRectYRadius);
 
+  painter->setPen(QPen(this->GetColorWithOpacity(kTextColor)));
+
   auto weapon_name = Constants::GetEnumValueToString(weapon_type_);
   weapon_name.remove(0, 1);
-  QString message = killer_name_ + " killed " + killed_name_;
+  QString message = killer_name_ + " killed " + victim_name_;
   if (weapon_type_ != WeaponType::kNull) {
     message += " with " + weapon_name;
   }
@@ -63,6 +64,16 @@ void KillFeedNotification::Draw(QPainter* painter) {
   painter->restore();
 }
 
-void KillFeedNotification::Disappear() {
+void KillFeedNotification::Hide() {
   opacity_target_ = 0;
+}
+
+QColor KillFeedNotification::GetColorWithOpacity(const QColor& color,
+                                                 int opacity) {
+  if (opacity == -1) {
+    opacity = static_cast<int>(std::round(opacity_emulator_.GetCurrentValue()));
+  }
+  auto result = color;
+  result.setAlpha(opacity);
+  return result;
 }

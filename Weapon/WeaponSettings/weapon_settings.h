@@ -14,7 +14,7 @@ namespace WeaponTypeWrapper {
 Q_NAMESPACE
 
 enum class WeaponType {
-  kNull,
+  kNull = -1,
   kAssaultRifle,
   kCrossbow,
   kMachineGun,

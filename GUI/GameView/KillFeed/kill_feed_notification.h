@@ -1,13 +1,18 @@
 #ifndef GUI_GAMEVIEW_KILLFEED_KILL_FEED_NOTIFICATION_H_
 #define GUI_GAMEVIEW_KILLFEED_KILL_FEED_NOTIFICATION_H_
 
-#include <QWidget>
 #include <QTimer>
+#include <QWidget>
 
 #include "SpringEmulator/spring_emulator.h"
 #include "Weapon/WeaponSettings/weapon_settings.h"
 
 namespace Constants::KillFeedNotification {
+
+const QColor kTextColor(Qt::black);
+const QColor kBackgroundOutlineColor(Qt::black);
+const QColor kBackgroundColor(Qt::cyan);
+const float kBackgroundOpacityMultiplier = 0.5f;
 
 const float kOpacityAnimationStiffnessRatio = 0.003f;
 const float kOpacityAnimationFrictionRatio = 0.08f;
@@ -25,16 +30,17 @@ class KillFeedNotification : public QWidget {
  public:
   KillFeedNotification(QWidget* parent,
                        QString killer_name,
-                       QString killed_name,
+                       QString victim_name,
                        WeaponType weapon_type);
 
-  void Disappear();
-
+  void Hide();
   void Draw(QPainter* painter);
+  QColor GetColorWithOpacity(const QColor& color,
+                             int opacity = -1);
 
  private:
   QString killer_name_;
-  QString killed_name_;
+  QString victim_name_;
   WeaponType weapon_type_;
   SpringEmulator<float, true> opacity_emulator_;
   float opacity_target_{255};

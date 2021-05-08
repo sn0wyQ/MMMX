@@ -153,9 +153,9 @@ QPointF ClientView::GetPlayerToCenterOffset() const {
 }
 
 void ClientView::AddKillFeedNotification(QString killer_name,
-                                         QString killed_name,
+                                         QString victim_name,
                                          WeaponType weapon_type) {
   kill_feed_->AddNotification(std::move(killer_name),
-                              std::move(killed_name),
+                              std::move(victim_name),
                               weapon_type);
 }
