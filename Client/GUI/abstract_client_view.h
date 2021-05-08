@@ -30,7 +30,7 @@ class AbstractClientView : public QMainWindow {
  public:
   ~AbstractClientView() override = default;
 
-  virtual void ConnectToRoom(RoomId room_id = Constants::kNullRoomId) = 0;
+  virtual void ConnectToRoom(RoomId room_id) = 0;
   virtual void SetWindow(ClientWindowType window_type) = 0;
   virtual void Update() = 0;
   virtual void UpdateRoomsInfoList() = 0;

@@ -12,7 +12,6 @@ enum class EventType {
   // After adding an event, add a function with the same name
   // to the BaseController private functions
 
-
   // [0] - <ClientId> client_id
   kClientDisconnected,
 
@@ -36,8 +35,12 @@ enum class EventType {
   // No arguments
   kSendGetVars,
 
-  // [0] -
+  // [0] - <QList<QList<QVariant>>> rooms_infos
+  // More in room_info.h
   kSendVisibleRoomsInfo,
+
+  // [0] - <RoomId> room_id
+  kConnectToRoomById,
 
   // [0] - <GameObjectId> player_id
   kSetPlayerIdToClient,

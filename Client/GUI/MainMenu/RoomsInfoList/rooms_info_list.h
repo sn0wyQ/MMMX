@@ -21,6 +21,8 @@ class RoomsInfoList : public QWidget {
   RoomsInfoList(QWidget* parent, std::shared_ptr<ClientGameModel> model);
 
   void UpdateRoomsInfoList();
+
+  RoomId GetSelectedRoom() const;
   void SelectRoom(RoomId room_id);
 
   void resizeEvent(QResizeEvent* event) override;

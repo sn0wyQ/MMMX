@@ -15,7 +15,8 @@ ClientController::ClientController(const QUrl& url)
 }
 
 void ClientController::ConnectToRoom(RoomId room_id) {
-  
+  room_id = 1;  // temporary
+  this->AddEventToSend(Event(EventType::kConnectToRoomById, room_id));
 }
 
 std::shared_ptr<ClientGameModel> ClientController::GetModel() {
@@ -86,6 +87,7 @@ void ClientController::OnTick(int delta_time) {
   if (!is_time_difference_set_) {
     return;
   }
+
   switch (game_state_) {
     case GameState::kGameFinished:
       this->OnTickGameFinished(delta_time);

@@ -37,6 +37,10 @@ void RoomsInfoList::UpdateRoomsInfoList() {
   }
 }
 
+RoomId RoomsInfoList::GetSelectedRoom() const {
+  return selected_room_id_;
+}
+
 void RoomsInfoList::SelectRoom(RoomId room_id) {
   selected_room_id_ = room_id;
 }

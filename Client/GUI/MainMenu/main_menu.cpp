@@ -33,6 +33,7 @@ void MainMenu::resizeEvent(QResizeEvent* event) {
 }
 
 void MainMenu::OnStartGameButtonClicked() {
-  parent_->ConnectToRoom();
+  // TODO(Klim): some check like "if room is OK" etc.
+  parent_->ConnectToRoom(rooms_info_list_->GetSelectedRoom());
   parent_->SetWindow(ClientWindowType::kGameView);
 }

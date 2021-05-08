@@ -63,7 +63,7 @@ class ClientController : public BaseController {
   explicit ClientController(const QUrl& url = Constants::kServerUrl);
   ~ClientController() override = default;
 
-  void ConnectToRoom(RoomId room_id = Constants::kNullRoomId);
+  void ConnectToRoom(RoomId room_id);
 
   QString GetControllerName() const override;
 

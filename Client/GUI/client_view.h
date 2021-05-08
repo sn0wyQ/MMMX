@@ -30,7 +30,7 @@ class ClientView : public AbstractClientView {
   explicit ClientView(std::shared_ptr<ClientController> controller);
   ~ClientView() override = default;
 
-  void ConnectToRoom(RoomId room_id = Constants::kNullRoomId) override;
+  void ConnectToRoom(RoomId room_id) override;
   void SetWindow(ClientWindowType window_type) override;
   void Update() override;
   void UpdateRoomsInfoList() override;

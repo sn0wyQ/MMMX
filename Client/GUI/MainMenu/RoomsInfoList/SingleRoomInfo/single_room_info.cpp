@@ -21,7 +21,7 @@ void SingleRoomInfo::UpdateInfo(const RoomInfo& room_info) {
                           : QString::number(room_info.owners_client_id))
                    .arg(room_info.max_clients);
 
-  label_->setText((room_info.is_public ? "[PUBLIC]" : "[PRIVATE]")
+  label_->setText((room_info.is_public ? "[PUBLIC] " : "[PRIVATE] ")
                   + text);
 }
 
