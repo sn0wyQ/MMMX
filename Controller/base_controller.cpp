@@ -54,6 +54,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::ReviveLocalPlayerEvent, this, _1));
   SetFunctionForEventType(EventType::kReviveConfirmed,
     std::bind(&BaseController::ReviveConfirmedEvent, this, _1));
+  SetFunctionForEventType(EventType::kRequestRespawn,
+    std::bind(&BaseController::RequestRespawnEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

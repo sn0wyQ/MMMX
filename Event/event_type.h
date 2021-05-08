@@ -127,6 +127,9 @@ enum class EventType {
   // [0] - <float> health_points
   kUpdateLocalPlayerHealthPoints,
 
+  // [0] - <GameObjectId> player_id
+  kRequestRespawn,
+
   SIZE
 };
 

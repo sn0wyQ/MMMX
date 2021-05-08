@@ -130,6 +130,7 @@ class RoomController : public BaseController {
   void SendControlsEvent(const Event& event) override;
   void SendLevelingPointsEvent(const Event& event) override;
   void ReviveConfirmedEvent(const Event& event) override;
+  void RequestRespawnEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

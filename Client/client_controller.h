@@ -28,14 +28,16 @@ enum class Controls {
   kKeyW = 17,
   kKeyA = 30,
   kKeyS = 31,
-  kKeyD = 32
+  kKeyD = 32,
+  kKeyC = 46
 };
 #else
 enum class Controls {
   kKeyW = 25,
   kKeyA = 38,
   kKeyS = 39,
-  kKeyD = 40
+  kKeyD = 40,
+  kKeyC = 54
 };
 #endif
 
@@ -108,7 +110,7 @@ class ClientController : public BaseController {
   void OnByteArrayReceived(const QByteArray& message);
   void UpdateVarsAndPing();
   void SetPing(int elapsed_time);
-  void ShootHolding();
+  void ControlsHolding();
 
  private:
   void EndGameEvent(const Event& event) override;
@@ -160,9 +162,14 @@ class ClientController : public BaseController {
       {Direction::kLeft, false}
   };
   QPointF last_mouse_position_;
-  QTimer shoot_check_timer;
-  bool is_holding_{false};
+  QTimer controls_check_timer_;
+  bool is_shoot_holding{false};
   bool is_controls_blocked_{false};
+
+  int64_t last_requested_respawn_time_{0};
+  int64_t started_holding_respawn_{0};
+  int64_t respawn_released_time_{0};
+  bool is_respawn_holding_{false};
 
   std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;
 };

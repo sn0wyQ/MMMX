@@ -765,5 +765,23 @@ void RoomController::SendLevelingPointsEvent(const Event& event) {
 }
 
 void RoomController::ReviveConfirmedEvent(const Event& event) {
-  is_controls_blocked_[event.GetArg<GameObjectId>(0)] = false;
+  auto player_id = event.GetArg<GameObjectId>(0);
+  if (!model_->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  is_controls_blocked_[player_id] = false;
+}
+
+void RoomController::RequestRespawnEvent(const Event& event) {
+  auto player_id = event.GetArg<GameObjectId>(0);
+  if (!model_->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  auto player = model_->GetPlayerByPlayerId(player_id);
+  QPointF point_to_spawn = model_->GetPointToSpawn(
+      player->GetRigidBodyBoundingCircleRadius(), true);
+  player->Revive(point_to_spawn);
+  this->AddEventToSendToSinglePlayer(
+      Event(EventType::kReviveLocalPlayer, point_to_spawn), player_id);
+  is_controls_blocked_[player_id] = true;
 }

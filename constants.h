@@ -54,7 +54,7 @@ constexpr RoomId kNullRoomId = -1;
 const QString kWindowTitle = "MMMX | Version " + kVersionString;
 constexpr int kTimeToUpdateVarsAndPing = 1000;
 constexpr int64_t kInterpolationMSecs = 200;
-constexpr int kShootHoldingCheck = 30;
+constexpr int kControlsHoldingCheck = 30;
 
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
@@ -114,6 +114,9 @@ constexpr float kBulletDamage = 1.1f;
 }  // namespace LevelingMultipliers
 
 constexpr int64_t kReviveTime = 5000;
+constexpr int64_t kRequestRespawnTime = 10000;
+constexpr int64_t kHoldingRespawnTime = 1000;
+
 template<class T>
 T GetEnumValueFromString(const QString& string) {
   auto weapon_type_index =

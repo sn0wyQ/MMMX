@@ -12,9 +12,9 @@ ClientController::ClientController(const QUrl& url,
   connect(&web_socket_, &QWebSocket::disconnected, this,
           &ClientController::OnDisconnected);
   web_socket_.open(url);
-  connect(&shoot_check_timer, &QTimer::timeout, this,
-          &ClientController::ShootHolding);
-  shoot_check_timer.start(Constants::kShootHoldingCheck);
+  connect(&controls_check_timer_, &QTimer::timeout, this,
+          &ClientController::ControlsHolding);
+  controls_check_timer_.start(Constants::kControlsHoldingCheck);
   this->StartTicking();
 }
 
@@ -357,21 +357,29 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity({0, 0});
   }
-  is_holding_ = false;
+  is_shoot_holding = false;
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
   if (is_controls_blocked_) {
     return;
   }
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
+  if (native_key == Controls::kKeyC &&
+    GetCurrentServerTime() - last_requested_respawn_time_
+    > Constants::kRequestRespawnTime && !is_respawn_holding_) {
+    started_holding_respawn_ = GetCurrentServerTime();
+    is_respawn_holding_ = true;
+    return;
+  }
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
 
-  if (model_->IsLocalPlayerSet()) {
-    model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
-  }
+  model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
@@ -379,6 +387,10 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
     return;
   }
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
+  if (native_key == Controls::kKeyC) {
+    respawn_released_time_ = GetCurrentServerTime();
+    return;
+  }
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = false;
   }
@@ -399,36 +411,53 @@ void ClientController::MousePressEvent(QMouseEvent*) {
   if (is_controls_blocked_) {
     return;
   }
-  is_holding_ = true;
+  is_shoot_holding = true;
 }
 
 void ClientController::MouseReleaseEvent(QMouseEvent*) {
   if (is_controls_blocked_) {
     return;
   }
-  is_holding_ = false;
+  is_shoot_holding = false;
 }
 
-void ClientController::ShootHolding() {
-  if (!is_holding_) {
+void ClientController::ControlsHolding() {
+  if (is_respawn_holding_) {
+    if (GetCurrentServerTime() - respawn_released_time_ > 50) {
+      is_respawn_holding_ = false;
+    }
+  }
+  if (is_respawn_holding_) {
+    if (GetCurrentServerTime() - started_holding_respawn_
+        > Constants::kHoldingRespawnTime) {
+      this->AddEventToSend(Event(EventType::kRequestRespawn,
+                                 model_->GetLocalPlayer()->GetId()));
+      last_requested_respawn_time_ = GetCurrentServerTime();
+      started_holding_respawn_ = GetCurrentServerTime();
+      is_respawn_holding_ = false;
+      is_controls_blocked_ = true;
+    }
     return;
   }
-  if (model_->IsLocalPlayerSet()) {
-    auto local_player = model_->GetLocalPlayer();
-    auto timestamp = GetCurrentServerTime();
-    if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
-      return;
+  if (is_shoot_holding) {
+    if (model_->IsLocalPlayerSet()) {
+      auto local_player = model_->GetLocalPlayer();
+      auto timestamp = GetCurrentServerTime();
+      if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
+        return;
+      }
+      // Temporary nickname change
+      this->AddEventToSend(Event(EventType::kSendNickname,
+                                 model_->GetLocalPlayer()->GetId(),
+                                 QString("Shooter#") +
+                                     QString::number(model_->GetLocalPlayer()->GetId())));
+      local_player->GetWeapon()->SetLastTimeShot(timestamp);
+      model_->AddLocalBullets(timestamp);
+      this->AddEventToSend(Event(EventType::kSendPlayerShooting,
+                                 static_cast<qint64>(timestamp),
+                                 local_player->GetId()));
     }
-    // Temporary nickname change
-    this->AddEventToSend(Event(EventType::kSendNickname,
-                               model_->GetLocalPlayer()->GetId(),
-                               QString("Shooter#") +
-                        QString::number(model_->GetLocalPlayer()->GetId())));
-    local_player->GetWeapon()->SetLastTimeShot(timestamp);
-    model_->AddLocalBullets(timestamp);
-    this->AddEventToSend(Event(EventType::kSendPlayerShooting,
-                               static_cast<qint64>(timestamp),
-                               local_player->GetId()));
+    return;
   }
 }
 
@@ -502,7 +531,7 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
     return;
   }
   is_controls_blocked_ = true;
-  is_holding_ = false;
+  is_shoot_holding = false;
   model_->GetLocalPlayer()->SetIsVisible(false);
 }
 

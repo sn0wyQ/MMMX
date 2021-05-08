@@ -83,6 +83,7 @@ class BaseController : public QObject {
   virtual void SendPlayerShootingEvent(const Event& event) {}
   virtual void SendLevelingPointsEvent(const Event& event) {}
   virtual void ReviveConfirmedEvent(const Event& event) {}
+  virtual void RequestRespawnEvent(const Event& event) {}
 
   // room -> client
   virtual void AddLocalPlayerGameObjectEvent(const Event& event) {}
