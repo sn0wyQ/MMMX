@@ -27,7 +27,8 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   info_label_->setAlignment(Qt::AlignTop);
 
   // ReloadingField
-  reloading_field_ = new ReloadingField(this, controller_->GetModel());
+  // reloading_field_ = new ReloadingField(this, controller_->GetModel());
+  reloading_field_ = new ReloadingField(this, controller_->GetModel(), controller_);
 
   // Stats table
   stats_table_ = new StatsTable(this, controller_->GetModel());

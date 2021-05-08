@@ -7,6 +7,14 @@ ReloadingField::ReloadingField(QWidget* parent,
   this->resize(Constants::ReloadingField::kDefaultSize);
 }
 
+ReloadingField::ReloadingField(QWidget* parent,
+                               std::shared_ptr<ClientGameModel> model,
+                               std::shared_ptr<ClientController> controller) :
+    QWidget(parent), model_{std::move(model)}, controller_{std::move(controller)}{
+  this->move(Constants::ReloadingField::kDefaultPos);
+  this->resize(Constants::ReloadingField::kDefaultSize);
+}
+
 void ReloadingField::paintEvent(QPaintEvent* paint_event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
@@ -33,16 +41,25 @@ void ReloadingField::DrawReloadingField(QPainter* painter) {
 
 void ReloadingField::DrawInPercents(QPainter* painter) {
   painter->save();
-  auto local_player = model_->GetLocalPlayer();
-  // if (model_->)
-  int clip_size = local_player->GetWeapon()->GetClipSize();
-  int bullets_in_clip = local_player->GetWeapon()->GetCurrentBulletsInClip();
-  painter->setBrush(Qt::blue);
-  painter->drawRect(8, 90, 62, 50 * bullets_in_clip / clip_size);
+  auto local_player_weapon = model_->GetLocalPlayer()->GetWeapon();
+
+  int64_t last_time_pressed_reload = local_player_weapon->GetLastTimePressedReload();
+  int64_t reloading_time = local_player_weapon->GetReloadingTime();
+  int64_t cur_time = controller_->GetCurrentServerTime();
+  int64_t delta_time = cur_time - last_time_pressed_reload;
+  if (delta_time <= reloading_time) {
+    painter->setBrush(Qt::darkBlue);
+    painter->drawRect(8, 90, 62, 50 * delta_time / reloading_time);
+  } else {
+    int clip_size = local_player_weapon->GetClipSize();
+    int bullets_in_clip = local_player_weapon->GetCurrentBulletsInClip();
+    painter->setBrush(Qt::blue);
+    painter->drawRect(8, 90, 62, 50 * bullets_in_clip / clip_size);
+  }
   painter->restore();
 }
 
 void ReloadingField::resizeEvent(QResizeEvent*) {
-  // this->move(15, 15);
-  // this->resize(20, 20);
+  // this->move(Constants::ReloadingField::kDefaultPos);
+  // this->resize(Constants::ReloadingField::kDefaultSize);
 }

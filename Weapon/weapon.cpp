@@ -93,6 +93,10 @@ void Weapon::SetLastTimeShot(int64_t cur_time) {
   last_time_shot_ = cur_time;
 }
 
+int64_t Weapon::GetLastTimePressedReload() const {
+  return last_time_pressed_reload_;
+}
+
 std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
                               float x, float y, float rotation,
                               float radius, float random_bullet_shift) const {

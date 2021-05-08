@@ -34,17 +34,18 @@ class ReloadingField : public QWidget {
  public:
   ReloadingField(QWidget* parent,
                  std::shared_ptr<ClientGameModel> model);
+  ReloadingField(QWidget* parent,
+                 std::shared_ptr<ClientGameModel> model,
+                 std::shared_ptr<ClientController> controller);
 
   void paintEvent(QPaintEvent* event) override;
   void resizeEvent(QResizeEvent*) override;
 
  private:
   std::shared_ptr<ClientGameModel> model_;
+  std::shared_ptr<ClientController> controller_;
   void DrawReloadingField(QPainter* painter);
   void DrawInPercents(QPainter* painter);
-  // int64_t clip_size_;
-  // int64_t current_clip_size_;
-  // int64_t reloading_time_;
 };
 
 #endif  // GUI_GAMEVIEW_RELOADING_FIELD_H_

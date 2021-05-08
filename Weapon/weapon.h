@@ -49,6 +49,8 @@ class Weapon {
   int GetCurrentBulletsInClip() const;
   void SetCurrentBulletsInClip(int current_bullets_in_clip);
 
+  int64_t GetLastTimePressedReload() const;
+
   void SetParams(std::vector<QVariant> params);
 
   std::vector<QVariant> GetBulletParams(GameObjectId parent_id, float x,
