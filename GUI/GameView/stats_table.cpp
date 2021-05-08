@@ -3,11 +3,26 @@
 #include <algorithm>
 #include <utility>
 
+using Constants::StatsTable::kSizeAnimationStiffnessRatio;
+using Constants::StatsTable::kSizeAnimationFrictionRatio;
+using Constants::StatsTable::kOpacityAnimationStiffnessRatio;
+using Constants::StatsTable::kOpacityAnimationFrictionRatio;
+using Constants::StatsTable::kMinimumSizeRatio;
+using Constants::StatsTable::kMaximumSizeRatio;
+
 StatsTable::StatsTable(QWidget* parent,
                        std::shared_ptr<ClientGameModel> model) :
     QWidget(parent),
     model_{std::move(model)},
-    size_emulator_(0.05, 0.05) {
+    size_ratio_emulator_(kSizeAnimationStiffnessRatio,
+                         kSizeAnimationFrictionRatio),
+    opacity_ratio_emulator_(kOpacityAnimationStiffnessRatio,
+                            kOpacityAnimationFrictionRatio) {
+  opacity_ratio_emulator_.SetBounds(0.01, 1);
+  opacity_ratio_emulator_.SetCurrentValue(0.f);
+  size_ratio_emulator_.SetCurrentValue(kMinimumSizeRatio);
+  target_opacity_ratio_ = 0.f;
+  target_size_ratio_ = kMinimumSizeRatio;
   column_count_ = static_cast<int>(Constants::StatsTable::kColumnNames.size());
 }
 
@@ -15,11 +30,32 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
+
+  size_ratio_emulator_.MakeStepTo(target_size_ratio_);
+  opacity_ratio_emulator_.MakeStepTo(target_opacity_ratio_);
+  auto dist_x = this->size().width() *
+      (1 - size_ratio_emulator_.GetCurrentValue());
+  auto dist_y = this->size().height() *
+      (1 - size_ratio_emulator_.GetCurrentValue());
+
   QPainter painter(this);
-  painter.setRenderHint(QPainter::Antialiasing);
+  painter.translate(dist_x / 2, dist_y / 2);
+  auto transform = painter.transform();
+  transform.scale(size_ratio_emulator_.GetCurrentValue(),
+                  size_ratio_emulator_.GetCurrentValue());
+  painter.setTransform(transform);
+  painter.setRenderHints(
+      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
   this->DrawTable(&painter);
   this->DrawPlayersStats(&painter);
+
+  static QGraphicsOpacityEffect* effect = nullptr;
+  if (!effect) {
+    effect = new QGraphicsOpacityEffect(this);
+    this->setGraphicsEffect(effect);
+  }
+  effect->setOpacity(opacity_ratio_emulator_.GetCurrentValue());
 }
 
 void StatsTable::DrawTable(QPainter* painter) {
@@ -126,18 +162,15 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
 }
 
 void StatsTable::Hide() {
-  auto effect = new QGraphicsOpacityEffect;
-  effect->setOpacity(0.01f);
-  this->setGraphicsEffect(effect);
+  target_size_ratio_ = kMinimumSizeRatio;
+  target_opacity_ratio_ = 0.f;
 }
 
 void StatsTable::Show() {
-  auto effect = new QGraphicsOpacityEffect;
-  effect->setOpacity(1.f);
-  this->setGraphicsEffect(effect);
+  target_size_ratio_ = kMaximumSizeRatio;
+  target_opacity_ratio_ = 1.f;
 }
 
 void StatsTable::Resize(const QSize& size) {
-  full_size_ = size;
   this->resize(size);
 }

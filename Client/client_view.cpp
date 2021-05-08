@@ -2,7 +2,9 @@
 
 ClientView::ClientView(std::shared_ptr<ClientController> controller)
     : AbstractClientView(),
-      controller_(std::move(controller)) {
+      controller_(std::move(controller)),
+      last_pressed_tab_(QDateTime::currentMSecsSinceEpoch()),
+      last_released_tab_(QDateTime::currentMSecsSinceEpoch()) {
   resize(1400, 960);
   height_of_bar_ = static_cast<int>(
       Constants::kPlayerBarHeightRatio * static_cast<float>(height()));
@@ -32,10 +34,11 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   // Stats table
   stats_table_ = new StatsTable(this, controller_->GetModel());
   stats_table_->setMouseTracking(true);
-  stats_table_->Hide();
 
   controller_->SetView(std::shared_ptr<ClientView>(this));
   model_ = controller_->GetModel();
+
+  resize(1400, 960);
 }
 
 void ClientView::Update() {
@@ -64,14 +67,18 @@ void ClientView::focusOutEvent(QFocusEvent* focus_event) {
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
   if (key_event->key() == Qt::Key_Tab) {
-    stats_table_->Show();
+    if (!table_shown_) {
+      table_shown_ = true;
+      stats_table_->Show();
+    }
+    last_pressed_tab_ = QDateTime::currentMSecsSinceEpoch();
   }
   controller_->KeyPressEvent(key_event);
 }
 
 void ClientView::keyReleaseEvent(QKeyEvent* key_event) {
   if (key_event->key() == Qt::Key_Tab) {
-    stats_table_->Hide();
+    last_released_tab_ = QDateTime::currentMSecsSinceEpoch();
   }
   controller_->KeyReleaseEvent(key_event);
 }
@@ -85,6 +92,12 @@ void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {
+  if (table_shown_ && last_pressed_tab_ < last_released_tab_ &&
+          QDateTime::currentMSecsSinceEpoch() - last_released_tab_ > 50) {
+    table_shown_ = false;
+    stats_table_->Hide();
+  }
+
   auto local_player_position = model_->IsLocalPlayerSet()
                                ? model_->GetLocalPlayer()->GetPosition()
                                : QPointF(0.f, 0.f);

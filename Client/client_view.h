@@ -54,6 +54,9 @@ class ClientView : public AbstractClientView {
   QLabel* info_label_;
   int height_of_bar_{};
 
+  bool table_shown_{false};
+  int64_t last_pressed_tab_{};
+  int64_t last_released_tab_{};
   int64_t last_updated_time_{};
   std::deque<int64_t> last_frame_times_{};
   KillFeed* kill_feed_;
