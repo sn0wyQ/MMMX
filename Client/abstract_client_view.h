@@ -4,9 +4,9 @@
 #include <memory>
 
 #include <QMainWindow>
-#include <Weapon/WeaponSettings/weapon_settings.h>
 
 #include "Converter/converter.h"
+#include "Weapon/WeaponSettings/weapon_settings.h"
 
 class AbstractClientView : public QMainWindow {
   Q_OBJECT

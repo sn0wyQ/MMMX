@@ -138,6 +138,7 @@ void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
 QPointF ClientView::GetPlayerToCenterOffset() const {
   return game_view_->GetPlayerToCenterOffset();
 }
+
 void ClientView::AddKillFeedNotification(QString killer_name,
                                          QString killed_name,
                                          WeaponType weapon_type) {

@@ -77,6 +77,8 @@ set(SOURCES
         Converter/converter.cpp
         Event/event.cpp
         Event/event_type.h
+        GUI/GameView/KillFeed/kill_feed.cpp
+        GUI/GameView/KillFeed/kill_feed_notification.cpp
         GUI/GameView/game_view.cpp
         GUI/GameView/player_bar.cpp
         GUI/GameView/stats_table.cpp
@@ -113,7 +115,7 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
-        GUI/GameView/KillFeed/kill_feed.cpp GUI/GameView/KillFeed/kill_feed.h GUI/GameView/KillFeed/kill_feed_notification.cpp GUI/GameView/KillFeed/kill_feed_notification.h)
+        )
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT

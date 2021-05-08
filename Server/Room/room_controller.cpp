@@ -59,12 +59,6 @@ void RoomController::OnTick(int delta_time) {
                            std::make_shared<RoomGameModel>(*model_)});
   model_ = models_cache_.back().model;
   this->RecalculateModel(models_cache_.back());
-  // static int64_t last = 0;
-  // if (QDateTime::currentMSecsSinceEpoch() - last > 1500) {
-  //   this->AddEventToSendToAllPlayers(Event(EventType::kPlayerKilledNotification,
-  //                                          static_cast<int>(last), 0, 0));
-  //   last = QDateTime::currentMSecsSinceEpoch();
-  // }
   this->AddCreeps();
   for (const auto& player_id : this->GetAllPlayerIds()) {
     // Рассказываем НАМ о других
@@ -579,7 +573,7 @@ void RoomController::AddConstantObjects() {
 }
 
 void RoomController::AddCreeps() {
-  for (; creeps_count_ < 15; creeps_count_++) {
+  for (; creeps_count_ < 10; creeps_count_++) {
     QPointF position = model_->GetPointToSpawn(std::max(
         CreepSettings::GetInstance().GetMaxCreepSize().height(),
         CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
