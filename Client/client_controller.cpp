@@ -367,7 +367,7 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
     if (native_key == Controls::kKeyR) {
       auto timestamp = GetCurrentServerTime();
       if (local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
-        model_->GetLocalPlayer()->GetWeapon()->Reload(timestamp);
+        local_player->GetWeapon()->Reload(timestamp);
         this->AddEventToSend(Event(EventType::kSendPlayerReloading,
                                    static_cast<qint64>(GetCurrentServerTime()),
                                    local_player->GetId()));

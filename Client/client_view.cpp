@@ -27,8 +27,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   info_label_->setAlignment(Qt::AlignTop);
 
   // ReloadingField
-  // reloading_field_ = new ReloadingField(this, controller_->GetModel());
-  reloading_field_ = new ReloadingField(this, controller_->GetModel(), controller_);
+  reloading_field_ = new ReloadingField(this, controller_);
 
   // Stats table
   stats_table_ = new StatsTable(this, controller_->GetModel());
@@ -130,7 +129,7 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
       (this->height() - stats_table_->height() - height_of_bar_) / 2.f);
 
   reloading_field_->resize(this->width() / 2.f, this->height() / 2.f);
-  reloading_field_->move(5, 10);
+  reloading_field_->move(Constants::ReloadingField::kDefaultPos);
 }
 
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {

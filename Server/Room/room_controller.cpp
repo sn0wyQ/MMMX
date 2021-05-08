@@ -599,7 +599,16 @@ void RoomController::SendPlayerReloadingEvent(const Event& event) {
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
-  // TODO(everyone) Send event for all person of reloading Player
+  std::vector<GameObjectId> players_ids = this->GetAllPlayerIds();
+
+  for (size_t i = 0; i < players_ids.size(); i++) {
+    if (player_id == players_ids[i]) {
+      players_ids.erase(players_ids.begin() + i);
+      break;
+    }
+  }
+  this->AddEventToSendToPlayerList(Event(
+      EventType::kSendPlayerReloading, timestamp, player_id), players_ids);
 }
 
 void RoomController::SendPlayerShootingEvent(const Event& event) {
@@ -620,9 +629,9 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
       start_model->GetPlayerByPlayerId(player_id);
 
   std::vector<GameObjectId> bullet_ids =
-    AddBullets(start_model, player_id, player_in_model->GetX(), player_in_model->GetY(),
-               player_in_model->GetRotation(), player_in_model->GetWeapon(),
-               event.GetArg<QList<QVariant>>(2));
+    AddBullets(start_model, player_id, player_in_model->GetX(),
+               player_in_model->GetY(), player_in_model->GetRotation(),
+               player_in_model->GetWeapon(),event.GetArg<QList<QVariant>>(2));
     for (int bullet_id : bullet_ids) {
     bool break_player = false;
     auto prev_bullet =

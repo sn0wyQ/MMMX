@@ -175,6 +175,8 @@ void Player::IncreaseLevelingPoint(int index) {
       * Constants::LevelingMultipliers::kFovRadius);
       break;
     case 4:
+      weapon_->SetAccuracy(weapon_->GetAccuracy()
+      / Constants::LevelingMultipliers::kAccuracy);
       break;
     case 5:
       weapon_->SetBulletSpeed(weapon_->GetBulletSpeed()
@@ -195,6 +197,10 @@ void Player::IncreaseLevelingPoint(int index) {
       * Constants::LevelingMultipliers::kBulletDamage);
       break;
     case 9:
+      weapon_->SetReloadingTime(
+          static_cast<int>(
+              static_cast<float>(weapon_->GetReloadingTime())
+                  / Constants::LevelingMultipliers::kReloadingTime));
       break;
     default:
       break;
