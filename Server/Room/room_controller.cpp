@@ -587,7 +587,6 @@ void RoomController::SendNicknameEvent(const Event& event) {
 // ------------------- GAME EVENTS -------------------
 
 void RoomController::SendPlayerReloadingEvent(const Event& event) {
-  // Temporary
   auto timestamp = event.GetArg<int64_t>(0);
   auto model_id = GetModelIdByTimestamp(timestamp);
   // Проигнорим, если чел нам прислал то, что он сделал очень давно
@@ -595,12 +594,12 @@ void RoomController::SendPlayerReloadingEvent(const Event& event) {
     return;
   }
   auto current_model_data = models_cache_[model_id];
-  auto player_id = event.GetArg<GameObjectId>(1);
+  GameObjectId player_id = event.GetArg<GameObjectId>(1);
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
-  std::vector<GameObjectId> players_ids = this->GetAllPlayerIds();
 
+  std::vector<GameObjectId> players_ids = this->GetAllPlayerIds();
   for (size_t i = 0; i < players_ids.size(); i++) {
     if (player_id == players_ids[i]) {
       players_ids.erase(players_ids.begin() + i);
