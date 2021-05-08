@@ -59,7 +59,7 @@ class StatsTable : public QWidget {
   float inner_width_{};
   float inner_height_{};
   QSize full_size_;
-  SpringEmulator<QSizeF> size_emulator_;
+  SpringEmulator<QSizeF, false> size_emulator_;
 };
 
 #endif  // GUI_GAMEVIEW_STATS_TABLE_H_

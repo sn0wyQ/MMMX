@@ -16,6 +16,9 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   game_view_->move(0, 0);
   game_view_->setMouseTracking(true);
 
+  // Kill feed
+  kill_feed_ = new KillFeed(this);
+
   // Player Bar
   player_bar_ = new PlayerBar(this, controller_->GetModel(),
                               QPoint(0, height() - height_of_bar_),
@@ -124,6 +127,8 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
   stats_table_->move(
       (this->width() - stats_table_->width()) / 2.f,
       (this->height() - stats_table_->height() - height_of_bar_) / 2.f);
+  kill_feed_->resize(this->width() / 4, this->height());
+  kill_feed_->move(this->width() - kill_feed_->width(), 0);
 }
 
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
@@ -132,4 +137,11 @@ void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
 
 QPointF ClientView::GetPlayerToCenterOffset() const {
   return game_view_->GetPlayerToCenterOffset();
+}
+void ClientView::AddKillFeedNotification(QString killer_name,
+                                         QString killed_name,
+                                         WeaponType weapon_type) {
+  kill_feed_->AddNotification(std::move(killer_name),
+                              std::move(killed_name),
+                              weapon_type);
 }

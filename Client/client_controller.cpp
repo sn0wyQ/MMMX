@@ -453,17 +453,20 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
 }
 
 void ClientController::PlayerKilledNotificationEvent(const Event& event) {
-  auto killer_id = event.GetArg<GameObjectId>(1);
   auto killed_id = event.GetArg<GameObjectId>(0);
-  auto weapon_type = event.GetArg<WeaponType>(2);
-  auto killer_name = QString::number(killer_id);
-  if (model_->GetGameObjectByGameObjectId(killer_id)->GetType() ==
-                                                GameObjectType::kPlayer) {
+  auto killer_id = event.GetArg<GameObjectId>(1);
+  bool is_killed_by_player = event.GetArg<bool>(2);
+  auto weapon_type = (is_killed_by_player ? event.GetArg<WeaponType>(3) :
+      WeaponType::kNull);
+
+  QString killer_name;
+  if (is_killed_by_player) {
     killer_name = model_->GetPlayerStatsByPlayerId(killer_id)->GetNickname();
+  } else {
+    killer_name = "Creep";
   }
   auto killed_name = model_->GetPlayerStatsByPlayerId(killed_id)->GetNickname();
-  qInfo() << killer_name << "killed" <<
-                              killed_name << "with" << weapon_type;
+  view_->AddKillFeedNotification(killer_name, killed_name, weapon_type);
 }
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {

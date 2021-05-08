@@ -32,6 +32,9 @@ class ClientView : public AbstractClientView {
   void Update() override;
   std::shared_ptr<Converter> GetConverter() override;
   QPointF GetPlayerToCenterOffset() const override;
+  void AddKillFeedNotification(QString killer_name,
+                               QString killed_name,
+                               WeaponType weapon_type) override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;
@@ -50,9 +53,10 @@ class ClientView : public AbstractClientView {
   StatsTable* stats_table_;
   QLabel* info_label_;
   int height_of_bar_{};
-
   int64_t last_updated_time_{};
+
   std::deque<int64_t> last_frame_times_{};
+  KillFeed* kill_feed_;
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_

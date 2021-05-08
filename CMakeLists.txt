@@ -113,7 +113,7 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
-        )
+        GUI/GameView/KillFeed/kill_feed.cpp GUI/GameView/KillFeed/kill_feed.h GUI/GameView/KillFeed/kill_feed_notification.cpp GUI/GameView/KillFeed/kill_feed_notification.h)
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
