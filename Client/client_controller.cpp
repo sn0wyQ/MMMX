@@ -457,8 +457,8 @@ void ClientController::PlayerKilledNotificationEvent(const Event& event) {
   auto killer_id = event.GetArg<GameObjectId>(1);
   auto weapon_type = event.GetArg<WeaponType>(2);
 
-  QString killer_name = this->GetKillerNickname(killer_id);
-  auto victim_name = model_->GetPlayerStatsByPlayerId(victim_id)->GetNickname();
+  QString killer_name = this->GetEntityName(killer_id);
+  auto victim_name = this->GetEntityName(victim_id);
   view_->AddKillFeedNotification(killer_name, victim_name, weapon_type);
 }
 
@@ -513,7 +513,7 @@ void ClientController::ShootFailedEvent(const Event& event) {
   }
 }
 
-QString ClientController::GetKillerNickname(GameObjectId game_object_id) const {
+QString ClientController::GetEntityName(GameObjectId game_object_id) const {
   auto killer_object_type =
       model_->GetGameObjectByGameObjectId(game_object_id)->GetType();
   if (killer_object_type == GameObjectType::kPlayer) {
