@@ -129,7 +129,7 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
       (this->height() - stats_table_->height() - height_of_bar_) / 2.f);
 
   reloading_field_->resize(this->width() / 2.f, this->height() / 2.f);
-  reloading_field_->move(10, 10);
+  reloading_field_->move(5, 10);
 }
 
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {

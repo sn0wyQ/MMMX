@@ -14,9 +14,8 @@
 
 namespace Constants::ReloadingField {
 
-const QColor kBackgroundColor(86, 86, 86, 180);
-const QSize kDefaultSize = QSize(200, 200);
-const QPoint kDefaultPos = QPoint(10, 10);
+const QSize kDefaultSize = QSize(70, 50);
+const QPoint kDefaultPos = QPoint(5, 10);
 const int kNodes = 5;
 
 const QPolygonF reloading_picture(QVector<QPointF> {
