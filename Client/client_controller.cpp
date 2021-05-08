@@ -457,7 +457,7 @@ void ClientController::PlayerKilledNotificationEvent(const Event& event) {
   auto killer_id = event.GetArg<GameObjectId>(1);
   auto weapon_type = event.GetArg<WeaponType>(2);
 
-  QString killer_name = this->GetEntityName(killer_id);
+  auto killer_name = this->GetEntityName(killer_id);
   auto victim_name = this->GetEntityName(victim_id);
   view_->AddKillFeedNotification(killer_name, victim_name, weapon_type);
 }
