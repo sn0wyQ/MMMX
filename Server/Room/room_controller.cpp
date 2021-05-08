@@ -628,10 +628,10 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
   auto player_in_model =
       start_model->GetPlayerByPlayerId(player_id);
 
-  std::vector<GameObjectId> bullet_ids =
-    AddBullets(start_model, player_id, player_in_model->GetX(),
-               player_in_model->GetY(), player_in_model->GetRotation(),
-               player_in_model->GetWeapon(),event.GetArg<QList<QVariant>>(2));
+  std::vector<GameObjectId> bullet_ids = AddBullets(
+      start_model, player_id, player_in_model->GetX(),
+      player_in_model->GetY(), player_in_model->GetRotation(),
+      player_in_model->GetWeapon(), event.GetArg<QList<QVariant>>(2));
     for (int bullet_id : bullet_ids) {
     bool break_player = false;
     auto prev_bullet =

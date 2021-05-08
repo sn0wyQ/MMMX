@@ -102,10 +102,10 @@ class RoomController : public BaseController {
   void AddRandomTree(float radius);
   void AddCreep(float x, float y);
 
-  std::vector<GameObjectId> AddBullets(const std::shared_ptr<RoomGameModel>& model,
-                         GameObjectId parent_id, float x, float y,
-                         float rotation, const std::shared_ptr<Weapon>& weapon,
-                         const QList<QVariant>& random_bullet_shifts);
+  std::vector<GameObjectId> AddBullets(
+      const std::shared_ptr<RoomGameModel>& model, GameObjectId parent_id,
+      float x, float y, float rotation, const std::shared_ptr<Weapon>& weapon,
+      const QList<QVariant>& random_bullet_shifts);
   void AddConstantObjects();
   void AddCreeps();
 

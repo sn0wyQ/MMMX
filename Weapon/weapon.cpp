@@ -136,14 +136,14 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
       auto angle_between_bullets = WeaponSettings::GetInstance().
           GetWeaponSetting<float>(weapon_type, "angle_between_bullets");
       bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y,Math::GetNormalizeAngle(
+          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(
                               rotation + angle_between_bullets),
         bullet_radius, random_bullet_shifts.front().toFloat()));
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
         bullet_radius, random_bullet_shifts.front().toFloat()));
       bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y,Math::GetNormalizeAngle(
+          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(
               rotation - angle_between_bullets),
         bullet_radius, random_bullet_shifts.front().toFloat()));
       break;
