@@ -83,7 +83,7 @@ void Entity::DrawHealthBar(Painter* painter) {
       QString::number(max_hp);
   QFont font = painter->font();
   float factor =
-      rect_width * 0.9f / painter->fontMetrics().horizontalAdvance(text);
+      rect_width * 0.9f / painter->fontMetrics().horizontalAdvance("100/100");
   font.setPointSizeF(font.pointSizeF() * factor);
   painter->setFont(font);
   QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
