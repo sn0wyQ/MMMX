@@ -450,7 +450,7 @@ void ClientController::ControlsHolding() {
       this->AddEventToSend(Event(EventType::kSendNickname,
                                  model_->GetLocalPlayer()->GetId(),
                                  QString("Shooter#") +
-                                     QString::number(model_->GetLocalPlayer()->GetId())));
+                                     QString::number(local_player->GetId())));
       local_player->GetWeapon()->SetLastTimeShot(timestamp);
       model_->AddLocalBullets(timestamp);
       this->AddEventToSend(Event(EventType::kSendPlayerShooting,
@@ -523,6 +523,7 @@ void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
     return;
   }
   auto health_points = event.GetArg<float>(0);
+  last_requested_respawn_time_ = GetCurrentServerTime();
   model_->GetLocalPlayer()->SetHealthPoints(health_points);
 }
 
@@ -532,6 +533,7 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
   }
   is_controls_blocked_ = true;
   is_shoot_holding = false;
+  last_requested_respawn_time_ = GetCurrentServerTime();
   model_->GetLocalPlayer()->SetIsVisible(false);
 }
 
