@@ -135,9 +135,12 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
   for (const auto& stat : stats) {
     if (stat->GetPlayerId() == model_->GetLocalPlayer()->GetId()) {
       pen_.setColor(Constants::StatsTable::kLocalPLayerTextColor);
+      font.setBold(true);
     } else {
       pen_.setColor(Constants::StatsTable::kTextColor);
+      font.setBold(false);
     }
+    painter->setFont(font);
     painter->setPen(pen_);
     painter->drawText(get_rect(0),
                       Qt::AlignCenter,
