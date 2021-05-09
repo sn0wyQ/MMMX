@@ -1,6 +1,8 @@
 #ifndef GUI_GAMEVIEW_RESPAWNBUTTON_RESPAWN_BUTTON_H_
 #define GUI_GAMEVIEW_RESPAWNBUTTON_RESPAWN_BUTTON_H_
 
+#include <algorithm>
+
 #include <QPainter>
 #include <QGraphicsOpacityEffect>
 #include <QWidget>

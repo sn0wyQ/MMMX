@@ -265,7 +265,8 @@ void RoomController::ProcessBulletHits(
     auto actual_object_collided =
         model_data_bullet.model->GetGameObjectByGameObjectId(
             object_collided_id);
-    if (actual_object_collided->IsEntity()) {
+    if (actual_object_collided->IsEntity() &&
+        actual_object_collided->IsAlive()) {
       auto entity = std::dynamic_pointer_cast<Entity>(actual_object_collided);
       bool is_killed;
       auto killer =
