@@ -74,6 +74,8 @@ T SpringEmulator<T, DoSetBounds>::GetCurrentValue() const {
 
 template <class T, bool DoSetBounds>
 void SpringEmulator<T, DoSetBounds>::SetBounds(T min, T max) {
+  static_assert(DoSetBounds,
+      "You can't use SetBounds with second template parameter 'false'");
   min_value_ = min;
   max_value_ = max;
 }
