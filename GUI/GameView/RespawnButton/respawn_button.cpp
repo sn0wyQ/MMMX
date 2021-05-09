@@ -55,7 +55,7 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
                      this->height() - 2 * kOutlineWidth);
   painter.drawEllipse(circle_rect);
 
-  if (wait_secs_ < 1) {
+  if (wait_secs_ <= 0) {
     painter.setBrush(QBrush(kInfillColor));
     painter.setPen(QPen(Qt::transparent));
     circle_rect = QRect(kOutlineWidth * 1.5f, kOutlineWidth * 1.5f,
@@ -77,13 +77,14 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
   } else {
     QFont font(kTextFont);
     QString text = QString::number(wait_secs_);
-    float factor = this->height() * 0.9f / painter.fontMetrics().height();
-    font.setPointSizeF(font.pointSizeF() * factor);
+    float factor_h = this->height() / 2 * 0.9f / painter.fontMetrics().height();
+    float factor_w = this->width() / 2 * 0.9f /
+        painter.fontMetrics().horizontalAdvance(text);
+    font.setPointSizeF(font.pointSizeF() * std::min(factor_h, factor_w));
     painter.setFont(font);
     painter.setPen(QPen(kTextColor));
     painter.drawText(QRect(0, 0, this->width(), this->height()),
-                     Qt::AlignCenter,
-                     QString::number(wait_secs_));
+                     Qt::AlignCenter, text);
   }
 
   opacity_effect_->setOpacity(opacity_emulator_.GetCurrentValue());
