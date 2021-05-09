@@ -2,8 +2,8 @@
   "max_width": 3,
   "max_height": 3,
 
-  "min_creep_level": 23,
-  "max_creep_level": 30,
+  "min_creep_level": 10,
+  "max_creep_level": 10,
   "hp_regen_rate_multiplier": 0.005,
   "rigid_body_type": "kCircle",
   "max_hp_multiplier": 100,

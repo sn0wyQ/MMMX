@@ -6,6 +6,7 @@
 #include <QCryptographicHash>
 #include <QMetaEnum>
 #include <QString>
+#include <QPainter>
 #include <QUrl>
 
 // code_readability++;
@@ -85,6 +86,10 @@ constexpr int64_t kRequestRespawnTime = 10000;
 constexpr int64_t kHoldingRespawnTime = 1000;
 
 // View
+inline void SetPainterHints(QPainter* painter) {
+  painter->setRenderHints(
+      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+}
 constexpr float kCameraStiffnessRatio = 0.008f;
 constexpr float kCameraFrictionRatio = 0.15f;
 constexpr float kFovStiffnessRatio = 0.007f;

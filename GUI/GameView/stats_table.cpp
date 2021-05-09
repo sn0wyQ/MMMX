@@ -46,8 +46,7 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
   transform.scale(size_ratio_emulator_.GetCurrentValue(),
                   size_ratio_emulator_.GetCurrentValue());
   painter.setTransform(transform);
-  painter.setRenderHints(
-      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+  Constants::SetPainterHints(&painter);
 
   this->DrawTable(&painter);
   this->DrawPlayersStats(&painter);

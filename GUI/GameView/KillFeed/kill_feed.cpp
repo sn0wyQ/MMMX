@@ -38,8 +38,7 @@ void KillFeed::AddNotification(QString killer_name,
 
 void KillFeed::paintEvent(QPaintEvent* paint_event) {
   QPainter painter(this);
-  painter.setRenderHints(
-      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+  Constants::SetPainterHints(&painter);
   painter.translate(kLeftOffset, kDistanceBetweenNotifications);
   notifications_y_emulator_.MakeStepTo(0);
   painter.translate(0, std::round(notifications_y_emulator_.GetCurrentValue()));

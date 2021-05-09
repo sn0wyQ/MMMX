@@ -46,8 +46,7 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
   opacity_emulator_.MakeStepTo(opacity_target_);
   value_emulator_.MakeStepTo(total_holding_msecs_);
   QPainter painter(this);
-  painter.setRenderHints(
-      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+  Constants::SetPainterHints(&painter);
 
   painter.setBrush(QBrush(kBackgroundColor));
   painter.setPen(QPen(Qt::black, kOutlineWidth));
