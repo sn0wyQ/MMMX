@@ -43,19 +43,16 @@ void SpringEmulator<T, DoSetBounds>::MakeStepTo(const T& new_value) {
   auto delta_time = static_cast<float>(time - last_time_updated_) / 10.f;
   last_time_updated_ = time;
 
-  if (delta_time > 5.f) {
-    qWarning() << "[SPRING EMULATOR] delta_time is too big to make step";
-    value_ = new_value;
-    return;
+  float sample_rate = 0.4f;
+  for (float now = 0; now < delta_time; now += sample_rate) {
+    // By the Hooke's Law: F = -k * x where x = |A - B| - l_0.
+    // Owr "spring's" length is 0, so l_0 = 0
+    T f = -stiffness_ratio_ * (value_ - new_value);
+    // v = F*dt/m (let m = 1)
+    velocity_ += f * sample_rate;
+    velocity_ -= velocity_ * friction_ratio_ * sample_rate;
+    value_ += velocity_ * sample_rate;
   }
-
-  // By the Hooke's Law: F = -k * x where x = |A - B| - l_0.
-  // Owr "spring's" length is 0, so l_0 = 0
-  T f = -stiffness_ratio_ * (value_ - new_value);
-  // v = F*dt/m (let m = 1)
-  velocity_ += f * delta_time;
-  velocity_ -= velocity_ * friction_ratio_ * delta_time;
-  value_ += velocity_ * delta_time;
 }
 
 template <class T, bool DoSetBounds>
