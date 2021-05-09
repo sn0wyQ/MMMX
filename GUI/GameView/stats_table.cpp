@@ -20,7 +20,7 @@ StatsTable::StatsTable(QWidget* parent,
     opacity_emulator_(kOpacityAnimationStiffnessRatio,
                       kOpacityAnimationFrictionRatio) {
   this->setGraphicsEffect(opacity_effect_);
-  opacity_emulator_.SetBounds(0.01, 1);
+  opacity_emulator_.SetBounds(0.01f, 1.f);
   opacity_emulator_.SetCurrentValue(0.f);
   size_ratio_emulator_.SetCurrentValue(kMinimumSizeRatio);
   target_opacity_ratio_ = 0.f;

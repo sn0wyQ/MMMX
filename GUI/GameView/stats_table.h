@@ -56,8 +56,6 @@ class StatsTable : public QWidget {
   void paintEvent(QPaintEvent* event) override;
 
  private:
-  void HideImmediately();
-
   QGraphicsOpacityEffect* opacity_effect_;
   std::shared_ptr<ClientGameModel> model_;
   void DrawTable(QPainter* painter);
