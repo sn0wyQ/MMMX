@@ -235,7 +235,6 @@ void RoomController::TickCreepsIntelligence(
           EntityReceiveDamage(model_data, creep,
                               closer_player, creep->GetDamage(),
                               &is_killed);
-          // exp
           if (is_killed) {
             this->AddEventToSendToAllPlayers(
                 Event(EventType::kPlayerKilledNotification,
