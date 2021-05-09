@@ -24,7 +24,7 @@ const float kOutlineWidth = 2.f;
 }  // namespace Constants::RespawnButton
 
 class RespawnButton : public QWidget {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   explicit RespawnButton(QWidget* parent);

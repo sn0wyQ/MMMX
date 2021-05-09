@@ -1,6 +1,7 @@
 #ifndef CLIENT_CLIENT_CONTROLLER_H_
 #define CLIENT_CLIENT_CONTROLLER_H_
 
+#include <algorithm>
 #include <memory>
 #include <unordered_map>
 #include <utility>
