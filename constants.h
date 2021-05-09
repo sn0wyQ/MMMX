@@ -77,6 +77,12 @@ constexpr float kDefaultEntityFov = 12.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
 constexpr float kDefaultHealthRegenSpeed = 0.002f;
+constexpr int kMaxLevel = 30;
+
+// Revive
+constexpr int64_t kReviveTime = 5000;
+constexpr int64_t kRequestRespawnTime = 10000;
+constexpr int64_t kHoldingRespawnTime = 1000;
 
 // View
 constexpr float kCameraStiffnessRatio = 0.008f;
@@ -87,8 +93,6 @@ constexpr int kDefaultFpsMax = 60;
 
 // Bullet collision
 constexpr int kAccuracy = 10;
-
-constexpr int kMaxLevel = 30;
 
 constexpr float GetExpForLevel(int level) {
   return static_cast<float>(level) * 5.f;
@@ -112,10 +116,6 @@ constexpr float kBulletRange = 1.3f;
 constexpr float kBulletDamage = 1.1f;
 
 }  // namespace LevelingMultipliers
-
-constexpr int64_t kReviveTime = 5000;
-constexpr int64_t kRequestRespawnTime = 1000;
-constexpr int64_t kHoldingRespawnTime = 1000;
 
 template<class T>
 T GetEnumValueFromString(const QString& string) {

@@ -5,6 +5,8 @@ using Constants::RespawnButton::kOutlineWidth;
 
 using Constants::RespawnButton::kOpacityAnimationStiffnessRatio;
 using Constants::RespawnButton::kTextFont;
+using Constants::RespawnButton::kTextColor;
+using Constants::RespawnButton::kInfillColor;
 using Constants::RespawnButton::kOpacityAnimationFrictionRatio;
 using Constants::RespawnButton::kValueAnimationStiffnessRatio;
 using Constants::RespawnButton::kValueAnimationFrictionRatio;
@@ -32,11 +34,13 @@ void RespawnButton::SetValue(int64_t total_holding_msecs) {
   total_holding_msecs_ = total_holding_msecs;
 }
 
+void RespawnButton::SetWaitValue(int64_t wait_secs) {
+  wait_secs_ = wait_secs;
+}
+
 void RespawnButton::Hide() {
   opacity_target_ = 0.f;
 }
-
-void RespawnButton::Resize(const QSize& size) {}
 
 void RespawnButton::paintEvent(QPaintEvent* event) {
   opacity_emulator_.MakeStepTo(opacity_target_);
@@ -51,20 +55,37 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
                      this->width() - 2 * kOutlineWidth,
                      this->height() - 2 * kOutlineWidth);
   painter.drawEllipse(circle_rect);
-  painter.setBrush(QBrush(Qt::cyan));
-  painter.setPen(QPen(Qt::transparent));
-  painter.drawPie(QRect(kOutlineWidth * 1.5f, kOutlineWidth * 1.5f,
-                        this->width() - 3 * kOutlineWidth,
-                        this->height() - 3 * kOutlineWidth),
-                  16 * 90,
-                  -16 * 360 * value_emulator_.GetCurrentValue() /
-                      (Constants::kHoldingRespawnTime * 0.9f));
 
-  painter.setFont(kTextFont);
-  painter.setPen(QPen(Qt::black));
-  painter.drawText(QRect(0, 0, this->width(), this->height()),
-                   Qt::AlignCenter,
-                   "Respawn");
+  if (wait_secs_ < 1) {
+    painter.setBrush(QBrush(kInfillColor));
+    painter.setPen(QPen(Qt::transparent));
+    circle_rect = QRect(kOutlineWidth * 1.5f, kOutlineWidth * 1.5f,
+                        this->width() - 3 * kOutlineWidth,
+                        this->height() - 3 * kOutlineWidth);
+    auto angle = 360 * value_emulator_.GetCurrentValue()
+        / (0.95f * Constants::kHoldingRespawnTime);
+    painter.drawPie(circle_rect, 16 * 90, -16 * angle);
+
+    QFont font(kTextFont);
+    QString text = "Respawn";
+    float factor =
+        this->width() * 0.7f / painter.fontMetrics().horizontalAdvance(text);
+    font.setPointSizeF(font.pointSizeF() * factor);
+    painter.setFont(font);
+    painter.setPen(QPen(kTextColor));
+    painter.drawText(QRect(0, 0, this->width(), this->height()),
+                     Qt::AlignCenter, text);
+  } else {
+    QFont font(kTextFont);
+    QString text = QString::number(wait_secs_);
+    float factor = this->height() * 0.9f / painter.fontMetrics().height();
+    font.setPointSizeF(font.pointSizeF() * factor);
+    painter.setFont(font);
+    painter.setPen(QPen(kTextColor));
+    painter.drawText(QRect(0, 0, this->width(), this->height()),
+                     Qt::AlignCenter,
+                     QString::number(wait_secs_));
+  }
 
   opacity_effect_->setOpacity(opacity_emulator_.GetCurrentValue());
 }

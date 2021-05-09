@@ -101,16 +101,18 @@ void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {
   if (table_shown_ && last_pressed_tab_ < last_released_tab_ &&
-          QDateTime::currentMSecsSinceEpoch() - last_released_tab_ > 50) {
+      QDateTime::currentMSecsSinceEpoch() - last_released_tab_ > 50) {
     table_shown_ = false;
     stats_table_->Hide();
   }
 
+  respawn_button_->SetWaitValue(controller_->GetSecsToNextPossibleRevive());
   respawn_button_->SetValue(controller_->GetHoldingRespawnButtonMsecs());
-  if (controller_->GetHoldingRespawnButtonMsecs() == 0) {
-    respawn_button_->Hide();
-  } else {
+  if (controller_->GetIsHoldingRespawnButton() ||
+      controller_->GetHoldingRespawnButtonMsecs() != 0) {
     respawn_button_->Show();
+  } else {
+    respawn_button_->Hide();
   }
 
   auto local_player_position = model_->IsLocalPlayerSet()

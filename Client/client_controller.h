@@ -83,6 +83,8 @@ class ClientController : public BaseController {
   bool IsGameInProgress() const;
 
   int64_t GetHoldingRespawnButtonMsecs() const;
+  int64_t GetSecsToNextPossibleRevive() const;
+  bool GetIsHoldingRespawnButton() const;
 
   void SetView(std::shared_ptr<AbstractClientView> view);
   void UpdateView();
@@ -169,8 +171,9 @@ class ClientController : public BaseController {
   QPointF last_mouse_position_;
   QTimer controls_check_timer_;
   bool is_shoot_holding{false};
-  bool is_controls_blocked_{false};
+  bool are_controls_blocked_{false};
 
+  int64_t last_died_{0};
   int64_t last_requested_respawn_time_{0};
   int64_t respawn_holding_current_{0};
   int64_t respawn_released_time_{0};

@@ -155,7 +155,7 @@ void RoomController::EntityReceiveDamage(const ModelData& model_data,
           entity->GetId());
       revive_player_at_.push({entity->GetId(),
                               GetCurrentServerTime() + Constants::kReviveTime});
-      is_controls_blocked_[entity->GetId()] = true;
+      are_controls_blocked_[entity->GetId()] = true;
     } else if (is_creep) {
       creeps_count_--;
       entity->SetIsNeedToDelete(true);
@@ -307,7 +307,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
 void RoomController::AddClient(ClientId client_id) {
   GameObjectId player_id = AddPlayer();
   player_ids_[client_id] = player_id;
-  is_controls_blocked_[player_id] = false;
+  are_controls_blocked_[player_id] = false;
 
   Event event_add_local_player(EventType::kAddLocalPlayerGameObject, player_id);
   event_add_local_player.PushBackArgs(
@@ -337,7 +337,7 @@ void RoomController::RemoveClient(ClientId client_id) {
     throw std::runtime_error(
         "[ROOM ID:" + std::to_string(id_) + "] Invalid client ID");
   }
-  is_controls_blocked_.erase(player_id);
+  are_controls_blocked_.erase(player_id);
   model_->DeleteGameObject(player_id);
   model_->DeletePlayerStats(player_id);
   this->AddEventToSendToAllClients(Event(EventType::kPlayerDisconnected,
@@ -644,7 +644,7 @@ void RoomController::SendControlsEvent(const Event& event) {
   }
   auto current_model_data = models_cache_[model_id];
   auto player_id = event.GetArg<GameObjectId>(1);
-  if (is_controls_blocked_[player_id]) {
+  if (are_controls_blocked_[player_id]) {
     return;
   }
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
@@ -783,7 +783,7 @@ void RoomController::ReviveConfirmedEvent(const Event& event) {
   if (!model_->IsGameObjectIdTaken(player_id)) {
     return;
   }
-  is_controls_blocked_[player_id] = false;
+  are_controls_blocked_[player_id] = false;
 }
 
 void RoomController::RequestRespawnEvent(const Event& event) {
@@ -797,5 +797,5 @@ void RoomController::RequestRespawnEvent(const Event& event) {
   player->Revive(point_to_spawn);
   this->AddEventToSendToSinglePlayer(
       Event(EventType::kReviveLocalPlayer, point_to_spawn), player_id);
-  is_controls_blocked_[player_id] = true;
+  are_controls_blocked_[player_id] = true;
 }

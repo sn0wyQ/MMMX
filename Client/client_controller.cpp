@@ -30,6 +30,30 @@ int64_t ClientController::GetHoldingRespawnButtonMsecs() const {
   return respawn_holding_current_;
 }
 
+int64_t ClientController::GetSecsToNextPossibleRevive() const {
+  if (!model_->IsLocalPlayerSet()) {
+    return -1;
+  }
+  if (model_->GetLocalPlayer()->IsVisible()) {
+    auto delta_time =
+        this->GetCurrentServerTime() - last_requested_respawn_time_;
+    return (Constants::kRequestRespawnTime - delta_time) / 1000;
+  } else {
+    return (Constants::kReviveTime -
+        (this->GetCurrentServerTime() - last_died_)) / 1000;
+  }
+}
+
+bool ClientController::GetIsHoldingRespawnButton() const {
+  if (!model_->IsLocalPlayerSet()) {
+    return false;
+  }
+  if (model_->GetLocalPlayer()->IsVisible()) {
+    return is_respawn_holding_;
+  }
+  return true;
+}
+
 void ClientController::OnConnected() {
   connect(&web_socket_,
           &QWebSocket::binaryMessageReceived,
@@ -351,7 +375,7 @@ int64_t ClientController::GetCurrentServerTime() const {
 // -------------------- CONTROLS --------------------
 
 void ClientController::FocusOutEvent(QFocusEvent*) {
-  if (is_controls_blocked_) {
+  if (are_controls_blocked_) {
     return;
   }
   for (const auto& [key, direction] : key_to_direction_) {
@@ -365,18 +389,16 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
-  if (is_controls_blocked_) {
-    return;
-  }
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
-  if (native_key == Controls::kKeyC &&
-      GetCurrentServerTime() - last_requested_respawn_time_
-        > Constants::kRequestRespawnTime && !is_respawn_holding_) {
+  if (native_key == Controls::kKeyC) {
     is_respawn_holding_ = true;
     respawn_pressed_time_ = this->GetCurrentServerTime();
+    return;
+  }
+  if (are_controls_blocked_) {
     return;
   }
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
@@ -387,7 +409,7 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
-  if (is_controls_blocked_) {
+  if (are_controls_blocked_) {
     return;
   }
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
@@ -405,21 +427,21 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
-  if (is_controls_blocked_) {
+  if (are_controls_blocked_) {
     return;
   }
   last_mouse_position_ = mouse_event->pos();
 }
 
 void ClientController::MousePressEvent(QMouseEvent*) {
-  if (is_controls_blocked_) {
+  if (are_controls_blocked_) {
     return;
   }
   is_shoot_holding = true;
 }
 
 void ClientController::MouseReleaseEvent(QMouseEvent*) {
-  if (is_controls_blocked_) {
+  if (are_controls_blocked_) {
     return;
   }
   is_shoot_holding = false;
@@ -432,20 +454,25 @@ void ClientController::ControlsHolding() {
     is_respawn_holding_ = false;
   }
   if (is_respawn_holding_) {
-    respawn_holding_current_ += controls_check_timer_.interval();
     if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
       this->AddEventToSend(Event(EventType::kRequestRespawn,
                                  model_->GetLocalPlayer()->GetId()));
       last_requested_respawn_time_ = GetCurrentServerTime();
       respawn_holding_current_ = 0;
-      is_respawn_holding_ = false;
-      is_controls_blocked_ = true;
+      are_controls_blocked_ = true;
     }
-    return;
-  } else {
+    if (this->GetCurrentServerTime() - last_requested_respawn_time_
+        > Constants::kRequestRespawnTime) {
+      respawn_holding_current_ += controls_check_timer_.interval();
+    }
+  }
+  if (!is_respawn_holding_ ||
+      this->GetCurrentServerTime() - last_requested_respawn_time_
+          <= Constants::kRequestRespawnTime) {
     respawn_holding_current_ = std::max(0L, respawn_holding_current_ -
         controls_check_timer_.interval());
   }
+
   if (is_shoot_holding) {
     if (model_->IsLocalPlayerSet()) {
       auto local_player = model_->GetLocalPlayer();
@@ -548,7 +575,8 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
-  is_controls_blocked_ = true;
+  last_died_ = this->GetCurrentServerTime();
+  are_controls_blocked_ = true;
   is_shoot_holding = false;
   last_requested_respawn_time_ = GetCurrentServerTime();
   model_->GetLocalPlayer()->SetIsVisible(false);
@@ -562,9 +590,10 @@ void ClientController::ReviveLocalPlayerEvent(const Event& event) {
   auto spawn_point = event.GetArg<QPointF>(0);
   local_player->Revive(spawn_point);
   local_player->SetIsVisible(true);
+  is_respawn_holding_ = false;
   this->AddEventToSend(Event(EventType::kReviveConfirmed,
                              local_player->GetId()));
-  is_controls_blocked_ = false;
+  are_controls_blocked_ = false;
 }
 
 void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {

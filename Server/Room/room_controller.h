@@ -83,7 +83,7 @@ class RoomController : public BaseController {
   std::vector<Event> events_for_server_;
   int creeps_count_{0};
   std::queue<std::pair<GameObjectId, int64_t>> revive_player_at_;
-  std::unordered_map<GameObjectId, bool> is_controls_blocked_;
+  std::unordered_map<GameObjectId, bool> are_controls_blocked_;
 
   void RecalculateModel(const ModelData& model_data);
   void RevivePlayers(const ModelData& model_data);
