@@ -88,6 +88,7 @@ set(SOURCES
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
+        GUI/GameView/RespawnButton/respawn_button.cpp
         GameObject/RigidBody/intersect_checker.cpp
         GameObject/RigidBody/intersect_constants.h
         GameObject/RigidBody/object_collision.cpp
@@ -114,8 +115,7 @@ set(SOURCES
         Weapon/MachineGun/machine_gun.cpp
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
-        Weapon/weapon.cpp
-        GUI/GameView/RespawnButton/respawn_button.cpp GUI/GameView/RespawnButton/respawn_button.h)
+        Weapon/weapon.cpp)
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
