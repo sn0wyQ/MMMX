@@ -53,6 +53,8 @@ class Player : public Entity {
   void SetNeedToSendLevelingPoints(bool need_to_send_leveling_points);
   bool IsNeedToSendLevelingPoints() const;
 
+  void Revive(QPointF point_to_spawn) override;
+
  private:
   bool is_local_player_{false};
   std::shared_ptr<Weapon> weapon_;

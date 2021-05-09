@@ -406,18 +406,27 @@ void ClientController::ShootHolding() {
   if (model_->IsLocalPlayerSet()) {
     auto local_player = model_->GetLocalPlayer();
     auto timestamp = GetCurrentServerTime();
-    if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
+
+    // Reload if Bullets In Clips is empty
+    if (local_player->GetWeapon()->GetCurrentBulletsInClip() <= 0
+        && local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
+      local_player->GetWeapon()->Reload(timestamp);
+      this->AddEventToSend(Event(EventType::kSendPlayerReloading,
+                                 static_cast<qint64>(GetCurrentServerTime()),
+                                 local_player->GetId()));
       return;
     }
-    // Temporary nickname change
-    this->AddEventToSend(Event(EventType::kSendNickname,
-                               model_->GetLocalPlayer()->GetId(),
-                               QString("Shooter#") +
-                        QString::number(model_->GetLocalPlayer()->GetId())));
+
     if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
       return;
     }
     local_player->GetWeapon()->SetLastTimeShot(timestamp);
+
+    // Temporary nickname change
+    this->AddEventToSend(Event(EventType::kSendNickname,
+                               local_player->GetId(),
+                               QString("Shooter#") +
+                        QString::number(model_->GetLocalPlayer()->GetId())));
 
     QList<QVariant> random_bullet_shifts;
     static std::mt19937 generator_(0);

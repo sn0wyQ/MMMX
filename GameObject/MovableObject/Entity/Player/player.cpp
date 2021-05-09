@@ -220,3 +220,9 @@ void Player::SetNeedToSendLevelingPoints(bool need_to_send_leveling_points) {
 float Player::GetExpIncrementForKill() const {
   return static_cast<float>(this->GetLevel()) * Constants::kExpMultiplier;
 }
+
+void Player::Revive(QPointF point_to_spawn) {
+  Entity::Revive(point_to_spawn);
+  this->GetWeapon()->SetCurrentBulletsInClip(
+      this->GetWeapon()->GetClipSize());
+}

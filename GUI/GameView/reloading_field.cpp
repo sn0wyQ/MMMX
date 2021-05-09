@@ -1,9 +1,10 @@
 #include "reloading_field.h"
 
 ReloadingField::ReloadingField(QWidget* parent,
-                               std::shared_ptr<ClientController> controller) :
+                               std::shared_ptr<ClientController> controller,
+                               QPoint position) :
     QWidget(parent), controller_{std::move(controller)} {
-  this->move(Constants::ReloadingField::kDefaultPos);
+  this->move(position);
   this->resize(Constants::ReloadingField::kDefaultSize);
 }
 
@@ -46,7 +47,7 @@ void ReloadingField::DrawInPercents(QPainter* painter) {
   painter->setClipRegion(Constants::ReloadingField::kBulletsRegion);
 
   if (delta_time <= reloading_time) {
-    painter->setBrush(Qt::darkBlue);
+    painter->setBrush(Qt::black);
     painter->drawRect(0, 0, width, 50 * delta_time / reloading_time);
   } else {
     int clip_size = local_player_weapon->GetClipSize();
@@ -58,6 +59,6 @@ void ReloadingField::DrawInPercents(QPainter* painter) {
 }
 
 void ReloadingField::resizeEvent(QResizeEvent*) {
-  this->move(Constants::ReloadingField::kDefaultPos);
-  this->resize(Constants::ReloadingField::kDefaultSize);
+  // this->move(0, this->height() / 2.f);
+  // this->resize(Constants::ReloadingField::kDefaultSize);
 }

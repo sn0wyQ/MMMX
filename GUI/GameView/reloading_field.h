@@ -50,7 +50,9 @@ class ReloadingField : public QWidget {
   Q_OBJECT
 
  public:
-  ReloadingField(QWidget* parent, std::shared_ptr<ClientController> controller);
+  ReloadingField(QWidget* parent,
+                 std::shared_ptr<ClientController> controller,
+                 QPoint position);
 
   void paintEvent(QPaintEvent* event) override;
   void resizeEvent(QResizeEvent*) override;
