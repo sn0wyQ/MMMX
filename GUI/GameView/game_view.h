@@ -13,6 +13,7 @@
 #include "Converter/converter.h"
 #include "SpringEmulator/spring_emulator.h"
 #include "Painter/painter.h"
+#include "KillFeed/kill_feed.h"
 
 class GameView : public QWidget {
   Q_OBJECT
@@ -36,8 +37,8 @@ class GameView : public QWidget {
                    const QRectF& view_rect);
 
   bool was_player_set_;
-  SpringEmulator<QVector2D> camera_motion_emulator_;
-  SpringEmulator<float> fov_change_emulator_;
+  SpringEmulator<QVector2D, false> camera_motion_emulator_;
+  SpringEmulator<float, false> fov_change_emulator_;
   std::unique_ptr<QPixmap> canvas_;
   std::unique_ptr<Painter> painter_;
 };
