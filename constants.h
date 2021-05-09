@@ -124,6 +124,11 @@ T GetEnumValueFromString(const QString& string) {
   return static_cast<T>(weapon_type_index);
 }
 
+template<class T>
+QString GetEnumValueToString(T value) {
+  return QMetaEnum::fromType<T>().valueToKey(static_cast<int>(value));
+}
+
 constexpr int kMaxPlayerBullets = 100000;
 
 }  // namespace Constants

@@ -129,9 +129,12 @@ class ClientController : public BaseController {
   void LocalPlayerDiedEvent(const Event& event) override;
   void ReviveLocalPlayerEvent(const Event& event) override;
   void SendGameInfoToInterpolateEvent(const Event& event) override;
+  void PlayerKilledNotificationEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;
   void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;
+
+  QString GetEntityName(GameObjectId game_object_id) const;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;

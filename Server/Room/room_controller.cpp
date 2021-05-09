@@ -236,13 +236,18 @@ void RoomController::TickCreepsIntelligence(
                               closer_player, creep->GetDamage(),
                               &is_killed);
           // exp
+          if (is_killed) {
+            this->AddEventToSendToAllPlayers(
+                Event(EventType::kPlayerKilledNotification,
+                      closer_player->GetId(), creep->GetId(),
+                      static_cast<int>(WeaponType::kNull)));
+          }
           creep->SetLastAttackedTime(timestamp);
         }
       }
     }
   }
 }
-
 
 void RoomController::ProcessBulletHits(
     const RoomController::ModelData& model_data_bullet,
@@ -272,6 +277,15 @@ void RoomController::ProcessBulletHits(
       EntityReceiveDamage(model_data_bullet,
                           killer, entity,
                           bullet->GetBulletDamage(), &is_killed);
+
+      if (is_killed && entity->GetType() == GameObjectType::kPlayer) {
+        this->AddEventToSendToAllPlayers(
+            Event(EventType::kPlayerKilledNotification,
+                  entity->GetId(),
+                  bullet->GetParentId(),
+                  static_cast<int>(std::dynamic_pointer_cast<Player>(killer)->
+                      GetWeapon()->GetWeaponType())));
+      }
     }
   }
 }
@@ -598,7 +612,7 @@ void RoomController::AddConstantObjects() {
 }
 
 void RoomController::AddCreeps() {
-  for (; creeps_count_ < 5; creeps_count_++) {
+  for (; creeps_count_ < 10; creeps_count_++) {
     QPointF position = model_->GetPointToSpawn(std::max(
         CreepSettings::GetInstance().GetMaxCreepSize().height(),
         CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
