@@ -591,6 +591,7 @@ void ClientController::ReviveLocalPlayerEvent(const Event& event) {
   local_player->Revive(spawn_point);
   local_player->SetIsVisible(true);
   is_respawn_holding_ = false;
+  last_requested_respawn_time_ = this->GetCurrentServerTime();
   this->AddEventToSend(Event(EventType::kReviveConfirmed,
                              local_player->GetId()));
   are_controls_blocked_ = false;
