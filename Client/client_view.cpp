@@ -33,8 +33,10 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 
   // Respawn Button
   respawn_button_ = new RespawnButton(this);
-  respawn_button_->move(3.f * this->width() / 5.f, this->height() / 2.f);
   respawn_button_->resize(100, 100);
+  respawn_button_->move(this->width() - respawn_button_->width() - 10,
+                        this->height() - height_of_bar_ -
+                            respawn_button_->height() - 10);
   respawn_button_->Hide();
 
   // Stats table

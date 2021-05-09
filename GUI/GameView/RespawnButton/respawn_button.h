@@ -11,19 +11,14 @@
 namespace Constants::RespawnButton {
 
 const QColor kTextColor(Qt::black);
-const QColor kBackgroundOutlineColor(Qt::black);
-const QColor kBackgroundColor(Qt::cyan);
-const float kBackgroundOpacityMultiplier = 0.5f;
+const QFont kTextFont("Roboto Mono");
+const QColor kBackgroundColor(Qt::transparent);
 
 const float kOpacityAnimationStiffnessRatio = 0.003f;
 const float kOpacityAnimationFrictionRatio = 0.08f;
 const float kValueAnimationStiffnessRatio = 0.08f;
-const float kValueAnimationFrictionRatio = 0.3f;
-const int kDisappearMsecs = 5000;
-const float kBackgroundOpacityRatio = 0.5f;
-const float kBackgroundOutlineWidth = 2.f;
-const float kRoundedRectXRadius = 5.f;
-const float kRoundedRectYRadius = 5.f;
+const float kValueAnimationFrictionRatio = 0.5f;
+const float kOutlineWidth = 2.f;
 
 }  // namespace Constants::RespawnButton
 

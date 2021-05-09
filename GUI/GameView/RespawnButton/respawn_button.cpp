@@ -1,6 +1,10 @@
 #include "respawn_button.h"
 
+using Constants::RespawnButton::kBackgroundColor;
+using Constants::RespawnButton::kOutlineWidth;
+
 using Constants::RespawnButton::kOpacityAnimationStiffnessRatio;
+using Constants::RespawnButton::kTextFont;
 using Constants::RespawnButton::kOpacityAnimationFrictionRatio;
 using Constants::RespawnButton::kValueAnimationStiffnessRatio;
 using Constants::RespawnButton::kValueAnimationFrictionRatio;
@@ -41,15 +45,22 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
   painter.setRenderHints(
       QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
-  painter.setBrush(QBrush(Qt::transparent));
-  painter.drawEllipse(0, 0, this->width(), this->height());
+  painter.setBrush(QBrush(kBackgroundColor));
+  painter.setPen(QPen(Qt::black, kOutlineWidth));
+  QRectF circle_rect(kOutlineWidth, kOutlineWidth,
+                     this->width() - 2 * kOutlineWidth,
+                     this->height() - 2 * kOutlineWidth);
+  painter.drawEllipse(circle_rect);
   painter.setBrush(QBrush(Qt::cyan));
   painter.setPen(QPen(Qt::transparent));
-  qInfo() << total_holding_msecs_;
-  painter.drawPie(QRect(0, 0, this->width(), this->height()), 16 * 90,
+  painter.drawPie(QRect(kOutlineWidth * 1.5f, kOutlineWidth * 1.5f,
+                        this->width() - 3 * kOutlineWidth,
+                        this->height() - 3 * kOutlineWidth),
+                  16 * 90,
                   -16 * 360 * value_emulator_.GetCurrentValue() /
-                      Constants::kHoldingRespawnTime);
+                      (Constants::kHoldingRespawnTime * 0.9f));
 
+  painter.setFont(kTextFont);
   painter.setPen(QPen(Qt::black));
   painter.drawText(QRect(0, 0, this->width(), this->height()),
                    Qt::AlignCenter,
