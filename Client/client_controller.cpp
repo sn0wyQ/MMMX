@@ -26,6 +26,10 @@ bool ClientController::IsGameInProgress() const {
   return game_state_ == GameState::kGameInProgress;
 }
 
+int64_t ClientController::GetHoldingRespawnButtonMsecs() const {
+  return respawn_holding_current_;
+}
+
 void ClientController::OnConnected() {
   connect(&web_socket_,
           &QWebSocket::binaryMessageReceived,
@@ -369,10 +373,10 @@ void ClientController::KeyPressEvent(QKeyEvent* key_event) {
   }
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
   if (native_key == Controls::kKeyC &&
-    GetCurrentServerTime() - last_requested_respawn_time_
-    > Constants::kRequestRespawnTime && !is_respawn_holding_) {
-    started_holding_respawn_ = GetCurrentServerTime();
+      GetCurrentServerTime() - last_requested_respawn_time_
+        > Constants::kRequestRespawnTime && !is_respawn_holding_) {
     is_respawn_holding_ = true;
+    respawn_pressed_time_ = this->GetCurrentServerTime();
     return;
   }
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
@@ -422,22 +426,25 @@ void ClientController::MouseReleaseEvent(QMouseEvent*) {
 }
 
 void ClientController::ControlsHolding() {
-  if (is_respawn_holding_) {
-    if (GetCurrentServerTime() - respawn_released_time_ > 50) {
-      is_respawn_holding_ = false;
-    }
+  if (is_respawn_holding_ &&
+      respawn_pressed_time_ < respawn_released_time_ &&
+      GetCurrentServerTime() - respawn_released_time_ > 50) {
+    is_respawn_holding_ = false;
   }
   if (is_respawn_holding_) {
-    if (GetCurrentServerTime() - started_holding_respawn_
-        > Constants::kHoldingRespawnTime) {
+    respawn_holding_current_ += controls_check_timer_.interval();
+    if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
       this->AddEventToSend(Event(EventType::kRequestRespawn,
                                  model_->GetLocalPlayer()->GetId()));
       last_requested_respawn_time_ = GetCurrentServerTime();
-      started_holding_respawn_ = GetCurrentServerTime();
+      respawn_holding_current_ = 0;
       is_respawn_holding_ = false;
       is_controls_blocked_ = true;
     }
     return;
+  } else {
+    respawn_holding_current_ = std::max(0L, respawn_holding_current_ -
+        controls_check_timer_.interval());
   }
   if (is_shoot_holding) {
     if (model_->IsLocalPlayerSet()) {

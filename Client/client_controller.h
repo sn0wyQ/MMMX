@@ -82,6 +82,8 @@ class ClientController : public BaseController {
 
   bool IsGameInProgress() const;
 
+  int64_t GetHoldingRespawnButtonMsecs() const;
+
   void SetView(std::shared_ptr<AbstractClientView> view);
   void UpdateView();
 
@@ -170,8 +172,9 @@ class ClientController : public BaseController {
   bool is_controls_blocked_{false};
 
   int64_t last_requested_respawn_time_{0};
-  int64_t started_holding_respawn_{0};
+  int64_t respawn_holding_current_{0};
   int64_t respawn_released_time_{0};
+  int64_t respawn_pressed_time_{0};
   bool is_respawn_holding_{false};
 
   std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;

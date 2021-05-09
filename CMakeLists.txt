@@ -115,7 +115,7 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
-        )
+        GUI/GameView/RespawnButton/respawn_button.cpp GUI/GameView/RespawnButton/respawn_button.h)
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT

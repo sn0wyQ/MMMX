@@ -114,7 +114,7 @@ constexpr float kBulletDamage = 1.1f;
 }  // namespace LevelingMultipliers
 
 constexpr int64_t kReviveTime = 5000;
-constexpr int64_t kRequestRespawnTime = 10000;
+constexpr int64_t kRequestRespawnTime = 1000;
 constexpr int64_t kHoldingRespawnTime = 1000;
 
 template<class T>

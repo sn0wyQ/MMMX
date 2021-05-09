@@ -31,6 +31,12 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   info_label_->move(10, 10);
   info_label_->setAlignment(Qt::AlignTop);
 
+  // Respawn Button
+  respawn_button_ = new RespawnButton(this);
+  respawn_button_->move(3.f * this->width() / 5.f, this->height() / 2.f);
+  respawn_button_->resize(100, 100);
+  respawn_button_->Hide();
+
   // Stats table
   stats_table_ = new StatsTable(this, controller_->GetModel());
   stats_table_->setMouseTracking(true);
@@ -96,6 +102,13 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
           QDateTime::currentMSecsSinceEpoch() - last_released_tab_ > 50) {
     table_shown_ = false;
     stats_table_->Hide();
+  }
+
+  respawn_button_->SetValue(controller_->GetHoldingRespawnButtonMsecs());
+  if (controller_->GetHoldingRespawnButtonMsecs() == 0) {
+    respawn_button_->Hide();
+  } else {
+    respawn_button_->Show();
   }
 
   auto local_player_position = model_->IsLocalPlayerSet()

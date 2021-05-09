@@ -21,6 +21,8 @@
 #include "GUI/GameView/game_view.h"
 #include "GUI/GameView/player_bar.h"
 #include "GUI/GameView/stats_table.h"
+#include "GUI/GameView/RespawnButton/respawn_button.h"
+#include "GUI/GameView/KillFeed/kill_feed.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
@@ -60,6 +62,7 @@ class ClientView : public AbstractClientView {
   int64_t last_updated_time_{};
   std::deque<int64_t> last_frame_times_{};
   KillFeed* kill_feed_;
+  RespawnButton* respawn_button_;
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_
