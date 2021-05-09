@@ -8,6 +8,7 @@
 
 using Constants::KillFeedNotification::kBackgroundOutlineColor;
 using Constants::KillFeedNotification::kTextColor;
+using Constants::KillFeedNotification::kTextFont;
 using Constants::KillFeedNotification::kBackgroundColor;
 using Constants::KillFeedNotification::kBackgroundOpacityMultiplier;
 
@@ -57,6 +58,7 @@ void KillFeedNotification::Draw(QPainter* painter) {
   if (weapon_type_ != WeaponType::kNull) {
     message += " with " + weapon_name;
   }
+  painter->setFont(kTextFont);
   painter->drawText(
       QRect(0, 0, this->width(), this->height()),
       Qt::AlignCenter, message);

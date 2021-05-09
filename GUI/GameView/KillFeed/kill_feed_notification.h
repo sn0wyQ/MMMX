@@ -10,6 +10,7 @@
 namespace Constants::KillFeedNotification {
 
 const QColor kTextColor(Qt::black);
+const QFont kTextFont("Roboto Mono");
 const QColor kBackgroundOutlineColor(Qt::black);
 const QColor kBackgroundColor(Qt::cyan);
 const float kBackgroundOpacityMultiplier = 0.5f;
