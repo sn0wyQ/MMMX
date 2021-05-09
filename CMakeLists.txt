@@ -115,7 +115,8 @@ set(SOURCES
         Weapon/MachineGun/machine_gun.cpp
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
-        Weapon/weapon.cpp)
+        Weapon/weapon.cpp
+        )
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
