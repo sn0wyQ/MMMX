@@ -36,6 +36,7 @@ const float kMaximumSizeRatio = 0.95f;
 const std::vector<QString> kColumnNames{
     "Nickname",
     "Level",
+    "Kills/Deaths",
     "Kills",
     "Deaths"
 };
