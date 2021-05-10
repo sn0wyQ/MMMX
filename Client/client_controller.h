@@ -135,6 +135,7 @@ class ClientController : public BaseController {
   void ReviveLocalPlayerEvent(const Event& event) override;
   void SendGameInfoToInterpolateEvent(const Event& event) override;
   void PlayerKilledNotificationEvent(const Event& event) override;
+  void PlayerRespawnedEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;
   void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;

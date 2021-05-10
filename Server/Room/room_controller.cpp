@@ -791,6 +791,8 @@ void RoomController::RequestRespawnEvent(const Event& event) {
   if (!model_->IsGameObjectIdTaken(player_id)) {
     return;
   }
+  this->AddEventToSendToAllPlayers(Event(EventType::kPlayerRespawned,
+                                         player_id));
   auto player = model_->GetPlayerByPlayerId(player_id);
   QPointF point_to_spawn = model_->GetPointToSpawn(
       player->GetRigidBodyBoundingCircleRadius(), true);

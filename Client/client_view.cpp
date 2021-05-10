@@ -33,11 +33,6 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 
   // Respawn Button
   respawn_button_ = new RespawnButton(this);
-  respawn_button_->Resize(QSize(150, 150));
-  respawn_button_default_position_ =
-      QPoint(10,
-             this->height() - height_of_bar_ - respawn_button_->height() - 10);
-  respawn_button_->Move(respawn_button_default_position_);
   respawn_button_->Hide();
 
   // Stats table
@@ -156,7 +151,7 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
   stats_table_->move(
       (this->width() - stats_table_->width()) / 2.f,
       (this->height() - stats_table_->height() - height_of_bar_) / 2.f);
-  kill_feed_->resize(this->width() / 4, this->height());
+  kill_feed_->resize(this->width() / 3, this->height());
   kill_feed_->move(this->width() - kill_feed_->width(), 0);
 }
 
@@ -168,12 +163,14 @@ QPointF ClientView::GetPlayerToCenterOffset() const {
   return game_view_->GetPlayerToCenterOffset();
 }
 
-void ClientView::AddKillFeedNotification(QString killer_name,
-                                         QString victim_name,
+void ClientView::AddKillFeedNotification(const QString& killer_name,
+                                         const QString& victim_name,
                                          WeaponType weapon_type) {
-  kill_feed_->AddNotification(std::move(killer_name),
-                              std::move(victim_name),
-                              weapon_type);
+  kill_feed_->AddKillNotification(killer_name, victim_name, weapon_type);
+}
+
+void ClientView::AddRespawnNotification(const QString& player_name) {
+  kill_feed_->AddSpawnNotification(player_name);
 }
 
 void ClientView::ProcessRespawnButton() {

@@ -118,6 +118,9 @@ enum class EventType {
   // [2] - <int> used weapon (WeaponType)
   kPlayerKilledNotification,
 
+  // [0] - <GameObjectId> player_id
+  kPlayerRespawned,
+
   // [0] - <float> experience_to_add
   kIncreaseLocalPlayerExperience,
 

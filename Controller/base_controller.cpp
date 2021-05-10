@@ -44,6 +44,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::UpdateLocalPlayerHealthPointsEvent, this, _1));
   SetFunctionForEventType(EventType::kPlayerKilledNotification,
     std::bind(&BaseController::PlayerKilledNotificationEvent, this, _1));
+  SetFunctionForEventType(EventType::kPlayerRespawned,
+    std::bind(&BaseController::PlayerRespawnedEvent, this, _1));
   SetFunctionForEventType(EventType::kLocalPlayerDied,
     std::bind(&BaseController::LocalPlayerDiedEvent, this, _1));
   SetFunctionForEventType(EventType::kIncreaseLocalPlayerExperience,

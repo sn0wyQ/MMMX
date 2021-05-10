@@ -34,9 +34,10 @@ class ClientView : public AbstractClientView {
   void Update() override;
   std::shared_ptr<Converter> GetConverter() override;
   QPointF GetPlayerToCenterOffset() const override;
-  void AddKillFeedNotification(QString killer_name,
-                               QString victim_name,
+  void AddKillFeedNotification(const QString& killer_name,
+                               const QString& victim_name,
                                WeaponType weapon_type) override;
+  void AddRespawnNotification(const QString& player_name) override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;
