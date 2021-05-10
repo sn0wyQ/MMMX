@@ -34,9 +34,8 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   // Respawn Button
   respawn_button_ = new RespawnButton(this);
   respawn_button_->resize(100, 100);
-  respawn_button_->move(this->width() - respawn_button_->width() - 10,
-                        this->height() - height_of_bar_ -
-                            respawn_button_->height() - 10);
+  respawn_button_->move(10, this->height() - height_of_bar_ -
+      respawn_button_->height() - 10);
   respawn_button_->Hide();
 
   // Stats table
@@ -150,9 +149,8 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
   respawn_button_->resize(100, 100);
-  respawn_button_->move(this->width() - respawn_button_->width() - 10,
-                        this->height() - height_of_bar_ -
-                            respawn_button_->height() - 10);
+  respawn_button_->move(10, this->height() - height_of_bar_ -
+      respawn_button_->height() - 10);
   game_view_->resize(resize_event->size());
   player_bar_->resize(width(), height_of_bar_);
   player_bar_->move(0, height() - height_of_bar_);
