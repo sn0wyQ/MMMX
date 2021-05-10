@@ -68,7 +68,7 @@ void StatsTable::DrawTable(QPainter* painter) {
 
   header_column_rects_.clear();
   table_column_points_.clear();
-  inner_width_ = w * 0.8f;
+  inner_width_ = w * 0.85f;
   float offset_x = (w - inner_width_) / 2.f;
   inner_height_ = h * 0.85f;
   float offset_y = (h - inner_height_) / 2.f;
@@ -103,7 +103,7 @@ void StatsTable::DrawTable(QPainter* painter) {
 void StatsTable::DrawPlayersStats(QPainter* painter) {
   painter->save();
   QFont font(Constants::StatsTable::kHeaderFont);
-  font.setPixelSize(this->height() / 23);
+  font.setPixelSize(this->height() / 25);
   painter->setFont(font);
   auto stats = model_->GetAllPlayersStats();
   std::sort(stats.begin(),
@@ -145,9 +145,14 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                       stat->GetNickname());
     painter->drawText(get_rect(1), Qt::AlignCenter,
                       QString::number(stat->GetLevel()));
-    painter->drawText(get_rect(2), Qt::AlignCenter,
+    QString k_d("-");
+    if (stat->GetDeaths() != 0) {
+      k_d = QString::number(1.f * stat->GetKills() / stat->GetDeaths(), 'f', 2);
+    }
+    painter->drawText(get_rect(2), Qt::AlignCenter, k_d);
+    painter->drawText(get_rect(3), Qt::AlignCenter,
                       QString::number(stat->GetKills()));
-    painter->drawText(get_rect(3),
+    painter->drawText(get_rect(4),
                       Qt::AlignCenter,
                       QString::number(stat->GetDeaths()));
     painter->setPen(pen_);
