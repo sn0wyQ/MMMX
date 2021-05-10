@@ -469,8 +469,8 @@ void ClientController::ControlsHolding() {
   if (!is_respawn_holding_ ||
       this->GetCurrentServerTime() - last_requested_respawn_time_
           <= Constants::kRequestRespawnTime) {
-    respawn_holding_current_ = std::max(0L, respawn_holding_current_ -
-        controls_check_timer_.interval());
+    respawn_holding_current_ = std::max(static_cast<int64_t>(0),
+                respawn_holding_current_ - controls_check_timer_.interval());
   }
 
   if (is_shoot_holding) {
