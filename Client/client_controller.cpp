@@ -575,6 +575,9 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
+  for (auto& direction : is_direction_by_keys_) {
+    direction.second = false;
+  }
   last_died_ = this->GetCurrentServerTime();
   are_controls_blocked_ = true;
   is_shoot_holding = false;

@@ -1,5 +1,5 @@
-#ifndef SPRINGEMULATOR_SPRING_EMULATOR_H_
-#define SPRINGEMULATOR_SPRING_EMULATOR_H_
+#ifndef GUI_ANIMATIONS_SPRING_EMULATOR_H_
+#define GUI_ANIMATIONS_SPRING_EMULATOR_H_
 
 #include <algorithm>
 
@@ -72,9 +72,9 @@ T SpringEmulator<T, DoSetBounds>::GetCurrentValue() const {
 template <class T, bool DoSetBounds>
 void SpringEmulator<T, DoSetBounds>::SetBounds(T min, T max) {
   static_assert(DoSetBounds,
-      "You can't use SetBounds with second template parameter 'false'");
+      "You can't use SetPath with second template parameter 'false'");
   min_value_ = min;
   max_value_ = max;
 }
 
-#endif  // SPRINGEMULATOR_SPRING_EMULATOR_H_
+#endif  // GUI_ANIMATIONS_SPRING_EMULATOR_H_

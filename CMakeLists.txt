@@ -120,6 +120,7 @@ set(SOURCES
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
+        Res/Icons/icons.qrc
         Res/Fonts/fonts.qrc)
 qt5_add_big_resources(RESOURCES_SERVER
         )
@@ -129,7 +130,7 @@ qt5_add_big_resources(RESOURCES_COMMON
         )
 
 add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
-        ${RESOURCES_COMMON})
+        ${RESOURCES_COMMON} GUI/Animations/linear_emulator.h)
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}

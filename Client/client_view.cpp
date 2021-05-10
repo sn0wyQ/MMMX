@@ -33,9 +33,9 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 
   // Respawn Button
   respawn_button_ = new RespawnButton(this);
-  respawn_button_->resize(100, 100);
-  respawn_button_->move(10, this->height() - height_of_bar_ -
-      respawn_button_->height() - 10);
+  respawn_button_->Resize(QSize(150, 150));
+  respawn_button_->Move(QPointF(10, this->height() - height_of_bar_ -
+      respawn_button_->height() - 10));
   respawn_button_->Hide();
 
   // Stats table
@@ -113,6 +113,13 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
   } else {
     respawn_button_->Hide();
   }
+  if (model_->IsLocalPlayerSet() && model_->GetLocalPlayer()->IsAlive()) {
+    respawn_button_->Move(QPointF(10, this->height() - height_of_bar_ -
+        respawn_button_->height() - 10));
+  } else {
+    respawn_button_->Move(QPointF(this->width() / 2 - respawn_button_->width() / 2,
+                                  (this->height() - height_of_bar_) / 2 - respawn_button_->height() / 2));
+  }
 
   auto local_player_position = model_->IsLocalPlayerSet()
                                ? model_->GetLocalPlayer()->GetPosition()
@@ -148,9 +155,9 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 }
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
-  respawn_button_->resize(100, 100);
-  respawn_button_->move(10, this->height() - height_of_bar_ -
-      respawn_button_->height() - 10);
+  respawn_button_->Resize(QSize(150, 150));
+  respawn_button_->Move(QPointF(10, this->height() - height_of_bar_ -
+      respawn_button_->height() - 10));
   game_view_->resize(resize_event->size());
   player_bar_->resize(width(), height_of_bar_);
   player_bar_->move(0, height() - height_of_bar_);

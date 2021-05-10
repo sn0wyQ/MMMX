@@ -4,7 +4,7 @@
 #include <QTimer>
 #include <QWidget>
 
-#include "SpringEmulator/spring_emulator.h"
+#include "GUI/Animations/spring_emulator.h"
 #include "Weapon/WeaponSettings/weapon_settings.h"
 
 namespace Constants::KillFeedNotification {
