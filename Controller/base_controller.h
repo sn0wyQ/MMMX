@@ -91,6 +91,7 @@ class BaseController : public QObject {
   virtual void UpdateGameObjectDataEvent(const Event& event) {}
   virtual void UpdatePlayersStatsEvent(const Event& event) {}
   virtual void UpdateLocalPlayerHealthPointsEvent(const Event& event) {}
+  virtual void PlayerKilledNotificationEvent(const Event& event) {}
   virtual void LocalPlayerDiedEvent(const Event& event) {}
   virtual void IncreaseLocalPlayerExperienceEvent(const Event& event) {}
   virtual void ShootFailedEvent(const Event& event) {}

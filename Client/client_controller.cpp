@@ -494,6 +494,16 @@ void ClientController::SendGameInfoToInterpolateEvent(const Event& event) {
   this->HandleEvent(Event(event_type, args));
 }
 
+void ClientController::PlayerKilledNotificationEvent(const Event& event) {
+  auto victim_id = event.GetArg<GameObjectId>(0);
+  auto killer_id = event.GetArg<GameObjectId>(1);
+  auto weapon_type = event.GetArg<WeaponType>(2);
+
+  auto killer_name = this->GetEntityName(killer_id);
+  auto victim_name = this->GetEntityName(victim_id);
+  view_->AddKillFeedNotification(killer_name, victim_name, weapon_type);
+}
+
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   model_->DeleteGameObject(player_id);
@@ -542,5 +552,15 @@ void ClientController::ShootFailedEvent(const Event& event) {
     if (bullet->GetUpdatedTime() == timestamp) {
       bullet->SetIsNeedToDelete(true);
     }
+  }
+}
+
+QString ClientController::GetEntityName(GameObjectId game_object_id) const {
+  auto killer_object_type =
+      model_->GetGameObjectByGameObjectId(game_object_id)->GetType();
+  if (killer_object_type == GameObjectType::kPlayer) {
+    return model_->GetPlayerStatsByPlayerId(game_object_id)->GetNickname();
+  } else {
+    return "Creep";
   }
 }

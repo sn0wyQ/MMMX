@@ -29,14 +29,15 @@ void GameView::Update() {
   auto player_pos = local_player->GetPosition();
   if (!was_player_set_) {
     was_player_set_ = true;
-    camera_motion_emulator_.SetValue(QVector2D(local_player->GetPosition()));
-    fov_change_emulator_.SetValue(local_player->GetFovRadius() / 1.2f);
+    camera_motion_emulator_.SetCurrentValue(
+        QVector2D(local_player->GetPosition()));
+    fov_change_emulator_.SetCurrentValue(local_player->GetFovRadius() / 1.2f);
   }
 
-  camera_motion_emulator_.MakeStep(QVector2D(player_pos));
-  auto local_center = camera_motion_emulator_.GetValue().toPointF();
-  fov_change_emulator_.MakeStep(local_player->GetFovRadius());
-  auto last_player_fov = fov_change_emulator_.GetValue();
+  camera_motion_emulator_.MakeStepTo(QVector2D(player_pos));
+  auto local_center = camera_motion_emulator_.GetCurrentValue().toPointF();
+  fov_change_emulator_.MakeStepTo(local_player->GetFovRadius());
+  auto last_player_fov = fov_change_emulator_.GetCurrentValue();
 
   auto player_bar_offset =
       this->GetConverter()->ScaleFromScreenToGame(
@@ -92,6 +93,7 @@ void GameView::resizeEvent(QResizeEvent* resize_event) {
   // waiting for painter to finish before deleting it
   while (painter_->isActive()) {}
   canvas_ = std::make_unique<QPixmap>(resize_event->size());
+  canvas_->fill();
   painter_ = std::make_unique<Painter>(canvas_.get(), converter_);
   converter_->UpdateCoefficient();
 }
@@ -100,7 +102,7 @@ QPointF GameView::GetPlayerToCenterOffset() const {
   if (model_->IsLocalPlayerSet()) {
     auto player_bar_offset = converter_->ScaleFromScreenToGame(
         Constants::kPlayerBarHeightRatio * this->height() / 2.f);
-    auto local_center = camera_motion_emulator_.GetValue().toPointF();
+    auto local_center = camera_motion_emulator_.GetCurrentValue().toPointF();
     return (local_center - model_->GetLocalPlayer()->GetPosition() +
         QPointF(0, player_bar_offset));
   }
