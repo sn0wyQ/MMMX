@@ -48,6 +48,8 @@ class ClientView : public AbstractClientView {
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
+  void ProcessRespawnButton();
+
   std::shared_ptr<ClientController> controller_;
   std::shared_ptr<ClientGameModel> model_;
   GameView* game_view_;
@@ -63,6 +65,7 @@ class ClientView : public AbstractClientView {
   std::deque<int64_t> last_frame_times_{};
   KillFeed* kill_feed_;
   RespawnButton* respawn_button_;
+  QPoint respawn_button_default_position_;
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_

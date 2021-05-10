@@ -57,7 +57,7 @@ T LinearEmulator<T>::GetCurrentValue() {
   auto delta_time = static_cast<float>(time - last_time_updated_) / 10.f;
   last_time_updated_ = time;
 
-  float sample_rate = 1.f;
+  float sample_rate = 0.5f;
   for (float now = 0; now < delta_time; now += sample_rate) {
     if (value_ > max_value_) {
       if (stop_on_max_) {

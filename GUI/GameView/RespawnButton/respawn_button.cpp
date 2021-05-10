@@ -63,16 +63,20 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
 
   QPixmap gray_heart(":RespawnHeartGray.png");
   QPixmap rgb_heart(":RespawnHeart.png");
-  float size = size_ratio_emulator_.GetCurrentValue() *
-      std::max(this->width(), this->height()) / 1.f;
-  QRectF draw_rect((this->width() - size) / 2.f,
-                   (this->height() - size) / 2.f,
-                   size, size);
-  painter.drawPixmap(draw_rect, gray_heart, QRectF(0, 0, gray_heart.width(),
-                                                   gray_heart.height()));
+  QPixmap canvas(this->size());
+  canvas.fill(Qt::transparent);
+  QPainter canvas_painter(&canvas);
+  Constants::SetPainterHints(&canvas_painter);
   QBitmap mask(QSize(rgb_heart.size()));
   mask.fill();
   QPainter mask_painter(&mask);
+  Constants::SetPainterHints(&mask_painter);
+
+  QRectF draw_rect(0, 0, this->width(), this->height());
+  canvas_painter.drawPixmap(draw_rect,
+                            gray_heart,
+                            QRectF(0, 0, gray_heart.width(),
+                                   gray_heart.height()));
 
   if (wait_secs_ <= 0) {
     auto angle = 360 * value_emulator_.GetCurrentValue()
@@ -83,31 +87,41 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
                            16 * 90, -16 * angle);
     }
     rgb_heart.setMask(mask);
-    painter.drawPixmap(draw_rect, rgb_heart, QRectF(0, 0, rgb_heart.width(),
-                                                    rgb_heart.height()));
+    canvas_painter.drawPixmap(draw_rect,
+                              rgb_heart,
+                              QRectF(0, 0, rgb_heart.width(),
+                                     rgb_heart.height()));
 
     QFont font(kTextFont);
     QString text = "Respawn";
     float factor =
-        this->width() / painter.fontMetrics().horizontalAdvance(text);
+        this->width() / canvas_painter.fontMetrics().horizontalAdvance(text);
     font.setPointSizeF(0.6 * font.pointSizeF() * factor);
-    painter.setFont(font);
-    painter.setPen(QPen(kTextColor));
-    painter.drawText(QRectF(draw_rect.x(),
-                            draw_rect.y() - 12,
-                            draw_rect.width(),
-                            draw_rect.height()), Qt::AlignCenter, text);
+    canvas_painter.setFont(font);
+    canvas_painter.setPen(QPen(kTextColor));
+    canvas_painter.drawText(QRectF(draw_rect.x(),
+                                   draw_rect.y() - 12,
+                                   draw_rect.width(),
+                                   draw_rect.height()), Qt::AlignCenter, text);
   } else {
     QFont font(kTextFont);
     QString text = QString::number(wait_secs_);
-    float factor_h = this->height() / painter.fontMetrics().height();
+    float factor_h = this->height() / canvas_painter.fontMetrics().height();
     float factor_w = this->width() /
-        painter.fontMetrics().horizontalAdvance(text);
+        canvas_painter.fontMetrics().horizontalAdvance(text);
     font.setPointSizeF(font.pointSizeF() * 0.3f * std::min(factor_h, factor_w));
-    painter.setFont(font);
-    painter.setPen(QPen(kTextColor));
-    painter.drawText(draw_rect, Qt::AlignCenter, text);
+    canvas_painter.setFont(font);
+    canvas_painter.setPen(QPen(kTextColor));
+    canvas_painter.drawText(draw_rect, Qt::AlignCenter, text);
   }
+  float size_ratio = size_ratio_emulator_.GetCurrentValue();
+  float width = size_ratio * this->width();
+  float height = size_ratio * this->height();
+  painter.drawPixmap(QRectF((this->width() - width) / 2,
+                            (this->height() - height) / 2,
+                            size_ratio * this->width(),
+                            size_ratio * this->height()), canvas,
+                     QRectF(0, 0, canvas.width(), canvas.height()));
 
   opacity_effect_->setOpacity(opacity_emulator_.GetCurrentValue());
 }
