@@ -89,7 +89,6 @@ void ReloadingField::Initialize() {
       break;
     }
   }
-
 }
 
 void ReloadingField::RecalculateSize() {
