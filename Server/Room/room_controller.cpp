@@ -455,6 +455,8 @@ GameObjectId RoomController::AddPlayer() {
 
   AnimationType animation_type = AnimationType::kNone;
   WeaponType weapon_type = WeaponType::kAssaultRifle;
+  float width = 8.f;
+  float height = 8.f;
   // Temporary
   int players_type =
       this->GetPlayersCount() % static_cast<int>(WeaponType::SIZE);
@@ -472,6 +474,8 @@ GameObjectId RoomController::AddPlayer() {
     case 2: {
       animation_type = AnimationType::kSpider3_0;
       weapon_type = WeaponType::kMachineGun;
+      width = 4.f;
+      height = 4.f;
       break;
     }
     case 3: {
@@ -489,8 +493,7 @@ GameObjectId RoomController::AddPlayer() {
       params = {point.x(),
                 point.y(),
                 Constants::kDefaultPlayerRotation,
-                Constants::kDefaultPlayerRadius * 8.f,
-                Constants::kDefaultPlayerRadius * 8.f,
+                width, height,
                 static_cast<int>(RigidBodyType::kCircle),
                 Constants::kDefaultPlayerRadius * 2.f,
                 Constants::kDefaultPlayerRadius * 2.f,
