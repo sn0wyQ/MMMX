@@ -6,6 +6,7 @@
 #include <QCryptographicHash>
 #include <QMetaEnum>
 #include <QString>
+#include <QPainter>
 #include <QUrl>
 
 // code_readability++;
@@ -79,6 +80,10 @@ constexpr float kDefaultPlayerRadius = 1.f;
 constexpr float kDefaultHealthRegenSpeed = 0.002f;
 
 // View
+inline void SetPainterHints(QPainter* painter) {
+  painter->setRenderHints(
+      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+}
 constexpr float kCameraStiffnessRatio = 0.008f;
 constexpr float kCameraFrictionRatio = 0.15f;
 constexpr float kFovStiffnessRatio = 0.007f;
@@ -121,7 +126,7 @@ T GetEnumValueFromString(const QString& string) {
 }
 
 template<class T>
-QString GetEnumValueToString(T value) {
+QString GetStringFromEnumValue(T value) {
   return QMetaEnum::fromType<T>().valueToKey(static_cast<int>(value));
 }
 

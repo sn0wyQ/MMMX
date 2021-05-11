@@ -305,10 +305,13 @@ void ClientController::UpdateVarsEvent(const Event& event) {
 }
 
 QVector2D ClientController::GetKeyForce() const {
-  bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
-  bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
-  bool is_down_pressed = is_direction_by_keys_.at(Direction::kDown);
-  bool is_left_pressed = is_direction_by_keys_.at(Direction::kLeft);
+  if (!view_) {
+    return QVector2D();
+  }
+  bool is_up_pressed = view_->GetKeyController()->IsHeld(Key::kUp);
+  bool is_right_pressed = view_->GetKeyController()->IsHeld(Key::kRight);
+  bool is_down_pressed = view_->GetKeyController()->IsHeld(Key::kDown);
+  bool is_left_pressed = view_->GetKeyController()->IsHeld(Key::kLeft);
 
   QVector2D key_force;
   if ((is_up_pressed ^ is_down_pressed) == 1) {
@@ -346,33 +349,21 @@ int64_t ClientController::GetCurrentServerTime() const {
 // -------------------- CONTROLS --------------------
 
 void ClientController::FocusOutEvent(QFocusEvent*) {
-  for (const auto& [key, direction] : key_to_direction_) {
-    is_direction_by_keys_[direction] = false;
-  }
-
+  view_->GetKeyController()->ClearControls();
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity({0, 0});
   }
-  is_holding_ = false;
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
-  auto native_key = static_cast<Controls>(key_event->nativeScanCode());
-  if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
-    is_direction_by_keys_[key_to_direction_[native_key]] = true;
-  }
-
+  view_->GetKeyController()->KeyPressedEvent(key_event);
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
   }
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
-  auto native_key = static_cast<Controls>(key_event->nativeScanCode());
-  if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
-    is_direction_by_keys_[key_to_direction_[native_key]] = false;
-  }
-
+  view_->GetKeyController()->KeyReleasedEvent(key_event);
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
   }
@@ -382,16 +373,16 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   last_mouse_position_ = mouse_event->pos();
 }
 
-void ClientController::MousePressEvent(QMouseEvent*) {
-  is_holding_ = true;
+void ClientController::MousePressEvent(QMouseEvent* mouse_event) {
+  view_->GetKeyController()->MousePressedEvent(mouse_event);
 }
 
-void ClientController::MouseReleaseEvent(QMouseEvent*) {
-  is_holding_ = false;
+void ClientController::MouseReleaseEvent(QMouseEvent* mouse_event) {
+  view_->GetKeyController()->MouseReleasedEvent(mouse_event);
 }
 
 void ClientController::ShootHolding() {
-  if (!is_holding_) {
+  if (!view_->GetKeyController()->IsHeld(Key::kShoot)) {
     return;
   }
   if (model_->IsLocalPlayerSet()) {

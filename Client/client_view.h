@@ -20,6 +20,7 @@
 #include "Event/event.h"
 #include "GUI/GameView/game_view.h"
 #include "GUI/GameView/player_bar.h"
+#include "GUI/GameView/KeyController/key_controller.h"
 #include "GUI/GameView/stats_table.h"
 
 class ClientView : public AbstractClientView {
@@ -35,6 +36,7 @@ class ClientView : public AbstractClientView {
   void AddKillFeedNotification(QString killer_name,
                                QString victim_name,
                                WeaponType weapon_type) override;
+  std::shared_ptr<KeyController> GetKeyController() const override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;
@@ -54,12 +56,10 @@ class ClientView : public AbstractClientView {
   QLabel* info_label_;
   int height_of_bar_{};
 
-  bool table_shown_{false};
-  int64_t last_pressed_tab_{};
-  int64_t last_released_tab_{};
   int64_t last_updated_time_{};
   std::deque<int64_t> last_frame_times_{};
   KillFeed* kill_feed_;
+  std::shared_ptr<KeyController> key_controller_;
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_

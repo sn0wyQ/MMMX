@@ -52,7 +52,7 @@ void KillFeedNotification::Draw(QPainter* painter) {
 
   painter->setPen(QPen(this->GetColorWithOpacity(kTextColor)));
 
-  auto weapon_name = Constants::GetEnumValueToString(weapon_type_);
+  auto weapon_name = Constants::GetStringFromEnumValue(weapon_type_);
   weapon_name.remove(0, 1);
   QString message = killer_name_ + " killed " + victim_name_;
   if (weapon_type_ != WeaponType::kNull) {

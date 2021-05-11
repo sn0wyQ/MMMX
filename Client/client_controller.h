@@ -149,21 +149,8 @@ class ClientController : public BaseController {
   bool is_time_difference_set_{false};
   int64_t time_difference_{0};
   int64_t last_view_update_time_{-1};
-  std::unordered_map<Controls, Direction> key_to_direction_{
-      {Controls::kKeyW, Direction::kUp},
-      {Controls::kKeyD, Direction::kRight},
-      {Controls::kKeyS, Direction::kDown},
-      {Controls::kKeyA, Direction::kLeft}
-  };
-  std::unordered_map<Direction, bool> is_direction_by_keys_{
-      {Direction::kUp, false},
-      {Direction::kRight, false},
-      {Direction::kDown, false},
-      {Direction::kLeft, false}
-  };
   QPointF last_mouse_position_;
   QTimer shoot_check_timer;
-  bool is_holding_{false};
 
   std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;
 };
