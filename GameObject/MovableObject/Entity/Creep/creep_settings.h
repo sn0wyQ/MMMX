@@ -12,13 +12,14 @@
 
 #include "Animation/animation_enums.h"
 #include "GameObject/MovableObject/Entity/Creep/creep.h"
+#include "GameObject/MovableObject/Entity/Creep/creep_enums.h"
 #include "constants.h"
 
 class CreepSettings {
  public:
   static CreepSettings& GetInstance();
 
-  std::vector<QVariant> GetCreepParams(float x, float y, float rotation,
+  std::vector<QVariant> GetCreepParams(float x, float y,
                                        float distance_from_center) const;
 
   std::pair<int, int> GetMinAndMaxCreepLevelByDistance(float distance) const;
@@ -51,6 +52,7 @@ class CreepSettings {
   float CalculateWidth(int level) const;
   float CalculateHeight(int level) const;
   float CalculateSpeed(int level) const;
+  CreepType CalculateType(int level) const;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_SETTINGS_H_

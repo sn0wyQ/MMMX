@@ -41,28 +41,62 @@ int CreepSettings::GetCreepLevel(float distance_from_center) const {
 }
 
 std::vector<QVariant>
-     CreepSettings::GetCreepParams(float x, float y, float rotation,
+     CreepSettings::GetCreepParams(float x, float y,
                                    float distance_from_center) const {
   std::vector<QVariant> params;
   int creep_level = this->GetCreepLevel(distance_from_center);
+
+  CreepType creep_type = this->CalculateType(creep_level);
+  float
+      rotation = static_cast<float>(QRandomGenerator::global()->bounded(360.f));
+  float width = this->CalculateWidth(creep_level);
+  float height = 0.f;
+  RigidBodyType rigid_body_type = RigidBodyType::kCircle;
+  AnimationType animation_type = AnimationType::kNone;
+  float fov = 0.1f;
+  switch (creep_type) {
+    case CreepType::kBoxSciFiCube:
+      height = width;
+      rigid_body_type = RigidBodyType::kRectangle;
+      animation_type = AnimationType::kBoxSciFiCube;
+      fov = 0.1f;
+      break;
+
+    case CreepType::kTemporaryCircle:
+      height = width;
+      rigid_body_type = RigidBodyType::kCircle;
+      animation_type = AnimationType::kNone;
+      fov = this->CalculateFov(creep_level);
+      break;
+
+    case CreepType::kBoxSciFiLong:
+      height = width * (384.f / 228.f);
+      rigid_body_type = RigidBodyType::kRectangle;
+      animation_type = AnimationType::kBoxSciFiLong;
+      fov = 0.1f;
+      break;
+
+    default:
+      qWarning() << "[CREEP] Unknown creep type";
+      break;
+  }
+
   // GameObject params
   params.emplace_back(x);
   params.emplace_back(y);
   params.emplace_back(rotation);
-  params.emplace_back(this->CalculateWidth(creep_level));
-  params.emplace_back(this->CalculateHeight(creep_level));
-  params.emplace_back(static_cast<int>(
-      Constants::GetEnumValueFromString<RigidBodyType>(
-          json_object_.value("rigid_body_type").toString())));
-  params.emplace_back(this->CalculateWidth(creep_level));
-  params.emplace_back(this->CalculateHeight(creep_level));
-  params.emplace_back(static_cast<int>(AnimationType::kNone));
+  params.emplace_back(width);
+  params.emplace_back(height);
+  params.emplace_back(static_cast<int>(rigid_body_type));
+  params.emplace_back(width);
+  params.emplace_back(height);
+  params.emplace_back(static_cast<int>(animation_type));
   // MovableObject params
   params.emplace_back(0);  // velocity_x
   params.emplace_back(0);  // velocity_y
   params.emplace_back(this->CalculateSpeed(creep_level));
   // Entity params
-  params.emplace_back(this->CalculateFov(creep_level));
+  params.emplace_back(fov);
   params.emplace_back(this->CalculateMaxHp(creep_level));
   params.emplace_back(this->CalculateRegenRate(creep_level));
   params.emplace_back(this->CalculateMaxHp(creep_level));
@@ -119,6 +153,17 @@ QSizeF CreepSettings::GetMaxCreepSize() const {
 float CreepSettings::CalculateSpeed(int level) const {
   float max_level = this->GetCreepSetting<int>("max_creep_level");
   return (max_level - level) * this->GetCreepSetting<float>("speed_multiplier");
+}
+
+CreepType CreepSettings::CalculateType(int level) const {
+  int random = QRandomGenerator::global()->bounded(1, 10);
+  if (random <= 3) {  // 1 - 3
+    return CreepType::kBoxSciFiCube;
+  } else if (random <= 6) {  // 4 - 6
+    return CreepType::kBoxSciFiLong;
+  } else {  // 7 - 10
+    return CreepType::kTemporaryCircle;
+  }
 }
 
 float CreepSettings::CalculateFov(int level) const {
