@@ -8,5 +8,5 @@ move:
 loop
 
 shoot:
-	play_frames	6	16
+	play_frames	6	32
 end
