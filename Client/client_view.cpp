@@ -6,8 +6,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
       last_pressed_tab_(QDateTime::currentMSecsSinceEpoch()),
       last_released_tab_(QDateTime::currentMSecsSinceEpoch()) {
   resize(1400, 960);
-  height_of_bar_ = static_cast<int>(
-      Constants::kPlayerBarHeightRatio * static_cast<float>(height()));
+  RecalculateSizes();
   setMinimumSize(1300, 700);
   setWindowTitle(Constants::kWindowTitle);
   setMouseTracking(true);
@@ -25,6 +24,11 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   player_bar_ = new PlayerBar(this, controller_->GetModel(),
                               QPoint(0, height() - height_of_bar_),
                               QSize(width(), height_of_bar_));
+
+  // Time Bar
+  time_bar_ = new TimeBar(this, controller_,
+                          QPoint(width() / 2.f - width_of_time_bar_ / 2.f, 0.f),
+                          QSize(width_of_time_bar_, height_of_time_bar_));
 
   // Info Label
   info_label_ = new QLabel(this);
@@ -132,9 +136,12 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 }
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
+  RecalculateSizes();
   game_view_->resize(resize_event->size());
   player_bar_->resize(width(), height_of_bar_);
   player_bar_->move(0, height() - height_of_bar_);
+  time_bar_->resize(width_of_time_bar_, height_of_time_bar_);
+  time_bar_->move(width() / 2.f - width_of_time_bar_ / 2.f, 0.f);
   stats_table_->Resize(QSize(this->width() * 0.9f,
                              (this->height() - height_of_bar_) * 0.9f));
   stats_table_->move(
@@ -158,4 +165,13 @@ void ClientView::AddKillFeedNotification(QString killer_name,
   kill_feed_->AddNotification(std::move(killer_name),
                               std::move(victim_name),
                               weapon_type);
+}
+
+void ClientView::RecalculateSizes() {
+  height_of_bar_ = static_cast<int>(
+      Constants::kPlayerBarHeightRatio * static_cast<float>(height()));
+  height_of_time_bar_ = static_cast<int>(
+      Constants::kTimeBarHeightRatio * static_cast<float>(height()));
+  width_of_time_bar_ = static_cast<int>(
+      Constants::kTimeBarWidthRatio * static_cast<float>(width()));
 }

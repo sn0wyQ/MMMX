@@ -43,7 +43,9 @@ constexpr float kDefaultMapWidth = 100.f;
 constexpr float kDefaultMapHeight = 100.f;
 
 // Room
-constexpr int kDefaultMaxClients = 15;
+constexpr int kDefaultMaxClients = 2;
+constexpr int kDefaultWarmupDuration = 10000;
+constexpr int kDefaultGameDuration = 70000;
 
 // Null Values
 constexpr ClientId kNullClientId = -1;
@@ -60,6 +62,8 @@ constexpr int kShootHoldingCheck = 30;
 constexpr float kBaseViewWidth = 25.f;
 constexpr float kBaseViewHeight = 25.f;
 constexpr float kPlayerBarHeightRatio = 0.15f;
+constexpr float kTimeBarHeightRatio = 0.12f;
+constexpr float kTimeBarWidthRatio = 0.15f;
 constexpr bool kRigidBodyShow = true;
 constexpr int kAverageFpsFrames = 50;
 

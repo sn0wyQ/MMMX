@@ -28,6 +28,8 @@ class PlayerStats {
   void SetLevel(int level);
   int GetLevel() const;
 
+  void Clear();
+
   friend bool operator<(const PlayerStats& first, const PlayerStats& second);
 
  private:

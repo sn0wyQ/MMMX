@@ -3,6 +3,13 @@
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), model_(std::make_shared<RoomGameModel>()),
       room_settings_(room_settings) {
+  model_->SetWarmupEndTime(
+      GetCurrentServerTime() + room_settings_.GetWarmupDuration());
+  connect(&warmup_end_timer_, &QTimer::timeout,
+          this, &RoomController::StartGame);
+  warmup_end_timer_.setSingleShot(true);
+  warmup_end_timer_.setInterval(room_settings_.GetWarmupDuration());
+  warmup_end_timer_.start();
   this->StartTicking();
   this->AddConstantObjects();
 }
@@ -275,6 +282,10 @@ void RoomController::AddClient(ClientId client_id) {
   GameObjectId player_id = AddPlayer();
   player_ids_[client_id] = player_id;
 
+  this->AddEventToSendToSinglePlayer(
+      Event(EventType::kSetWarmupEndTime,
+            static_cast<qint64>(model_->GetWarmupEndTime())),
+      player_id);
   Event event_add_local_player(EventType::kAddLocalPlayerGameObject, player_id);
   event_add_local_player.PushBackArgs(
       model_->GetGameObjectByGameObjectId(player_id)->GetParams());
@@ -291,9 +302,7 @@ void RoomController::AddClient(ClientId client_id) {
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
                               << "] Connected client (ID: " << client_id << ")";
   if (!this->HasFreeSpot()) {
-    this->AddEventToSendToAllClients(Event(EventType::kStartGame));
-    room_state_ = RoomState::kGameInProgress;
-    qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
+    this->StartGame();
   }
 }
 
@@ -726,4 +735,28 @@ void RoomController::SendLevelingPointsEvent(const Event& event) {
       was_leveling_points[i]++;
     }
   }
+}
+
+void RoomController::StartGame() {
+  int64_t game_end_time =
+      GetCurrentServerTime() + room_settings_.GetGameDuration();
+  model_->StartGame(game_end_time);
+  model_->ClearStats();
+  for (auto& player : model_->GetPlayers()) {
+    // like kill them and set level exp = 0
+    // after merging respawn button
+  }
+  this->AddEventToSendToAllClients(Event(EventType::kStartGame,
+                                         static_cast<qint64>(game_end_time)));
+  room_state_ = RoomState::kGameInProgress;
+  connect(&game_end_timer_, &QTimer::timeout,
+          this, &RoomController::EndGame);
+  game_end_timer_.setSingleShot(true);
+  game_end_timer_.setInterval(room_settings_.GetGameDuration());
+  game_end_timer_.start();
+  qInfo().noquote().nospace() << "[ROOM ID: " << id_ << "] Started Game";
+}
+
+void RoomController::EndGame() {
+  this->AddEventToSendToAllPlayers(Event(EventType::kEndGame));
 }

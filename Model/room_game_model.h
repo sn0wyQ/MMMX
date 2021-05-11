@@ -27,6 +27,7 @@ class RoomGameModel : public GameModel {
   void AddPlayerStats(GameObjectId player_id, QString nickname, int level);
   bool IsNeededToSendPlayerStats(GameObjectId player_id);
   void UpdatePlayerStatsHashes();
+  void ClearStats();
 
   QPointF GetPointToSpawn(float radius_from_object,
                           bool for_player = false) const;

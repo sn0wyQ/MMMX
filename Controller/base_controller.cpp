@@ -24,6 +24,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::UpdateVarsEvent, this, _1));
   SetFunctionForEventType(EventType::kSetTimeDifference,
     std::bind(&BaseController::SetTimeDifferenceEvent, this, _1));
+  SetFunctionForEventType(EventType::kSetWarmupEndTime,
+    std::bind(&BaseController::SetWarmupEndTimeEvent, this, _1));
 
   // ------------------- GAME EVENTS -------------------
   SetFunctionForEventType(EventType::kAddLocalPlayerGameObject,

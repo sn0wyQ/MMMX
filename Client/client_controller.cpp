@@ -66,6 +66,8 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
 
 void ClientController::EndGameEvent(const Event& event) {
   game_state_ = GameState::kGameFinished;
+  // are controls blocked = true
+
 }
 
 void ClientController::SetPlayerIdToClient(const Event& event) {
@@ -76,6 +78,8 @@ void ClientController::SetPlayerIdToClient(const Event& event) {
 
 void ClientController::StartGameEvent(const Event& event) {
   game_state_ = GameState::kGameInProgress;
+  model_->StartGame(event.GetArg<int64_t>(0));
+  // Add game start notification to killfeed (after respawn_button)
   qInfo().noquote().nospace() << "[CLIENT] Started game";
 }
 
@@ -521,4 +525,20 @@ QString ClientController::GetEntityName(GameObjectId game_object_id) const {
   } else {
     return "Creep";
   }
+}
+
+int64_t ClientController::GetGameRemainingTime() const {
+  if (!model_->IsGameStarted()) {
+    qCritical() << "[CLIENT] Game is not started";
+  }
+  return model_->GetGameEndTime() - GetCurrentServerTime();
+}
+
+void ClientController::SetWarmupEndTimeEvent(const Event& event) {
+  auto time = event.GetArg<int64_t>(0);
+  model_->SetWarmupEndTime(time);
+}
+
+int64_t ClientController::GetWarmupRemainingTime() const {
+  return model_->GetWarmupEndTime() - GetCurrentServerTime();
 }

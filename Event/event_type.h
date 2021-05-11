@@ -38,8 +38,11 @@ enum class EventType {
   // [0] - <GameObjectId> player_id
   kSetPlayerIdToClient,
 
-  // No arguments
+  // [0] - <int64_t> game_end_time
   kStartGame,
+
+  // [0] - <int64_t> warmup_end_time
+  kSetWarmupEndTime,
 
   // [0] - <int> server_var,
   // [1] - <int> room_var

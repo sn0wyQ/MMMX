@@ -82,6 +82,12 @@ class RoomController : public BaseController {
   std::vector<Event> events_for_server_;
   int creeps_count_{0};
 
+  QTimer warmup_end_timer_;
+  QTimer game_end_timer_;
+
+  void StartGame();
+  void EndGame();
+
   void RecalculateModel(const ModelData& model_data);
   void ProcessBulletHits(
       const RoomController::ModelData& model_data_bullet,

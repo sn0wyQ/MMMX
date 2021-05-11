@@ -75,6 +75,7 @@ class BaseController : public QObject {
   virtual void SetTimeDifferenceEvent(const Event& event) {}
   virtual void StartGameEvent(const Event& event) {}
   virtual void UpdateVarsEvent(const Event& event) {}
+  virtual void SetWarmupEndTimeEvent(const Event& event) {}
 
   // ------------------- GAME EVENTS -------------------
 

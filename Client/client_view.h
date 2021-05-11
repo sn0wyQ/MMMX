@@ -20,6 +20,7 @@
 #include "Event/event.h"
 #include "GUI/GameView/game_view.h"
 #include "GUI/GameView/player_bar.h"
+#include "GUI/GameView/time_bar.h"
 #include "GUI/GameView/stats_table.h"
 
 class ClientView : public AbstractClientView {
@@ -35,7 +36,6 @@ class ClientView : public AbstractClientView {
   void AddKillFeedNotification(QString killer_name,
                                QString victim_name,
                                WeaponType weapon_type) override;
-
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;
   void keyPressEvent(QKeyEvent* key_event) override;
@@ -46,13 +46,18 @@ class ClientView : public AbstractClientView {
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
+  void RecalculateSizes();
+
   std::shared_ptr<ClientController> controller_;
   std::shared_ptr<ClientGameModel> model_;
   GameView* game_view_;
   PlayerBar* player_bar_;
   StatsTable* stats_table_;
+  TimeBar* time_bar_;
   QLabel* info_label_;
   int height_of_bar_{};
+  int height_of_time_bar_{};
+  int width_of_time_bar_{};
 
   bool table_shown_{false};
   int64_t last_pressed_tab_{};

@@ -53,11 +53,20 @@ class GameModel {
   std::vector<std::shared_ptr<GameObject>>
     GetGameObjectsToMoveWithSliding() const;
 
+  bool IsGameStarted() const;
+  int64_t GetGameEndTime() const;
+  void StartGame(int64_t game_end_time);
+
+  void SetWarmupEndTime(int64_t warmup_end_time);
+  int64_t GetWarmupEndTime() const;
+
  protected:
   std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;
-
  private:
   std::map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
+  bool is_game_started_{false};
+  int64_t game_end_time_{};
+  int64_t warmup_end_time_{};
 };
 
 #endif  // MODEL_GAME_MODEL_H_

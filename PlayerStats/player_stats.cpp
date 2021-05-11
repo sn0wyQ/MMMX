@@ -85,3 +85,9 @@ bool operator<(const PlayerStats& first, const PlayerStats& second) {
 
   return first.GetNickname() < second.GetNickname();
 }
+
+void PlayerStats::Clear() {
+  SetKills(0);
+  SetDeaths(0);
+  SetLevel(1);
+}

@@ -8,6 +8,9 @@ GameModel::GameModel(const GameModel& other) {
     players_stats_[game_object_id] =
         std::make_shared<PlayerStats>(PlayerStats(*player_stats));
   }
+  is_game_started_ = other.is_game_started_;
+  game_end_time_ = other.game_end_time_;
+  warmup_end_time_ = other.warmup_end_time_;
 }
 
 std::shared_ptr<Player> GameModel::GetPlayerByPlayerId(
@@ -194,4 +197,25 @@ std::vector<std::shared_ptr<GameObject>>
     }
   }
   return result;
+}
+
+void GameModel::StartGame(int64_t game_end_time) {
+  is_game_started_ = true;
+  game_end_time_ = game_end_time;
+}
+
+bool GameModel::IsGameStarted() const {
+  return is_game_started_;
+}
+
+int64_t GameModel::GetGameEndTime() const {
+  return game_end_time_;
+}
+
+int64_t GameModel::GetWarmupEndTime() const {
+  return warmup_end_time_;
+}
+
+void GameModel::SetWarmupEndTime(int64_t warmup_end_time) {
+  warmup_end_time_ = warmup_end_time;
 }

@@ -9,10 +9,13 @@ class RoomSettings {
   explicit RoomSettings(int max_clients);
 
   int GetMaxClients() const;
-  void SetMaxClients(int max_clients);
+  int GetGameDuration() const;
+  int GetWarmupDuration() const;
 
  private:
   int max_clients_{Constants::kDefaultMaxClients};
+  int game_duration_{Constants::kDefaultGameDuration};
+  int warmup_duration_{Constants::kDefaultWarmupDuration};
 };
 
 #endif  // SERVER_ROOM_ROOM_SETTINGS_H_

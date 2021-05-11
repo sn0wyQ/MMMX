@@ -133,3 +133,9 @@ GameObjectId RoomGameModel::GenerateNextUnusedBulletId(GameObjectId player_id) {
   return player_id * Constants::kMaxPlayerBullets +
     next_bullet_id_for_player_[player_id];
 }
+
+void RoomGameModel::ClearStats() {
+  for (auto& stats : this->GetAllPlayersStats()) {
+    stats->Clear();
+  }
+}

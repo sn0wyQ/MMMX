@@ -88,6 +88,8 @@ class ClientController : public BaseController {
   void UpdateLocalBullets(int delta_time);
   void UpdateInterpolationInfo();
   int64_t GetCurrentServerTime() const override;
+  int64_t GetGameRemainingTime() const;
+  int64_t GetWarmupRemainingTime() const;
 
   // -------------------- CONTROLS --------------------
 
@@ -117,6 +119,7 @@ class ClientController : public BaseController {
   void SetTimeDifferenceEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
   void UpdateVarsEvent(const Event& event) override;
+  void SetWarmupEndTimeEvent(const Event& event) override;
 
   // ------------------- GAME EVENTS -------------------
 
