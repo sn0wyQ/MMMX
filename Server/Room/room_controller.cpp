@@ -662,7 +662,9 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
       AddBullets(start_model,
                  player_id, player_in_model->GetX(), player_in_model->GetY(),
                  player_in_model->GetRotation(), player_in_model->GetWeapon());
+  int start_model_id = model_id;
   for (int bullet_id : bullet_ids) {
+    model_id = start_model_id;
     bool break_player = false;
     auto prev_bullet =
         std::dynamic_pointer_cast<Bullet>(
