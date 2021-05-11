@@ -474,8 +474,8 @@ GameObjectId RoomController::AddPlayer() {
     case 2: {
       animation_type = AnimationType::kSpider3_0;
       weapon_type = WeaponType::kMachineGun;
-      width = 4.f;
-      height = 4.f;
+      width = 3.f;
+      height = 3.f;
       break;
     }
     case 3: {
