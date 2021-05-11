@@ -247,27 +247,38 @@ void Animation::SetAnimationState(AnimationState animation_state,
     int current_frame_index = 1;
     while (current_sequence.back().IsExists()
            && current_frame_index < frames_to_preload_in_inactive_sequences_) {
-      current_sequence.emplace(base_path_,
-                               animation_state_,
-                               current_frame_index++,
-                               saved_size);
+      SharedFrame next_frame(base_path_,
+                             animation_state_,
+                             current_frame_index++,
+                             saved_size);
+      if (next_frame.IsExists()) {
+        current_sequence.push(next_frame);
+      } else {
+        break;
+      }
     }
   }
 
   animation_state_ = animation_state;
-  current_sequence = animation_frames_.at(animation_state_);
+  std::queue<SharedFrame>&
+      new_sequence = animation_frames_.at(animation_state_);
   animation_instruction_index_ = 0;
   go_to_next_instruction_time_ = current_animation_time_;
 
   // We guarantee that we always already have 0th frame
   // (if it exists in storage) and we also want to preload more frames
-  int current_frame_index = 1;
-  while (current_sequence.back().IsExists()
+  int current_frame_index = frames_to_preload_in_inactive_sequences_;
+  while (new_sequence.back().IsExists()
          && current_frame_index < frames_to_preload_in_active_sequence_) {
-    current_sequence.emplace(base_path_,
-                             animation_state_,
-                             current_frame_index++,
-                             saved_size);
+    SharedFrame next_frame(base_path_,
+                           animation_state_,
+                           current_frame_index++,
+                           saved_size);
+    if (next_frame.IsExists()) {
+      new_sequence.push(next_frame);
+    } else {
+      break;
+    }
   }
 }
 

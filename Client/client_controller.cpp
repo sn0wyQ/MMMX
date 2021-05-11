@@ -401,7 +401,7 @@ void ClientController::ShootHolding() {
       return;
     }
     // Temporary nickname change
-    local_player->SetAnimationState(AnimationState::kShoot);
+    local_player->SetAnimationState(AnimationState::kShoot, true);
     this->AddEventToSend(Event(EventType::kSendNickname,
                                model_->GetLocalPlayer()->GetId(),
                                QString("Shooter#") +

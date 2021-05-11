@@ -26,7 +26,6 @@ SharedFrame::SharedFrame(const QString& path_prefix,
       + CalcLeadingZeros(frame_index_) + QString::number(frame_index_)
       + ".svg";
 
-  qInfo() << path_;
   if (!QFile::exists(path_)) {
     return;
   } else {

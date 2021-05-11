@@ -4,6 +4,7 @@
 #include <exception>
 #include <memory>
 #include <queue>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>

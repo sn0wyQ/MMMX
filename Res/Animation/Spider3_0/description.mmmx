@@ -4,5 +4,9 @@ idle:
 loop
 
 move:
-	play_frames 19 16
+	play_frames 19	16
 loop
+
+shoot:
+	play_frames	6	16
+end
