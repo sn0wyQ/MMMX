@@ -18,8 +18,7 @@ const std::unordered_map<AnimationState, QString> kAnimationStateStrings {
     { AnimationState::kDestroy, "destroy" },
     { AnimationState::kIdle, "idle" },
     { AnimationState::kMove, "move" },
-    { AnimationState::kShootToIdle, "shoot_to_idle" },
-    { AnimationState::kShootToMove, "shoot_to_move" }
+    { AnimationState::kShoot, "shoot" }
 };
 
 class SharedFrame {

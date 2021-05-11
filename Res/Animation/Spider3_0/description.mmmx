@@ -1,0 +1,8 @@
+# Spider3_0
+
+idle:
+loop
+
+move:
+	play_frames 19 16
+loop

@@ -364,14 +364,17 @@ GameObjectId RoomController::AddPlayer() {
       break;
     }
     case 1: {
+      animation_type = AnimationType::kXaleKokhrap;
       weapon_type = WeaponType::kCrossbow;
       break;
     }
     case 2: {
+      animation_type = AnimationType::kSpider3_0;
       weapon_type = WeaponType::kMachineGun;
       break;
     }
     case 3: {
+      animation_type = AnimationType::kShenandoah;
       weapon_type = WeaponType::kShotgun;
       break;
     }

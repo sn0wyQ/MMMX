@@ -7,10 +7,6 @@ move:
 	play_frames 39 16
 loop
 
-shoot_to_idle:
-	play_frames 29 16
-end
-
-shoot_to_move:
-	play_frames 29 16
+shoot:
+	play_frames 15 16
 end

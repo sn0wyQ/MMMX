@@ -57,8 +57,7 @@ enum class AnimationState {
   kDestroy = 0,
   kIdle,
   kMove,
-  kShootToIdle,
-  kShootToMove,
+  kShoot,
 
   SIZE
 };
@@ -71,7 +70,10 @@ enum class AnimationType {
   kNone = -1,
 
   kJoCost,
-  kTreeGreen
+  kShenandoah,
+  kSpider3_0,
+  kTreeGreen,
+  kXaleKokhrap
 };
 
 Q_ENUM_NS(AnimationType)

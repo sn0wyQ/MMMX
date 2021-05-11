@@ -206,7 +206,13 @@ void Animation::Update(int delta_time) {
 
 void Animation::SetAnimationState(AnimationState animation_state,
                                   bool restart) {
-  if (!restart && animation_state_ == animation_state) {
+  if (animation_type_ == AnimationType::kNone) {
+    return;
+  }
+
+  if (!restart && (animation_state_ == animation_state
+                   || animation_state_ == AnimationState::kDestroy
+                   || animation_state_ == AnimationState::kShoot)) {
     return;
   }
 

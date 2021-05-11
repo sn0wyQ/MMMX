@@ -21,15 +21,17 @@
 
 const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
     { AnimationType::kJoCost, "JoCost" },
-    { AnimationType::kTreeGreen, "TreeGreen" }
+    { AnimationType::kShenandoah, "Shenandoah" },
+    { AnimationType::kSpider3_0, "Spider3_0" },
+    { AnimationType::kTreeGreen, "TreeGreen" },
+    { AnimationType::kXaleKokhrap, "XaleKokhrap" }
 };
 
 const std::unordered_map<QString, AnimationState> kAnimationStateLabels {
     { "destroy:", AnimationState::kDestroy },
     { "idle:", AnimationState::kIdle },
     { "move:", AnimationState::kMove },
-    { "shoot_to_idle:", AnimationState::kShootToIdle },
-    { "shoot_to_move:", AnimationState::kShootToMove }
+    { "shoot:", AnimationState::kShoot }
 };
 
 const std::unordered_map<QString, AnimationInstructionType>

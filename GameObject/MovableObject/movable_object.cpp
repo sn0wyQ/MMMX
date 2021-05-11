@@ -29,8 +29,10 @@ std::vector<QVariant> MovableObject::GetParams() const {
 }
 
 void MovableObject::OnTick(int delta_time) {
-  if (velocity_.length() > 0.001f) {
-    //this->SetAnimationState(AnimationState::kMove);
+  if (velocity_.length() > 0.01f) {
+    this->SetAnimationState(AnimationState::kMove);
+  } else {
+    this->SetAnimationState(AnimationState::kIdle);
   }
   ApplyVelocity(delta_time);
 }
