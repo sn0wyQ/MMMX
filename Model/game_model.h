@@ -31,6 +31,7 @@ class GameModel {
   std::vector<std::shared_ptr<GameObject>> GetNotFilteredByFovObjects() const;
 
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
+  std::vector<std::shared_ptr<Creep>> GetCreeps() const;
 
   bool IsGameObjectIdTaken(GameObjectId game_object_id) const;
 
@@ -46,6 +47,11 @@ class GameModel {
   void DeleteGameObject(GameObjectId game_object_id);
   void AttachGameObject(GameObjectId game_object_id,
                         const std::shared_ptr<GameObject>& game_object);
+
+  bool DoesObjectCollideByMoveWithSliding(
+      const std::shared_ptr<GameObject>& game_object) const;
+  std::vector<std::shared_ptr<GameObject>>
+    GetGameObjectsToMoveWithSliding() const;
 
  protected:
   std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;

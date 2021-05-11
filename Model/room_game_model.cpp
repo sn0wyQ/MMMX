@@ -7,6 +7,7 @@ RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {
   next_game_object_id_ = model.next_game_object_id_;
   last_object_hash_ = model.last_object_hash_;
   last_player_stats_hash_ = model.last_player_stats_hash_;
+  next_bullet_id_for_player_ = model.next_bullet_id_for_player_;
 }
 
 GameObjectId RoomGameModel::GenerateNextUnusedGameObjectId() {
@@ -90,7 +91,8 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
                   point, game_object->GetPosition()));
         }
       }
-      float bounding_circle_radius = game_object->GetBoundingCircleRadius();
+      float bounding_circle_radius =
+          game_object->GetRigidBodyBoundingCircleRadius();
       if (Math::DistanceBetweenPoints(point, game_object->GetPosition()) <
           radius_from_object + bounding_circle_radius) {
         regenerate = true;
@@ -119,4 +121,15 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
     }
   }
   return best_point;
+}
+
+GameObjectId RoomGameModel::GenerateNextUnusedBulletId(GameObjectId player_id) {
+  if (next_bullet_id_for_player_.find(player_id) ==
+    next_bullet_id_for_player_.end()) {
+    next_bullet_id_for_player_[player_id] = 1;
+  } else {
+    next_bullet_id_for_player_[player_id]++;
+  }
+  return player_id * Constants::kMaxPlayerBullets +
+    next_bullet_id_for_player_[player_id];
 }

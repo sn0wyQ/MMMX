@@ -62,7 +62,7 @@ set(UBSAN_FLAGS
         FORCE)
 
 # Build Types
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g ${TSAN_FLAGS}")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g ${UBSAN_FLAGS}")
 
 # Add code files
 set(SOURCES
@@ -77,6 +77,8 @@ set(SOURCES
         Converter/converter.cpp
         Event/event.cpp
         Event/event_type.h
+        GUI/GameView/KillFeed/kill_feed.cpp
+        GUI/GameView/KillFeed/kill_feed_notification.cpp
         GUI/GameView/game_view.cpp
         GUI/GameView/player_bar.cpp
         GUI/GameView/stats_table.cpp
@@ -142,5 +144,6 @@ if (WIN32)
             COMMAND ${CMAKE_COMMAND} -E copy_directory
             ${CMAKE_SOURCE_DIR}/Res/ ${CMAKE_BINARY_DIR}/Res)
 else()
+    file(REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/Res)
     file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Res DESTINATION ${CMAKE_BINARY_DIR})
 endif (WIN32)

@@ -3,10 +3,28 @@
 #include <algorithm>
 #include <utility>
 
+using Constants::StatsTable::kSizeAnimationStiffnessRatio;
+using Constants::StatsTable::kSizeAnimationFrictionRatio;
+using Constants::StatsTable::kOpacityAnimationStiffnessRatio;
+using Constants::StatsTable::kOpacityAnimationFrictionRatio;
+using Constants::StatsTable::kMinimumSizeRatio;
+using Constants::StatsTable::kMaximumSizeRatio;
+
 StatsTable::StatsTable(QWidget* parent,
                        std::shared_ptr<ClientGameModel> model) :
     QWidget(parent),
-    model_{std::move(model)} {
+    opacity_effect_(new QGraphicsOpacityEffect(this)),
+    model_{std::move(model)},
+    size_ratio_emulator_(kSizeAnimationStiffnessRatio,
+                         kSizeAnimationFrictionRatio),
+    opacity_emulator_(kOpacityAnimationStiffnessRatio,
+                      kOpacityAnimationFrictionRatio) {
+  this->setGraphicsEffect(opacity_effect_);
+  opacity_emulator_.SetBounds(0.01f, 1.f);
+  opacity_emulator_.SetCurrentValue(0.f);
+  size_ratio_emulator_.SetCurrentValue(kMinimumSizeRatio);
+  target_opacity_ratio_ = 0.f;
+  target_size_ratio_ = kMinimumSizeRatio;
   column_count_ = static_cast<int>(Constants::StatsTable::kColumnNames.size());
 }
 
@@ -14,11 +32,27 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
+
+  size_ratio_emulator_.MakeStepTo(target_size_ratio_);
+  opacity_emulator_.MakeStepTo(target_opacity_ratio_);
+  auto dist_x = this->size().width() *
+      (1 - size_ratio_emulator_.GetCurrentValue());
+  auto dist_y = this->size().height() *
+      (1 - size_ratio_emulator_.GetCurrentValue());
+
   QPainter painter(this);
-  painter.setRenderHint(QPainter::Antialiasing);
+  painter.translate(dist_x / 2, dist_y / 2);
+  auto transform = painter.transform();
+  transform.scale(size_ratio_emulator_.GetCurrentValue(),
+                  size_ratio_emulator_.GetCurrentValue());
+  painter.setTransform(transform);
+  painter.setRenderHints(
+      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
   this->DrawTable(&painter);
   this->DrawPlayersStats(&painter);
+
+  opacity_effect_->setOpacity(opacity_emulator_.GetCurrentValue());
 }
 
 void StatsTable::DrawTable(QPainter* painter) {
@@ -34,7 +68,7 @@ void StatsTable::DrawTable(QPainter* painter) {
 
   header_column_rects_.clear();
   table_column_points_.clear();
-  inner_width_ = w * 0.8f;
+  inner_width_ = w * 0.85f;
   float offset_x = (w - inner_width_) / 2.f;
   inner_height_ = h * 0.85f;
   float offset_y = (h - inner_height_) / 2.f;
@@ -69,7 +103,7 @@ void StatsTable::DrawTable(QPainter* painter) {
 void StatsTable::DrawPlayersStats(QPainter* painter) {
   painter->save();
   QFont font(Constants::StatsTable::kHeaderFont);
-  font.setPixelSize(this->height() / 23);
+  font.setPixelSize(this->height() / 25);
   painter->setFont(font);
   auto stats = model_->GetAllPlayersStats();
   std::sort(stats.begin(),
@@ -111,9 +145,14 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                       stat->GetNickname());
     painter->drawText(get_rect(1), Qt::AlignCenter,
                       QString::number(stat->GetLevel()));
-    painter->drawText(get_rect(2), Qt::AlignCenter,
+    QString k_d("-");
+    if (stat->GetDeaths() != 0) {
+      k_d = QString::number(1.f * stat->GetKills() / stat->GetDeaths(), 'f', 2);
+    }
+    painter->drawText(get_rect(2), Qt::AlignCenter, k_d);
+    painter->drawText(get_rect(3), Qt::AlignCenter,
                       QString::number(stat->GetKills()));
-    painter->drawText(get_rect(3),
+    painter->drawText(get_rect(4),
                       Qt::AlignCenter,
                       QString::number(stat->GetDeaths()));
     painter->setPen(pen_);
@@ -125,13 +164,15 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
 }
 
 void StatsTable::Hide() {
-  auto effect = new QGraphicsOpacityEffect;
-  effect->setOpacity(0.01f);
-  this->setGraphicsEffect(effect);
+  target_size_ratio_ = kMinimumSizeRatio;
+  target_opacity_ratio_ = 0.f;
 }
 
 void StatsTable::Show() {
-  auto effect = new QGraphicsOpacityEffect;
-  effect->setOpacity(1.f);
-  this->setGraphicsEffect(effect);
+  target_size_ratio_ = kMaximumSizeRatio;
+  target_opacity_ratio_ = 1.f;
+}
+
+void StatsTable::Resize(const QSize& size) {
+  this->resize(size);
 }

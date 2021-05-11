@@ -42,3 +42,63 @@ float& Creep::GetMutableExpIncrementForKill() {
 std::shared_ptr<GameObject> Creep::Clone() const {
   return std::make_shared<Creep>(*this);
 }
+
+float Creep::GetSpawnX() const {
+  return spawn_x_;
+}
+
+float Creep::GetSpawnY() const {
+  return spawn_y_;
+}
+
+void Creep::SetSpawnX(float spawn_x) {
+  Creep::spawn_x_ = spawn_x;
+}
+
+void Creep::SetSpawnY(float spawn_y) {
+  Creep::spawn_y_ = spawn_y;
+}
+
+bool Creep::IsGoingToSpawn() const {
+  return is_going_to_spawn_;
+}
+
+void Creep::SetIsGoingToSpawn(bool is_going_to_spawn) {
+  is_going_to_spawn_ = is_going_to_spawn;
+}
+
+void Creep::SetAttackDistance(float attack_distance) {
+  attack_distance_ = attack_distance;
+}
+
+float Creep::GetAttackDistance() const {
+  return attack_distance_;
+}
+
+float Creep::GetDamage() const {
+  return damage_;
+}
+
+void Creep::SetDamage(float damage) {
+  damage_ = damage;
+}
+
+int64_t Creep::GetLastAttackedTime() const {
+  return last_attacked_time_;
+}
+
+int64_t Creep::GetReloadingTime() const {
+  return reloading_time_;
+}
+
+void Creep::SetLastAttackedTime(int64_t last_attacked_time) {
+  last_attacked_time_ = last_attacked_time;
+}
+
+void Creep::SetReloadingTime(int64_t reloading_time) {
+  reloading_time_ = reloading_time;
+}
+
+bool Creep::IsPossibleToAttack(int64_t timestamp) const {
+  return (timestamp - last_attacked_time_) >= reloading_time_;
+}

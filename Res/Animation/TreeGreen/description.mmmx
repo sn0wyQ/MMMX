@@ -1,6 +1,4 @@
 # TreeGreen
 
 idle:
-	wait_rand	8000	20000
-	play_frames  400 16
 loop

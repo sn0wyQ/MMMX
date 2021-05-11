@@ -1,12 +1,17 @@
 {
-  "max_width": 1,
-  "max_height": 1,
+  "max_width": 3,
+  "max_height": 3,
 
   "min_creep_level": 23,
   "max_creep_level": 30,
   "hp_regen_rate_multiplier": 0.005,
-  "rigid_body_type": 0,
+  "rigid_body_type": "kCircle",
   "max_hp_multiplier": 100,
+  "attack_distance": 0.01,
+  "reloading_time": 350.0,
+  "speed_multiplier": 0.0003,
+  "damage_multiplier": 1.0,
   "kMinLevelPow": 5,
-  "kMaxLevelPow": 4
+  "kMaxLevelPow": 4,
+  "runaway_hp_ratio": 0.4
 }
