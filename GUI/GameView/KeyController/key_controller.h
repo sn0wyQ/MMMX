@@ -42,8 +42,8 @@ const float kInnerOffsetY = 30.f;
 struct NativeButton {
   NativeButton() = delete;
   NativeButton(bool is_keyboard_, uint32_t key_);
-  NativeButton(QKeyEvent* key_event);
-  NativeButton(QMouseEvent* mouse_event);
+  explicit NativeButton(QKeyEvent* key_event);
+  explicit NativeButton(QMouseEvent* mouse_event);
 
   bool operator<(const NativeButton& other) const;
   bool is_keyboard;
