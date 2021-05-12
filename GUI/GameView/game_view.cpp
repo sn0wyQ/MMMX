@@ -56,7 +56,9 @@ void GameView::Update() {
   auto view_rect = QRectF(local_center - view_rect_offset,
                           local_center + view_rect_offset);
 
-  this->DrawObjects(model_->GetNotFilteredByFovObjects(), view_rect);
+  std::vector<std::shared_ptr<GameObject>> drawn_objects;
+  this->DrawObjects(model_->GetNotFilteredByFovObjects(), view_rect,
+                    &drawn_objects);
 
   // Temporary FOV show
   view_rect_offset = QPointF(this->height(), this->height()) / 2.f;
@@ -70,12 +72,17 @@ void GameView::Update() {
                           local_player->GetY(),
                           last_player_fov);
 
-  this->DrawObjects(model_->GetFilteredByFovObjects(), view_rect);
+  this->DrawObjects(model_->GetFilteredByFovObjects(), view_rect,
+                    &drawn_objects);
 
   for (const auto& object : model_->GetLocalBullets()) {
     if (view_rect.intersects(object->GetBoundingRect())) {
       object->Draw(painter_.get());
     }
+  }
+
+  for (const auto& object : drawn_objects) {
+    DrawBars(object);
   }
 
   painter_->ResetClip();
@@ -110,19 +117,34 @@ QPointF GameView::GetPlayerToCenterOffset() const {
 
 void GameView::DrawObjects(
     const std::vector<std::shared_ptr<GameObject>>& objects,
-    const QRectF& view_rect) {
+    const QRectF& view_rect,
+    std::vector<std::shared_ptr<GameObject>>* drawn_objects) {
   for (const auto& object : objects) {
     if (!object->IsMovable()) {
       if (view_rect.intersects(object->GetBoundingRect())) {
-        object->Draw(painter_.get());
+        if (object->IsNeedToDraw()) {
+          object->Draw(painter_.get());
+          drawn_objects->emplace_back(object);
+        }
       }
     }
   }
   for (const auto& object : objects) {
     if (object->IsMovable()) {
       if (view_rect.intersects(object->GetBoundingRect())) {
-        object->Draw(painter_.get());
+        if (object->IsNeedToDraw()) {
+          object->Draw(painter_.get());
+          drawn_objects->emplace_back(object);
+        }
       }
     }
   }
+}
+
+void GameView::DrawBars(const std::shared_ptr<GameObject>& object) {
+  painter_->save();
+  painter_->Translate(object->GetPosition());
+  object->DrawHealthBar(painter_.get());
+  object->DrawLevel(painter_.get());
+  painter_->restore();
 }
