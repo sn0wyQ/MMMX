@@ -6,6 +6,7 @@
 #include <QCryptographicHash>
 #include <QMetaEnum>
 #include <QString>
+#include <QPainter>
 #include <QUrl>
 
 // code_readability++;
@@ -44,8 +45,8 @@ constexpr float kDefaultMapHeight = 100.f;
 
 // Room
 constexpr int kDefaultMaxClients = 2;
-constexpr int kDefaultWarmupDuration = 10000;
-constexpr int kDefaultGameDuration = 70000;
+constexpr int kDefaultWarmupDuration = 15000;
+constexpr int kDefaultGameDuration = 15000;
 
 // Null Values
 constexpr ClientId kNullClientId = -1;
@@ -56,7 +57,7 @@ constexpr RoomId kNullRoomId = -1;
 const QString kWindowTitle = "MMMX | Version " + kVersionString;
 constexpr int kTimeToUpdateVarsAndPing = 1000;
 constexpr int64_t kInterpolationMSecs = 200;
-constexpr int kShootHoldingCheck = 30;
+constexpr int kControlsHoldingCheck = 30;
 
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
@@ -70,19 +71,29 @@ constexpr int kAverageFpsFrames = 50;
 // Animations
 constexpr int kUnloadAnimationCheckTime = 30;
 
-// GameObject
-constexpr float kDefaultMaxHealthPoints = 100.f;
-
 // MovableObject
 constexpr float kDefaultSpeedMultiplier = 0.01f;
+
+// Entity
+constexpr float kDefaultMaxHealthPoints = 100.f;
 
 // Player
 constexpr float kDefaultEntityFov = 12.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
 constexpr float kDefaultHealthRegenSpeed = 0.002f;
+constexpr int kMaxLevel = 30;
+
+// Revive
+constexpr int64_t kReviveTime = 5000;
+constexpr int64_t kRequestRespawnTime = 10000;
+constexpr int64_t kHoldingRespawnTime = 1000;
 
 // View
+inline void SetPainterHints(QPainter* painter) {
+  painter->setRenderHints(
+      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+}
 constexpr float kCameraStiffnessRatio = 0.008f;
 constexpr float kCameraFrictionRatio = 0.15f;
 constexpr float kFovStiffnessRatio = 0.007f;
@@ -91,8 +102,6 @@ constexpr int kDefaultFpsMax = 60;
 
 // Bullet collision
 constexpr int kAccuracy = 10;
-
-constexpr int kMaxLevel = 30;
 
 constexpr float GetExpForLevel(int level) {
   return static_cast<float>(level) * 5.f;

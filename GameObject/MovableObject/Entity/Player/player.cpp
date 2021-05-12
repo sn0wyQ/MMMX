@@ -212,3 +212,11 @@ void Player::SetNeedToSendLevelingPoints(bool need_to_send_leveling_points) {
 float Player::GetExpIncrementForKill() const {
   return static_cast<float>(this->GetLevel()) * Constants::kExpMultiplier;
 }
+
+void Player::ClearLevel() {
+  current_exp_ = 0.f;
+  free_leveling_points_ = 5;
+  for (auto& leveling_point : leveling_points_) {
+    leveling_point = 0;
+  }
+}

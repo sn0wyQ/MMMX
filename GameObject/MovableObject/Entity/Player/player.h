@@ -50,6 +50,8 @@ class Player : public Entity {
   const std::vector<int>& GetLevelingPoints() const;
   void IncreaseLevelingPoint(int index);
 
+  void ClearLevel();
+
   void SetNeedToSendLevelingPoints(bool need_to_send_leveling_points);
   bool IsNeedToSendLevelingPoints() const;
 

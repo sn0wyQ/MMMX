@@ -17,9 +17,11 @@ class AbstractClientView : public QMainWindow {
   virtual void Update() = 0;
   virtual std::shared_ptr<Converter> GetConverter() = 0;
   virtual QPointF GetPlayerToCenterOffset() const = 0;
-  virtual void AddKillFeedNotification(QString killer_name,
-                                       QString victim_name,
+  virtual void AddKillFeedNotification(const QString& killer_name,
+                                       const QString& victim_name,
                                        WeaponType weapon_type) = 0;
+  virtual void AddRespawnNotification(const QString& player_name) = 0;
+  virtual void AddGameStartedNotification() = 0;
 };
 
 #endif  // CLIENT_ABSTRACT_CLIENT_VIEW_H_

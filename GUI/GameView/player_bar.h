@@ -11,6 +11,7 @@
 #include <QWidget>
 
 #include "Client/client_controller.h"
+#include "GUI/Animations/spring_emulator.h"
 #include "Painter/painter.h"
 
 class PlayerBar : public QWidget {
@@ -37,6 +38,9 @@ class PlayerBar : public QWidget {
   void resizeEvent(QResizeEvent*) override;
 
  private:
+  SpringEmulator<float, true> hp_emulator_;
+  SpringEmulator<float, true> xp_emulator_;
+
   std::shared_ptr<ClientGameModel> model_;
   std::vector<QPushButton*> buttons_;
 

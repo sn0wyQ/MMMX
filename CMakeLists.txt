@@ -83,6 +83,7 @@ set(SOURCES
         GUI/GameView/player_bar.cpp
         GUI/GameView/time_bar.cpp
         GUI/GameView/stats_table.cpp
+        GUI/GameView/RespawnButton/respawn_button.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp
         GameObject/MovableObject/Entity/Creep/creep_settings.cpp
@@ -120,6 +121,7 @@ set(SOURCES
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
+        Res/Icons/icons.qrc
         Res/Fonts/fonts.qrc)
 qt5_add_big_resources(RESOURCES_SERVER
         )
