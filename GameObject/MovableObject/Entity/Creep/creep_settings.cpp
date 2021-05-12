@@ -51,27 +51,23 @@ std::vector<QVariant>
       rotation = static_cast<float>(QRandomGenerator::global()->bounded(360.f));
   float width = this->CalculateWidth(creep_level);
   float height = 0.f;
-  RigidBodyType rigid_body_type = RigidBodyType::kCircle;
   AnimationType animation_type = AnimationType::kNone;
   float fov = 0.1f;
   switch (creep_type) {
     case CreepType::kBoxSciFiCube:
       height = width;
-      rigid_body_type = RigidBodyType::kRectangle;
       animation_type = AnimationType::kBoxSciFiCube;
       fov = 0.1f;
       break;
 
     case CreepType::kTemporaryCircle:
       height = width;
-      rigid_body_type = RigidBodyType::kCircle;
       animation_type = AnimationType::kNone;
       fov = this->CalculateFov(creep_level);
       break;
 
     case CreepType::kBoxSciFiLong:
       height = width * (384.f / 228.f);
-      rigid_body_type = RigidBodyType::kRectangle;
       animation_type = AnimationType::kBoxSciFiLong;
       fov = 0.1f;
       break;
@@ -87,7 +83,7 @@ std::vector<QVariant>
   params.emplace_back(rotation);
   params.emplace_back(width);
   params.emplace_back(height);
-  params.emplace_back(static_cast<int>(rigid_body_type));
+  params.emplace_back(static_cast<int>(RigidBodyType::kCircle));
   params.emplace_back(width);
   params.emplace_back(height);
   params.emplace_back(static_cast<int>(animation_type));
