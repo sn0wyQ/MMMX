@@ -699,7 +699,12 @@ void RoomController::SendPlayerReloadingEvent(const Event& event) {
     return;
   }
   auto current_model_data = models_cache_[model_id];
-  GameObjectId player_id = event.GetArg<GameObjectId>(1);
+  auto player_id = event.GetArg<GameObjectId>(1);
+
+  if (are_controls_blocked_[player_id]) {
+    return;
+  }
+
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
