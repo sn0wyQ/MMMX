@@ -22,6 +22,8 @@
 #include "GUI/GameView/player_bar.h"
 #include "GUI/GameView/reloading_field.h"
 #include "GUI/GameView/stats_table.h"
+#include "GUI/GameView/RespawnButton/respawn_button.h"
+#include "GUI/GameView/KillFeed/kill_feed.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
@@ -33,9 +35,10 @@ class ClientView : public AbstractClientView {
   void Update() override;
   std::shared_ptr<Converter> GetConverter() override;
   QPointF GetPlayerToCenterOffset() const override;
-  void AddKillFeedNotification(QString killer_name,
-                               QString victim_name,
+  void AddKillFeedNotification(const QString& killer_name,
+                               const QString& victim_name,
                                WeaponType weapon_type) override;
+  void AddRespawnNotification(const QString& player_name) override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;
@@ -46,6 +49,8 @@ class ClientView : public AbstractClientView {
   void mouseReleaseEvent(QMouseEvent* mouse_event) override;
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
+
+  void ProcessRespawnButton();
 
   std::shared_ptr<ClientController> controller_;
   std::shared_ptr<ClientGameModel> model_;
@@ -62,6 +67,8 @@ class ClientView : public AbstractClientView {
   int64_t last_updated_time_{};
   std::deque<int64_t> last_frame_times_{};
   KillFeed* kill_feed_;
+  RespawnButton* respawn_button_;
+  QPoint respawn_button_default_position_;
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_

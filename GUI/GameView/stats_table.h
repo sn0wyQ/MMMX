@@ -12,7 +12,7 @@
 
 #include "Client/client_controller.h"
 #include "Painter/painter.h"
-#include "SpringEmulator/spring_emulator.h"
+#include "GUI/Animations/spring_emulator.h"
 
 namespace Constants::StatsTable {
 

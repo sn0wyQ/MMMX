@@ -12,9 +12,9 @@ ClientController::ClientController(const QUrl& url,
   connect(&web_socket_, &QWebSocket::disconnected, this,
           &ClientController::OnDisconnected);
   web_socket_.open(url);
-  connect(&shoot_check_timer, &QTimer::timeout, this,
-          &ClientController::ShootHolding);
-  shoot_check_timer.start(Constants::kShootHoldingCheck);
+  connect(&controls_check_timer_, &QTimer::timeout, this,
+          &ClientController::ControlsHolding);
+  controls_check_timer_.start(Constants::kControlsHoldingCheck);
   this->StartTicking();
 }
 
@@ -24,6 +24,34 @@ std::shared_ptr<ClientGameModel> ClientController::GetModel() {
 
 bool ClientController::IsGameInProgress() const {
   return game_state_ == GameState::kGameInProgress;
+}
+
+int64_t ClientController::GetHoldingRespawnButtonMsecs() const {
+  return respawn_holding_current_;
+}
+
+int64_t ClientController::GetSecsToNextPossibleRevive() const {
+  if (!model_->IsLocalPlayerSet()) {
+    return -1;
+  }
+  if (model_->GetLocalPlayer()->IsVisible()) {
+    auto delta_time =
+        this->GetCurrentServerTime() - last_requested_respawn_time_;
+    return (Constants::kRequestRespawnTime - delta_time) / 1000;
+  } else {
+    return (Constants::kReviveTime -
+        (this->GetCurrentServerTime() - last_died_)) / 1000;
+  }
+}
+
+bool ClientController::GetIsHoldingRespawnButton() const {
+  if (!model_->IsLocalPlayerSet()) {
+    return false;
+  }
+  if (model_->GetLocalPlayer()->IsVisible()) {
+    return is_respawn_holding_;
+  }
+  return true;
 }
 
 void ClientController::OnConnected() {
@@ -235,7 +263,8 @@ void ClientController::UpdateLocalBullets(int delta_time) {
   std::vector<GameObjectId> is_need_to_delete;
   for (const auto& bullet : model_->GetLocalBullets()) {
     auto object_collided = ObjectCollision::GetObjectBulletCollidedWith(
-            bullet, model_->GetAllGameObjects(), delta_time, true);
+            bullet, model_->GetAllExistGameObjects(),
+            delta_time, true);
     if (object_collided != nullptr) {
       bullet->SetIsNeedToDelete(true);
     }
@@ -346,6 +375,9 @@ int64_t ClientController::GetCurrentServerTime() const {
 // -------------------- CONTROLS --------------------
 
 void ClientController::FocusOutEvent(QFocusEvent*) {
+  if (are_controls_blocked_) {
+    return;
+  }
   for (const auto& [key, direction] : key_to_direction_) {
     is_direction_by_keys_[direction] = false;
   }
@@ -353,31 +385,47 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity({0, 0});
   }
-  is_holding_ = false;
+  is_shoot_holding = false;
 }
 
 void ClientController::KeyPressEvent(QKeyEvent* key_event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
+  if (native_key == Controls::kKeyC) {
+    is_respawn_holding_ = true;
+    respawn_pressed_time_ = this->GetCurrentServerTime();
+    return;
+  }
+  if (are_controls_blocked_) {
+    return;
+  }
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = true;
   }
-  if (model_->IsLocalPlayerSet()) {
-    auto local_player = model_->GetLocalPlayer();
-    local_player->SetVelocity(GetKeyForce());
-    if (native_key == Controls::kKeyR) {
-      auto timestamp = GetCurrentServerTime();
-      if (local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
-        local_player->GetWeapon()->Reload(timestamp);
-        this->AddEventToSend(Event(EventType::kSendPlayerReloading,
-                                   static_cast<qint64>(GetCurrentServerTime()),
-                                   local_player->GetId()));
-      }
+  auto local_player = model_->GetLocalPlayer();
+  local_player->SetVelocity(GetKeyForce());
+  if (native_key == Controls::kKeyR) {
+    auto timestamp = GetCurrentServerTime();
+    if (local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
+      local_player->GetWeapon()->Reload(timestamp);
+      this->AddEventToSend(Event(EventType::kSendPlayerReloading,
+                                 static_cast<qint64>(GetCurrentServerTime()),
+                                 local_player->GetId()));
     }
   }
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
+  if (are_controls_blocked_) {
+    return;
+  }
   auto native_key = static_cast<Controls>(key_event->nativeScanCode());
+  if (native_key == Controls::kKeyC) {
+    respawn_released_time_ = GetCurrentServerTime();
+    return;
+  }
   if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
     is_direction_by_keys_[key_to_direction_[native_key]] = false;
   }
@@ -388,70 +436,106 @@ void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
 }
 
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
+  if (are_controls_blocked_) {
+    return;
+  }
   last_mouse_position_ = mouse_event->pos();
 }
 
 void ClientController::MousePressEvent(QMouseEvent*) {
-  is_holding_ = true;
+  if (are_controls_blocked_) {
+    return;
+  }
+  is_shoot_holding = true;
 }
 
 void ClientController::MouseReleaseEvent(QMouseEvent*) {
-  is_holding_ = false;
-}
-
-void ClientController::ShootHolding() {
-  if (!is_holding_) {
+  if (are_controls_blocked_) {
     return;
   }
-  if (model_->IsLocalPlayerSet()) {
-    auto local_player = model_->GetLocalPlayer();
-    auto timestamp = GetCurrentServerTime();
+  is_shoot_holding = false;
+}
 
-    // Reload if Bullets In Clips is empty
-    if (local_player->GetWeapon()->GetCurrentBulletsInClip() <= 0
-        && local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
-      local_player->GetWeapon()->Reload(timestamp);
-      this->AddEventToSend(Event(EventType::kSendPlayerReloading,
-                                 static_cast<qint64>(GetCurrentServerTime()),
-                                 local_player->GetId()));
-      return;
+void ClientController::ControlsHolding() {
+  if (is_respawn_holding_ &&
+      respawn_pressed_time_ < respawn_released_time_ &&
+      GetCurrentServerTime() - respawn_released_time_ > 50) {
+    is_respawn_holding_ = false;
+  }
+  if (is_respawn_holding_) {
+    if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
+      this->AddEventToSend(Event(EventType::kRequestRespawn,
+                                 model_->GetLocalPlayer()->GetId()));
+      last_requested_respawn_time_ = GetCurrentServerTime();
+      respawn_holding_current_ = 0;
+      are_controls_blocked_ = true;
     }
-
-    if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
-      return;
+    if (this->GetCurrentServerTime() - last_requested_respawn_time_
+        > Constants::kRequestRespawnTime) {
+      respawn_holding_current_ += controls_check_timer_.interval();
     }
-    local_player->GetWeapon()->SetLastTimeShot(timestamp);
+  }
+  if (!is_respawn_holding_ ||
+      this->GetCurrentServerTime() - last_requested_respawn_time_
+          <= Constants::kRequestRespawnTime) {
+    respawn_holding_current_ = std::max(static_cast<int64_t>(0),
+                respawn_holding_current_ - controls_check_timer_.interval());
+  }
 
-    // Temporary nickname change
-    this->AddEventToSend(Event(EventType::kSendNickname,
-                               local_player->GetId(),
-                               QString("Shooter#") +
-                        QString::number(model_->GetLocalPlayer()->GetId())));
+  if (is_shoot_holding) {
+    if (model_->IsLocalPlayerSet()) {
+      auto local_player = model_->GetLocalPlayer();
+      auto timestamp = GetCurrentServerTime();
 
-    QList<QVariant> random_bullet_shifts;
-    static std::mt19937 generator_(0);
-    std::uniform_real_distribution<> generate_shift_ =
-        std::uniform_real_distribution<>(-1, 1);
-    switch (local_player->GetWeapon()->GetWeaponType()) {
-      case WeaponType::kShotgun: {
-        random_bullet_shifts.push_back(generate_shift_(generator_));
-        random_bullet_shifts.push_back(generate_shift_(generator_));
-        random_bullet_shifts.push_back(generate_shift_(generator_));
-        break;
+      // Reload if Bullets In Clips is empty
+      if (local_player->GetWeapon()->GetCurrentBulletsInClip() <= 0
+          && local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
+        local_player->GetWeapon()->Reload(timestamp);
+        this->AddEventToSend(Event(EventType::kSendPlayerReloading,
+                                   static_cast<qint64>(GetCurrentServerTime()),
+                                   local_player->GetId()));
+        return;
       }
-      default: {
-        random_bullet_shifts.push_back(generate_shift_(generator_));
-        break;
-      }
-    }
-    local_player->GetWeapon()->SetCurrentBulletsInClip(
-        local_player->GetWeapon()->GetCurrentBulletsInClip()
-            - random_bullet_shifts.size());
 
-    model_->AddLocalBullets(timestamp, random_bullet_shifts);
-    this->AddEventToSend(Event(EventType::kSendPlayerShooting,
-                               static_cast<qint64>(timestamp),
-                               local_player->GetId(), random_bullet_shifts));
+      if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
+        return;
+      }
+      local_player->GetWeapon()->SetLastTimeShot(timestamp);
+
+      // Temporary nickname change
+      this->AddEventToSend(Event(EventType::kSendNickname,
+                                 local_player->GetId(),
+                                 QString("Shooter#") +
+                                     QString::number(model_->GetLocalPlayer()->GetId())));
+
+      QList<QVariant> random_bullet_shifts;
+      static std::mt19937 generator_(0);
+      std::uniform_real_distribution<> generate_shift_ =
+          std::uniform_real_distribution<>(-1, 1);
+      switch (local_player->GetWeapon()->GetWeaponType()) {
+        case WeaponType::kShotgun: {
+          random_bullet_shifts.push_back(generate_shift_(generator_));
+          random_bullet_shifts.push_back(generate_shift_(generator_));
+          random_bullet_shifts.push_back(generate_shift_(generator_));
+          break;
+        }
+        case WeaponType::kAssaultRifle:
+        case WeaponType::kCrossbow:
+        case WeaponType::kMachineGun: {
+          random_bullet_shifts.push_back(generate_shift_(generator_));
+          break;
+        }
+      }
+      local_player->GetWeapon()->SetCurrentBulletsInClip(
+          local_player->GetWeapon()->GetCurrentBulletsInClip()
+              - random_bullet_shifts.size());
+
+      model_->AddLocalBullets(timestamp, random_bullet_shifts);
+      this->AddEventToSend(Event(EventType::kSendPlayerShooting,
+                                 static_cast<qint64>(timestamp),
+                                 local_player->GetId(),
+                                 random_bullet_shifts));
+    }
   }
 }
 
@@ -504,6 +588,12 @@ void ClientController::PlayerKilledNotificationEvent(const Event& event) {
   view_->AddKillFeedNotification(killer_name, victim_name, weapon_type);
 }
 
+void ClientController::PlayerRespawnedEvent(const Event& event) {
+  view_->AddRespawnNotification(
+      model_->GetPlayerStatsByPlayerId(event.GetArg<GameObjectId>(0))->
+          GetNickname());
+}
+
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   model_->DeleteGameObject(player_id);
@@ -527,6 +617,7 @@ void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
     return;
   }
   auto health_points = event.GetArg<float>(0);
+  last_requested_respawn_time_ = GetCurrentServerTime();
   model_->GetLocalPlayer()->SetHealthPoints(health_points);
 }
 
@@ -534,8 +625,29 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
+  for (auto& direction : is_direction_by_keys_) {
+    direction.second = false;
+  }
+  last_died_ = this->GetCurrentServerTime();
+  are_controls_blocked_ = true;
+  is_shoot_holding = false;
+  last_requested_respawn_time_ = GetCurrentServerTime();
+  model_->GetLocalPlayer()->SetIsVisible(false);
+}
+
+void ClientController::ReviveLocalPlayerEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto local_player = model_->GetLocalPlayer();
   auto spawn_point = event.GetArg<QPointF>(0);
-  model_->GetLocalPlayer()->Revive(spawn_point);
+  local_player->Revive(spawn_point);
+  local_player->SetIsVisible(true);
+  is_respawn_holding_ = false;
+  last_requested_respawn_time_ = this->GetCurrentServerTime();
+  this->AddEventToSend(Event(EventType::kReviveConfirmed,
+                             local_player->GetId()));
+  are_controls_blocked_ = false;
 }
 
 void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {

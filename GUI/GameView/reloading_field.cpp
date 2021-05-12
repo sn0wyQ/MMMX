@@ -16,9 +16,9 @@ void ReloadingField::paintEvent(QPaintEvent* paint_event) {
 
   QPainter painter(this);
 
-  QString base_path = "./Res/Pictures/ReloadingField/";
-  QSvgRenderer renderer_empty_bullet(base_path + "empty_bullet.svg");
-  QSvgRenderer renderer_bullet(base_path + "bullet.svg");
+  QString base_path = "./Res/Icons/";
+  QSvgRenderer renderer_empty_bullet(base_path + "EmptyBullet.svg");
+  QSvgRenderer renderer_bullet(base_path + "GoldBullet.svg");
   bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
   empty_bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
   bullet_pixmap_.fill(Qt::transparent);

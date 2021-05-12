@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <queue>
 
 #include <QDateTime>
 #include <QDebug>
@@ -81,17 +82,21 @@ class RoomController : public BaseController {
   std::unordered_map<ClientId, GameObjectId> player_ids_;
   std::vector<Event> events_for_server_;
   int creeps_count_{0};
+  std::queue<std::pair<GameObjectId, int64_t>> revive_player_at_;
+  std::unordered_map<GameObjectId, bool> are_controls_blocked_;
 
   void RecalculateModel(const ModelData& model_data);
+  void RevivePlayers(const ModelData& model_data);
+  void TickObjectsInModel(const ModelData& model_data);
   void ProcessBulletHits(
       const RoomController::ModelData& model_data_bullet,
       const std::shared_ptr<Bullet>& bullet,
       const std::vector<std::shared_ptr<GameObject>>& game_objects);
   void ProcessBulletsHits(const ModelData& model_data);
   void TickCreepsIntelligence(const ModelData& model_data);
-  void TickObjectsInModel(const ModelData& model_data);
   void DeleteReadyToBeDeletedObjects(const ModelData& model_data);
   void EntityReceiveDamage(const ModelData& model_data,
+                           const std::shared_ptr<Entity>& killer,
                            const std::shared_ptr<Entity>& entity,
                            float damage, bool* is_killed);
 
@@ -125,6 +130,8 @@ class RoomController : public BaseController {
   void SendPlayerShootingEvent(const Event& event) override;
   void SendPlayerReloadingEvent(const Event& event) override;
   void SendLevelingPointsEvent(const Event& event) override;
+  void ReviveConfirmedEvent(const Event& event) override;
+  void RequestRespawnEvent(const Event& event) override;
 };
 
 #endif  // SERVER_ROOM_ROOM_CONTROLLER_H_

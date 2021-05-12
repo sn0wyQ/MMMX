@@ -25,12 +25,14 @@ class GameModel {
       GameObjectId game_object_id) const;
 
   std::vector<std::shared_ptr<GameObject>> GetAllGameObjects() const;
+  std::vector<std::shared_ptr<GameObject>> GetAllExistGameObjects() const;
   std::vector<std::shared_ptr<Bullet>> GetAllBullets() const;
 
   std::vector<std::shared_ptr<GameObject>> GetFilteredByFovObjects() const;
   std::vector<std::shared_ptr<GameObject>> GetNotFilteredByFovObjects() const;
 
   std::vector<std::shared_ptr<Player>> GetPlayers() const;
+  std::vector<std::shared_ptr<Player>> GetAlivePlayers() const;
   std::vector<std::shared_ptr<Creep>> GetCreeps() const;
 
   bool IsGameObjectIdTaken(GameObjectId game_object_id) const;

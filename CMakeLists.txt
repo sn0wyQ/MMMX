@@ -79,6 +79,7 @@ set(SOURCES
         Event/event_type.h
         GUI/GameView/KillFeed/kill_feed.cpp
         GUI/GameView/KillFeed/kill_feed_notification.cpp
+        GUI/GameView/RespawnButton/respawn_button.cpp
         GUI/GameView/game_view.cpp
         GUI/GameView/player_bar.cpp
         GUI/GameView/reloading_field.cpp
@@ -120,6 +121,7 @@ set(SOURCES
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
+        Res/Icons/icons.qrc
         Res/Fonts/fonts.qrc)
 qt5_add_big_resources(RESOURCES_SERVER
         )
