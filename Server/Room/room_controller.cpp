@@ -699,14 +699,7 @@ void RoomController::SendPlayerReloadingEvent(const Event& event) {
     return;
   }
   auto current_model_data = models_cache_[model_id];
-// <<<<<<< HEAD
   GameObjectId player_id = event.GetArg<GameObjectId>(1);
-// =======
-//   auto player_id = event.GetArg<GameObjectId>(1);
-//   if (are_controls_blocked_[player_id]) {
-//     return;
-//   }
-// >>>>>>> 6894b254d1e8b54547498c8ed847426498b77091
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
@@ -717,16 +710,6 @@ void RoomController::SendPlayerReloadingEvent(const Event& event) {
       players_ids.erase(players_ids.begin() + i);
       break;
     }
-// <<<<<<< HEAD
-// =======
-//     auto player_in_model = cur_model->GetPlayerByPlayerId(player_id);
-//     player_in_model->SetPosition(position_to_set);
-//     player_in_model->SetVelocity(velocity);
-//     player_in_model->SetRotation(rotation);
-//     player_in_model->OnTick(models_cache_[model_id].delta_time);
-//     position_to_set = player_in_model->GetPosition();
-//     model_id++;
-// >>>>>>> 6894b254d1e8b54547498c8ed847426498b77091
   }
   this->AddEventToSendToPlayerList(Event(EventType::kSendPlayerReloading,
                       static_cast<qint64>(timestamp), player_id), players_ids);
