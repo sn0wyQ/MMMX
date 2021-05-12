@@ -29,6 +29,10 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   info_label_->move(10, 10);
   info_label_->setAlignment(Qt::AlignTop);
 
+  // Respawn Button
+  respawn_button_ = new RespawnButton(this);
+  respawn_button_->Hide();
+
   // Stats table
   stats_table_ = new StatsTable(this, controller_->GetModel());
   stats_table_->setMouseTracking(true);
@@ -100,6 +104,8 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
     stats_table_->Hide();
   }
 
+  this->ProcessRespawnButton();
+
   auto local_player_position = model_->IsLocalPlayerSet()
                                ? model_->GetLocalPlayer()->GetPosition()
                                : QPointF(0.f, 0.f);
@@ -134,6 +140,11 @@ void ClientView::paintEvent(QPaintEvent* paint_event) {
 }
 
 void ClientView::resizeEvent(QResizeEvent* resize_event) {
+  respawn_button_->Resize(QSize(150, 150));
+  respawn_button_default_position_ =
+      QPoint(10,
+             this->height() - height_of_bar_ - respawn_button_->height() - 10);
+  respawn_button_->Move(respawn_button_default_position_);
   game_view_->resize(resize_event->size());
   player_bar_->resize(width(), height_of_bar_);
   player_bar_->move(0, height() - height_of_bar_);
@@ -142,7 +153,7 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
   stats_table_->move(
       (this->width() - stats_table_->width()) / 2.f,
       (this->height() - stats_table_->height() - height_of_bar_) / 2.f);
-  kill_feed_->resize(this->width() / 4, this->height());
+  kill_feed_->resize(this->width() / 3, this->height());
   kill_feed_->move(this->width() - kill_feed_->width(), 0);
   key_controller_->move(this->width() / 4, this->height() / 4);
   key_controller_->resize(this->width() / 2, this->height());
@@ -156,12 +167,32 @@ QPointF ClientView::GetPlayerToCenterOffset() const {
   return game_view_->GetPlayerToCenterOffset();
 }
 
-void ClientView::AddKillFeedNotification(QString killer_name,
-                                         QString victim_name,
+void ClientView::AddKillFeedNotification(const QString& killer_name,
+                                         const QString& victim_name,
                                          WeaponType weapon_type) {
-  kill_feed_->AddNotification(std::move(killer_name),
-                              std::move(victim_name),
-                              weapon_type);
+  kill_feed_->AddKillNotification(killer_name, victim_name, weapon_type);
+}
+
+void ClientView::AddRespawnNotification(const QString& player_name) {
+  kill_feed_->AddSpawnNotification(player_name);
+}
+
+void ClientView::ProcessRespawnButton() {
+  respawn_button_->SetWaitValue(controller_->GetSecsToNextPossibleRevive());
+  respawn_button_->SetValue(controller_->GetHoldingRespawnButtonMsecs());
+  if (controller_->GetIsHoldingRespawnButton() ||
+      controller_->GetHoldingRespawnButtonMsecs() != 0) {
+    respawn_button_->Show();
+  } else {
+    respawn_button_->Hide();
+  }
+  if (model_->IsLocalPlayerSet() && model_->GetLocalPlayer()->IsAlive()) {
+    respawn_button_->Move(respawn_button_default_position_);
+  } else {
+    respawn_button_->Move(QPointF(
+        this->width() / 2 - respawn_button_->width() / 2,
+        (this->height() - height_of_bar_) / 2 - respawn_button_->height() / 2));
+  }
 }
 
 std::shared_ptr<KeyController> ClientView::GetKeyController() const {

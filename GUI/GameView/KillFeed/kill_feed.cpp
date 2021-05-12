@@ -20,26 +20,26 @@ KillFeed::KillFeed(QWidget* parent) :
     notifications_y_emulator_(kAnimationStiffnessRatio,
                               kAnimationFrictionRatio) {}
 
-void KillFeed::AddNotification(QString killer_name,
-                               QString victim_name,
-                               WeaponType weapon_type) {
-  notifications_y_emulator_.SetCurrentValue(kOutOfScreenAnimationOffset);
-  notifications_.push_back(
-      new KillFeedNotification(this,
-                               std::move(killer_name),
-                               std::move(victim_name),
-                               weapon_type));
-  notifications_.back()->resize(this->width() - kLeftOffset - kRightOffset,
-                                kNotificationHeight);
-  if (notifications_.size() > kMaxNotificationsOnScreen) {
-    notifications_[next_to_disappear_index_++]->Hide();
+void KillFeed::AddKillNotification(const QString& killer_name,
+                                   const QString& victim_name,
+                                   WeaponType weapon_type) {
+  QString message = killer_name + " killed " + victim_name;
+  if (weapon_type != WeaponType::kNull) {
+    auto weapon_name_str = Constants::GetStringFromEnumValue(weapon_type);
+    weapon_name_str.remove(0, 1);
+    message += " with " + weapon_name_str;
   }
+  this->AddNotification(new KillFeedNotification(this, message));
+}
+
+void KillFeed::AddSpawnNotification(const QString& player_name) {
+  this->AddNotification(
+      new KillFeedNotification(this, player_name + " respawned"));
 }
 
 void KillFeed::paintEvent(QPaintEvent* paint_event) {
   QPainter painter(this);
-  painter.setRenderHints(
-      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+  Constants::SetPainterHints(&painter);
   painter.translate(kLeftOffset, kDistanceBetweenNotifications);
   notifications_y_emulator_.MakeStepTo(0);
   painter.translate(0, std::round(notifications_y_emulator_.GetCurrentValue()));
@@ -55,4 +55,14 @@ void KillFeed::resizeEvent(QResizeEvent* resize_event) {
                          kNotificationHeight);
   }
   QWidget::resizeEvent(resize_event);
+}
+
+void KillFeed::AddNotification(KillFeedNotification* kill_feed_notification) {
+  notifications_y_emulator_.SetCurrentValue(kOutOfScreenAnimationOffset);
+  notifications_.push_back(kill_feed_notification);
+  notifications_.back()->resize(this->width() - kLeftOffset - kRightOffset,
+                                kNotificationHeight);
+  if (notifications_.size() > kMaxNotificationsOnScreen) {
+    notifications_[next_to_disappear_index_++]->Hide();
+  }
 }

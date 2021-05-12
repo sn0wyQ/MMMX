@@ -20,14 +20,9 @@ using Constants::KillFeedNotification::kBackgroundOutlineWidth;
 using Constants::KillFeedNotification::kRoundedRectXRadius;
 using Constants::KillFeedNotification::kRoundedRectYRadius;
 
-KillFeedNotification::KillFeedNotification(QWidget* parent,
-                                           QString killer_name,
-                                           QString victim_name,
-                                           WeaponType weapon_type) :
+KillFeedNotification::KillFeedNotification(QWidget* parent, QString message) :
     QWidget(parent),
-    killer_name_(std::move(killer_name)),
-    victim_name_(std::move(victim_name)),
-    weapon_type_(weapon_type),
+    message_(std::move(message)),
     opacity_emulator_(kOpacityAnimationStiffnessRatio,
                       kOpacityAnimationFrictionRatio) {
   opacity_emulator_.SetCurrentValue(0.f);
@@ -52,16 +47,10 @@ void KillFeedNotification::Draw(QPainter* painter) {
 
   painter->setPen(QPen(this->GetColorWithOpacity(kTextColor)));
 
-  auto weapon_name = Constants::GetStringFromEnumValue(weapon_type_);
-  weapon_name.remove(0, 1);
-  QString message = killer_name_ + " killed " + victim_name_;
-  if (weapon_type_ != WeaponType::kNull) {
-    message += " with " + weapon_name;
-  }
   painter->setFont(kTextFont);
   painter->drawText(
       QRect(0, 0, this->width(), this->height()),
-      Qt::AlignCenter, message);
+      Qt::AlignCenter, message_);
 
   painter->restore();
 }

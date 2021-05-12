@@ -82,6 +82,8 @@ set(SOURCES
         GUI/GameView/game_view.cpp
         GUI/GameView/player_bar.cpp
         GUI/GameView/stats_table.cpp
+        GUI/GameView/RespawnButton/respawn_button.cpp
+        GUI/GameView/KeyController/key_controller.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp
         GameObject/MovableObject/Entity/Creep/creep_settings.cpp
@@ -115,10 +117,11 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
-        GUI/GameView/KeyController/key_controller.cpp GUI/GameView/KeyController/key_controller.h)
+        )
 
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
+        Res/Icons/icons.qrc
         Res/Fonts/fonts.qrc)
 qt5_add_big_resources(RESOURCES_SERVER
         )

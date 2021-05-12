@@ -55,7 +55,7 @@ constexpr RoomId kNullRoomId = -1;
 const QString kWindowTitle = "MMMX | Version " + kVersionString;
 constexpr int kTimeToUpdateVarsAndPing = 1000;
 constexpr int64_t kInterpolationMSecs = 200;
-constexpr int kShootHoldingCheck = 30;
+constexpr int kControlsHoldingCheck = 30;
 
 // Graphics
 constexpr float kBaseViewWidth = 25.f;
@@ -67,17 +67,23 @@ constexpr int kAverageFpsFrames = 50;
 // Animations
 constexpr int kUnloadAnimationCheckTime = 30;
 
-// GameObject
-constexpr float kDefaultMaxHealthPoints = 100.f;
-
 // MovableObject
 constexpr float kDefaultSpeedMultiplier = 0.01f;
+
+// Entity
+constexpr float kDefaultMaxHealthPoints = 100.f;
 
 // Player
 constexpr float kDefaultEntityFov = 12.f;
 constexpr float kDefaultPlayerRotation = 0.f;
 constexpr float kDefaultPlayerRadius = 1.f;
 constexpr float kDefaultHealthRegenSpeed = 0.002f;
+constexpr int kMaxLevel = 30;
+
+// Revive
+constexpr int64_t kReviveTime = 5000;
+constexpr int64_t kRequestRespawnTime = 10000;
+constexpr int64_t kHoldingRespawnTime = 1000;
 
 // View
 inline void SetPainterHints(QPainter* painter) {
@@ -92,8 +98,6 @@ constexpr int kDefaultFpsMax = 60;
 
 // Bullet collision
 constexpr int kAccuracy = 10;
-
-constexpr int kMaxLevel = 30;
 
 constexpr float GetExpForLevel(int level) {
   return static_cast<float>(level) * 5.f;

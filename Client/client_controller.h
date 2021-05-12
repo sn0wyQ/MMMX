@@ -1,6 +1,7 @@
 #ifndef CLIENT_CLIENT_CONTROLLER_H_
 #define CLIENT_CLIENT_CONTROLLER_H_
 
+#include <algorithm>
 #include <memory>
 #include <unordered_map>
 #include <utility>
@@ -28,14 +29,16 @@ enum class Controls {
   kKeyW = 17,
   kKeyA = 30,
   kKeyS = 31,
-  kKeyD = 32
+  kKeyD = 32,
+  kKeyC = 46
 };
 #else
 enum class Controls {
   kKeyW = 25,
   kKeyA = 38,
   kKeyS = 39,
-  kKeyD = 40
+  kKeyD = 40,
+  kKeyC = 54
 };
 #endif
 
@@ -80,6 +83,10 @@ class ClientController : public BaseController {
 
   bool IsGameInProgress() const;
 
+  int64_t GetHoldingRespawnButtonMsecs() const;
+  int64_t GetSecsToNextPossibleRevive() const;
+  bool GetIsHoldingRespawnButton() const;
+
   void SetView(std::shared_ptr<AbstractClientView> view);
   void UpdateView();
 
@@ -108,7 +115,7 @@ class ClientController : public BaseController {
   void OnByteArrayReceived(const QByteArray& message);
   void UpdateVarsAndPing();
   void SetPing(int elapsed_time);
-  void ShootHolding();
+  void ControlsHolding();
 
  private:
   void EndGameEvent(const Event& event) override;
@@ -125,8 +132,10 @@ class ClientController : public BaseController {
   void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
   void ShootFailedEvent(const Event& event) override;
   void LocalPlayerDiedEvent(const Event& event) override;
+  void ReviveLocalPlayerEvent(const Event& event) override;
   void SendGameInfoToInterpolateEvent(const Event& event) override;
   void PlayerKilledNotificationEvent(const Event& event) override;
+  void PlayerRespawnedEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;
   void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;
@@ -150,7 +159,12 @@ class ClientController : public BaseController {
   int64_t time_difference_{0};
   int64_t last_view_update_time_{-1};
   QPointF last_mouse_position_;
-  QTimer shoot_check_timer;
+  QTimer controls_check_timer_;
+  bool are_controls_blocked_{false};
+
+  int64_t last_died_{0};
+  int64_t last_requested_respawn_time_{0};
+  int64_t respawn_holding_current_{0};
 
   std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;
 };

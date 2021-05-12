@@ -16,8 +16,7 @@ std::shared_ptr<Converter> GameView::GetConverter() {
 }
 
 void GameView::Update() {
-  painter_->setRenderHints(
-      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+  Constants::SetPainterHints(painter_.get());
 
   // If LocalPlayer isn't set we don't want to draw anything
   if (!model_->IsLocalPlayerSet()) {

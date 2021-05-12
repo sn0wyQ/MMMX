@@ -12,9 +12,9 @@ ClientController::ClientController(const QUrl& url,
   connect(&web_socket_, &QWebSocket::disconnected, this,
           &ClientController::OnDisconnected);
   web_socket_.open(url);
-  connect(&shoot_check_timer, &QTimer::timeout, this,
-          &ClientController::ShootHolding);
-  shoot_check_timer.start(Constants::kShootHoldingCheck);
+  connect(&controls_check_timer_, &QTimer::timeout, this,
+          &ClientController::ControlsHolding);
+  controls_check_timer_.start(Constants::kControlsHoldingCheck);
   this->StartTicking();
 }
 
@@ -24,6 +24,34 @@ std::shared_ptr<ClientGameModel> ClientController::GetModel() {
 
 bool ClientController::IsGameInProgress() const {
   return game_state_ == GameState::kGameInProgress;
+}
+
+int64_t ClientController::GetHoldingRespawnButtonMsecs() const {
+  return respawn_holding_current_;
+}
+
+int64_t ClientController::GetSecsToNextPossibleRevive() const {
+  if (!model_->IsLocalPlayerSet()) {
+    return -1;
+  }
+  if (model_->GetLocalPlayer()->IsVisible()) {
+    auto delta_time =
+        this->GetCurrentServerTime() - last_requested_respawn_time_;
+    return (Constants::kRequestRespawnTime - delta_time) / 1000;
+  } else {
+    return (Constants::kReviveTime -
+        (this->GetCurrentServerTime() - last_died_)) / 1000;
+  }
+}
+
+bool ClientController::GetIsHoldingRespawnButton() const {
+  if (!model_->IsLocalPlayerSet()) {
+    return false;
+  }
+  if (model_->GetLocalPlayer()->IsVisible()) {
+    return view_->GetKeyController()->IsHeld(Key::kRespawn);
+  }
+  return true;
 }
 
 void ClientController::OnConnected() {
@@ -235,7 +263,8 @@ void ClientController::UpdateLocalBullets(int delta_time) {
   std::vector<GameObjectId> is_need_to_delete;
   for (const auto& bullet : model_->GetLocalBullets()) {
     auto object_collided = ObjectCollision::GetObjectBulletCollidedWith(
-            bullet, model_->GetAllGameObjects(), delta_time, true);
+            bullet, model_->GetAllExistGameObjects(),
+            delta_time, true);
     if (object_collided != nullptr) {
       bullet->SetIsNeedToDelete(true);
     }
@@ -355,21 +384,30 @@ void ClientController::FocusOutEvent(QFocusEvent*) {
   }
 }
 
-void ClientController::KeyPressEvent(QKeyEvent* key_event) {
-  view_->GetKeyController()->KeyPressedEvent(key_event);
-  if (model_->IsLocalPlayerSet()) {
-    model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
-  }
-}
-
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
+  if (are_controls_blocked_) {
+    return;
+  }
   view_->GetKeyController()->KeyReleasedEvent(key_event);
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
   }
 }
 
+void ClientController::KeyPressEvent(QKeyEvent* key_event) {
+  if (are_controls_blocked_) {
+    return;
+  }
+  view_->GetKeyController()->KeyPressedEvent(key_event);
+  if (model_->IsLocalPlayerSet()) {
+    model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
+  }
+}
+
 void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
+  if (are_controls_blocked_) {
+    return;
+  }
   last_mouse_position_ = mouse_event->pos();
 }
 
@@ -381,26 +419,43 @@ void ClientController::MouseReleaseEvent(QMouseEvent* mouse_event) {
   view_->GetKeyController()->MouseReleasedEvent(mouse_event);
 }
 
-void ClientController::ShootHolding() {
-  if (!view_->GetKeyController()->IsHeld(Key::kShoot)) {
-    return;
-  }
-  if (model_->IsLocalPlayerSet()) {
-    auto local_player = model_->GetLocalPlayer();
-    auto timestamp = GetCurrentServerTime();
-    if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
-      return;
+void ClientController::ControlsHolding() {
+  if (view_->GetKeyController()->IsHeld(Key::kRespawn)) {
+    if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
+      this->AddEventToSend(Event(EventType::kRequestRespawn,
+                                 model_->GetLocalPlayer()->GetId()));
+      last_requested_respawn_time_ = GetCurrentServerTime();
+      respawn_holding_current_ = 0;
+      are_controls_blocked_ = true;
     }
-    // Temporary nickname change
-    this->AddEventToSend(Event(EventType::kSendNickname,
-                               model_->GetLocalPlayer()->GetId(),
-                               QString("Shooter#") +
-                        QString::number(model_->GetLocalPlayer()->GetId())));
-    local_player->GetWeapon()->SetLastTimeShot(timestamp);
-    model_->AddLocalBullets(timestamp);
-    this->AddEventToSend(Event(EventType::kSendPlayerShooting,
-                               static_cast<qint64>(timestamp),
-                               local_player->GetId()));
+    if (this->GetCurrentServerTime() - last_requested_respawn_time_
+        > Constants::kRequestRespawnTime) {
+      respawn_holding_current_ += controls_check_timer_.interval();
+    }
+  } else  {
+    respawn_holding_current_ = std::max(static_cast<int64_t>(0),
+                respawn_holding_current_ - controls_check_timer_.interval());
+  }
+
+  if (view_->GetKeyController()->IsHeld(Key::kShoot)) {
+    if (model_->IsLocalPlayerSet()) {
+      auto local_player = model_->GetLocalPlayer();
+      auto timestamp = GetCurrentServerTime();
+      if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
+        return;
+      }
+      // Temporary nickname change
+      this->AddEventToSend(Event(EventType::kSendNickname,
+                                 model_->GetLocalPlayer()->GetId(),
+                                 QString("Shooter#") +
+                                     QString::number(local_player->GetId())));
+      local_player->GetWeapon()->SetLastTimeShot(timestamp);
+      model_->AddLocalBullets(timestamp);
+      this->AddEventToSend(Event(EventType::kSendPlayerShooting,
+                                 static_cast<qint64>(timestamp),
+                                 local_player->GetId()));
+    }
+    return;
   }
 }
 
@@ -453,6 +508,12 @@ void ClientController::PlayerKilledNotificationEvent(const Event& event) {
   view_->AddKillFeedNotification(killer_name, victim_name, weapon_type);
 }
 
+void ClientController::PlayerRespawnedEvent(const Event& event) {
+  view_->AddRespawnNotification(
+      model_->GetPlayerStatsByPlayerId(event.GetArg<GameObjectId>(0))->
+          GetNickname());
+}
+
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   model_->DeleteGameObject(player_id);
@@ -476,6 +537,7 @@ void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
     return;
   }
   auto health_points = event.GetArg<float>(0);
+  last_requested_respawn_time_ = GetCurrentServerTime();
   model_->GetLocalPlayer()->SetHealthPoints(health_points);
 }
 
@@ -483,8 +545,25 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
+  view_->GetKeyController()->ClearControls();
+  last_died_ = this->GetCurrentServerTime();
+  are_controls_blocked_ = true;
+  last_requested_respawn_time_ = GetCurrentServerTime();
+  model_->GetLocalPlayer()->SetIsVisible(false);
+}
+
+void ClientController::ReviveLocalPlayerEvent(const Event& event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+  auto local_player = model_->GetLocalPlayer();
   auto spawn_point = event.GetArg<QPointF>(0);
-  model_->GetLocalPlayer()->Revive(spawn_point);
+  local_player->Revive(spawn_point);
+  local_player->SetIsVisible(true);
+  last_requested_respawn_time_ = this->GetCurrentServerTime();
+  this->AddEventToSend(Event(EventType::kReviveConfirmed,
+                             local_player->GetId()));
+  are_controls_blocked_ = false;
 }
 
 void ClientController::IncreaseLocalPlayerExperienceEvent(const Event& event) {

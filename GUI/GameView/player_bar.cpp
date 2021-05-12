@@ -2,8 +2,11 @@
 
 PlayerBar::PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel> model,
                      QPoint position, QSize size)
-    : QWidget(parent), model_(std::move(model)),
-    buttons_(Constants::kUpgradeSlots) {
+    : QWidget(parent), hp_emulator_(0.5f, 0.8f), xp_emulator_(0.5f, 0.8f),
+      model_(std::move(model)),
+      buttons_(Constants::kUpgradeSlots) {
+  hp_emulator_.SetCurrentValue(0.f);
+  xp_emulator_.SetCurrentValue(0.f);
   this->move(position);
   this->resize(size);
   this->RecalculateSizes();
@@ -32,6 +35,7 @@ void PlayerBar::paintEvent(QPaintEvent* paint_event) {
 
   auto local_player = model_->GetLocalPlayer();
   QPainter painter(this);
+  Constants::SetPainterHints(&painter);
 
   QFont font(Constants::Painter::kDefaultFont);
   font.setPointSizeF(10.f);
@@ -55,18 +59,23 @@ QRectF PlayerBar::RectWithPercents(
 
 void PlayerBar::DrawHealthRect(QPainter* painter) {
   painter->setBrush(Qt::gray);
-  painter->drawRect(RectWithPercents(kHealthBarX, kHealthBarY,
-                                     kHealthBarWidth,
-                                     kHealthBarHeight));
+  painter->drawRoundedRect(RectWithPercents(kHealthBarX, kHealthBarY,
+                                            kHealthBarWidth,
+                                            kHealthBarHeight), 20, 20);
   painter->setBrush(Qt::darkGreen);
   auto local_player = model_->GetLocalPlayer();
-  float hp_ratio = local_player->GetHealthPoints()
-      / local_player->GetMaxHealthPoints();
-  painter->drawRect(RectWithPercents(
-      kHealthBarX, kHealthBarY,
-      kHealthBarWidth * hp_ratio, kHealthBarHeight));
   auto cur_hp = static_cast<int>(local_player->GetHealthPoints());
   auto max_hp = static_cast<int>(local_player->GetMaxHealthPoints());
+  hp_emulator_.SetBounds(0, max_hp);
+  hp_emulator_.MakeStepTo(cur_hp);
+  float hp_ratio = hp_emulator_.GetCurrentValue() / max_hp;
+  painter->setClipRect(RectWithPercents(
+      kHealthBarX, kHealthBarY,
+      kHealthBarWidth * hp_ratio, kHealthBarHeight));
+  painter->drawRoundedRect(RectWithPercents(kHealthBarX, kHealthBarY,
+                                            kHealthBarWidth,
+                                            kHealthBarHeight), 20, 20);
+  painter->setClipping(false);
   float regen_hp_in_sec = local_player->GetHealthRegenRate() * 1000.f;
   auto regen_hp_in_sec_int =
       static_cast<float>(std::floor(regen_hp_in_sec * 100.f) / 100.f);
@@ -85,15 +94,20 @@ void PlayerBar::DrawExpRect(QPainter* painter) {
   float exp_for_level = Constants::GetExpForLevel(cur_level);
 
   painter->setBrush(Qt::gray);
-  painter->drawRect(RectWithPercents(kExpBarX, kExpBarY,
-                                     kExpBarWidth,
-                                     kExpBarHeight));
-  painter->setBrush(Qt::darkYellow);
-  float exp_ratio = local_player->GetCurrentExp()
-      / exp_for_level;
-  painter->drawRect(RectWithPercents(
+  painter->drawRoundedRect(RectWithPercents(kExpBarX, kExpBarY,
+                                            kExpBarWidth,
+                                            kExpBarHeight), 20, 20);
+  painter->setBrush(Qt::cyan);
+  xp_emulator_.SetBounds(0.f, exp_for_level);
+  xp_emulator_.MakeStepTo(cur_exp);
+  float exp_ratio = xp_emulator_.GetCurrentValue() / exp_for_level;
+  painter->setClipRect(RectWithPercents(
       kExpBarX, kExpBarY,
       kExpBarWidth * exp_ratio, kExpBarHeight));
+  painter->drawRoundedRect(RectWithPercents(kExpBarX, kExpBarY,
+                                            kExpBarWidth,
+                                            kExpBarHeight), 20, 20);
+  painter->setClipping(false);
   painter->drawText(RectWithPercents(kExpBarX, kExpBarY,
                                      kExpBarWidth,
                                      kExpBarHeight), Qt::AlignCenter,
@@ -157,8 +171,8 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
     int get_i = first_part ? i : 3
         * Constants::kUpgradeSlots / 2 - 1 - i;
     painter->drawText(
-        RectWithPercents(- picture_width_ / 2.f - kIntervalLr / 2.f,
-                         - kPictureHeight / 2.f,
+        RectWithPercents(-picture_width_ / 2.f - kIntervalLr / 2.f,
+                         -kPictureHeight / 2.f,
                          picture_width_ + kIntervalLr, kPictureHeight),
         Qt::AlignCenter,
         kLevelingNames[get_i]);
@@ -174,7 +188,7 @@ void PlayerBar::Clicked(int index) {
   int free_leveling_points = local_player->GetFreeLevelingPoints();
   auto leveling_points = local_player->GetLevelingPoints();
   if (free_leveling_points > 0
-    && leveling_points[index] < Constants::kCountOfLevels) {
+      && leveling_points[index] < Constants::kCountOfLevels) {
     free_leveling_points--;
     local_player->IncreaseLevelingPoint(index);
     local_player->SetFreeLevelingPoints(free_leveling_points);
