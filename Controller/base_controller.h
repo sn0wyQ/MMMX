@@ -46,6 +46,9 @@ class BaseController : public QObject {
   int GetVar() const;
   virtual int64_t GetCurrentServerTime() const;
 
+  void BlockTicking();
+  bool IsTickingBlocked() const;
+
  protected:
   BaseController();
 
@@ -61,6 +64,8 @@ class BaseController : public QObject {
 
   std::queue<Event> events_to_handle_;
   std::queue<Event> events_to_send_;
+
+  bool is_ticking_blocked_{false};
 
   std::array<std::function<void(const Event&)>,
       static_cast<uint32_t>(EventType::SIZE)> function_for_event_;

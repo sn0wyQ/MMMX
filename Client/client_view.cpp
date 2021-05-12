@@ -100,7 +100,10 @@ void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {
-  if (table_shown_ && last_pressed_tab_ < last_released_tab_ &&
+  if (controller_->IsTickingBlocked()) {
+    stats_table_->Show();
+    return;
+  } else if (table_shown_ && last_pressed_tab_ < last_released_tab_ &&
       QDateTime::currentMSecsSinceEpoch() - last_released_tab_ > 50) {
     table_shown_ = false;
     stats_table_->Hide();
@@ -185,9 +188,6 @@ void ClientView::AddGameStartedNotification() {
 }
 
 void ClientView::ProcessRespawnButton() {
-  if (!model_->IsGameStarted()) {
-    return;
-  }
   respawn_button_->SetWaitValue(controller_->GetSecsToNextPossibleRevive());
   respawn_button_->SetValue(controller_->GetHoldingRespawnButtonMsecs());
   if (controller_->GetIsHoldingRespawnButton() ||

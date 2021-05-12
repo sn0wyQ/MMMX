@@ -58,6 +58,9 @@ void RoomController::AddEventToSendToAllPlayers(const Event& event) {
 
 void RoomController::SendEvent(const Event& event) {
   this->BaseController::LogEvent(event);
+  if (event.GetType() == EventType::kEndGame) {
+    this->BlockTicking();
+  }
   events_for_server_.push_back(event);
 }
 

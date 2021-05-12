@@ -13,7 +13,7 @@
 #include "Painter/painter.h"
 
 class TimeBar : public QWidget {
- Q_OBJECT
+  Q_OBJECT
 
  public:
   TimeBar(QWidget* parent, std::shared_ptr<ClientController> controller,

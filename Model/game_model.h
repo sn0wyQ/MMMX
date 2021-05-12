@@ -64,6 +64,7 @@ class GameModel {
 
  protected:
   std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;
+
  private:
   std::map<GameObjectId, std::shared_ptr<GameObject>> game_objects_;
   bool is_game_started_{false};

@@ -11,6 +11,9 @@ void TimeBar::paintEvent(QPaintEvent* paint_event) {
   if (!controller_->GetModel()->IsLocalPlayerSet()) {
     return;
   }
+  if (controller_->IsTickingBlocked()) {
+    return;
+  }
 
   QPainter painter(this);
 

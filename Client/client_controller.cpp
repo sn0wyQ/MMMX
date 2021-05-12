@@ -92,6 +92,9 @@ void ClientController::OnByteArrayReceived(const QByteArray& message) {
 
 void ClientController::EndGameEvent(const Event& event) {
   game_state_ = GameState::kGameFinished;
+  are_controls_blocked_ = true;
+  this->BlockTicking();
+  qInfo().noquote() << "[CLIENT] Game ended";
 }
 
 void ClientController::SetPlayerIdToClient(const Event& event) {
@@ -114,6 +117,9 @@ void ClientController::SendEvent(const Event& event) {
 
 void ClientController::OnTick(int delta_time) {
   if (!is_time_difference_set_) {
+    return;
+  }
+  if (this->IsTickingBlocked()) {
     return;
   }
   switch (game_state_) {
@@ -285,6 +291,9 @@ void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
 }
 
 void ClientController::UpdateView() {
+  if (this->IsTickingBlocked()) {
+    return;
+  }
   auto time = QDateTime::currentMSecsSinceEpoch();
   auto delta_time = time - last_view_update_time_;
   last_view_update_time_ = time;
@@ -451,6 +460,9 @@ void ClientController::MouseReleaseEvent(QMouseEvent*) {
 }
 
 void ClientController::ControlsHolding() {
+  if (this->IsTickingBlocked()) {
+    return;
+  }
   if (is_respawn_holding_ &&
       respawn_pressed_time_ < respawn_released_time_ &&
       GetCurrentServerTime() - respawn_released_time_ > 50) {

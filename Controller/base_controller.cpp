@@ -68,12 +68,19 @@ BaseController::BaseController() {
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }
 
+void BaseController::BlockTicking() {
+  is_ticking_blocked_ = true;
+}
+
 void BaseController::SetFunctionForEventType(
     EventType event_type, const std::function<void(const Event&)>& func) {
   function_for_event_[static_cast<uint32_t>(event_type)] = func;
 }
 
 void BaseController::Tick() {
+  if (is_ticking_blocked_) {
+    return;
+  }
   QElapsedTimer var_timer;
   var_timer.start();
 
@@ -130,4 +137,8 @@ void BaseController::LogEvent(const Event& event) const {
 
 int64_t BaseController::GetCurrentServerTime() const {
   return QDateTime::currentMSecsSinceEpoch();
+}
+
+bool BaseController::IsTickingBlocked() const {
+  return is_ticking_blocked_;
 }
