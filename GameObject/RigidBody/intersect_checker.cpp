@@ -21,6 +21,11 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     const std::shared_ptr<RigidBodyCircle>& circle1,
     const std::shared_ptr<RigidBodyCircle>& circle2,
     QVector2D offset, float) {
+  // Temporary
+  if (!circle1.get() || !circle2.get()) {
+    return {};
+  }
+
   // Формула нахождения точек пересечения двух кругов:
   // http://e-maxx.ru/algo/circles_intersection
   float r1 = circle1->GetRadius();
@@ -36,6 +41,11 @@ std::vector<QPointF> IntersectChecker::GetIntersectPoints(
     const std::shared_ptr<RigidBodyCircle>& circle,
     const std::shared_ptr<RigidBodyRectangle>& rectangle,
     QVector2D offset, float rotation) {
+  // Temporary
+  if (!circle.get() || !rectangle.get()) {
+    return {};
+  }
+
   // Нахождение всех точек пересечения круга с прямоугольником -
   // это нахождение точек пересечения с каждой стороной круга
   float r = circle->GetRadius();
