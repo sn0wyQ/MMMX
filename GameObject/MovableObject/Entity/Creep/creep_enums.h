@@ -1,5 +1,5 @@
-#ifndef CREEP_ENUMS_H_
-#define CREEP_ENUMS_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_ENUMS_H_
+#define GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_ENUMS_H_
 
 namespace CreepEnumsWrapper {
 
@@ -18,4 +18,4 @@ Q_ENUM_NS(CreepType)
 using CreepType = CreepEnumsWrapper::CreepType;
 Q_DECLARE_METATYPE(CreepType)
 
-#endif  // CREEP_ENUMS_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_ENUMS_H_
