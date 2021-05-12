@@ -503,10 +503,11 @@ void ClientController::ControlsHolding() {
       local_player->GetWeapon()->SetLastTimeShot(timestamp);
 
       // Temporary nickname change
-      this->AddEventToSend(Event(EventType::kSendNickname,
-                                 local_player->GetId(),
-                                 QString("Shooter#") +
-                                     QString::number(model_->GetLocalPlayer()->GetId())));
+      this->AddEventToSend(Event(
+          EventType::kSendNickname,
+          local_player->GetId(),
+          QString("Shooter#") +
+          QString::number(model_->GetLocalPlayer()->GetId())));
 
       QList<QVariant> random_bullet_shifts;
       static std::mt19937 generator_(0);
