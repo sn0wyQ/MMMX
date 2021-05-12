@@ -11,7 +11,7 @@
 
 #include "Client/client_controller.h"
 #include "Converter/converter.h"
-#include "SpringEmulator/spring_emulator.h"
+#include "GUI/Animations/spring_emulator.h"
 #include "Painter/painter.h"
 #include "KillFeed/kill_feed.h"
 

@@ -4,7 +4,7 @@
 #include <QTimer>
 #include <QWidget>
 
-#include "SpringEmulator/spring_emulator.h"
+#include "GUI/Animations/spring_emulator.h"
 #include "Weapon/WeaponSettings/weapon_settings.h"
 
 namespace Constants::KillFeedNotification {
@@ -29,10 +29,7 @@ class KillFeedNotification : public QWidget {
   Q_OBJECT
 
  public:
-  KillFeedNotification(QWidget* parent,
-                       QString killer_name,
-                       QString victim_name,
-                       WeaponType weapon_type);
+  KillFeedNotification(QWidget* parent, QString message);
 
   void Hide();
   void Draw(QPainter* painter);
@@ -40,9 +37,7 @@ class KillFeedNotification : public QWidget {
                              int opacity = -1);
 
  private:
-  QString killer_name_;
-  QString victim_name_;
-  WeaponType weapon_type_;
+  QString message_;
   SpringEmulator<float, true> opacity_emulator_;
   float opacity_target_{255};
   QTimer disappear_timer_;

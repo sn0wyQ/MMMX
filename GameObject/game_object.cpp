@@ -30,11 +30,14 @@ GameObject::GameObject(const GameObject& other) {
   SetX(other.GetX());
   updated_time_ = other.updated_time_;
   is_need_to_delete_ = other.is_need_to_delete_;
+  visibility_ = other.visibility_;
   created_time_ = other.created_time_;
   is_interpolated_once_ = other.is_interpolated_once_;
 }
 
 void GameObject::SetParams(std::vector<QVariant> params) {
+  SetVisibility(params.back().toFloat());
+  params.pop_back();
   auto animation_type = static_cast<AnimationType>(params.back().toInt());
   SetAnimation(animation_type);
   params.pop_back();
@@ -82,11 +85,18 @@ std::vector<QVariant> GameObject::GetParams() const {
   result.emplace_back(rigid_body_->GetWidth());
   result.emplace_back(rigid_body_->GetHeight());
   result.emplace_back(static_cast<int>(animation_->GetType()));
+  result.emplace_back(GetVisibility());
   return result;
 }
 
 void GameObject::Draw(Painter* painter) {
+  if (!IsVisible()) {
+    return;
+  }
   if (this->IsInterpolatedOnce()) {
+    return;
+  }
+  if (!IsAlive()) {
     return;
   }
   painter->save();
@@ -221,6 +231,10 @@ bool GameObject::IsEntity() const {
 }
 
 float GameObject::GetRigidBodyBoundingCircleRadius() const {
+  if (GetRigidBody()->GetType() == RigidBodyType::kCircle) {
+    return std::dynamic_pointer_cast<RigidBodyCircle>(
+        GetRigidBody())->GetRadius();
+  }
   return Math::DistanceBetweenPoints(
       QPointF(), QPointF(this->GetRigidBody()->GetWidth() / 2.f,
                          this->GetRigidBody()->GetHeight() / 2.f));
@@ -240,4 +254,24 @@ bool GameObject::IsInterpolatedOnce() const {
 
 void GameObject::SetIsInterpolatedOnce(bool is_interpolated_once) {
   is_interpolated_once_ = is_interpolated_once;
+}
+
+float GameObject::GetVisibility() const {
+  return visibility_;
+}
+
+void GameObject::SetVisibility(float visibility) {
+  visibility_ = visibility;
+}
+
+bool GameObject::IsVisible() const {
+  return visibility_ > 0.0001f;
+}
+
+void GameObject::SetIsVisible(bool visible) {
+  visibility_ = (visible ? 1.f : 0.f);
+}
+
+bool GameObject::IsAlive() const {
+  return true;
 }

@@ -1,0 +1,6 @@
+<RCC>
+    <qresource>
+        <file>RespawnHeart.png</file>
+        <file>RespawnHeartGray.png</file>
+    </qresource>
+</RCC>

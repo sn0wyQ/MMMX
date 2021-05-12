@@ -6,7 +6,7 @@
 #include <QWidget>
 
 #include "GUI/GameView/KillFeed/kill_feed_notification.h"
-#include "SpringEmulator/spring_emulator.h"
+#include "GUI/Animations/spring_emulator.h"
 
 namespace Constants::KillFeed {
 
@@ -27,14 +27,17 @@ class KillFeed : public QWidget {
  public:
   explicit KillFeed(QWidget* parent);
 
-  void AddNotification(QString killer_name,
-                       QString victim_name,
-                       WeaponType weapon_type);
+  void AddKillNotification(const QString& killer_name,
+                           const QString& victim_name,
+                           WeaponType weapon_type);
+  void AddSpawnNotification(const QString& player_name);
 
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
  private:
+  void AddNotification(KillFeedNotification* kill_feed_notification);
+
   SpringEmulator<float, false> notifications_y_emulator_;
   std::deque<KillFeedNotification*> notifications_;
   int next_to_disappear_index_{0};
