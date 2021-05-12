@@ -526,6 +526,10 @@ void ClientController::ControlsHolding() {
           random_bullet_shifts.push_back(generate_shift_(generator_));
           break;
         }
+        default: {
+          qWarning() << "Addressing a nonexistent type of weapon\n";
+          break;
+        }
       }
       local_player->GetWeapon()->SetCurrentBulletsInClip(
           local_player->GetWeapon()->GetCurrentBulletsInClip()
