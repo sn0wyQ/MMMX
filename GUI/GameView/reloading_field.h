@@ -14,12 +14,9 @@
 
 namespace Constants::ReloadingField {
 
-const float kBulletWidth = 9.f;
 const float kBulletHeight = 54.f;
-const int kMaxInRows = 10;
-const int kMaxInColumns = 7;
+const float kBulletWidth = 9.f;
 const float kSpaceBetweenBullets = 1.5f;
-const int kBulletsInRow = 8;
 
 }  // namespace Constants::ReloadingField
 
@@ -31,8 +28,6 @@ class ReloadingField : public QWidget {
                  std::shared_ptr<ClientController> controller);
 
   void paintEvent(QPaintEvent* event) override;
-  void RecalculateSize();
-  QSize RecalculateSize1();
 
  private:
   std::shared_ptr<ClientController> controller_;

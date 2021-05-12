@@ -2,8 +2,6 @@
 
 using Constants::ReloadingField::kBulletWidth;
 using Constants::ReloadingField::kBulletHeight;
-using Constants::ReloadingField::kMaxInColumns;
-using Constants::ReloadingField::kMaxInRows;
 using Constants::ReloadingField::kSpaceBetweenBullets;
 
 ReloadingField::ReloadingField(QWidget* parent,
