@@ -8,14 +8,6 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   resize(1400, 960);
   height_of_bar_ = static_cast<int>(
       Constants::kPlayerBarHeightRatio * static_cast<float>(height()));
-  height_of_reloading_field_ = static_cast<int>(
-      static_cast<float>(Constants::ReloadingField::kDefaultMaxInColumns)
-          * (Constants::ReloadingField::kDefaultSpaceBetweenBullets
-              + Constants::ReloadingField::kDefaultBulletHeight));
-  width_of_reloading_field_ = static_cast<int>(
-      static_cast<float>(Constants::ReloadingField::kDefaultMaxInRows)
-          * (Constants::ReloadingField::kDefaultSpaceBetweenBullets
-              + Constants::ReloadingField::kDefaultBulletWidth));
 
   setMinimumSize(1300, 700);
   setWindowTitle(Constants::kWindowTitle);
@@ -41,10 +33,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   info_label_->setAlignment(Qt::AlignTop);
 
   // ReloadingField
-  reloading_field_ = new ReloadingField(this, controller_,
-QPoint(this->width() - width_of_reloading_field_,
-              this->height() - height_of_bar_ - height_of_reloading_field_),
-              QSize(width_of_reloading_field_, height_of_reloading_field_));
+  reloading_field_ = new ReloadingField(this, controller_);
 
   // Stats table
   stats_table_ = new StatsTable(this, controller_->GetModel());
@@ -156,11 +145,10 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
       (this->width() - stats_table_->width()) / 2.f,
       (this->height() - stats_table_->height() - height_of_bar_) / 2.f);
 
-  reloading_field_->resize(width_of_reloading_field_,
-                           height_of_reloading_field_);
-  reloading_field_->move(this->width() - width_of_reloading_field_,
-                         this->height() - height_of_bar_
-                             - height_of_reloading_field_);
+  reloading_field_->resize(this->width() / 5, this->height() / 3);
+  reloading_field_->move(this->width() - reloading_field_->width(),
+                         (this->height() - height_of_bar_
+                             - reloading_field_->height()));
 
   kill_feed_->resize(this->width() / 4, this->height());
   kill_feed_->move(this->width() - kill_feed_->width(), 0);

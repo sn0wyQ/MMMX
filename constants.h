@@ -104,7 +104,7 @@ namespace LevelingMultipliers {
 constexpr float kMaxHp = 1.5f;
 constexpr float kHealthRegenRate = 2.1f;
 constexpr float kSpeed = 1.1f;
-constexpr float kFovRadius = 1.3f;
+constexpr float kFovRadius = 1.2f;
 constexpr float kAccuracy = 1.2f;
 
 constexpr float kBulletSpeed = 1.2f;

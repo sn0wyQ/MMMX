@@ -14,11 +14,12 @@
 
 namespace Constants::ReloadingField {
 
-const float kDefaultBulletWidth = 5.f;
-const float kDefaultBulletHeight = 30.f;
-const int kDefaultMaxInRows = 10;
-const int kDefaultMaxInColumns = 5;
-const float kDefaultSpaceBetweenBullets = 1.f;
+const float kBulletWidth = 9.f;
+const float kBulletHeight = 54.f;
+const int kMaxInRows = 10;
+const int kMaxInColumns = 7;
+const float kSpaceBetweenBullets = 1.5f;
+const int kBulletsInRow = 8;
 
 }  // namespace Constants::ReloadingField
 
@@ -27,12 +28,11 @@ class ReloadingField : public QWidget {
 
  public:
   ReloadingField(QWidget* parent,
-                 std::shared_ptr<ClientController> controller,
-                 QPoint position,
-                 QSize size);
+                 std::shared_ptr<ClientController> controller);
 
   void paintEvent(QPaintEvent* event) override;
-  void resizeEvent(QResizeEvent*) override;
+  void RecalculateSize();
+  QSize RecalculateSize1();
 
  private:
   std::shared_ptr<ClientController> controller_;
@@ -41,13 +41,11 @@ class ReloadingField : public QWidget {
                   int64_t delta_time,
                   int64_t reloading_time);
   void DrawPixmaps(QPainter* painter, int bullets_in_clip);
-  void Initialize();
-  void RecalculateSize();
-  QPixmap bullet_;
-  QPixmap empty_bullet_;
-  int columns_;
-  int rows_;
-  bool is_initialize_{false};
+  void RecalculateFields();
+  QPixmap bullet_pixmap_;
+  QPixmap empty_bullet_pixmap_;
+  int in_rows_;
+  int in_columns_;
 };
 
 #endif  // GUI_GAMEVIEW_RELOADING_FIELD_H_
