@@ -100,7 +100,7 @@ void ReloadingField::DrawPixmaps(QPainter* painter, int bullets_in_clip) {
       current_bullet++;
       continue;
     }
-    if (current_bullet < max_clip_size - bullets_in_clip ) {
+    if (current_bullet < max_clip_size - bullets_in_clip) {
       painter->drawPixmap(shift_x + x, shift_y + y, empty_bullet_pixmap_);
     } else {
       painter->drawPixmap(shift_x + x, shift_y + y, bullet_pixmap_);
