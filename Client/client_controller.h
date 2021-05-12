@@ -147,6 +147,7 @@ class ClientController : public BaseController {
   QWebSocket web_socket_;
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<AbstractClientView> view_;
+  std::shared_ptr<KeyController> key_controller_;
   int server_var_{0};
   int room_var_{0};
   int client_var_{0};

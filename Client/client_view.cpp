@@ -79,13 +79,13 @@ void ClientView::keyPressEvent(QKeyEvent* key_event) {
       key_controller_->hide();
     }
   }
-  key_controller_->keyPressEvent(key_event);
-  key_controller_->KeyPressedEvent(key_event);
+  if (!key_controller_->isHidden()) {
+    key_controller_->keyPressEvent(key_event);
+  }
   controller_->KeyPressEvent(key_event);
 }
 
 void ClientView::keyReleaseEvent(QKeyEvent* key_event) {
-  key_controller_->KeyReleasedEvent(key_event);
   controller_->KeyReleaseEvent(key_event);
 }
 
@@ -94,6 +94,13 @@ void ClientView::mouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
+  if (mouse_event->button() == Qt::MouseButton::LeftButton &&
+      !key_controller_->isHidden()) {
+    key_controller_->hide();
+  }
+  if (!key_controller_->isHidden()) {
+    key_controller_->mousePressEvent(mouse_event);
+  }
   controller_->MousePressEvent(mouse_event);
 }
 

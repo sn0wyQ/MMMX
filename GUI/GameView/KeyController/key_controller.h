@@ -7,6 +7,7 @@
 #include <QDateTime>
 
 #include "constants.h"
+#include "GUI/Animations/linear_emulator.h"
 
 enum class Key {
   kUp,
@@ -54,12 +55,12 @@ class KeyController : public QWidget {
   Q_OBJECT
 
  public:
-  KeyController(QWidget* parent);
+  explicit KeyController(QWidget* parent);
 
-  void KeyPressedEvent(QKeyEvent* key_event);
-  void KeyReleasedEvent(QKeyEvent* key_event);
-  void MousePressedEvent(QMouseEvent* mouse_event);
-  void MouseReleasedEvent(QMouseEvent* mouse_event);
+  void AddKeyPressEvent(QKeyEvent* key_event);
+  void AddKeyReleaseEvent(QKeyEvent* key_event);
+  void AddMousePressEvent(QMouseEvent* mouse_event);
+  void AddMouseReleaseEvent(QMouseEvent* mouse_event);
 
   void NativeButtonPressedEvent(const NativeButton& native_button);
   void NativeButtonReleasedEvent(const NativeButton& native_button);
@@ -73,6 +74,9 @@ class KeyController : public QWidget {
   void paintEvent(QPaintEvent* paint_event) override;
   void mousePressEvent(QMouseEvent* mouse_event) override;
   void keyPressEvent(QKeyEvent* key_event) override;
+
+  void Hide();
+  void Show();
 
  private:
   std::unordered_map<Key, QString> key_to_key_name_{
@@ -109,6 +113,9 @@ class KeyController : public QWidget {
 
   static int64_t GetCurrentTime();
   void UnbindKeyFromNativeButton(Key key);
+  void BindNativeButtonToKey(Key key,
+                             const NativeButton& native_button,
+                             const QString& button_name);
 
   std::unordered_map<Key, int64_t> last_pressed_;
   std::unordered_map<Key, int64_t> last_released_;
@@ -117,6 +124,9 @@ class KeyController : public QWidget {
 
   std::vector<QRectF> settings_rects_;
   int highlighted_setting_index_{-1};
+
+  float opacity_target_;
+  LinearEmulator<float> opacity_emulator_;
 };
 
 #endif  // GUI_GAMEVIEW_KEYCONTROLLER_KEY_CONTROLLER_H_

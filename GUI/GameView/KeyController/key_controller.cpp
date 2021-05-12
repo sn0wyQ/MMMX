@@ -8,15 +8,19 @@ using Constants::KeySettings::kSettingNames;
 using Constants::KeySettings::kInnerOffsetX;
 using Constants::KeySettings::kInnerOffsetY;
 
-KeyController::KeyController(QWidget* parent) : QWidget(parent) {
+KeyController::KeyController(QWidget* parent) :
+    QWidget(parent),
+    opacity_emulator_(0.01f) {
   this->setMouseTracking(true);
+
 }
 
 void KeyController::paintEvent(QPaintEvent* paint_event) {
   int settings_count = kSettingNames.size();
   QPixmap canvas(this->width(),
                  (kSettingHeight + kBlankSpaceBetweenSettings)
-                     * settings_count + 2 * kInnerOffsetY - kBlankSpaceBetweenSettings);
+                     * settings_count + 2 * kInnerOffsetY
+                     - kBlankSpaceBetweenSettings);
   canvas.fill(Qt::transparent);
   QPainter canvas_painter(&canvas);
   Constants::SetPainterHints(&canvas_painter);
@@ -27,7 +31,8 @@ void KeyController::paintEvent(QPaintEvent* paint_event) {
                                kSettingHeight);
     settings_rects_.emplace_back(QPointF(kInnerOffsetX,
                                          i * (kSettingHeight
-                                             + kBlankSpaceBetweenSettings) + kInnerOffsetY),
+                                             + kBlankSpaceBetweenSettings)
+                                             + kInnerOffsetY),
                                  QPointF(this->width() - kInnerOffsetX,
                                          i * (kSettingHeight
                                              + kBlankSpaceBetweenSettings)
@@ -38,7 +43,10 @@ void KeyController::paintEvent(QPaintEvent* paint_event) {
       canvas_painter.setBrush(QBrush(Qt::cyan));
     }
     canvas_painter.drawRoundedRect(setting_rect, 10, 10);
-    canvas_painter.drawText(QRectF(0, 0, this->width() / 2 - kInnerOffsetX, kSettingHeight),
+    canvas_painter.drawText(QRectF(0,
+                                   0,
+                                   this->width() / 2 - kInnerOffsetX,
+                                   kSettingHeight),
                             Qt::AlignCenter, kSettingNames[i]);
     canvas_painter.drawText(QRectF(this->width() / 2, 0,
                                    this->width() / 2, kSettingHeight),
@@ -50,25 +58,30 @@ void KeyController::paintEvent(QPaintEvent* paint_event) {
   QPainter painter(this);
   Constants::SetPainterHints(&painter);
   painter.setBrush(Qt::darkBlue);
-  painter.drawRoundedRect(0, 0, this->width(), canvas.height(), kInnerOffsetX, kInnerOffsetY);
+  painter.drawRoundedRect(0,
+                          0,
+                          this->width(),
+                          canvas.height(),
+                          kInnerOffsetX,
+                          kInnerOffsetY);
   painter.drawPixmap(QRectF(0, 0, this->width(), canvas.height()),
                      canvas,
                      QRectF(0, 0, this->width(), canvas.height()));
 }
 
-void KeyController::KeyPressedEvent(QKeyEvent* key_event) {
+void KeyController::AddKeyPressEvent(QKeyEvent* key_event) {
   this->NativeButtonPressedEvent(NativeButton(key_event));
 }
 
-void KeyController::KeyReleasedEvent(QKeyEvent* key_event) {
+void KeyController::AddKeyReleaseEvent(QKeyEvent* key_event) {
   this->NativeButtonReleasedEvent(NativeButton(key_event));
 }
 
-void KeyController::MousePressedEvent(QMouseEvent* mouse_event) {
+void KeyController::AddMousePressEvent(QMouseEvent* mouse_event) {
   this->NativeButtonPressedEvent(NativeButton(mouse_event));
 }
 
-void KeyController::MouseReleasedEvent(QMouseEvent* mouse_event) {
+void KeyController::AddMouseReleaseEvent(QMouseEvent* mouse_event) {
   this->NativeButtonReleasedEvent(NativeButton(mouse_event));
 }
 
@@ -130,14 +143,25 @@ void KeyController::mousePressEvent(QMouseEvent* mouse_event) {
       break;
     }
   }
-  if (setting_index == -1) {
+  if (highlighted_setting_index_ == -1 &&
+      mouse_event->button() == Qt::MouseButton::LeftButton) {
+    highlighted_setting_index_ = setting_index;
     return;
   }
-  if (highlighted_setting_index_ == setting_index) {
+  if (highlighted_setting_index_ == -1) {
+    return;
+  }
+  if (highlighted_setting_index_ == setting_index &&
+      mouse_event->button() == Qt::MouseButton::LeftButton) {
     highlighted_setting_index_ = -1;
     return;
   }
-  highlighted_setting_index_ = setting_index;
+
+  this->BindNativeButtonToKey(static_cast<Key>(highlighted_setting_index_),
+                              NativeButton(mouse_event),
+                              "Mouse"
+                                  + QString::number(mouse_event->button()));
+  highlighted_setting_index_ = -1;
 }
 
 void KeyController::keyPressEvent(QKeyEvent* key_event) {
@@ -148,17 +172,11 @@ void KeyController::keyPressEvent(QKeyEvent* key_event) {
     return;
   }
   auto key = static_cast<Key>(highlighted_setting_index_);
-  if (native_button_to_key_.find(NativeButton(key_event)) !=
-      native_button_to_key_.end()) {
-    key_to_key_name_.erase(native_button_to_key_[NativeButton(key_event)]);
+  auto text = key_event->text();
+  if (text.isEmpty() || !text[0].isLetterOrNumber()) {
+    text = "#" + QString::number(key_event->nativeScanCode());
   }
-  this->UnbindKeyFromNativeButton(key);
-  key_to_key_name_[key] = key_event->text().toUpper();
-  if (key_to_key_name_[key].isEmpty() ||
-      !key_to_key_name_[key][0].isLetterOrNumber()) {
-    key_to_key_name_[key] = "#" + QString::number(key_event->nativeScanCode());
-  }
-  native_button_to_key_[NativeButton(key_event)] = key;
+  this->BindNativeButtonToKey(key, NativeButton(key_event), text);
   highlighted_setting_index_ = -1;
 }
 
@@ -178,6 +196,27 @@ void KeyController::UnbindKeyFromNativeButton(Key key) {
       break;
     }
   }
+}
+
+void KeyController::BindNativeButtonToKey(Key key,
+                                          const NativeButton& native_button,
+                                          const QString& button_name) {
+  if (native_button_to_key_.find(native_button) !=
+      native_button_to_key_.end()) {
+    key_to_key_name_.erase(native_button_to_key_[native_button]);
+  }
+  this->UnbindKeyFromNativeButton(key);
+  key_to_key_name_[key] = button_name;
+  native_button_to_key_[native_button] = key;
+}
+
+void KeyController::Hide() {
+
+}
+
+void KeyController::Show() {
+  this->show();
+  opacity_target_ = 255.f;
 }
 
 NativeButton::NativeButton(bool is_keyboard_, uint32_t key_) :
