@@ -20,7 +20,7 @@
 #include "Event/event.h"
 #include "GUI/GameView/game_view.h"
 #include "GUI/GameView/player_bar.h"
-#include "GUI/GameView/KeyController/key_controller.h"
+#include "Client/KeyController/key_controller.h"
 #include "GUI/GameView/stats_table.h"
 #include "GUI/GameView/RespawnButton/respawn_button.h"
 #include "GUI/GameView/KillFeed/kill_feed.h"

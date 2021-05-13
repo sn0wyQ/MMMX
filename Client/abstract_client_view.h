@@ -6,7 +6,7 @@
 #include <QMainWindow>
 
 #include "Converter/converter.h"
-#include <GUI/GameView/KeyController/key_controller.h>
+#include "Client/KeyController/key_controller.h"
 #include "Weapon/WeaponSettings/weapon_settings.h"
 
 class AbstractClientView : public QMainWindow {

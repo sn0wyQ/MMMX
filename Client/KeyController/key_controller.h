@@ -1,13 +1,16 @@
-#ifndef GUI_GAMEVIEW_KEYCONTROLLER_KEY_CONTROLLER_H_
-#define GUI_GAMEVIEW_KEYCONTROLLER_KEY_CONTROLLER_H_
+#ifndef CLIENT_KEYCONTROLLER_KEY_CONTROLLER_H_
+#define CLIENT_KEYCONTROLLER_KEY_CONTROLLER_H_
 
 #include <QWidget>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QDateTime>
+#include <QTimer>
+#include <QGraphicsOpacityEffect>
 
 #include "constants.h"
 #include "GUI/Animations/linear_emulator.h"
+#include "key_names.h"
 
 enum class Key {
   kUp,
@@ -37,6 +40,10 @@ const float kSettingHeight = 30.f;
 const float kBlankSpaceBetweenSettings = 10.f;
 const float kInnerOffsetX = 30.f;
 const float kInnerOffsetY = 30.f;
+const QColor kHighlightedColor(115, 237, 64, 210);
+const QColor kDefaultSettingColor(126, 210, 91, 210);
+const QColor kEmptySettingColor(241, 105, 59, 210);
+const QColor kBackgroundColor(86, 86, 86, 180);
 
 }  // namespace Constants::KeySettings
 
@@ -45,6 +52,7 @@ struct NativeButton {
   NativeButton(bool is_keyboard_, uint32_t key_);
   explicit NativeButton(QKeyEvent* key_event);
   explicit NativeButton(QMouseEvent* mouse_event);
+  QString GetButtonName() const;
 
   bool operator<(const NativeButton& other) const;
   bool is_keyboard;
@@ -75,20 +83,12 @@ class KeyController : public QWidget {
   void mousePressEvent(QMouseEvent* mouse_event) override;
   void keyPressEvent(QKeyEvent* key_event) override;
 
+  bool IsShown() const;
   void Hide();
   void Show();
 
  private:
-  std::unordered_map<Key, QString> key_to_key_name_{
-      {Key::kUp, "W"},
-      {Key::kDown, "S"},
-      {Key::kLeft, "A"},
-      {Key::kRight, "D"},
-      {Key::kReload, "R"},
-      {Key::kShowStatistics, "TAB"},
-      {Key::kRespawn, "C"},
-      {Key::kShoot, "LMouse"}
-  };
+  std::unordered_map<Key, QString> key_to_key_name_{};
   std::map<NativeButton, Key> native_button_to_key_{
 #ifdef WIN32
       {{true, 17}, Key::kUp},
@@ -125,8 +125,11 @@ class KeyController : public QWidget {
   std::vector<QRectF> settings_rects_;
   int highlighted_setting_index_{-1};
 
-  float opacity_target_;
+  bool is_shown_{false};
+
   LinearEmulator<float> opacity_emulator_;
+  QTimer hide_timer_;
+  QGraphicsOpacityEffect* opacity_effect;
 };
 
-#endif  // GUI_GAMEVIEW_KEYCONTROLLER_KEY_CONTROLLER_H_
+#endif  // CLIENT_KEYCONTROLLER_KEY_CONTROLLER_H_

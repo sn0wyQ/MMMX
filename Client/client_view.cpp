@@ -39,7 +39,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 
   // Key Settings
   key_controller_ = std::make_shared<KeyController>(this);
-  key_controller_->hide();
+  key_controller_->Hide();
 
   controller_->SetView(std::shared_ptr<ClientView>(this));
   model_ = controller_->GetModel();
@@ -73,13 +73,13 @@ void ClientView::focusOutEvent(QFocusEvent* focus_event) {
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
   if (key_event->key() == Qt::Key_F1) {
-    if (key_controller_->isHidden()) {
-      key_controller_->show();
+    if (key_controller_->IsShown()) {
+      key_controller_->Hide();
     } else {
-      key_controller_->hide();
+      key_controller_->Show();
     }
   }
-  if (!key_controller_->isHidden()) {
+  if (key_controller_->IsShown()) {
     key_controller_->keyPressEvent(key_event);
   }
   controller_->KeyPressEvent(key_event);
@@ -95,10 +95,10 @@ void ClientView::mouseMoveEvent(QMouseEvent* mouse_event) {
 
 void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
   if (mouse_event->button() == Qt::MouseButton::LeftButton &&
-      !key_controller_->isHidden()) {
-    key_controller_->hide();
+      key_controller_->IsShown()) {
+    key_controller_->Hide();
   }
-  if (!key_controller_->isHidden()) {
+  if (key_controller_->IsShown()) {
     key_controller_->mousePressEvent(mouse_event);
   }
   controller_->MousePressEvent(mouse_event);

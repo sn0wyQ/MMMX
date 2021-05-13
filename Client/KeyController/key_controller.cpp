@@ -7,15 +7,34 @@ using Constants::KeySettings::kSettingHeight;
 using Constants::KeySettings::kSettingNames;
 using Constants::KeySettings::kInnerOffsetX;
 using Constants::KeySettings::kInnerOffsetY;
+using Constants::KeySettings::kHighlightedColor;
+using Constants::KeySettings::kDefaultSettingColor;
+using Constants::KeySettings::kEmptySettingColor;
+using Constants::KeySettings::kBackgroundColor;
 
 KeyController::KeyController(QWidget* parent) :
     QWidget(parent),
-    opacity_emulator_(0.01f) {
+    opacity_emulator_(5.f),
+    hide_timer_(this),
+    opacity_effect(new QGraphicsOpacityEffect(this)) {
   this->setMouseTracking(true);
-
+  for (auto[native_button, key] : native_button_to_key_) {
+    key_to_key_name_[key] = native_button.GetButtonName();
+  }
+  opacity_emulator_.SetStopOnMax(true);
+  opacity_emulator_.SetStopOnMin(true);
+  opacity_emulator_.SetCurrentValue(0.01f);
+  opacity_emulator_.SetPath(255.f, 0.01f);
+  this->setGraphicsEffect(opacity_effect);
+  hide_timer_.setInterval(500);
+  hide_timer_.setSingleShot(true);
+  connect(&hide_timer_, &QTimer::timeout,
+          this, &KeyController::hide);
 }
 
 void KeyController::paintEvent(QPaintEvent* paint_event) {
+  opacity_effect->setOpacity(opacity_emulator_.GetCurrentValue() / 255.f);
+
   int settings_count = kSettingNames.size();
   QPixmap canvas(this->width(),
                  (kSettingHeight + kBlankSpaceBetweenSettings)
@@ -38,10 +57,13 @@ void KeyController::paintEvent(QPaintEvent* paint_event) {
                                              + kBlankSpaceBetweenSettings)
                                              + kSettingHeight + kInnerOffsetY));
     if (highlighted_setting_index_ == i) {
-      canvas_painter.setBrush(QBrush(Qt::green));
+      canvas_painter.setBrush(QBrush(kHighlightedColor));
+    } else if (key_to_key_name_[static_cast<Key>(i)].isEmpty()) {
+      canvas_painter.setBrush(QBrush(kEmptySettingColor));
     } else {
-      canvas_painter.setBrush(QBrush(Qt::cyan));
+      canvas_painter.setBrush(QBrush(kDefaultSettingColor));
     }
+    canvas_painter.setPen(QPen(Qt::black, 2));
     canvas_painter.drawRoundedRect(setting_rect, 10, 10);
     canvas_painter.drawText(QRectF(0,
                                    0,
@@ -57,7 +79,8 @@ void KeyController::paintEvent(QPaintEvent* paint_event) {
   }
   QPainter painter(this);
   Constants::SetPainterHints(&painter);
-  painter.setBrush(Qt::darkBlue);
+  painter.setBrush(kBackgroundColor);
+  painter.setPen(QPen(Qt::transparent));
   painter.drawRoundedRect(0,
                           0,
                           this->width(),
@@ -108,7 +131,7 @@ void KeyController::NativeButtonReleasedEvent(
 }
 
 bool KeyController::IsHeld(Key key) {
-  if (!this->isHidden()) {
+  if (this->IsShown()) {
     return false;
   }
   if (is_held_[key] &&
@@ -120,7 +143,7 @@ bool KeyController::IsHeld(Key key) {
 }
 
 bool KeyController::WasPressed(Key key) {
-  if (!this->isHidden()) {
+  if (this->IsShown()) {
     return false;
   }
   return was_pressed_[key];
@@ -135,6 +158,10 @@ int64_t KeyController::GetCurrentTime() {
 }
 
 void KeyController::mousePressEvent(QMouseEvent* mouse_event) {
+  if (!this->IsShown()) {
+    mouse_event->setAccepted(false);
+    return;
+  }
   auto pos = mouse_event->pos();
   int setting_index = -1;
   for (size_t i = 0; i < settings_rects_.size(); i++) {
@@ -143,24 +170,20 @@ void KeyController::mousePressEvent(QMouseEvent* mouse_event) {
       break;
     }
   }
-  if (highlighted_setting_index_ == -1 &&
-      mouse_event->button() == Qt::MouseButton::LeftButton) {
-    highlighted_setting_index_ = setting_index;
-    return;
-  }
-  if (highlighted_setting_index_ == -1) {
-    return;
-  }
-  if (highlighted_setting_index_ == setting_index &&
-      mouse_event->button() == Qt::MouseButton::LeftButton) {
-    highlighted_setting_index_ = -1;
-    return;
+  if (mouse_event->button() == Qt::MouseButton::LeftButton) {
+    if (highlighted_setting_index_ == -1) {
+      highlighted_setting_index_ = setting_index;
+      return;
+    }
+    if (highlighted_setting_index_ == setting_index) {
+      highlighted_setting_index_ = -1;
+      return;
+    }
   }
 
+  NativeButton native_button(mouse_event);
   this->BindNativeButtonToKey(static_cast<Key>(highlighted_setting_index_),
-                              NativeButton(mouse_event),
-                              "Mouse"
-                                  + QString::number(mouse_event->button()));
+                              native_button, native_button.GetButtonName());
   highlighted_setting_index_ = -1;
 }
 
@@ -172,11 +195,9 @@ void KeyController::keyPressEvent(QKeyEvent* key_event) {
     return;
   }
   auto key = static_cast<Key>(highlighted_setting_index_);
-  auto text = key_event->text();
-  if (text.isEmpty() || !text[0].isLetterOrNumber()) {
-    text = "#" + QString::number(key_event->nativeScanCode());
-  }
-  this->BindNativeButtonToKey(key, NativeButton(key_event), text);
+  NativeButton native_button(key_event);
+  this->BindNativeButtonToKey(key, native_button,
+                              native_button.GetButtonName());
   highlighted_setting_index_ = -1;
 }
 
@@ -211,12 +232,22 @@ void KeyController::BindNativeButtonToKey(Key key,
 }
 
 void KeyController::Hide() {
-
+  is_shown_ = false;
+  opacity_emulator_.SetPath(255.f, 0.01f);
+  hide_timer_.stop();
+  hide_timer_.start();
 }
 
 void KeyController::Show() {
+  this->ClearControls();
+  is_shown_ = true;
   this->show();
-  opacity_target_ = 255.f;
+  opacity_emulator_.SetPath(0.01f, 255.f);
+  hide_timer_.stop();
+}
+
+bool KeyController::IsShown() const {
+  return is_shown_;
 }
 
 NativeButton::NativeButton(bool is_keyboard_, uint32_t key_) :
@@ -236,4 +267,15 @@ bool NativeButton::operator<(const NativeButton& other) const {
     return !is_keyboard;
   }
   return key < other.key;
+}
+
+QString NativeButton::GetButtonName() const {
+  if (is_keyboard) {
+    if (KeyNames::kNativeCodeToKeyName.find(key)
+        != KeyNames::kNativeCodeToKeyName.end()) {
+      return KeyNames::kNativeCodeToKeyName.at(key);
+    }
+    return "Unknown";
+  }
+  return "Mouse " + QString::number(key);
 }
