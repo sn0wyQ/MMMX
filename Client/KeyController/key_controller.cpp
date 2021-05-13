@@ -55,7 +55,7 @@ void KeyController::paintEvent(QPaintEvent* paint_event) {
                                          i * (kSettingHeight
                                              + kBlankSpaceBetweenSettings)
                                              + kSettingHeight + kInnerOffsetY));
-    auto key = static_cast<Key>(highlighted_setting_index_);
+    auto key = static_cast<Key>(i);
     if (highlighted_setting_index_ == i) {
       canvas_painter.setBrush(QBrush(kHighlightedColor));
     } else if (key_to_key_name_[key].isEmpty()) {
