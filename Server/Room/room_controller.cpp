@@ -645,6 +645,9 @@ void RoomController::SendControlsEvent(const Event& event) {
   }
   auto current_model_data = models_cache_[model_id];
   auto player_id = event.GetArg<GameObjectId>(1);
+  if (are_controls_blocked_[player_id]) {
+    return;
+  }
   if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
     return;
   }
