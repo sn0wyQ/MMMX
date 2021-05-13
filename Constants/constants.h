@@ -1,5 +1,5 @@
-#ifndef CONSTANTS_H_
-#define CONSTANTS_H_
+#ifndef CONSTANTS_CONSTANTS_H_
+#define CONSTANTS_CONSTANTS_H_
 
 #include <string>
 
@@ -132,4 +132,4 @@ extern const int kMaxPlayerBullets;
 
 }  // namespace Constants
 
-#endif  // CONSTANTS_H_
+#endif  // CONSTANTS_CONSTANTS_H_
