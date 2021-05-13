@@ -115,7 +115,7 @@ void KeyController::NativeButtonPressedEvent(
     return;
   }
   auto key = native_button_to_key_[native_button];
-  last_pressed_[key] = GetCurrentTime();
+  last_pressed_[key] = this->GetCurrentTime();
   is_held_[key] = true;
   was_pressed_[key] = true;
 }
@@ -127,7 +127,7 @@ void KeyController::NativeButtonReleasedEvent(
     return;
   }
   auto key = native_button_to_key_[native_button];
-  last_released_[key] = GetCurrentTime();
+  last_released_[key] = this->GetCurrentTime();
 }
 
 bool KeyController::IsHeld(Key key) {
