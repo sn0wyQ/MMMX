@@ -111,6 +111,8 @@ class GameObject {
 
   virtual bool IsAlive() const;
 
+  bool IsNeedToDraw() const;
+
  private:
   // Holds animations for all GameObjects
   // Prevents same SharedFrame being loaded into RAM more than once at a time
