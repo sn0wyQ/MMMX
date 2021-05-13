@@ -1,6 +1,7 @@
 #ifndef CLIENT_KEYCONTROLLER_KEY_CONTROLLER_H_
 #define CLIENT_KEYCONTROLLER_KEY_CONTROLLER_H_
 
+#include <map>
 #include <vector>
 #include <unordered_map>
 
