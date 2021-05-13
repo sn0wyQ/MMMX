@@ -258,7 +258,7 @@ void KeyController::ReadSettings() {
   auto location = QStandardPaths::writableLocation(
       QStandardPaths::StandardLocation::AppConfigLocation);
   QSettings settings(location, QSettings::Format::IniFormat);
-  for (int i = 0; i < kSettingNames.size(); i++) {
+  for (size_t i = 0; i < kSettingNames.size(); i++) {
     auto key = static_cast<Key>(i);
     auto settings_key =
         "key_settings/" + Constants::GetStringFromEnumValue(key);
