@@ -5,15 +5,16 @@
 #include <vector>
 #include <unordered_map>
 
-#include <QPainter>
-#include <QStandardPaths>
-#include <QSettings>
-#include <QWidget>
-#include <QKeyEvent>
-#include <QMouseEvent>
 #include <QDateTime>
-#include <QTimer>
+#include <QSettings>
 #include <QGraphicsOpacityEffect>
+#include <QStandardPaths>
+#include <QKeyEvent>
+#include <QTimer>
+#include <QMouseEvent>
+#include <QMetaEnum>
+#include <QPainter>
+#include <QWidget>
 
 #include "constants.h"
 #include "GUI/Animations/linear_emulator.h"
@@ -36,7 +37,7 @@ enum class Key {
 
 Q_ENUM_NS(Key)
 
-}  // namespace WeaponTypeWrapper
+}  // namespace KeyWrapper
 
 using Key = KeyWrapper::Key;
 
