@@ -1,8 +1,4 @@
-#include <QDebug>
-#include <QPainter>
 #include "key_controller.h"
-#include <QStandardPaths>
-#include <QSettings>
 
 using Constants::KeySettings::kBlankSpaceBetweenSettings;
 using Constants::KeySettings::kSettingHeight;
@@ -59,9 +55,10 @@ void KeyController::paintEvent(QPaintEvent* paint_event) {
                                          i * (kSettingHeight
                                              + kBlankSpaceBetweenSettings)
                                              + kSettingHeight + kInnerOffsetY));
+    auto key = static_cast<Key>(highlighted_setting_index_);
     if (highlighted_setting_index_ == i) {
       canvas_painter.setBrush(QBrush(kHighlightedColor));
-    } else if (key_to_key_name_[static_cast<Key>(i)].isEmpty()) {
+    } else if (key_to_key_name_[key].isEmpty()) {
       canvas_painter.setBrush(QBrush(kEmptySettingColor));
     } else {
       canvas_painter.setBrush(QBrush(kDefaultSettingColor));
@@ -76,7 +73,7 @@ void KeyController::paintEvent(QPaintEvent* paint_event) {
     canvas_painter.drawText(QRectF(this->width() / 2, 0,
                                    this->width() / 2, kSettingHeight),
                             Qt::AlignCenter,
-                            key_to_key_name_[static_cast<Key>(i)]);
+                            key_to_key_name_[key]);
     canvas_painter.translate(
         QPointF(0, kSettingHeight + kBlankSpaceBetweenSettings));
   }
@@ -183,10 +180,11 @@ void KeyController::mousePressEvent(QMouseEvent* mouse_event) {
       return;
     }
   }
-
+  auto key = static_cast<Key>(highlighted_setting_index_);
+  this->UnbindKeyFromNativeButton(key);
   NativeButton native_button(mouse_event);
-  this->BindNativeButtonToKey(static_cast<Key>(highlighted_setting_index_),
-                              native_button, native_button.GetButtonName());
+  this->BindNativeButtonToKey(key, native_button,
+                              native_button.GetButtonName());
   highlighted_setting_index_ = -1;
 }
 
@@ -198,6 +196,7 @@ void KeyController::keyPressEvent(QKeyEvent* key_event) {
     return;
   }
   auto key = static_cast<Key>(highlighted_setting_index_);
+  this->UnbindKeyFromNativeButton(key);
   NativeButton native_button(key_event);
   this->BindNativeButtonToKey(key, native_button,
                               native_button.GetButtonName());
@@ -262,6 +261,7 @@ void KeyController::ReadSettings() {
     auto settings_key =
         "key_settings/" + Constants::GetStringFromEnumValue(key);
     if (settings.contains(settings_key)) {
+      this->UnbindKeyFromNativeButton(key);
       native_button_to_key_[NativeButton(settings.value(settings_key))] = key;
     }
   }
@@ -270,7 +270,6 @@ void KeyController::ReadSettings() {
 void KeyController::SaveSettings() const {
   auto location = QStandardPaths::writableLocation(
       QStandardPaths::StandardLocation::AppConfigLocation);
-  qWarning() << location;
   QSettings settings(location, QSettings::Format::IniFormat);
   for (auto&[native_button, key] : native_button_to_key_) {
     settings.setValue("key_settings/" + Constants::GetStringFromEnumValue(key),

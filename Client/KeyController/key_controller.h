@@ -5,6 +5,9 @@
 #include <vector>
 #include <unordered_map>
 
+#include <QPainter>
+#include <QStandardPaths>
+#include <QSettings>
 #include <QWidget>
 #include <QKeyEvent>
 #include <QMouseEvent>
