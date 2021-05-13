@@ -737,6 +737,9 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
   if (!start_model->IsGameObjectIdTaken(player_id)) {
     return;
   }
+  if (are_controls_blocked_[player_id]) {
+    return;
+  }
   auto player_in_model =
       start_model->GetPlayerByPlayerId(player_id);
 
