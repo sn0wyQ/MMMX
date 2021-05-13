@@ -39,5 +39,7 @@ int main(int argc, char* argv[]) {
   auto client_view = new ClientView(client_controller);
   client_view->show();
 
-  return QApplication::exec();
+  auto ret = QApplication::exec();
+  client_view->GetKeyController()->SaveSettings();
+  return ret;
 }

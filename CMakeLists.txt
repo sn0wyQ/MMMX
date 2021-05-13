@@ -117,7 +117,7 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
-        Client/KeyController/key_names.h)
+        )
 
 if (WIN32)
     set(SYSTEM_DEPENDENT_SOURCES

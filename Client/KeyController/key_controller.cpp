@@ -1,6 +1,8 @@
 #include <QDebug>
 #include <QPainter>
 #include "key_controller.h"
+#include <QStandardPaths>
+#include <QSettings>
 
 using Constants::KeySettings::kBlankSpaceBetweenSettings;
 using Constants::KeySettings::kSettingHeight;
@@ -18,6 +20,7 @@ KeyController::KeyController(QWidget* parent) :
     hide_timer_(this),
     opacity_effect(new QGraphicsOpacityEffect(this)) {
   this->setMouseTracking(true);
+  this->ReadSettings();
   for (auto[native_button, key] : native_button_to_key_) {
     key_to_key_name_[key] = native_button.GetButtonName();
   }
@@ -250,6 +253,31 @@ bool KeyController::IsShown() const {
   return is_shown_;
 }
 
+void KeyController::ReadSettings() {
+  auto location = QStandardPaths::writableLocation(
+      QStandardPaths::StandardLocation::AppConfigLocation);
+  QSettings settings(location, QSettings::Format::IniFormat);
+  for (int i = 0; i < kSettingNames.size(); i++) {
+    auto key = static_cast<Key>(i);
+    auto settings_key =
+        "key_settings/" + Constants::GetStringFromEnumValue(key);
+    if (settings.contains(settings_key)) {
+      native_button_to_key_[NativeButton(settings.value(settings_key))] = key;
+    }
+  }
+}
+
+void KeyController::SaveSettings() const {
+  auto location = QStandardPaths::writableLocation(
+      QStandardPaths::StandardLocation::AppConfigLocation);
+  qWarning() << location;
+  QSettings settings(location, QSettings::Format::IniFormat);
+  for (auto&[native_button, key] : native_button_to_key_) {
+    settings.setValue("key_settings/" + Constants::GetStringFromEnumValue(key),
+                      native_button.ToQVariant());
+  }
+}
+
 NativeButton::NativeButton(bool is_keyboard_, uint32_t key_) :
     is_keyboard(is_keyboard_),
     key(key_) {}
@@ -278,4 +306,14 @@ QString NativeButton::GetButtonName() const {
     return "Unknown";
   }
   return "Mouse " + QString::number(key);
+}
+
+NativeButton::NativeButton(const QVariant& variant) {
+  is_keyboard = variant.toStringList()[0].toInt();
+  key = variant.toStringList()[1].toInt();
+}
+
+QVariant NativeButton::ToQVariant() const {
+  return QVariant(QStringList{QString::number(is_keyboard),
+                              QString::number(key)});
 }

@@ -16,6 +16,10 @@
 #include "GUI/Animations/linear_emulator.h"
 #include "key_names.h"
 
+namespace KeyWrapper {
+
+Q_NAMESPACE
+
 enum class Key {
   kUp,
   kDown,
@@ -26,6 +30,14 @@ enum class Key {
   kRespawn,
   kShoot
 };
+
+Q_ENUM_NS(Key)
+
+}  // namespace WeaponTypeWrapper
+
+using Key = KeyWrapper::Key;
+
+Q_DECLARE_METATYPE(Key)
 
 namespace Constants::KeySettings {
 
@@ -54,8 +66,11 @@ const QColor kBackgroundColor(86, 86, 86, 180);
 struct NativeButton {
   NativeButton() = delete;
   NativeButton(bool is_keyboard_, uint32_t key_);
+  explicit NativeButton(const QVariant& variant);
   explicit NativeButton(QKeyEvent* key_event);
   explicit NativeButton(QMouseEvent* mouse_event);
+
+  QVariant ToQVariant() const;
   QString GetButtonName() const;
 
   bool operator<(const NativeButton& other) const;
@@ -90,6 +105,9 @@ class KeyController : public QWidget {
   bool IsShown() const;
   void Hide();
   void Show();
+
+  void ReadSettings();
+  void SaveSettings() const;
 
  private:
   std::unordered_map<Key, QString> key_to_key_name_{};
