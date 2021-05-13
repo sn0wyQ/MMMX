@@ -1,6 +1,9 @@
 #ifndef CLIENT_KEYCONTROLLER_KEY_CONTROLLER_H_
 #define CLIENT_KEYCONTROLLER_KEY_CONTROLLER_H_
 
+#include <vector>
+#include <unordered_map>
+
 #include <QWidget>
 #include <QKeyEvent>
 #include <QMouseEvent>
