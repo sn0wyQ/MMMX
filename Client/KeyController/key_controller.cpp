@@ -9,10 +9,12 @@ using Constants::KeySettings::kHighlightedColor;
 using Constants::KeySettings::kDefaultSettingColor;
 using Constants::KeySettings::kEmptySettingColor;
 using Constants::KeySettings::kBackgroundColor;
+using Constants::KeySettings::kAnimationSpeed;
+using Constants::KeySettings::kAnimationMaxMsecs;
 
 KeyController::KeyController(QWidget* parent) :
     QWidget(parent),
-    opacity_emulator_(5.f),
+    opacity_emulator_(kAnimationSpeed),
     hide_timer_(this),
     opacity_effect(new QGraphicsOpacityEffect(this)) {
   this->setMouseTracking(true);
@@ -25,7 +27,7 @@ KeyController::KeyController(QWidget* parent) :
   opacity_emulator_.SetCurrentValue(0.01f);
   opacity_emulator_.SetPath(255.f, 0.01f);
   this->setGraphicsEffect(opacity_effect);
-  hide_timer_.setInterval(500);
+  hide_timer_.setInterval(kAnimationMaxMsecs);
   hide_timer_.setSingleShot(true);
   connect(&hide_timer_, &QTimer::timeout,
           this, &KeyController::hide);

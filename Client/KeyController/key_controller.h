@@ -60,6 +60,8 @@ const float kSettingHeight = 30.f;
 const float kBlankSpaceBetweenSettings = 10.f;
 const float kInnerOffsetX = 30.f;
 const float kInnerOffsetY = 30.f;
+const float kAnimationSpeed = 5.f;
+const int kAnimationMaxMsecs = 500;
 const QColor kHighlightedColor(115, 237, 64, 210);
 const QColor kDefaultSettingColor(126, 210, 91, 210);
 const QColor kEmptySettingColor(241, 105, 59, 210);
