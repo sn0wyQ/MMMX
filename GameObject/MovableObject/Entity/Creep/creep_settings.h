@@ -12,7 +12,7 @@
 
 #include "Animation/animation_enums.h"
 #include "GameObject/MovableObject/Entity/Creep/creep.h"
-#include "constants.h"
+#include "Constants/constants.h"
 
 class CreepSettings {
  public:

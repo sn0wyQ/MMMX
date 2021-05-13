@@ -18,7 +18,7 @@
 #include "GameObject/RigidBody/rigid_body.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
-#include "constants.h"
+#include "Constants/constants.h"
 
 namespace GameObjectTypeWrapper {
 

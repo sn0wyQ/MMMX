@@ -13,7 +13,7 @@
 #include "Weapon/Crossbow/crossbow.h"
 #include "Weapon/MachineGun/machine_gun.h"
 #include "Weapon/Shotgun/shotgun.h"
-#include "constants.h"
+#include "Constants/constants.h"
 
 class Player : public Entity {
  public:
