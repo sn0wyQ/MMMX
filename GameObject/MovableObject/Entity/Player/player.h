@@ -19,6 +19,7 @@ class Player : public Entity {
  public:
   explicit Player(GameObjectId player_id);
   Player(const Player& other);
+  virtual ~Player() = default;
 
   void DrawRelatively(Painter* painter) override;
 

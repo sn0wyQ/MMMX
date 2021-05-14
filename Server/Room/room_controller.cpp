@@ -67,7 +67,7 @@ void RoomController::OnTick(int delta_time) {
   this->SendPlayersStatsToPlayers();
   model_->UpdatePlayerStatsHashes();
   model_->UpdateGameObjectHashes();
-  if (models_cache_.size() > Constants::kTicksToStore) {
+  if (static_cast<int>(models_cache_.size()) > Constants::kTicksToStore) {
     models_cache_.pop_front();
   }
 }

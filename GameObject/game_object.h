@@ -45,6 +45,7 @@ class GameObject {
  public:
   explicit GameObject(GameObjectId id);
   GameObject(const GameObject& other);
+  virtual ~GameObject() = default;
 
   virtual void OnTick(int delta_time) {}
   void Draw(Painter* painter);

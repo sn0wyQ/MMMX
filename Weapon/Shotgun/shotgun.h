@@ -7,6 +7,7 @@ class Shotgun : public Weapon {
  public:
   Shotgun();
   Shotgun(const Shotgun& shotgun);
+  virtual ~Shotgun() = default;
 
   void DrawWeapon(Painter *painter) override;
 

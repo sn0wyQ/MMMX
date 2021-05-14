@@ -53,7 +53,8 @@ void ClientView::Update() {
     last_updated_time_ = time;
   }
   last_frame_times_.push_back(time - last_updated_time_);
-  if (last_frame_times_.size() > Constants::kAverageFpsFrames) {
+  if (static_cast<int>(last_frame_times_.size()) >
+      Constants::kAverageFpsFrames) {
     last_frame_times_.pop_front();
   }
   last_updated_time_ = time;
