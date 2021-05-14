@@ -49,7 +49,7 @@ bool ClientController::GetIsHoldingRespawnButton() const {
     return false;
   }
   if (model_->GetLocalPlayer()->IsVisible()) {
-    return is_respawn_holding_;
+    return key_controller_->IsHeld(Controls::kRespawn);
   }
   return true;
 }
@@ -282,6 +282,7 @@ void ClientController::UpdateLocalBullets(int delta_time) {
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
   view_ = std::move(view);
   converter_ = view_->GetConverter();
+  key_controller_ = view_->GetKeyController();
 }
 
 void ClientController::UpdateView() {
@@ -334,10 +335,13 @@ void ClientController::UpdateVarsEvent(const Event& event) {
 }
 
 QVector2D ClientController::GetKeyForce() const {
-  bool is_up_pressed = is_direction_by_keys_.at(Direction::kUp);
-  bool is_right_pressed = is_direction_by_keys_.at(Direction::kRight);
-  bool is_down_pressed = is_direction_by_keys_.at(Direction::kDown);
-  bool is_left_pressed = is_direction_by_keys_.at(Direction::kLeft);
+  if (!view_) {
+    return QVector2D();
+  }
+  bool is_up_pressed = key_controller_->IsHeld(Controls::kUp);
+  bool is_right_pressed = key_controller_->IsHeld(Controls::kRight);
+  bool is_down_pressed = key_controller_->IsHeld(Controls::kDown);
+  bool is_left_pressed = key_controller_->IsHeld(Controls::kLeft);
 
   QVector2D key_force;
   if ((is_up_pressed ^ is_down_pressed) == 1) {
@@ -375,52 +379,27 @@ int64_t ClientController::GetCurrentServerTime() const {
 // -------------------- CONTROLS --------------------
 
 void ClientController::FocusOutEvent(QFocusEvent*) {
-  if (are_controls_blocked_) {
-    return;
-  }
-  for (const auto& [key, direction] : key_to_direction_) {
-    is_direction_by_keys_[direction] = false;
-  }
-
+  key_controller_->ClearControls();
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity({0, 0});
   }
-  is_shoot_holding = false;
-}
-
-void ClientController::KeyPressEvent(QKeyEvent* key_event) {
-  if (!model_->IsLocalPlayerSet()) {
-    return;
-  }
-  auto native_key = static_cast<Controls>(key_event->nativeScanCode());
-  if (native_key == Controls::kKeyC) {
-    is_respawn_holding_ = true;
-    respawn_pressed_time_ = this->GetCurrentServerTime();
-    return;
-  }
-  if (are_controls_blocked_) {
-    return;
-  }
-  if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
-    is_direction_by_keys_[key_to_direction_[native_key]] = true;
-  }
-
-  model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
 }
 
 void ClientController::KeyReleaseEvent(QKeyEvent* key_event) {
   if (are_controls_blocked_) {
     return;
   }
-  auto native_key = static_cast<Controls>(key_event->nativeScanCode());
-  if (native_key == Controls::kKeyC) {
-    respawn_released_time_ = GetCurrentServerTime();
+  key_controller_->AddKeyReleaseEvent(key_event);
+  if (model_->IsLocalPlayerSet()) {
+    model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
+  }
+}
+
+void ClientController::KeyPressEvent(QKeyEvent* key_event) {
+  if (are_controls_blocked_) {
     return;
   }
-  if (key_to_direction_.find(native_key) != key_to_direction_.end()) {
-    is_direction_by_keys_[key_to_direction_[native_key]] = false;
-  }
-
+  key_controller_->AddKeyPressEvent(key_event);
   if (model_->IsLocalPlayerSet()) {
     model_->GetLocalPlayer()->SetVelocity(GetKeyForce());
   }
@@ -433,27 +412,16 @@ void ClientController::MouseMoveEvent(QMouseEvent* mouse_event) {
   last_mouse_position_ = mouse_event->pos();
 }
 
-void ClientController::MousePressEvent(QMouseEvent*) {
-  if (are_controls_blocked_) {
-    return;
-  }
-  is_shoot_holding = true;
+void ClientController::MousePressEvent(QMouseEvent* mouse_event) {
+  key_controller_->AddMousePressEvent(mouse_event);
 }
 
-void ClientController::MouseReleaseEvent(QMouseEvent*) {
-  if (are_controls_blocked_) {
-    return;
-  }
-  is_shoot_holding = false;
+void ClientController::MouseReleaseEvent(QMouseEvent* mouse_event) {
+  key_controller_->AddMouseReleaseEvent(mouse_event);
 }
 
 void ClientController::ControlsHolding() {
-  if (is_respawn_holding_ &&
-      respawn_pressed_time_ < respawn_released_time_ &&
-      GetCurrentServerTime() - respawn_released_time_ > 50) {
-    is_respawn_holding_ = false;
-  }
-  if (is_respawn_holding_) {
+  if (key_controller_->IsHeld(Controls::kRespawn)) {
     if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
       this->AddEventToSend(Event(EventType::kRequestRespawn,
                                  model_->GetLocalPlayer()->GetId()));
@@ -465,15 +433,12 @@ void ClientController::ControlsHolding() {
         > Constants::kRequestRespawnTime) {
       respawn_holding_current_ += controls_check_timer_.interval();
     }
-  }
-  if (!is_respawn_holding_ ||
-      this->GetCurrentServerTime() - last_requested_respawn_time_
-          <= Constants::kRequestRespawnTime) {
+  } else  {
     respawn_holding_current_ = std::max(static_cast<int64_t>(0),
                 respawn_holding_current_ - controls_check_timer_.interval());
   }
 
-  if (is_shoot_holding) {
+  if (key_controller_->IsHeld(Controls::kShoot)) {
     if (model_->IsLocalPlayerSet()) {
       auto local_player = model_->GetLocalPlayer();
       auto timestamp = GetCurrentServerTime();
@@ -581,12 +546,9 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
-  for (auto& direction : is_direction_by_keys_) {
-    direction.second = false;
-  }
+  key_controller_->ClearControls();
   last_died_ = this->GetCurrentServerTime();
   are_controls_blocked_ = true;
-  is_shoot_holding = false;
   last_requested_respawn_time_ = GetCurrentServerTime();
   model_->GetLocalPlayer()->SetIsVisible(false);
 }
@@ -599,7 +561,6 @@ void ClientController::ReviveLocalPlayerEvent(const Event& event) {
   auto spawn_point = event.GetArg<QPointF>(0);
   local_player->Revive(spawn_point);
   local_player->SetIsVisible(true);
-  is_respawn_holding_ = false;
   last_requested_respawn_time_ = this->GetCurrentServerTime();
   this->AddEventToSend(Event(EventType::kReviveConfirmed,
                              local_player->GetId()));

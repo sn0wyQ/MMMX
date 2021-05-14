@@ -10,6 +10,7 @@ class RigidBodyRectangle : public RigidBody {
  public:
   RigidBodyRectangle();
   RigidBodyRectangle(float width, float height);
+  virtual ~RigidBodyRectangle() = default;
 
   RigidBodyType GetType() const override;
   std::shared_ptr<RigidBody> External(float friction_force) const override;

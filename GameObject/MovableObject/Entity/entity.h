@@ -13,6 +13,7 @@ class Entity : public MovableObject {
  public:
   explicit Entity(GameObjectId id);
   Entity(const Entity& other);
+  virtual ~Entity() = default;
 
   void OnTick(int delta_time) override;
   void TickHealthPoints(int delta_time);

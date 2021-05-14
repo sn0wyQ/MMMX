@@ -9,6 +9,7 @@
 class Creep : public Entity {
  public:
   explicit Creep(GameObjectId player_id);
+  virtual ~Creep() = default;
 
   void DrawRelatively(Painter* painter) override;
 

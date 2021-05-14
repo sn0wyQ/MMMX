@@ -14,6 +14,7 @@ class MovableObject : public GameObject {
  public:
   explicit MovableObject(GameObjectId game_object_id);
   MovableObject(const MovableObject& other);
+  virtual ~MovableObject() = default;
 
   void OnTick(int delta_time) override;
   bool IsMovable() const override;

@@ -124,7 +124,7 @@ T GetEnumValueFromString(const QString& string) {
 }
 
 template<class T>
-QString GetEnumValueToString(T value) {
+QString GetStringFromEnumValue(T value) {
   return QMetaEnum::fromType<T>().valueToKey(static_cast<int>(value));
 }
 
