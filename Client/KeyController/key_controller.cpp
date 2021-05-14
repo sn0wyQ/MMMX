@@ -233,6 +233,7 @@ void KeyController::BindNativeButtonToControl(Controls control,
   this->UnbindControlFromNativeButton(control);
   control_to_key_name_[control] = button_name;
   native_button_to_control_[native_button] = control;
+  this->SaveSettings();
 }
 
 void KeyController::Hide() {
