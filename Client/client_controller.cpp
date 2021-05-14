@@ -49,7 +49,7 @@ bool ClientController::GetIsHoldingRespawnButton() const {
     return false;
   }
   if (model_->GetLocalPlayer()->IsVisible()) {
-    return key_controller_->IsHeld(Key::kRespawn);
+    return key_controller_->IsHeld(Controls::kRespawn);
   }
   return true;
 }
@@ -338,10 +338,10 @@ QVector2D ClientController::GetKeyForce() const {
   if (!view_) {
     return QVector2D();
   }
-  bool is_up_pressed = key_controller_->IsHeld(Key::kUp);
-  bool is_right_pressed = key_controller_->IsHeld(Key::kRight);
-  bool is_down_pressed = key_controller_->IsHeld(Key::kDown);
-  bool is_left_pressed = key_controller_->IsHeld(Key::kLeft);
+  bool is_up_pressed = key_controller_->IsHeld(Controls::kUp);
+  bool is_right_pressed = key_controller_->IsHeld(Controls::kRight);
+  bool is_down_pressed = key_controller_->IsHeld(Controls::kDown);
+  bool is_left_pressed = key_controller_->IsHeld(Controls::kLeft);
 
   QVector2D key_force;
   if ((is_up_pressed ^ is_down_pressed) == 1) {
@@ -421,7 +421,7 @@ void ClientController::MouseReleaseEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientController::ControlsHolding() {
-  if (key_controller_->IsHeld(Key::kRespawn)) {
+  if (key_controller_->IsHeld(Controls::kRespawn)) {
     if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
       this->AddEventToSend(Event(EventType::kRequestRespawn,
                                  model_->GetLocalPlayer()->GetId()));
@@ -438,7 +438,7 @@ void ClientController::ControlsHolding() {
                 respawn_holding_current_ - controls_check_timer_.interval());
   }
 
-  if (key_controller_->IsHeld(Key::kShoot)) {
+  if (key_controller_->IsHeld(Controls::kShoot)) {
     if (model_->IsLocalPlayerSet()) {
       auto local_player = model_->GetLocalPlayer();
       auto timestamp = GetCurrentServerTime();

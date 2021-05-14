@@ -24,33 +24,6 @@
 #include "Model/client_game_model.h"
 #include "Interpolator/interpolator.h"
 
-#ifdef WIN32
-enum class Controls {
-  kKeyW = 17,
-  kKeyA = 30,
-  kKeyS = 31,
-  kKeyD = 32,
-  kKeyC = 46
-};
-#else
-enum class Controls {
-  kKeyW = 25,
-  kKeyA = 38,
-  kKeyS = 39,
-  kKeyD = 40,
-  kKeyC = 54
-};
-#endif
-
-enum class Direction {
-  kUp,
-  kRight,
-  kDown,
-  kLeft,
-
-  SIZE
-};
-
 enum class GameState {
   kGameFinished,
   kGameInProgress,

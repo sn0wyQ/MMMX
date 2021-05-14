@@ -37,7 +37,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   stats_table_ = new StatsTable(this, controller_->GetModel());
   stats_table_->setMouseTracking(true);
 
-  // Key Settings
+  // Controls Settings
   key_controller_ = std::make_shared<KeyController>(this);
   key_controller_->Hide();
 
@@ -105,7 +105,7 @@ void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {
-  if (key_controller_->IsHeld(Key::kShowStatistics)) {
+  if (key_controller_->IsHeld(Controls::kShowStatistics)) {
     stats_table_->Show();
   } else {
     stats_table_->Hide();

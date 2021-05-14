@@ -20,11 +20,11 @@
 #include "GUI/Animations/linear_emulator.h"
 #include "key_names.h"
 
-namespace KeyWrapper {
+namespace ControlsWrapper {
 
 Q_NAMESPACE
 
-enum class Key {
+enum class Controls {
   kUp,
   kDown,
   kLeft,
@@ -35,17 +35,17 @@ enum class Key {
   kShoot
 };
 
-Q_ENUM_NS(Key)
+Q_ENUM_NS(Controls)
 
-}  // namespace KeyWrapper
+}  // namespace ControlsWrapper
 
-using Key = KeyWrapper::Key;
+using Controls = ControlsWrapper::Controls;
 
-Q_DECLARE_METATYPE(Key)
+Q_DECLARE_METATYPE(Controls)
 
-namespace Constants::KeySettings {
+namespace Constants::KeyController {
 
-const std::vector<QString> kSettingNames{
+const std::vector<QString> kControlsNames{
   "Up",
   "Down",
   "Left",
@@ -67,11 +67,11 @@ const QColor kDefaultSettingColor(126, 210, 91, 210);
 const QColor kEmptySettingColor(241, 105, 59, 210);
 const QColor kBackgroundColor(86, 86, 86, 180);
 
-}  // namespace Constants::KeySettings
+}  // namespace Constants::KeyController
 
 struct NativeButton {
   NativeButton() = delete;
-  NativeButton(bool is_keyboard_, uint32_t key_);
+  NativeButton(bool is_keyboard_, uint32_t control_);
   explicit NativeButton(const QVariant& variant);
   explicit NativeButton(QKeyEvent* key_event);
   explicit NativeButton(QMouseEvent* mouse_event);
@@ -81,7 +81,7 @@ struct NativeButton {
 
   bool operator<(const NativeButton& other) const;
   bool is_keyboard;
-  uint32_t key;
+  uint32_t control;
 };
 
 class KeyController : public QWidget {
@@ -98,9 +98,9 @@ class KeyController : public QWidget {
   void NativeButtonPressedEvent(const NativeButton& native_button);
   void NativeButtonReleasedEvent(const NativeButton& native_button);
 
-  bool IsHeld(Key key);
-  bool WasPressed(Key key);
-  void ClearKeyPress(Key key);
+  bool IsHeld(Controls control);
+  bool WasPressed(Controls control);
+  void ClearKeyPress(Controls control);
 
   void ClearControls();
 
@@ -116,39 +116,39 @@ class KeyController : public QWidget {
   void SaveSettings() const;
 
  private:
-  std::unordered_map<Key, QString> key_to_key_name_{};
-  std::map<NativeButton, Key> native_button_to_key_{
+  std::unordered_map<Controls, QString> control_to_key_name_{};
+  std::map<NativeButton, Controls> native_button_to_control_{
 #ifdef WIN32
-      {{true, 17}, Key::kUp},
-      {{true, 31}, Key::kDown},
-      {{true, 30}, Key::kLeft},
-      {{true, 32}, Key::kRight},
-      {{true, 19}, Key::kReload},
-      {{true, 15}, Key::kShowStatistics},
-      {{true, 46}, Key::kRespawn},
-      {{false, 1}, Key::kShoot}
+      {{true, 17}, Controls::kUp},
+      {{true, 31}, Controls::kDown},
+      {{true, 30}, Controls::kLeft},
+      {{true, 32}, Controls::kRight},
+      {{true, 19}, Controls::kReload},
+      {{true, 15}, Controls::kShowStatistics},
+      {{true, 46}, Controls::kRespawn},
+      {{false, 1}, Controls::kShoot}
 #else
-      {{true, 25}, Key::kUp},
-      {{true, 39}, Key::kDown},
-      {{true, 38}, Key::kLeft},
-      {{true, 40}, Key::kRight},
-      {{true, 27}, Key::kReload},
-      {{true, 23}, Key::kShowStatistics},
-      {{true, 54}, Key::kRespawn},
-      {{false, 1}, Key::kShoot}
+      {{true, 25}, Controls::kUp},
+      {{true, 39}, Controls::kDown},
+      {{true, 38}, Controls::kLeft},
+      {{true, 40}, Controls::kRight},
+      {{true, 27}, Controls::kReload},
+      {{true, 23}, Controls::kShowStatistics},
+      {{true, 54}, Controls::kRespawn},
+      {{false, 1}, Controls::kShoot}
 #endif
   };
 
   static int64_t GetCurrentTime();
-  void UnbindKeyFromNativeButton(Key key);
-  void BindNativeButtonToKey(Key key,
-                             const NativeButton& native_button,
-                             const QString& button_name);
+  void UnbindControlFromNativeButton(Controls control);
+  void BindNativeButtonToControl(Controls control,
+                                 const NativeButton& native_button,
+                                 const QString& button_name);
 
-  std::unordered_map<Key, int64_t> last_pressed_;
-  std::unordered_map<Key, int64_t> last_released_;
-  std::unordered_map<Key, bool> is_held_;
-  std::unordered_map<Key, bool> was_pressed_;
+  std::unordered_map<Controls, int64_t> last_pressed_;
+  std::unordered_map<Controls, int64_t> last_released_;
+  std::unordered_map<Controls, bool> is_held_;
+  std::unordered_map<Controls, bool> was_pressed_;
 
   std::vector<QRectF> settings_rects_;
   int highlighted_setting_index_{-1};
