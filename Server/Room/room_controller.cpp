@@ -533,12 +533,13 @@ GameObjectId RoomController::AddPlayer() {
 
 void RoomController::AddBox(float x, float y, float rotation,
                             float width, float height) {
-  model_->AddGameObject(GameObjectType::kGameObject,
+  auto id = model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, rotation, width, height,
                          static_cast<int>(RigidBodyType::kRectangle),
                          width, height,
                          static_cast<int>(AnimationType::kNone),
                          true});
+  qWarning() << width << height << model_->GetGameObjectByGameObjectId(id)->GetRigidBodyBoundingCircleRadius();
 }
 
 void RoomController::AddRandomBox(float width, float height) {
@@ -603,19 +604,19 @@ void RoomController::AddConstantObjects() {
                          static_cast<int>(AnimationType::kNone),
                          true});
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 10; i++) {
     this->AddRandomBox(7.f, 7.f);
   }
-  for (int i = 0; i < 5; i++) {
-    this->AddRandomTree(5.f);
+  for (int i = 0; i < 10; i++) {
+    this->AddRandomTree(3.f);
   }
 }
 
 void RoomController::AddCreeps() {
-  for (; creeps_count_ < 10; creeps_count_++) {
-    QPointF position = model_->GetPointToSpawn(std::max(
+  for (; creeps_count_ < 20; creeps_count_++) {
+    QPointF position = model_->GetPointToSpawn(Math::DistanceBetweenPoints(QPointF(), QPointF(
         CreepSettings::GetInstance().GetMaxCreepSize().height(),
-        CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
+        CreepSettings::GetInstance().GetMaxCreepSize().width())));
     this->AddCreep(position.x(), position.y());
   }
 }
