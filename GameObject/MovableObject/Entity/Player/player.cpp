@@ -51,6 +51,9 @@ void Player::SetParams(std::vector<QVariant> params) {
       weapon_ = std::make_shared<Shotgun>();
       break;
     }
+
+    default:
+      break;
   }
   params.pop_back();
   Entity::SetParams(params);

@@ -369,6 +369,7 @@ void ClientController::AddLocalPlayerGameObjectEvent(const Event& event) {
 }
 
 void ClientController::UpdateGameObjectDataEvent(const Event& event) {
+  qInfo() << event;
   auto game_object_id = event.GetArg<GameObjectId>(0);
   auto params = event.GetArgsSubVector(1);
   auto game_object =
