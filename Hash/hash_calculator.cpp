@@ -1,6 +1,6 @@
 #include <QCryptographicHash>
 
-#include "constants.h"
+#include "Constants/constants.h"
 #include "hash_calculator.h"
 
 QByteArray HashCalculator::GetHash(const std::vector<QVariant>& params) {

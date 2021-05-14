@@ -1,7 +1,7 @@
 #ifndef SERVER_ROOM_ROOM_SETTINGS_H_
 #define SERVER_ROOM_ROOM_SETTINGS_H_
 
-#include "constants.h"
+#include "Constants/constants.h"
 
 class RoomSettings {
  public:
