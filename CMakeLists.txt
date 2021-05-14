@@ -84,6 +84,7 @@ set(SOURCES
         GUI/GameView/stats_table.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp
+        GameObject/MovableObject/Entity/Creep/creep_enums.h
         GameObject/MovableObject/Entity/Creep/creep_settings.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
@@ -128,7 +129,7 @@ qt5_add_big_resources(RESOURCES_COMMON
         )
 
 add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
-        ${RESOURCES_COMMON} GameObject/MovableObject/Entity/Creep/creep_enums.h)
+        ${RESOURCES_COMMON})
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}

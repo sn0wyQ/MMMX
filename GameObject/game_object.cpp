@@ -202,7 +202,7 @@ void GameObject::SetAnimation(AnimationType animation_type) {
 
 void GameObject::SetAnimationState(AnimationState animation_state,
                                    bool restart) {
-  if (!animation_.get()) {
+  if (!animation_) {
     return;
   }
   animation_->SetAnimationState(animation_state, restart);
