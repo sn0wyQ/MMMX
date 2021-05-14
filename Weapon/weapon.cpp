@@ -102,9 +102,9 @@ std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
                               float radius, float random_bullet_shift) const {
   QVector2D velocity = Math::GetVectorByAngle(Math::GetNormalizeAngle(
       rotation + GetRotationWithAccuracy(random_bullet_shift)));
-  velocity *= this->GetBulletSpeed();
   float start_x = x + velocity.x();
   float start_y = y + velocity.y();
+  velocity *= this->GetBulletSpeed();
   return {start_x, start_y, 0.f, radius * 2.f, radius * 2.f,
           static_cast<int>(RigidBodyType::kCircle),
           radius * 2.f, radius * 2.f,
