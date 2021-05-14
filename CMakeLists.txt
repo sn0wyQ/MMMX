@@ -73,6 +73,7 @@ set(SOURCES
         Client/abstract_client_view.h
         Client/client_controller.cpp
         Client/client_view.cpp
+        Constants/constants.cpp
         Controller/base_controller.cpp
         Converter/converter.cpp
         Event/event.cpp
