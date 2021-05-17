@@ -220,6 +220,10 @@ bool GameObject::IsEntity() const {
 }
 
 float GameObject::GetRigidBodyBoundingCircleRadius() const {
+  if (GetRigidBody()->GetType() == RigidBodyType::kCircle) {
+    return std::dynamic_pointer_cast<RigidBodyCircle>(
+        GetRigidBody())->GetRadius();
+  }
   return Math::DistanceBetweenPoints(
       QPointF(), QPointF(this->GetRigidBody()->GetWidth() / 2.f,
                          this->GetRigidBody()->GetHeight() / 2.f));

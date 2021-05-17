@@ -65,9 +65,9 @@ void RoomGameModel::UpdatePlayerStatsHashes() {
 
 QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
                                        bool for_player) const {
-  static std::mt19937 gen(QDateTime::currentSecsSinceEpoch());
-  int kChunksX = 10;
-  int kChunksY = 10;
+  static std::mt19937 gen(123);
+  int kChunksX = 15;
+  int kChunksY = 15;
   QPointF chunk_size((Constants::kDefaultMapWidth - 2 * radius_from_object) / kChunksX,
                        (Constants::kDefaultMapHeight - 2 * radius_from_object) / kChunksY);
   QPointF top_left_dot(-Constants::kDefaultMapWidth / 2.f + radius_from_object,
@@ -112,16 +112,21 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
         chunk_rect.topLeft().y(), chunk_rect.bottomLeft().y());
     for (int tries = 0; tries < 20; tries++) {
       QPointF point(distribution_x(gen), distribution_y(gen));
+      bool ok = true;
       for (const auto& game_object : this->GetAllGameObjects()) {
-        if (Math::DistanceBetweenPoints(point, game_object->GetPosition()) >
+        if (game_object->GetType() != GameObjectType::kMapBorder &&
+            Math::DistanceBetweenPoints(point, game_object->GetPosition()) <
             radius_from_object + game_object->GetRigidBodyBoundingCircleRadius()) {
-          return point;
+          ok = false;
         }
+      }
+      if (ok) {
+        return point;
       }
     }
   }
-  qWarning() << "SOOOO GAY";
-  return QPointF();
+  qWarning() << "Cant find spawn point for object";
+  return QPointF(1, 1);
 }
 
 GameObjectId RoomGameModel::GenerateNextUnusedBulletId(GameObjectId player_id) {

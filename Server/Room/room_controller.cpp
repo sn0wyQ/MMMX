@@ -533,13 +533,12 @@ GameObjectId RoomController::AddPlayer() {
 
 void RoomController::AddBox(float x, float y, float rotation,
                             float width, float height) {
-  auto id = model_->AddGameObject(GameObjectType::kGameObject,
+  model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, rotation, width, height,
                          static_cast<int>(RigidBodyType::kRectangle),
                          width, height,
                          static_cast<int>(AnimationType::kNone),
                          true});
-  qWarning() << width << height << model_->GetGameObjectByGameObjectId(id)->GetRigidBodyBoundingCircleRadius();
 }
 
 void RoomController::AddRandomBox(float width, float height) {
@@ -610,6 +609,8 @@ void RoomController::AddConstantObjects() {
   for (int i = 0; i < 10; i++) {
     this->AddRandomTree(3.f);
   }
+  auto obj1 = model_->GetGameObjectByGameObjectId(2);
+  auto obj2 = model_->GetGameObjectByGameObjectId(5);
 }
 
 void RoomController::AddCreeps() {
