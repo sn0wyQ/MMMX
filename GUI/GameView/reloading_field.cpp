@@ -2,11 +2,23 @@
 
 using Constants::ReloadingField::kBulletWidth;
 using Constants::ReloadingField::kBulletHeight;
-using Constants::ReloadingField::kSpaceBetweenBullets;
+using Constants::ReloadingField::kMinSpaceBetweenBullets;
 
 ReloadingField::ReloadingField(QWidget* parent,
                                std::shared_ptr<ClientController> controller) :
     QWidget(parent), controller_{std::move(controller)} {
+    QString base_path = "./Res/Icons/";
+    QSvgRenderer renderer_empty_bullet(base_path + "EmptyBullet.svg");
+    QSvgRenderer renderer_bullet(base_path + "GoldBullet.svg");
+    bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
+    empty_bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
+    bullet_pixmap_.fill(Qt::transparent);
+    empty_bullet_pixmap_.fill(Qt::transparent);
+    QPainter painter_for_bullet_pixmap(&bullet_pixmap_);
+    QPainter painter_for_empty_bullet_pixmap(&empty_bullet_pixmap_);
+    renderer_bullet.render(&painter_for_bullet_pixmap, bullet_pixmap_.rect());
+    renderer_empty_bullet.render(&painter_for_empty_bullet_pixmap,
+                                 empty_bullet_pixmap_.rect());
 }
 
 void ReloadingField::paintEvent(QPaintEvent* paint_event) {
@@ -15,19 +27,6 @@ void ReloadingField::paintEvent(QPaintEvent* paint_event) {
   }
 
   QPainter painter(this);
-
-  QString base_path = "./Res/Icons/";
-  QSvgRenderer renderer_empty_bullet(base_path + "EmptyBullet.svg");
-  QSvgRenderer renderer_bullet(base_path + "GoldBullet.svg");
-  bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
-  empty_bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
-  bullet_pixmap_.fill(Qt::transparent);
-  empty_bullet_pixmap_.fill(Qt::transparent);
-  QPainter painter_for_bullet_pixmap(&bullet_pixmap_);
-  QPainter painter_for_empty_bullet_pixmap(&empty_bullet_pixmap_);
-  renderer_bullet.render(&painter_for_bullet_pixmap, bullet_pixmap_.rect());
-  renderer_empty_bullet.render(&painter_for_empty_bullet_pixmap,
-                               empty_bullet_pixmap_.rect());
 
   this->RecalculateFields();
 
@@ -49,10 +48,20 @@ void ReloadingField::paintEvent(QPaintEvent* paint_event) {
 }
 
 void ReloadingField::RecalculateFields() {
-  in_rows_ = this->width() / (kSpaceBetweenBullets + kBulletWidth);
   int clip_size =
       controller_->GetModel()->GetLocalPlayer()->GetWeapon()->GetClipSize();
-  in_columns_ = (clip_size + in_rows_ - 1) / in_rows_;
+  int max_in_row = this->width() / (kMinSpaceBetweenBullets + kBulletWidth);
+  clip_size_ = clip_size;
+  if (max_in_row >= clip_size) {
+    in_rows_ = clip_size;
+    in_columns_ = 1;
+  } else if (max_in_row * 2 >= clip_size) {
+    in_rows_ = clip_size / 2;
+    in_columns_ = 2;
+  } else {
+    in_columns_ =  (clip_size + max_in_row - 1) / max_in_row;
+    in_rows_ = (clip_size + in_columns_ - 1) / in_columns_;
+  }
 }
 
 void ReloadingField::Draw(QPainter* painter) {
@@ -70,7 +79,7 @@ void ReloadingField::DrawReload(QPainter* painter,
                                 int64_t reloading_time) {
   painter->save();
 
-  int bullets_in_clip = in_rows_ * in_columns_ * delta_time / reloading_time;
+  int bullets_in_clip = clip_size_ * delta_time / reloading_time;
   this->DrawPixmaps(painter, bullets_in_clip);
 
   painter->restore();
@@ -80,22 +89,20 @@ void ReloadingField::DrawPixmaps(QPainter* painter, int bullets_in_clip) {
   painter->save();
 
   int real_height = static_cast<int>(static_cast<float>(in_columns_)
-      * (kSpaceBetweenBullets + kBulletHeight));
+      * (kMinSpaceBetweenBullets + kBulletHeight));
   int real_width = static_cast<int>(static_cast<float>(in_rows_)
-      * (kSpaceBetweenBullets + kBulletWidth));
+      * (kMinSpaceBetweenBullets + kBulletWidth));
   int shift_x = this->size().width() - real_width;
   int shift_y = this->size().height() - real_height;
-  int clip_size =
-      controller_->GetModel()->GetLocalPlayer()->GetWeapon()->GetClipSize();
   int max_clip_size = in_columns_ * in_rows_;
-  int delta = max_clip_size - clip_size;
+  int delta = max_clip_size - clip_size_;
   int current_bullet = 0;
 
   while (current_bullet < max_clip_size) {
     int x = static_cast<int>(static_cast<float>((current_bullet % in_rows_))
-        * (kBulletWidth + kSpaceBetweenBullets));
+        * (kBulletWidth + kMinSpaceBetweenBullets));
     int y = static_cast<int>(static_cast<float>((current_bullet / in_rows_))
-        * (kBulletHeight + kSpaceBetweenBullets));
+        * (kBulletHeight + kMinSpaceBetweenBullets));
     if (current_bullet < delta) {
       current_bullet++;
       continue;

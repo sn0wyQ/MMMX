@@ -16,7 +16,7 @@ namespace Constants::ReloadingField {
 
 const float kBulletHeight = 54.f;
 const float kBulletWidth = 9.f;
-const float kSpaceBetweenBullets = 1.5f;
+const float kMinSpaceBetweenBullets = 1.5f;
 
 }  // namespace Constants::ReloadingField
 
@@ -41,6 +41,7 @@ class ReloadingField : public QWidget {
   QPixmap empty_bullet_pixmap_;
   int in_rows_;
   int in_columns_;
+  int clip_size_;
 };
 
 #endif  // GUI_GAMEVIEW_RELOADING_FIELD_H_
