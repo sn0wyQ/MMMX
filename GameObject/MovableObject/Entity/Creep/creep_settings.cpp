@@ -54,7 +54,8 @@ CreepSettings::CreepSettings() {
       if (!creep_params.isObject()) {
         qWarning() << "[CREEP SETTINGS] Json document has wrong format";
       } else {
-        QVariantMap current_creep_params = creep_params.toObject().toVariantMap();
+        QVariantMap
+            current_creep_params = creep_params.toObject().toVariantMap();
         QVariant current_creep_type = current_creep_params.value("type");
         if (!current_creep_type.isValid()
             || !current_creep_type.canConvert<QString>()) {
