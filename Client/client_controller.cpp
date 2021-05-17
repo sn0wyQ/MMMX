@@ -461,9 +461,7 @@ void ClientController::ControlsHolding() {
         this->AddEventToSend(Event(EventType::kSendPlayerReloading,
                                    static_cast<qint64>(GetCurrentServerTime()),
                                    local_player->GetId()));
-        return;
-      }
-
+      } else {
       if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
         return;
       }
@@ -507,6 +505,7 @@ void ClientController::ControlsHolding() {
                                  static_cast<qint64>(timestamp),
                                  local_player->GetId(),
                                  random_bullet_shifts));
+      }
     }
   }
 }
