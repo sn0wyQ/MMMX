@@ -461,50 +461,47 @@ void ClientController::ControlsHolding() {
         this->AddEventToSend(Event(EventType::kSendPlayerReloading,
                                    static_cast<qint64>(GetCurrentServerTime()),
                                    local_player->GetId()));
-      } else {
-      if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
-        return;
-      }
-      local_player->GetWeapon()->SetLastTimeShot(timestamp);
+      } else if (local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
+          local_player->GetWeapon()->SetLastTimeShot(timestamp);
 
-      // Temporary nickname change
-      this->AddEventToSend(Event(
-          EventType::kSendNickname,
-          local_player->GetId(),
-          QString("Shooter#") +
-          QString::number(model_->GetLocalPlayer()->GetId())));
+        // Temporary nickname change
+        this->AddEventToSend(Event(
+            EventType::kSendNickname,
+            local_player->GetId(),
+            QString("Shooter#") +
+            QString::number(model_->GetLocalPlayer()->GetId())));
 
-      QList<QVariant> random_bullet_shifts;
-      static std::mt19937 generator_(0);
-      std::uniform_real_distribution<> generate_shift_ =
-          std::uniform_real_distribution<>(-1, 1);
-      switch (local_player->GetWeapon()->GetWeaponType()) {
-        case WeaponType::kShotgun: {
-          random_bullet_shifts.push_back(generate_shift_(generator_));
-          random_bullet_shifts.push_back(generate_shift_(generator_));
-          random_bullet_shifts.push_back(generate_shift_(generator_));
-          break;
+        QList<QVariant> random_bullet_shifts;
+        static std::mt19937 generator_(0);
+        std::uniform_real_distribution<> generate_shift_ =
+            std::uniform_real_distribution<>(-1, 1);
+        switch (local_player->GetWeapon()->GetWeaponType()) {
+          case WeaponType::kShotgun: {
+            random_bullet_shifts.push_back(generate_shift_(generator_));
+            random_bullet_shifts.push_back(generate_shift_(generator_));
+            random_bullet_shifts.push_back(generate_shift_(generator_));
+            break;
+          }
+          case WeaponType::kAssaultRifle:
+          case WeaponType::kCrossbow:
+          case WeaponType::kMachineGun: {
+            random_bullet_shifts.push_back(generate_shift_(generator_));
+            break;
+          }
+          default: {
+            qWarning() << "Addressing a nonexistent type of weapon\n";
+            break;
+          }
         }
-        case WeaponType::kAssaultRifle:
-        case WeaponType::kCrossbow:
-        case WeaponType::kMachineGun: {
-          random_bullet_shifts.push_back(generate_shift_(generator_));
-          break;
-        }
-        default: {
-          qWarning() << "Addressing a nonexistent type of weapon\n";
-          break;
-        }
-      }
-      local_player->GetWeapon()->SetCurrentBulletsInClip(
-          local_player->GetWeapon()->GetCurrentBulletsInClip()
-              - random_bullet_shifts.size());
+        local_player->GetWeapon()->SetCurrentBulletsInClip(
+            local_player->GetWeapon()->GetCurrentBulletsInClip()
+                - random_bullet_shifts.size());
 
-      model_->AddLocalBullets(timestamp, random_bullet_shifts);
-      this->AddEventToSend(Event(EventType::kSendPlayerShooting,
-                                 static_cast<qint64>(timestamp),
-                                 local_player->GetId(),
-                                 random_bullet_shifts));
+        model_->AddLocalBullets(timestamp, random_bullet_shifts);
+        this->AddEventToSend(Event(EventType::kSendPlayerShooting,
+                                   static_cast<qint64>(timestamp),
+                                   local_player->GetId(),
+                                   random_bullet_shifts));
       }
     }
   }
