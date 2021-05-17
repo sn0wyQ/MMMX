@@ -22,6 +22,7 @@
 
 const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
     { AnimationType::kElectricGenerator, "ElectricGenerator" },
+    {AnimationType::kGarage, "Garage" },
     {AnimationType::kGiantWeak, "GiantWeak" },
     {AnimationType::kGiantStrong, "GiantStrong" },
     { AnimationType::kBox, "Box" },

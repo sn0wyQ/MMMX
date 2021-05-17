@@ -515,22 +515,22 @@ GameObjectId RoomController::AddPlayer() {
   return model_->AddGameObject(GameObjectType::kPlayer, params);
 }
 
-void RoomController::AddBox(float x, float y, float rotation,
-                            float width, float height) {
+void RoomController::AddGarage(float x, float y, float rotation,
+                               float width, float height) {
   model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, rotation, width, height,
                          static_cast<int>(RigidBodyType::kRectangle),
                          width, height,
-                         static_cast<int>(AnimationType::kNone)});
+                         static_cast<int>(AnimationType::kGarage)});
 }
 
-void RoomController::AddRandomBox(float width, float height) {
+void RoomController::AddRandomGarage(float width, float height) {
   QPointF position = model_->GetPointToSpawn(
       Math::DistanceBetweenPoints(
           QPointF(), QPointF(width / 2.f, height / 2.f)));
   static std::mt19937 rng(QDateTime::currentMSecsSinceEpoch());
   std::uniform_real_distribution<> random_rotation(0, 360);
-  AddBox(position.x(), position.y(), random_rotation(rng), width, height);
+  AddGarage(position.x(), position.y(), random_rotation(rng), width, height);
 }
 
 void RoomController::AddTree(float x, float y, float radius) {
@@ -589,10 +589,10 @@ void RoomController::AddConstantObjects() {
                          static_cast<int>(AnimationType::kNone)});
 
   for (int i = 0; i < 5; i++) {
-    this->AddRandomBox(7.f, 7.f);
+    this->AddRandomGarage(10.f, 7.772f);
   }
   for (int i = 0; i < 5; i++) {
-    this->AddRandomTree(5.f);
+    this->AddRandomTree(4.f);
   }
 }
 

@@ -69,10 +69,11 @@ enum class AnimationType {
   // Used for objects without images (that are just drawn for example)
   kNone = -1,
 
+  kBox,
   kElectricGenerator,
+  kGarage,
   kGiantStrong,
   kGiantWeak,
-  kBox,
   kJoCost,
   kShenandoah,
   kSpider3_0,
