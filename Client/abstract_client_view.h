@@ -6,6 +6,7 @@
 #include <QMainWindow>
 
 #include "Converter/converter.h"
+#include "Client/KeyController/key_controller.h"
 #include "Weapon/WeaponSettings/weapon_settings.h"
 
 class AbstractClientView : public QMainWindow {
@@ -17,9 +18,11 @@ class AbstractClientView : public QMainWindow {
   virtual void Update() = 0;
   virtual std::shared_ptr<Converter> GetConverter() = 0;
   virtual QPointF GetPlayerToCenterOffset() const = 0;
-  virtual void AddKillFeedNotification(QString killer_name,
-                                       QString victim_name,
+  virtual void AddKillFeedNotification(const QString& killer_name,
+                                       const QString& victim_name,
                                        WeaponType weapon_type) = 0;
+  virtual std::shared_ptr<KeyController> GetKeyController() const = 0;
+  virtual void AddRespawnNotification(const QString& player_name) = 0;
 };
 
 #endif  // CLIENT_ABSTRACT_CLIENT_VIEW_H_

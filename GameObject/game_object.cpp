@@ -30,11 +30,14 @@ GameObject::GameObject(const GameObject& other) {
   SetX(other.GetX());
   updated_time_ = other.updated_time_;
   is_need_to_delete_ = other.is_need_to_delete_;
+  visibility_ = other.visibility_;
   created_time_ = other.created_time_;
   is_interpolated_once_ = other.is_interpolated_once_;
 }
 
 void GameObject::SetParams(std::vector<QVariant> params) {
+  SetVisibility(params.back().toFloat());
+  params.pop_back();
   auto animation_type = static_cast<AnimationType>(params.back().toInt());
   SetAnimation(animation_type);
   params.pop_back();
@@ -43,7 +46,7 @@ void GameObject::SetParams(std::vector<QVariant> params) {
   float rigid_body_width = params.back().toFloat();
   params.pop_back();
   auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
-  if (rigid_body_ == nullptr) {
+  if (!rigid_body_) {
     switch (rigid_body_type) {
       case RigidBodyType::kCircle:
         rigid_body_ = std::make_shared<RigidBodyCircle>();
@@ -52,7 +55,8 @@ void GameObject::SetParams(std::vector<QVariant> params) {
         rigid_body_ = std::make_shared<RigidBodyRectangle>();
         break;
       default:
-        qWarning() << "[GAME OBJECT] Invalid rigid body type";
+        qWarning() << "[GAME OBJECT] Invalid rigid body type"
+                   << params.back().toInt();
         break;
     }
   }
@@ -82,17 +86,13 @@ std::vector<QVariant> GameObject::GetParams() const {
   result.emplace_back(rigid_body_->GetWidth());
   result.emplace_back(rigid_body_->GetHeight());
   result.emplace_back(static_cast<int>(animation_->GetType()));
+  result.emplace_back(GetVisibility());
   return result;
 }
 
 void GameObject::Draw(Painter* painter) {
-  if (this->IsInterpolatedOnce()) {
-    return;
-  }
   painter->save();
   painter->Translate(position_);
-  this->DrawHealthBar(painter);
-  this->DrawLevel(painter);
   painter->RotateCounterClockWise(rotation_);
   if (!animation_ || animation_->GetType() == AnimationType::kNone) {
     this->DrawRelatively(painter);
@@ -232,6 +232,10 @@ bool GameObject::IsEntity() const {
 }
 
 float GameObject::GetRigidBodyBoundingCircleRadius() const {
+  if (GetRigidBody()->GetType() == RigidBodyType::kCircle) {
+    return std::dynamic_pointer_cast<RigidBodyCircle>(
+        GetRigidBody())->GetRadius();
+  }
   return Math::DistanceBetweenPoints(
       QPointF(), QPointF(this->GetRigidBody()->GetWidth() / 2.f,
                          this->GetRigidBody()->GetHeight() / 2.f));
@@ -251,4 +255,37 @@ bool GameObject::IsInterpolatedOnce() const {
 
 void GameObject::SetIsInterpolatedOnce(bool is_interpolated_once) {
   is_interpolated_once_ = is_interpolated_once;
+}
+
+float GameObject::GetVisibility() const {
+  return visibility_;
+}
+
+void GameObject::SetVisibility(float visibility) {
+  visibility_ = visibility;
+}
+
+bool GameObject::IsVisible() const {
+  return visibility_ > 0.0001f;
+}
+
+void GameObject::SetIsVisible(bool visible) {
+  visibility_ = (visible ? 1.f : 0.f);
+}
+
+bool GameObject::IsAlive() const {
+  return true;
+}
+
+bool GameObject::IsNeedToDraw() const {
+  if (!IsVisible()) {
+    return false;
+  }
+  if (this->IsInterpolatedOnce()) {
+    return false;
+  }
+  if (!IsAlive()) {
+    return false;
+  }
+  return true;
 }

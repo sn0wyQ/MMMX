@@ -170,6 +170,7 @@ std::vector<QVariant>
   params.emplace_back(GetRigidBodyHeight(level_and_type.second));
   params.emplace_back(
       static_cast<int>(GetAnimationType(level_and_type.second)));
+  params.emplace_back(true);
   // MovableObject params
   params.emplace_back(0);  // velocity_x
   params.emplace_back(0);  // velocity_y

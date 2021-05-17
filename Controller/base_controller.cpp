@@ -44,6 +44,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::UpdateLocalPlayerHealthPointsEvent, this, _1));
   SetFunctionForEventType(EventType::kPlayerKilledNotification,
     std::bind(&BaseController::PlayerKilledNotificationEvent, this, _1));
+  SetFunctionForEventType(EventType::kPlayerRespawned,
+    std::bind(&BaseController::PlayerRespawnedEvent, this, _1));
   SetFunctionForEventType(EventType::kLocalPlayerDied,
     std::bind(&BaseController::LocalPlayerDiedEvent, this, _1));
   SetFunctionForEventType(EventType::kIncreaseLocalPlayerExperience,
@@ -54,6 +56,12 @@ BaseController::BaseController() {
     std::bind(&BaseController::ShootFailedEvent, this, _1));
   SetFunctionForEventType(EventType::kStartShootingAnimation,
     std::bind(&BaseController::StartShootingAnimationEvent, this, _1));
+  SetFunctionForEventType(EventType::kReviveLocalPlayer,
+    std::bind(&BaseController::ReviveLocalPlayerEvent, this, _1));
+  SetFunctionForEventType(EventType::kReviveConfirmed,
+    std::bind(&BaseController::ReviveConfirmedEvent, this, _1));
+  SetFunctionForEventType(EventType::kRequestRespawn,
+    std::bind(&BaseController::RequestRespawnEvent, this, _1));
 
   connect(&ticker_, &QTimer::timeout, this, &BaseController::Tick);
 }

@@ -7,6 +7,7 @@ class MachineGun : public Weapon {
  public:
   MachineGun();
   MachineGun(const MachineGun& machine_gun);
+  virtual ~MachineGun() = default;
 
   void DrawWeapon(Painter *painter) override;
 

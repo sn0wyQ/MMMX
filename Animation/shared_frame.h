@@ -17,7 +17,7 @@
 #include <QTimer>
 
 #include "Animation/animation_enums.h"
-#include "constants.h"
+#include "Constants/constants.h"
 
 const std::unordered_map<AnimationState, QString> kAnimationStateStrings {
     { AnimationState::kDestroy, "destroy" },

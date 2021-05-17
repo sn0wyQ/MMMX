@@ -13,6 +13,7 @@ class Entity : public MovableObject {
  public:
   explicit Entity(GameObjectId id);
   Entity(const Entity& other);
+  virtual ~Entity() = default;
 
   void OnTick(int delta_time) override;
   void TickHealthPoints(int delta_time);
@@ -31,6 +32,7 @@ class Entity : public MovableObject {
 
   void SetMaxHealthPoints(float max_health_points);
   float GetMaxHealthPoints() const;
+  bool IsAlive() const override;
 
   void SetLevel(int level);
   int GetLevel() const;

@@ -11,7 +11,7 @@
 
 #include "Client/client_controller.h"
 #include "Converter/converter.h"
-#include "SpringEmulator/spring_emulator.h"
+#include "GUI/Animations/spring_emulator.h"
 #include "Painter/painter.h"
 #include "KillFeed/kill_feed.h"
 
@@ -34,7 +34,9 @@ class GameView : public QWidget {
   std::shared_ptr<Converter> converter_;
 
   void DrawObjects(const std::vector<std::shared_ptr<GameObject>>& objects,
-                   const QRectF& view_rect);
+                   const QRectF& view_rect,
+                   std::vector<std::shared_ptr<GameObject>>* drawn_objects);
+  void DrawBars(const std::shared_ptr<GameObject>& object);
 
   bool was_player_set_;
   SpringEmulator<QVector2D, false> camera_motion_emulator_;

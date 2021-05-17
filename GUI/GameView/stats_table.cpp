@@ -41,13 +41,12 @@ void StatsTable::paintEvent(QPaintEvent* paint_event) {
       (1 - size_ratio_emulator_.GetCurrentValue());
 
   QPainter painter(this);
-  painter.translate(dist_x / 2, dist_y / 2);
+  painter.translate(dist_x / 2.f, dist_y / 2.f);
   auto transform = painter.transform();
   transform.scale(size_ratio_emulator_.GetCurrentValue(),
                   size_ratio_emulator_.GetCurrentValue());
   painter.setTransform(transform);
-  painter.setRenderHints(
-      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+  Constants::SetPainterHints(&painter);
 
   this->DrawTable(&painter);
   this->DrawPlayersStats(&painter);
@@ -136,9 +135,12 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
   for (const auto& stat : stats) {
     if (stat->GetPlayerId() == model_->GetLocalPlayer()->GetId()) {
       pen_.setColor(Constants::StatsTable::kLocalPLayerTextColor);
+      font.setBold(true);
     } else {
       pen_.setColor(Constants::StatsTable::kTextColor);
+      font.setBold(false);
     }
+    painter->setFont(font);
     painter->setPen(pen_);
     painter->drawText(get_rect(0),
                       Qt::AlignCenter,

@@ -9,6 +9,7 @@
 class Bullet : public MovableObject {
  public:
   explicit Bullet(GameObjectId bullet_id);
+  virtual ~Bullet() = default;
 
   GameObjectType GetType() const override;
 

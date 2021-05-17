@@ -4,7 +4,7 @@
 #include <vector>
 #include <QVariant>
 
-#include "constants.h"
+#include "Constants/constants.h"
 
 class PlayerStats {
  public:

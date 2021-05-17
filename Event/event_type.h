@@ -121,14 +121,25 @@ enum class EventType {
   // [2] - <int> used weapon (WeaponType)
   kPlayerKilledNotification,
 
+  // [0] - <GameObjectId> player_id
+  kPlayerRespawned,
+
   // [0] - <float> experience_to_add
   kIncreaseLocalPlayerExperience,
 
-  // [0] - <QPointF> point_to_spawn
   kLocalPlayerDied,
+
+  // [0] - <QPointF> point_to_spawn
+  kReviveLocalPlayer,
+
+  // [0] - <GameObjectId> player_id
+  kReviveConfirmed,
 
   // [0] - <float> health_points
   kUpdateLocalPlayerHealthPoints,
+
+  // [0] - <GameObjectId> player_id
+  kRequestRespawn,
 
   SIZE
 };

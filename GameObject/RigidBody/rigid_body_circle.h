@@ -10,6 +10,7 @@ class RigidBodyCircle : public RigidBody {
  public:
   RigidBodyCircle();
   explicit RigidBodyCircle(float radius);
+  virtual ~RigidBodyCircle() = default;
 
   void SetRadius(float radius);
   float GetRadius() const;

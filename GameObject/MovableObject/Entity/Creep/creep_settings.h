@@ -19,10 +19,10 @@
 #include <QVariantMap>
 
 #include "Animation/animation_enums.h"
+#include "Constants/constants.h"
 #include "GameObject/MovableObject/Entity/Creep/creep.h"
 #include "GameObject/MovableObject/Entity/Creep/creep_enums.h"
 #include "GameObject/RigidBody/rigid_body.h"
-#include "constants.h"
 
 class CreepSettings {
  public:
