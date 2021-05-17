@@ -65,14 +65,14 @@ void RoomGameModel::UpdatePlayerStatsHashes() {
 QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
                                        bool for_player) const {
   std::uniform_real_distribution<> random_x(
-      -Constants::kDefaultMapWidth / 2.f + radius_from_object,
-      Constants::kDefaultMapWidth / 2.f - radius_from_object);
+      -Constants::kMapWidth / 2.f + radius_from_object,
+      Constants::kMapWidth / 2.f - radius_from_object);
   std::uniform_real_distribution<> random_y(
-      -Constants::kDefaultMapHeight / 2.f + radius_from_object,
-      Constants::kDefaultMapHeight / 2.f - radius_from_object);
+      -Constants::kMapHeight / 2.f + radius_from_object,
+      Constants::kMapHeight / 2.f - radius_from_object);
   int times_generate = 0;
   QPointF best_point;
-  float big_distance{Constants::kDefaultMapHeight};
+  float big_distance{Constants::kMapHeight};
   float best_point_min_player_distance{0.f};
   while (true) {
     times_generate++;
@@ -116,8 +116,8 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
       // я тут хз что делать, крашить сервер не хочется,
       // так что пока оставил создание объекта где то далеко
       qWarning() << "[MODEL] Can't find spawn point";
-      return QPointF(Constants::kDefaultMapWidth,
-                     Constants::kDefaultMapHeight);
+      return QPointF(Constants::kMapWidth,
+                     Constants::kMapHeight);
     }
   }
   return best_point;

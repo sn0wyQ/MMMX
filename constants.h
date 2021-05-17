@@ -39,8 +39,9 @@ constexpr int kMSecsToStore = 1000;
 constexpr int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
 
 // Map
-constexpr float kDefaultMapWidth = 100.f;
-constexpr float kDefaultMapHeight = 100.f;
+constexpr float kMapWidth = 100.f;
+constexpr float kMapHeight = 100.f;
+constexpr float kMapMaxDistanceFromCenter = 141.43f;
 
 // Room
 constexpr int kDefaultMaxClients = 15;

@@ -15,6 +15,8 @@ GameObjectType Creep::GetType() const {
 void Creep::SetParams(std::vector<QVariant> params) {
   this->SetExpIncrementForKill(params.back().toFloat());
   params.pop_back();
+  this->SetCreepType(static_cast<CreepType>(params.back().toInt()));
+  params.pop_back();
   this->SetLevel(params.back().toInt());
   params.pop_back();
   Entity::SetParams(params);
@@ -23,6 +25,7 @@ void Creep::SetParams(std::vector<QVariant> params) {
 std::vector<QVariant> Creep::GetParams() const {
   auto params = Entity::GetParams();
   params.emplace_back(this->GetLevel());
+  params.emplace_back(static_cast<int>(this->GetCreepType()));
   params.emplace_back(this->GetExpIncrementForKill());
   return params;
 }
@@ -101,4 +104,12 @@ void Creep::SetReloadingTime(int64_t reloading_time) {
 
 bool Creep::IsPossibleToAttack(int64_t timestamp) const {
   return (timestamp - last_attacked_time_) >= reloading_time_;
+}
+
+void Creep::SetCreepType(CreepType creep_type) {
+  creep_type_ = creep_type;
+}
+
+CreepType Creep::GetCreepType() const {
+  return creep_type_;
 }

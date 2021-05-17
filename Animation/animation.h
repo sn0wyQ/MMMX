@@ -21,8 +21,10 @@
 #include "Painter/painter.h"
 
 const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
-    { AnimationType::kBoxSciFiCube, "BoxSciFiCube" },
-    { AnimationType::kBoxSciFiLong, "BoxSciFiLong" },
+    { AnimationType::kGenerator, "Generator" },
+    { AnimationType::kGiant1, "Giant1" },
+    { AnimationType::kGiant2, "Giant2" },
+    { AnimationType::kBox, "Box" },
     { AnimationType::kJoCost, "JoCost" },
     { AnimationType::kShenandoah, "Shenandoah" },
     { AnimationType::kSpider3_0, "Spider3_0" },

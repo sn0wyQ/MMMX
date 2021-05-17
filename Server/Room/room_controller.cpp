@@ -173,8 +173,8 @@ void RoomController::TickCreepsIntelligence(
     } else if (closer_player) {
       force = QVector2D(closer_player->GetPosition() - creep_position);
     }
-    auto runaway_hp = CreepSettings::GetInstance().GetCreepSetting<float>
-        ("runaway_hp_ratio") * creep->GetMaxHealthPoints();
+    auto runaway_hp = creep->GetMaxHealthPoints()
+        * CreepSettings::GetInstance().GetRunawayHpRatio(creep->GetCreepType());
     if (!creep->IsGoingToSpawn() &&
         creep->GetHealthPoints() < runaway_hp) {
       force *= -1;
@@ -542,6 +542,11 @@ void RoomController::AddRandomTree(float radius) {
 void RoomController::AddCreep(float x, float y) {
   float distance = QLineF(QPointF(), QPointF(x, y)).length();
   auto params = CreepSettings::GetInstance().GetCreepParams(x, y, distance);
+  if (params.empty()) {
+    qWarning() << "[ROOM CONTROLLER] No suitable creep found";
+    // --creeps_count_;
+    return;
+  }
   auto game_object_id =
       model_->AddGameObject(GameObjectType::kCreep, params);
   auto creep = std::dynamic_pointer_cast<Creep>(
@@ -569,11 +574,11 @@ std::vector<GameObjectId> RoomController::AddBullets(
 void RoomController::AddConstantObjects() {
   model_->AddGameObject(GameObjectType::kMapBorder,
                         {0.f, 0.f, 0.f,
-                         Constants::kDefaultMapWidth,
-                         Constants::kDefaultMapHeight,
+                         Constants::kMapWidth,
+                         Constants::kMapHeight,
                          static_cast<int>(RigidBodyType::kRectangle),
-                         Constants::kDefaultMapWidth,
-                         Constants::kDefaultMapHeight,
+                         Constants::kMapWidth,
+                         Constants::kMapHeight,
                          static_cast<int>(AnimationType::kNone)});
 
   for (int i = 0; i < 5; i++) {

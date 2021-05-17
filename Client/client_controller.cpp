@@ -108,7 +108,7 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
   this->OnTickGameInProgress(delta_time);
 }
 
-void ClientController::SendPLayerDataToServer() {
+void ClientController::SendPlayerDataToServer() {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
@@ -132,7 +132,7 @@ void ClientController::SendPLayerDataToServer() {
 }
 
 void ClientController::OnTickGameInProgress(int delta_time) {
-  this->SendPLayerDataToServer();
+  this->SendPlayerDataToServer();
 }
 
 void ClientController::UpdateInterpolationInfo() {
@@ -250,6 +250,15 @@ void ClientController::UpdateLocalBullets(int delta_time) {
   }
 }
 
+void ClientController::UpdateOtherGameObjects(int delta_time) {
+  for (const auto& object : model_->GetAllGameObjects()) {
+    if (object->GetType() != GameObjectType::kBullet
+        && object->GetId() != model_->GetLocalPlayerId()) {
+      object->OnTick(delta_time);
+    }
+  }
+}
+
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
   view_ = std::move(view);
   converter_ = view_->GetConverter();
@@ -265,6 +274,7 @@ void ClientController::UpdateView() {
   this->UpdateInterpolationInfo();
   this->UpdateLocalPlayer(delta_time);
   this->UpdateLocalBullets(delta_time);
+  this->UpdateOtherGameObjects(delta_time);
   this->UpdateAnimations(delta_time);
   view_->Update();
 }

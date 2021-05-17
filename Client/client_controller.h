@@ -58,8 +58,7 @@ class ClientController : public BaseController {
   Q_OBJECT
 
  public:
-  ClientController(const QUrl& url,
-                   int fps_max = Constants::kDefaultFpsMax);
+  ClientController(const QUrl& url, int fps_max = Constants::kDefaultFpsMax);
   ~ClientController() override = default;
 
   QString GetControllerName() const override;
@@ -70,7 +69,7 @@ class ClientController : public BaseController {
   void OnTickGameFinished(int) {}
   void OnTickGameInProgress(int delta_time);
   void OnTickGameNotStarted(int delta_time);
-  void SendPLayerDataToServer();
+  void SendPlayerDataToServer();
 
   std::shared_ptr<ClientGameModel> GetModel();
   int GetServerVar() const;
@@ -86,6 +85,7 @@ class ClientController : public BaseController {
   void UpdateAnimations(int delta_time);
   void UpdateLocalPlayer(int delta_time);
   void UpdateLocalBullets(int delta_time);
+  void UpdateOtherGameObjects(int delta_time);
   void UpdateInterpolationInfo();
   int64_t GetCurrentServerTime() const override;
 

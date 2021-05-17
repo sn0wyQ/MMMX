@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "GameObject/MovableObject/Entity/entity.h"
+#include "GameObject/MovableObject/Entity/Creep/creep_enums.h"
 
 class Creep : public Entity {
  public:
@@ -46,6 +47,9 @@ class Creep : public Entity {
   void SetReloadingTime(int64_t reloading_time);
   int64_t GetReloadingTime() const;
 
+  void SetCreepType(CreepType creep_type);
+  CreepType GetCreepType() const;
+
  private:
   float exp_increment_{};
   float spawn_x_;
@@ -55,6 +59,7 @@ class Creep : public Entity {
   float damage_;
   int64_t last_attacked_time_{0};
   int64_t reloading_time_;
+  CreepType creep_type_{CreepType::kNone};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_

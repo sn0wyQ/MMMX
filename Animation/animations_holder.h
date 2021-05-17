@@ -11,8 +11,10 @@
 
 const std::unordered_map<AnimationType, bool> kIsSynchronizedAllOfThisType {
     { AnimationType::kNone, true },
-    { AnimationType::kBoxSciFiCube, true },
-    { AnimationType::kBoxSciFiLong, true },
+    { AnimationType::kGenerator, true },
+    { AnimationType::kGiant1, true },
+    { AnimationType::kGiant2, true },
+    { AnimationType::kBox, true },
     { AnimationType::kJoCost, false },
     { AnimationType::kShenandoah, false },
     { AnimationType::kSpider3_0, false },

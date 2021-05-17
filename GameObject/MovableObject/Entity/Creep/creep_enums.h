@@ -6,9 +6,11 @@ namespace CreepEnumsWrapper {
 Q_NAMESPACE
 
 enum class CreepType {
-  kBoxSciFiCube,
-  kBoxSciFiLong,
-  kTemporaryCircle
+  kNone = -1,
+  kGenerator,
+  kGiant1,
+  kGiant2,
+  kBox,
 };
 
 Q_ENUM_NS(CreepType)
