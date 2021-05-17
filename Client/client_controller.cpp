@@ -444,8 +444,8 @@ void ClientController::ControlsHolding() {
       if (local_player_weapon->IsPossibleToReload(timestamp)) {
         local_player_weapon->Reload(timestamp);
           this->AddEventToSend(Event(EventType::kSendPlayerReloading,
-                                     static_cast<qint64>(GetCurrentServerTime()),
-                                     model_->GetLocalPlayer()->GetId()));
+                                   static_cast<qint64>(GetCurrentServerTime()),
+                                   model_->GetLocalPlayer()->GetId()));
       }
     }
   }
