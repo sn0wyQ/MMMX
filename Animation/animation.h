@@ -21,9 +21,9 @@
 #include "Painter/painter.h"
 
 const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
-    { AnimationType::kGenerator, "Generator" },
-    { AnimationType::kGiant1, "Giant1" },
-    { AnimationType::kGiant2, "Giant2" },
+    { AnimationType::kElectricGenerator, "ElectricGenerator" },
+    {AnimationType::kGiantWeak, "GiantWeak" },
+    {AnimationType::kGiantStrong, "GiantStrong" },
     { AnimationType::kBox, "Box" },
     { AnimationType::kJoCost, "JoCost" },
     { AnimationType::kShenandoah, "Shenandoah" },
@@ -66,6 +66,7 @@ class Animation {
 
   void RenderFrame(Painter* painter, float w, float h);
 
+  AnimationState GetState() const;
   AnimationType GetType() const;
 
   static void SetNumberOfFramesToPreloadInActiveSequence(int number_of_frames);

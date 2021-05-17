@@ -31,10 +31,7 @@ class CreepSettings {
   std::vector<QVariant> GetCreepParams(float x, float y,
                                        float distance_from_center) const;
 
-  std::pair<int, int> GetMinAndMaxCreepLevelByDistance(float distance) const;
-
   QSizeF GetMaxCreepSize() const;
-  int GetCreepLevel(float distance_from_center) const;
   std::pair<int, CreepType>
       GenerateCreepLevelAndType(float distance_from_center) const;
 

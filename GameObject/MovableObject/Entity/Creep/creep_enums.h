@@ -7,9 +7,9 @@ Q_NAMESPACE
 
 enum class CreepType {
   kNone = -1,
-  kGenerator,
-  kGiant1,
-  kGiant2,
+  kElectricGenerator,
+  kGiantStrong,
+  kGiantWeak,
   kBox,
 };
 

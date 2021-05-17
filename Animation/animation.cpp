@@ -236,6 +236,7 @@ void Animation::SetAnimationState(AnimationState animation_state,
     return;
   }
 
+
   // Clearing current animation state's frames queue
   // and adding there first frame of sequence
   QSize saved_size;
@@ -293,6 +294,10 @@ void Animation::RenderFrame(Painter* painter, float w, float h) {
     return;
   }
   painter->DrawSharedFrame(QPointF(), w, h, frame_to_render);
+}
+
+AnimationState Animation::GetState() const {
+  return animation_state_;
 }
 
 AnimationType Animation::GetType() const {

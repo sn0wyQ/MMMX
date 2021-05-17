@@ -99,6 +99,7 @@ std::pair<int, CreepType>
   static std::mt19937 gen(QDateTime::currentMSecsSinceEpoch());
   std::uniform_real_distribution<float>
       real_distribution(0.f, distribution_delta_ * 2.f);
+  // TODO(Someone): rework for something more... random?
   float
       normalized = distance_from_center / Constants::kMapMaxDistanceFromCenter;
   float distributed = -std::log(normalized) / distribution_lambda_;
