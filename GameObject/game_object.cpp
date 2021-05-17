@@ -197,6 +197,9 @@ std::shared_ptr<Animation> GameObject::GetAnimation() {
 }
 
 void GameObject::SetAnimation(AnimationType animation_type) {
+  if (animation_->GetType() != AnimationType::kNone) {
+    return;
+  }
   animation_ = animations_holder_.GetAnimation(animation_type);
 }
 
