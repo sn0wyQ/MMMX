@@ -131,6 +131,7 @@ class ClientController : public BaseController {
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;
   void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;
+  void StartShootingAnimationEvent(const Event& event) override;
 
   QString GetEntityName(GameObjectId game_object_id) const;
 

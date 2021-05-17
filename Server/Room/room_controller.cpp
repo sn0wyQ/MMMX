@@ -669,9 +669,12 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
   if (!start_model->IsGameObjectIdTaken(player_id)) {
     return;
   }
+
+  AddEventToSendToAllPlayers(Event(EventType::kStartShootingAnimation,
+                                   player_id));
+
   auto player_in_model =
       start_model->GetPlayerByPlayerId(player_id);
-
   std::vector<GameObjectId> bullet_ids =
       AddBullets(start_model,
                  player_id, player_in_model->GetX(), player_in_model->GetY(),

@@ -97,8 +97,7 @@ class RoomController : public BaseController {
 
   GameObjectId AddPlayer();
   void AddGarage(float x, float y, float rotation, float width, float height);
-  void AddRandomGarage
-  (float width, float height);
+  void AddRandomGarage(float width, float height);
   void AddTree(float x, float y, float radius);
   void AddRandomTree(float radius);
   void AddCreep(float x, float y);

@@ -499,6 +499,18 @@ void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
   model_->GetLocalPlayer()->SetHealthPoints(health_points);
 }
 
+void ClientController::StartShootingAnimationEvent(const Event& event) {
+  auto shooter_id = event.GetArg<GameObjectId>(0);
+  if (!model_->IsGameObjectIdTaken(shooter_id)) {
+    return;
+  }
+  auto shooter = model_->GetPlayerByPlayerId(shooter_id);
+  if (shooter->IsLocalPlayer()) {
+    return;
+  }
+  shooter->SetAnimationState(AnimationState::kShoot, true);
+}
+
 void ClientController::LocalPlayerDiedEvent(const Event& event) {
   if (!model_->IsLocalPlayerSet()) {
     return;
