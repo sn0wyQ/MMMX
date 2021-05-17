@@ -29,11 +29,6 @@ std::vector<QVariant> MovableObject::GetParams() const {
 }
 
 void MovableObject::OnTick(int delta_time) {
-  if (velocity_.length() > Math::kEps) {
-    this->SetAnimationState(AnimationState::kMove);
-  } else {
-    this->SetAnimationState(AnimationState::kIdle);
-  }
   ApplyVelocity(delta_time);
 }
 
@@ -121,4 +116,12 @@ float MovableObject::GetSpeedMultiplier() const {
 
 void MovableObject::SetSpeedMultiplier(float speed_multiplier) {
   speed_multiplier_ = speed_multiplier;
+}
+
+void MovableObject::UpdateAnimationState() {
+  if (velocity_.length() > Math::kEps) {
+    this->SetAnimationState(AnimationState::kMove);
+  } else {
+    this->SetAnimationState(AnimationState::kIdle);
+  }
 }

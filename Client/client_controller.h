@@ -86,7 +86,7 @@ class ClientController : public BaseController {
   void UpdateAnimations(int delta_time);
   void UpdateLocalPlayer(int delta_time);
   void UpdateLocalBullets(int delta_time);
-  void UpdateOtherGameObjects(int delta_time);
+  void UpdateOtherGameObjects();
   void UpdateInterpolationInfo();
   int64_t GetCurrentServerTime() const override;
 

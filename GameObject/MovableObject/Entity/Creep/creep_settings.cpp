@@ -99,7 +99,7 @@ std::pair<int, CreepType>
   static std::mt19937 gen(QDateTime::currentMSecsSinceEpoch());
   std::uniform_real_distribution<float>
       real_distribution(0.f, distribution_delta_ * 2.f);
-  // TODO(Someone): rework for something more... random?
+  // TODO(Someone): rework for something more... equally distributed?
   float
       normalized = distance_from_center / Constants::kMapMaxDistanceFromCenter;
   float distributed = -std::log(normalized) / distribution_lambda_;
@@ -137,7 +137,7 @@ std::pair<int, CreepType>
   if (suitable_pairs.empty()) {
     qWarning() << "[CREEP SETTINGS] Can not find suitable Creep for distance"
                << distance_from_center;
-    return {-1, CreepType::kNone};
+    return { 3, CreepType::kBox };
   }
 
   std::uniform_int_distribution<int>
@@ -256,12 +256,16 @@ float CreepSettings::GetAttackDistance(CreepType creep_type) const {
   return GetCreepSetting<float>(creep_type, "attack_distance");
 }
 
-float CreepSettings::GetReloadingTime(CreepType creep_type) const {
-  return GetCreepSetting<float>(creep_type, "reloading_time");
+int64_t CreepSettings::GetReloadingTime(CreepType creep_type) const {
+  return GetCreepSetting<int64_t>(creep_type, "reloading_time");
 }
 
 float CreepSettings::GetRunawayHpRatio(CreepType creep_type) const {
   return GetCreepSetting<float>(creep_type, "runaway_hp_ratio");
+}
+
+bool CreepSettings::HasIntellect(CreepType creep_type) const {
+  return GetCreepSetting<bool>(creep_type, "has_intellect");
 }
 
 QSizeF CreepSettings::GetMaxCreepSize() const {

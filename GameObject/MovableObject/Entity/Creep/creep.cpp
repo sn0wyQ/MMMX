@@ -103,6 +103,9 @@ void Creep::SetReloadingTime(int64_t reloading_time) {
 }
 
 bool Creep::IsPossibleToAttack(int64_t timestamp) const {
+  if (GetDamage() < Math::kEps) {
+    return false;
+  }
   return (timestamp - last_attacked_time_) >= reloading_time_;
 }
 

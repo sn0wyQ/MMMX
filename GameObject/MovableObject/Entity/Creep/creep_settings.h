@@ -71,8 +71,9 @@ class CreepSettings {
   float GetRegenRate(CreepType creep_type, int level) const;
   float GetDamage(CreepType creep_type, int level) const;
   float GetAttackDistance(CreepType creep_type) const;
-  float GetReloadingTime(CreepType creep_type) const;
+  int64_t GetReloadingTime(CreepType creep_type) const;
   float GetRunawayHpRatio(CreepType creep_type) const;
+  bool HasIntellect(CreepType creep_type) const;
 
   static void SetStaticParams(const std::shared_ptr<Creep>& creep);
 

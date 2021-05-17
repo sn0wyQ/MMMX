@@ -133,10 +133,14 @@ void RoomController::EntityReceiveDamage(const ModelData& model_data,
 }
 
 void RoomController::TickCreepsIntelligence(
-    const RoomController::ModelData& model_data) {
+  const RoomController::ModelData& model_data) {
   auto creeps = model_data.model->GetCreeps();
   auto players = model_data.model->GetPlayers();
   for (auto& creep : creeps) {
+    if (!CreepSettings::GetInstance().HasIntellect(creep->GetCreepType())) {
+      continue;
+    }
+
     std::shared_ptr<Player> closer_player{nullptr};
     auto creep_position = creep->GetPosition();
     auto creep_spawn_position = QPointF(creep->GetSpawnX(), creep->GetSpawnY());
@@ -173,12 +177,14 @@ void RoomController::TickCreepsIntelligence(
     } else if (closer_player) {
       force = QVector2D(closer_player->GetPosition() - creep_position);
     }
+
     auto runaway_hp = creep->GetMaxHealthPoints()
         * CreepSettings::GetInstance().GetRunawayHpRatio(creep->GetCreepType());
     if (!creep->IsGoingToSpawn() &&
         creep->GetHealthPoints() < runaway_hp) {
       force *= -1;
     }
+
     force.normalize();
     ObjectCollision::MoveWithSlidingCollision(
         creep, model_->GetGameObjectsToMoveWithSliding(),

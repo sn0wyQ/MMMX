@@ -89,6 +89,7 @@ class GameObject {
   void SetAnimationState(AnimationState animation_state,
                          bool restart = false);
   static AnimationsHolder& GetAnimationsHolder();
+  virtual void UpdateAnimationState() {};
 
   virtual bool IsEntity() const;
 
