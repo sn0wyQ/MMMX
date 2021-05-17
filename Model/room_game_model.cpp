@@ -76,36 +76,49 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
   QPointF top_left_dot(
       -Constants::kDefaultMapWidth / 2.f + radius_from_object,
       -Constants::kDefaultMapHeight / 2.f + radius_from_object);
-  std::vector<std::pair<QRectF, int>> objects_in_chunk;
+  std::vector<QRectF> chunks;
   for (int i = 0; i < kChunksX; i++) {
     for (int j = 0; j < kChunksY; j++) {
       QRectF current_chunk(top_left_dot.x() + chunk_size.x() * i,
                            top_left_dot.y() + chunk_size.y() * j,
                            chunk_size.x(), chunk_size.y());
-      objects_in_chunk.emplace_back(current_chunk, 0);
-      for (const auto& game_object : this->GetAllGameObjects()) {
-        auto& chunk_rect = objects_in_chunk.back().first;
-        auto& count_of_objects = objects_in_chunk.back().second;
-        if (chunk_rect.contains(game_object->GetPosition())) {
-          ++count_of_objects;
-        }
-      }
+      chunks.emplace_back(current_chunk);
     }
   }
 
   if (for_creep) {
-    std::sort(objects_in_chunk.begin(), objects_in_chunk.end(),
-              [](const std::pair<QRectF, int>& pair1,
-                 const std::pair<QRectF, int>& pair2) {
-      return Math::DistanceBetweenPoints(QPointF(), pair1.first.center()) <
-          Math::DistanceBetweenPoints(QPointF(), pair2.first.center());
+    std::uniform_real_distribution<double> real_distribution(0.01, 20);
+    std::vector<std::pair<QRectF, double>> distances(chunks.size());
+    double max_dist =
+        Math::DistanceBetweenPoints(QPointF(),
+                                    QPointF(Constants::kDefaultMapWidth,
+                                            Constants::kDefaultMapHeight));
+    for (size_t i = 0; i < distances.size(); i++) {
+      auto distance =
+          Math::DistanceBetweenPoints(QPointF(), chunks[i].center()) / max_dist;
+      distance = distance * real_distribution(gen);
+      distances[i] = {chunks[i], distance};
+    }
+    std::sort(distances.begin(), distances.end(),
+              [](const std::pair<QRectF, double>& pair1,
+                 const std::pair<QRectF, double>& pair2) {
+      return pair1.second < pair2.second;
     });
-    std::shuffle(objects_in_chunk.begin(),
-                 objects_in_chunk.end() -
-                     objects_in_chunk.size()
-                         / Constants::kCreepSpawnShuffleRatio,
-                 gen);
+    chunks.clear();
+    for (auto [chunk, _] : distances) {
+      chunks.push_back(chunk);
+    }
   } else {
+    std::vector<std::pair<QRectF, int>> objects_in_chunk(chunks.size());
+    for (auto chunk : chunks) {
+      int count_of_objects = 0;
+      for (const auto& game_object : this->GetAllGameObjects()) {
+        if (chunk.contains(game_object->GetPosition())) {
+          ++count_of_objects;
+        }
+      }
+      objects_in_chunk.emplace_back(chunk, count_of_objects);
+    }
     std::sort(objects_in_chunk.begin(), objects_in_chunk.end(),
               [](const std::pair<QRectF, int>& pair1,
                  const std::pair<QRectF, int>& pair2) {
@@ -123,10 +136,14 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
         last_index = i;
       }
     }
+    chunks.clear();
+    for (auto [chunk, _] : objects_in_chunk) {
+      chunks.push_back(chunk);
+    }
   }
 
   std::vector<std::pair<float, QPointF>> points_to_spawn;
-  for (auto&[chunk_rect, count_of_entities] : objects_in_chunk) {
+  for (auto chunk_rect : chunks) {
     std::uniform_real_distribution<> distribution_x(
         chunk_rect.topLeft().x(), chunk_rect.topRight().x());
     std::uniform_real_distribution<> distribution_y(
@@ -138,7 +155,7 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
       for (const auto& game_object : this->GetAllGameObjects()) {
         auto distance = Math::DistanceBetweenPoints(point,
                                                     game_object->GetPosition());
-        if (for_player && game_object->GetType() == GameObjectType::kPlayer) {
+        if (for_player && game_object->IsEntity()) {
           min_dist_from_player = std::min(min_dist_from_player, distance);
         }
         auto good_dist = radius_from_object +
@@ -164,8 +181,8 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
   std::sort(points_to_spawn.begin(), points_to_spawn.end(),
             [](const std::pair<float, QPointF>& pair1,
                const std::pair<float, QPointF>& pair2) {
-    return pair1.first < pair2.first;
-  });
+              return pair1.first < pair2.first;
+            });
   return points_to_spawn.back().second;
 }
 
