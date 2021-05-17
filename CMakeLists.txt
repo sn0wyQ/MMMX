@@ -70,9 +70,11 @@ set(SOURCES
         Animation/animation_enums.h
         Animation/animations_holder.cpp
         Animation/shared_frame.cpp
+        Client/KeyController/key_controller.cpp
         Client/abstract_client_view.h
         Client/client_controller.cpp
         Client/client_view.cpp
+        Constants/constants.cpp
         Controller/base_controller.cpp
         Converter/converter.cpp
         Event/event.cpp
@@ -119,6 +121,14 @@ set(SOURCES
         Weapon/weapon.cpp
         )
 
+if (WIN32)
+    set(SYSTEM_DEPENDENT_SOURCES
+            Client/KeyController/key_names_windows.cpp)
+else()
+    set(SYSTEM_DEPENDENT_SOURCES
+            Client/KeyController/key_names_unix.cpp)
+endif (WIN32)
+
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
         Res/Icons/icons.qrc
@@ -131,11 +141,11 @@ qt5_add_big_resources(RESOURCES_COMMON
         )
 
 add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
-        ${RESOURCES_COMMON})
+        ${RESOURCES_COMMON} ${SYSTEM_DEPENDENT_SOURCES})
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}
-        ${RESOURCES_COMMON})
+        ${RESOURCES_COMMON} ${SYSTEM_DEPENDENT_SOURCES})
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
 
 # Synchronize Res with output folder

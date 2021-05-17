@@ -7,7 +7,7 @@
 #include <QGraphicsOpacityEffect>
 #include <QWidget>
 
-#include "constants.h"
+#include "Constants/constants.h"
 #include "GUI/Animations/spring_emulator.h"
 #include "GUI/Animations/linear_emulator.h"
 

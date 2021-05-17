@@ -7,7 +7,7 @@
 #include <QMetaEnum>
 #include "QJsonObject"
 
-#include "constants.h"
+#include "Constants/constants.h"
 
 namespace WeaponTypeWrapper {
 

@@ -18,7 +18,7 @@
 #include "GameObject/RigidBody/rigid_body.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
-#include "constants.h"
+#include "Constants/constants.h"
 
 namespace GameObjectTypeWrapper {
 
@@ -45,6 +45,7 @@ class GameObject {
  public:
   explicit GameObject(GameObjectId id);
   GameObject(const GameObject& other);
+  virtual ~GameObject() = default;
 
   virtual void OnTick(int delta_time) {}
   void Draw(Painter* painter);
@@ -110,6 +111,8 @@ class GameObject {
   float GetVisibility() const;
 
   virtual bool IsAlive() const;
+
+  bool IsNeedToDraw() const;
 
  private:
   // Holds animations for all GameObjects

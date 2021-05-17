@@ -26,35 +26,6 @@
 #include "Model/client_game_model.h"
 #include "Interpolator/interpolator.h"
 
-#ifdef WIN32
-enum class Controls {
-  kKeyW = 17,
-  kKeyR = 19,
-  kKeyA = 30,
-  kKeyS = 31,
-  kKeyD = 32,
-  kKeyC = 46
-};
-#else
-enum class Controls {
-  kKeyW = 25,
-  kKeyR = 27,
-  kKeyA = 38,
-  kKeyS = 39,
-  kKeyD = 40,
-  kKeyC = 54
-};
-#endif
-
-enum class Direction {
-  kUp,
-  kRight,
-  kDown,
-  kLeft,
-
-  SIZE
-};
-
 enum class GameState {
   kGameFinished,
   kGameInProgress,
@@ -151,6 +122,7 @@ class ClientController : public BaseController {
   QWebSocket web_socket_;
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<AbstractClientView> view_;
+  std::shared_ptr<KeyController> key_controller_;
   int server_var_{0};
   int room_var_{0};
   int client_var_{0};
@@ -162,29 +134,13 @@ class ClientController : public BaseController {
   bool is_time_difference_set_{false};
   int64_t time_difference_{0};
   int64_t last_view_update_time_{-1};
-  std::unordered_map<Controls, Direction> key_to_direction_{
-      {Controls::kKeyW, Direction::kUp},
-      {Controls::kKeyD, Direction::kRight},
-      {Controls::kKeyS, Direction::kDown},
-      {Controls::kKeyA, Direction::kLeft}
-  };
-  std::unordered_map<Direction, bool> is_direction_by_keys_{
-      {Direction::kUp, false},
-      {Direction::kRight, false},
-      {Direction::kDown, false},
-      {Direction::kLeft, false}
-  };
   QPointF last_mouse_position_;
   QTimer controls_check_timer_;
-  bool is_shoot_holding{false};
   bool are_controls_blocked_{false};
 
   int64_t last_died_{0};
   int64_t last_requested_respawn_time_{0};
   int64_t respawn_holding_current_{0};
-  int64_t respawn_released_time_{0};
-  int64_t respawn_pressed_time_{0};
-  bool is_respawn_holding_{false};
 
   std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;
 };

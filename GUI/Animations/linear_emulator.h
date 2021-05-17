@@ -57,15 +57,17 @@ T LinearEmulator<T>::GetCurrentValue() {
   auto delta_time = static_cast<float>(time - last_time_updated_) / 10.f;
   last_time_updated_ = time;
 
-  float sample_rate = 0.5f;
+  float sample_rate = 0.1f;
   for (float now = 0; now < delta_time; now += sample_rate) {
-    if (value_ > max_value_) {
+    if (value_ > max_value_ && speed_ > 0.f) {
+      value_ = max_value_;
       if (stop_on_max_) {
         break;
       }
       speed_ = -abs(speed_);
     }
-    if (value_ < min_value_) {
+    if (value_ < min_value_ && speed_ < 0.f) {
+      value_ = min_value_;
       if (stop_on_min_) {
         break;
       }
@@ -79,6 +81,7 @@ T LinearEmulator<T>::GetCurrentValue() {
 
 template<class T>
 void LinearEmulator<T>::SetPath(T start, T finish) {
+  last_time_updated_ = QDateTime::currentMSecsSinceEpoch();
   min_value_ = std::min(start, finish);
   max_value_ = std::max(start, finish);
   if (start < finish) {

@@ -90,19 +90,8 @@ std::vector<QVariant> GameObject::GetParams() const {
 }
 
 void GameObject::Draw(Painter* painter) {
-  if (!IsVisible()) {
-    return;
-  }
-  if (this->IsInterpolatedOnce()) {
-    return;
-  }
-  if (!IsAlive()) {
-    return;
-  }
   painter->save();
   painter->Translate(position_);
-  this->DrawHealthBar(painter);
-  this->DrawLevel(painter);
   painter->RotateCounterClockWise(rotation_);
   if (!animation_ || animation_->GetType() == AnimationType::kNone) {
     this->DrawRelatively(painter);
@@ -273,5 +262,18 @@ void GameObject::SetIsVisible(bool visible) {
 }
 
 bool GameObject::IsAlive() const {
+  return true;
+}
+
+bool GameObject::IsNeedToDraw() const {
+  if (!IsVisible()) {
+    return false;
+  }
+  if (this->IsInterpolatedOnce()) {
+    return false;
+  }
+  if (!IsAlive()) {
+    return false;
+  }
   return true;
 }

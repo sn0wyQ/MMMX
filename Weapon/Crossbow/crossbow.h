@@ -7,6 +7,7 @@ class Crossbow : public Weapon {
  public:
   Crossbow();
   Crossbow(const Crossbow& crossbow);
+  virtual ~Crossbow() = default;
 
   void DrawWeapon(Painter *painter) override;
 

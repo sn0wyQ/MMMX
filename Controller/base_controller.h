@@ -14,7 +14,7 @@
 
 #include "Event/event.h"
 #include "Model/game_model.h"
-#include "constants.h"
+#include "Constants/constants.h"
 
 class BaseController : public QObject {
  public:

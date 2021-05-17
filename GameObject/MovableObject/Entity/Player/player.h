@@ -13,12 +13,13 @@
 #include "Weapon/Crossbow/crossbow.h"
 #include "Weapon/MachineGun/machine_gun.h"
 #include "Weapon/Shotgun/shotgun.h"
-#include "constants.h"
+#include "Constants/constants.h"
 
 class Player : public Entity {
  public:
   explicit Player(GameObjectId player_id);
   Player(const Player& other);
+  virtual ~Player() = default;
 
   void DrawRelatively(Painter* painter) override;
 

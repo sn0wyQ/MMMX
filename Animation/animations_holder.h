@@ -7,7 +7,7 @@
 
 #include "Animation/animation.h"
 #include "Animation/animation_enums.h"
-#include "constants.h"
+#include "Constants/constants.h"
 
 const std::unordered_map<AnimationType, bool> kIsSynchronizedAllOfThisType {
     { AnimationType::kNone, true },

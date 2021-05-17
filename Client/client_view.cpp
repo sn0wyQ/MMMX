@@ -2,9 +2,7 @@
 
 ClientView::ClientView(std::shared_ptr<ClientController> controller)
     : AbstractClientView(),
-      controller_(std::move(controller)),
-      last_pressed_tab_(QDateTime::currentMSecsSinceEpoch()),
-      last_released_tab_(QDateTime::currentMSecsSinceEpoch()) {
+      controller_(std::move(controller)) {
   resize(1400, 960);
   height_of_bar_ = static_cast<int>(
       Constants::kPlayerBarHeightRatio * static_cast<float>(height()));
@@ -43,6 +41,10 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   stats_table_ = new StatsTable(this, controller_->GetModel());
   stats_table_->setMouseTracking(true);
 
+  // Controls Settings
+  key_controller_ = std::make_shared<KeyController>(this);
+  key_controller_->Hide();
+
   controller_->SetView(std::shared_ptr<ClientView>(this));
   model_ = controller_->GetModel();
 
@@ -55,7 +57,8 @@ void ClientView::Update() {
     last_updated_time_ = time;
   }
   last_frame_times_.push_back(time - last_updated_time_);
-  if (last_frame_times_.size() > Constants::kAverageFpsFrames) {
+  if (static_cast<int>(last_frame_times_.size()) >
+      Constants::kAverageFpsFrames) {
     last_frame_times_.pop_front();
   }
   last_updated_time_ = time;
@@ -74,20 +77,20 @@ void ClientView::focusOutEvent(QFocusEvent* focus_event) {
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
-  if (key_event->key() == Qt::Key_Tab) {
-    if (!table_shown_) {
-      table_shown_ = true;
-      stats_table_->Show();
+  if (key_event->key() == Qt::Key_F1) {
+    if (key_controller_->IsShown()) {
+      key_controller_->Hide();
+    } else {
+      key_controller_->Show();
     }
-    last_pressed_tab_ = QDateTime::currentMSecsSinceEpoch();
+  }
+  if (key_controller_->IsShown()) {
+    key_controller_->keyPressEvent(key_event);
   }
   controller_->KeyPressEvent(key_event);
 }
 
 void ClientView::keyReleaseEvent(QKeyEvent* key_event) {
-  if (key_event->key() == Qt::Key_Tab) {
-    last_released_tab_ = QDateTime::currentMSecsSinceEpoch();
-  }
   controller_->KeyReleaseEvent(key_event);
 }
 
@@ -96,13 +99,20 @@ void ClientView::mouseMoveEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
+  if (mouse_event->button() == Qt::MouseButton::LeftButton &&
+      key_controller_->IsShown()) {
+    key_controller_->Hide();
+  }
+  if (key_controller_->IsShown()) {
+    key_controller_->mousePressEvent(mouse_event);
+  }
   controller_->MousePressEvent(mouse_event);
 }
 
 void ClientView::paintEvent(QPaintEvent* paint_event) {
-  if (table_shown_ && last_pressed_tab_ < last_released_tab_ &&
-      QDateTime::currentMSecsSinceEpoch() - last_released_tab_ > 50) {
-    table_shown_ = false;
+  if (key_controller_->IsHeld(Controls::kShowStatistics)) {
+    stats_table_->Show();
+  } else {
     stats_table_->Hide();
   }
 
@@ -163,6 +173,8 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
 
   kill_feed_->resize(this->width() / 3, this->height());
   kill_feed_->move(this->width() - kill_feed_->width(), 0);
+  key_controller_->move(this->width() / 4, this->height() / 4);
+  key_controller_->resize(this->width() / 2, this->height());
 }
 
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
@@ -199,4 +211,8 @@ void ClientView::ProcessRespawnButton() {
         this->width() / 2 - respawn_button_->width() / 2,
         (this->height() - height_of_bar_) / 2 - respawn_button_->height() / 2));
   }
+}
+
+std::shared_ptr<KeyController> ClientView::GetKeyController() const {
+  return std::shared_ptr<KeyController>(key_controller_);
 }

@@ -15,15 +15,16 @@
 #include <QPaintEvent>
 #include <QPainter>
 
+#include "Client/KeyController/key_controller.h"
 #include "Client/abstract_client_view.h"
 #include "Client/client_controller.h"
 #include "Event/event.h"
+#include "GUI/GameView/KillFeed/kill_feed.h"
+#include "GUI/GameView/RespawnButton/respawn_button.h"
 #include "GUI/GameView/game_view.h"
 #include "GUI/GameView/player_bar.h"
 #include "GUI/GameView/reloading_field.h"
 #include "GUI/GameView/stats_table.h"
-#include "GUI/GameView/RespawnButton/respawn_button.h"
-#include "GUI/GameView/KillFeed/kill_feed.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
@@ -38,6 +39,8 @@ class ClientView : public AbstractClientView {
   void AddKillFeedNotification(const QString& killer_name,
                                const QString& victim_name,
                                WeaponType weapon_type) override;
+
+  std::shared_ptr<KeyController> GetKeyController() const override;
   void AddRespawnNotification(const QString& player_name) override;
 
  private:
@@ -61,12 +64,10 @@ class ClientView : public AbstractClientView {
   QLabel* info_label_;
   int height_of_bar_{};
 
-  bool table_shown_{false};
-  int64_t last_pressed_tab_{};
-  int64_t last_released_tab_{};
   int64_t last_updated_time_{};
   std::deque<int64_t> last_frame_times_{};
   KillFeed* kill_feed_;
+  std::shared_ptr<KeyController> key_controller_;
   RespawnButton* respawn_button_;
   QPoint respawn_button_default_position_;
 };

@@ -7,6 +7,7 @@ class AssaultRifle : public Weapon {
  public:
   AssaultRifle();
   AssaultRifle(const AssaultRifle& assault_rifle);
+  virtual ~AssaultRifle() = default;
 
   void DrawWeapon(Painter *painter) override;
 

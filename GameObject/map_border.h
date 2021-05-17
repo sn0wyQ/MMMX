@@ -9,6 +9,7 @@ class MapBorder : public GameObject {
  public:
   explicit MapBorder(GameObjectId game_object_id);
   MapBorder(const MapBorder& other) = default;
+  virtual ~MapBorder() = default;
 
   GameObjectType GetType() const override;
 
