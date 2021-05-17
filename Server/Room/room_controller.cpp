@@ -183,6 +183,7 @@ void RoomController::TickCreepsIntelligence(
     ObjectCollision::MoveWithSlidingCollision(
         creep, model_->GetGameObjectsToMoveWithSliding(),
         force, model_data.delta_time);
+    creep->SetRotation(Math::VectorAngle(QPointF(), force.toPointF()));
 
     if (closer_player) {
       auto timestamp = GetCurrentServerTime();
