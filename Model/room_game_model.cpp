@@ -68,8 +68,8 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
   bool for_player = (game_object_type == GameObjectType::kPlayer);
   bool for_creep = (game_object_type == GameObjectType::kCreep);
   static std::mt19937 gen(QDateTime::currentSecsSinceEpoch());
-  int kChunksX = 15;
-  int kChunksY = 15;
+  int kChunksX = Constants::kChunksX;
+  int kChunksY = Constants::kChunksY;
   QPointF chunk_size(
       (Constants::kDefaultMapWidth - 2 * radius_from_object) / kChunksX,
       (Constants::kDefaultMapHeight - 2 * radius_from_object) / kChunksY);
@@ -101,7 +101,10 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
           Math::DistanceBetweenPoints(QPointF(), pair2.first.center());
     });
     std::shuffle(objects_in_chunk.begin(),
-                 objects_in_chunk.end() - objects_in_chunk.size() / 3, gen);
+                 objects_in_chunk.end() -
+                     objects_in_chunk.size()
+                         / Constants::kCreepSpawnShuffleRatio,
+                 gen);
   } else {
     std::sort(objects_in_chunk.begin(), objects_in_chunk.end(),
               [](const std::pair<QRectF, int>& pair1,
@@ -128,7 +131,7 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
         chunk_rect.topLeft().x(), chunk_rect.topRight().x());
     std::uniform_real_distribution<> distribution_y(
         chunk_rect.topLeft().y(), chunk_rect.bottomLeft().y());
-    for (int tries = 0; tries < 15; tries++) {
+    for (int tries = 0; tries < Constants::kGenerationTries; tries++) {
       QPointF point(distribution_x(gen), distribution_y(gen));
       bool can_spawn = true;
       float min_dist_from_player = 1e9;
