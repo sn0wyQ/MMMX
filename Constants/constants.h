@@ -115,7 +115,7 @@ extern const float kBulletRange;
 extern const float kBulletDamage;
 extern const float kReloadingTime;
 
-}  // namespace LevelingMultipliers
+}  // namespace LevelingSlots
 
 template<class T>
 T GetEnumValueFromString(const QString& string) {

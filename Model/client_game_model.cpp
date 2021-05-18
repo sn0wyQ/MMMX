@@ -64,15 +64,15 @@ void ClientGameModel::RemoveFromInterpolator(GameObjectId game_object_id) {
   interpolator_.erase(game_object_id);
 }
 
-void ClientGameModel::AddLocalBullets(int64_t timestamp, const QList<QVariant>&
-    random_bullet_shifts) {
+void ClientGameModel::AddLocalBullets(
+    int64_t timestamp, const QList<QVariant>& random_bullet_shifts) {
   auto local_player = this->GetLocalPlayer();
   std::vector<std::vector<QVariant>> bullets = local_player->GetWeapon()->
       GetBulletsParams(local_player_id_,
-                      local_player->GetX(),
-                      local_player->GetY(),
-                      local_player->GetRotation(),
-                      random_bullet_shifts);
+                       local_player->GetX(),
+                       local_player->GetY(),
+                       local_player->GetRotation(),
+                       random_bullet_shifts);
 
   for (const auto& bullet_params : bullets) {
     auto bullet = std::make_shared<Bullet>(bullet_id_to_set_);
@@ -80,7 +80,7 @@ void ClientGameModel::AddLocalBullets(int64_t timestamp, const QList<QVariant>&
     bullet->SetUpdatedTime(timestamp);
     local_bullets_.emplace(std::make_pair(bullet_id_to_set_, bullet));
     qDebug().noquote() << "[MODEL] Added new local bullet:"
-      << bullet_id_to_set_;
+                       << bullet_id_to_set_;
     bullet_id_to_set_++;
   }
 }

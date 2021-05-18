@@ -681,15 +681,15 @@ void RoomController::SendLevelingPointsEvent(const Event& event) {
   }
   auto player = model_->GetPlayerByPlayerId(player_id);
   std::vector<int> leveling_points;
-  for (int i = 0; i < static_cast<int>(LevelingMultipliers::SIZE); i++) {
+  for (int i = 0; i < static_cast<int>(LevelingSlots::SIZE); i++) {
     auto param = event.GetArg<int>(1 + i);
     leveling_points.push_back(param);
   }
-  auto was_leveling_points = player->GetLevelingPoints();
-  for (int i = 0; i < static_cast<int>(LevelingMultipliers::SIZE); i++) {
-    while (was_leveling_points[i] < leveling_points[i]) {
-      player->IncreaseLevelingPoint(static_cast<LevelingMultipliers>(i));
-      was_leveling_points[i]++;
+  auto prev_leveling_points = player->GetLevelingPoints();
+  for (int i = 0; i < static_cast<int>(LevelingSlots::SIZE); i++) {
+    while (prev_leveling_points[i] < leveling_points[i]) {
+      player->IncreaseLevelingPoint(static_cast<LevelingSlots>(i));
+      prev_leveling_points[i]++;
     }
   }
 }
@@ -704,11 +704,8 @@ void RoomController::SendPlayerReloadingEvent(const Event& event) {
   auto current_model_data = models_cache_[model_id];
   auto player_id = event.GetArg<GameObjectId>(1);
 
-  if (are_controls_blocked_[player_id]) {
-    return;
-  }
-
-  if (!current_model_data.model->IsGameObjectIdTaken(player_id)) {
+  if (!current_model_data.model->IsGameObjectIdTaken(player_id) ||
+      are_controls_blocked_[player_id]) {
     return;
   }
 
@@ -734,10 +731,8 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
     return;
   }
   auto start_model = models_cache_[model_id].model;
-  if (!start_model->IsGameObjectIdTaken(player_id)) {
-    return;
-  }
-  if (are_controls_blocked_[player_id]) {
+  if (!start_model->IsGameObjectIdTaken(player_id) ||
+      are_controls_blocked_[player_id]) {
     return;
   }
   auto player_in_model =

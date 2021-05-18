@@ -15,7 +15,7 @@
 #include "Weapon/Shotgun/shotgun.h"
 #include "Constants/constants.h"
 
-enum class LevelingMultipliers {
+enum class LevelingSlots {
   kMaxHp,
   kHealthRegenRate,
   kSpeed,
@@ -63,7 +63,7 @@ class Player : public Entity {
   int GetFreeLevelingPoints() const;
 
   const std::vector<int>& GetLevelingPoints() const;
-  void IncreaseLevelingPoint(LevelingMultipliers index);
+  void IncreaseLevelingPoint(LevelingSlots leveling_slot);
 
   void SetNeedToSendLevelingPoints(bool need_to_send_leveling_points);
   bool IsNeedToSendLevelingPoints() const;

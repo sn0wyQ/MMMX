@@ -496,7 +496,7 @@ void ClientController::ControlsHolding() {
         }
 
         default: {
-          qWarning() << "Addressing a nonexistent type of weapon";
+          qWarning() << "Invalid weapon type";
           break;
         }
       }

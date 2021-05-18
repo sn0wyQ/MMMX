@@ -62,7 +62,7 @@ class Weapon {
                       const QList<QVariant>& random_bullet_shifts) const;
 
   virtual WeaponType GetWeaponType() const = 0;
-  virtual float GetRotationWithAccuracy(float random_bullet_shift) const = 0;
+  virtual float GetBulletAngleByShift(float random_bullet_shift) const = 0;
 
  private:
   float accuracy_{};  // точность/разброс

@@ -5,20 +5,21 @@ using Constants::ReloadingField::kBulletHeight;
 using Constants::ReloadingField::kMinSpaceBetweenBullets;
 
 ReloadingField::ReloadingField(QWidget* parent,
-                               std::shared_ptr<ClientController> controller) :
-    QWidget(parent), controller_{std::move(controller)} {
-    QString base_path = "./Res/Icons/";
-    QSvgRenderer renderer_empty_bullet(base_path + "UnfilledBullet.svg");
-    QSvgRenderer renderer_bullet(base_path + "FilledBullet.svg");
-    bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
-    empty_bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
-    bullet_pixmap_.fill(Qt::transparent);
-    empty_bullet_pixmap_.fill(Qt::transparent);
-    QPainter painter_for_bullet_pixmap(&bullet_pixmap_);
-    QPainter painter_for_empty_bullet_pixmap(&empty_bullet_pixmap_);
-    renderer_bullet.render(&painter_for_bullet_pixmap, bullet_pixmap_.rect());
-    renderer_empty_bullet.render(&painter_for_empty_bullet_pixmap,
-                                 empty_bullet_pixmap_.rect());
+                               std::shared_ptr<ClientController> controller)
+    : QWidget(parent), controller_{std::move(controller)} {
+  QString base_path = "./Res/Icons/";
+  QSvgRenderer unfilled_bullet_renderer(base_path + "UnfilledBullet.svg");
+  QSvgRenderer filled_bullet_renderer(base_path + "FilledBullet.svg");
+  filled_bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
+  unfilled_bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
+  filled_bullet_pixmap_.fill(Qt::transparent);
+  unfilled_bullet_pixmap_.fill(Qt::transparent);
+  QPainter painter_for_filled_bullet_pixmap(&filled_bullet_pixmap_);
+  QPainter painter_for_unfilled_bullet_pixmap(&unfilled_bullet_pixmap_);
+  filled_bullet_renderer.render(&painter_for_filled_bullet_pixmap,
+                                filled_bullet_pixmap_.rect());
+  unfilled_bullet_renderer.render(&painter_for_unfilled_bullet_pixmap,
+                                  unfilled_bullet_pixmap_.rect());
 }
 
 void ReloadingField::paintEvent(QPaintEvent* paint_event) {
@@ -108,9 +109,9 @@ void ReloadingField::DrawPixmaps(QPainter* painter, int bullets_in_clip) {
       continue;
     }
     if (current_bullet < max_clip_size - bullets_in_clip) {
-      painter->drawPixmap(shift_x + x, shift_y + y, empty_bullet_pixmap_);
+      painter->drawPixmap(shift_x + x, shift_y + y, unfilled_bullet_pixmap_);
     } else {
-      painter->drawPixmap(shift_x + x, shift_y + y, bullet_pixmap_);
+      painter->drawPixmap(shift_x + x, shift_y + y, filled_bullet_pixmap_);
     }
     current_bullet++;
   }

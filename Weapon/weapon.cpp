@@ -10,10 +10,7 @@ bool Weapon::IsPossibleToShoot(int64_t cur_time) const {
 }
 
 bool Weapon::IsPossibleToReload(int64_t cur_time) const {
-  if (cur_time - last_time_pressed_reload_ < GetReloadingTime()) {
-    return false;
-  }
-  return true;
+  return (cur_time - last_time_pressed_reload_) >= GetReloadingTime();
 }
 
 void Weapon::Reload(int64_t cur_time) {
@@ -101,7 +98,7 @@ std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
                               float x, float y, float rotation,
                               float radius, float random_bullet_shift) const {
   QVector2D velocity = Math::GetVectorByAngle(Math::GetNormalizeAngle(
-      rotation + GetRotationWithAccuracy(random_bullet_shift)));
+      rotation + GetBulletAngleByShift(random_bullet_shift)));
   float start_x = x + velocity.x();
   float start_y = y + velocity.y();
   velocity *= this->GetBulletSpeed();
@@ -152,7 +149,7 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
       break;
     }
     default: {
-      qWarning() << "Addressing a nonexistent type of weapon\n";
+      qWarning() << "Invalid weapon type";
       break;
     }
   }

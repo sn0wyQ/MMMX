@@ -37,8 +37,8 @@ class ReloadingField : public QWidget {
                   int64_t reloading_time);
   void DrawPixmaps(QPainter* painter, int bullets_in_clip);
   void RecalculateFields();
-  QPixmap bullet_pixmap_;
-  QPixmap empty_bullet_pixmap_;
+  QPixmap filled_bullet_pixmap_;
+  QPixmap unfilled_bullet_pixmap_;
   int in_rows_;
   int in_columns_;
   int clip_size_;

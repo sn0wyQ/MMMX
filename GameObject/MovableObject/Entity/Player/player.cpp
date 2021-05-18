@@ -2,7 +2,7 @@
 
 Player::Player(GameObjectId player_id)
     : Entity(player_id),
-      leveling_points_(static_cast<int>(LevelingMultipliers::SIZE)) {
+      leveling_points_(static_cast<int>(LevelingSlots::SIZE)) {
   free_leveling_points_ = 5;
 }
 
@@ -15,23 +15,27 @@ Player::Player(const Player& other) : Entity(other) {
           *(std::dynamic_pointer_cast<AssaultRifle>(other.weapon_)));
       break;
     }
+
     case WeaponType::kCrossbow: {
       weapon_ = std::make_shared<Crossbow>(
           *(std::dynamic_pointer_cast<Crossbow>(other.weapon_)));
       break;
     }
+
     case WeaponType::kMachineGun: {
       weapon_ = std::make_shared<MachineGun>(
           *(std::dynamic_pointer_cast<MachineGun>(other.weapon_)));
       break;
     }
+
     case WeaponType::kShotgun: {
       weapon_ = std::make_shared<Shotgun>(
           *(std::dynamic_pointer_cast<Shotgun>(other.weapon_)));
       break;
     }
+
     default: {
-      qWarning() << "Addressing a nonexistent type of weapon\n";
+      qWarning() << "Invalid weapon type";
       break;
     }
   }
@@ -48,20 +52,24 @@ void Player::SetParams(std::vector<QVariant> params) {
       weapon_ = std::make_shared<AssaultRifle>();
       break;
     }
+
     case WeaponType::kCrossbow: {
       weapon_ = std::make_shared<Crossbow>();
       break;
     }
+
     case WeaponType::kMachineGun: {
       weapon_ = std::make_shared<MachineGun>();
       break;
     }
+
     case WeaponType::kShotgun: {
       weapon_ = std::make_shared<Shotgun>();
       break;
     }
+
     default: {
-      qWarning() << "Addressing a nonexistent type of weapon\n";
+      qWarning() << "Invalid weapon type";
       break;
     }
   }
@@ -153,9 +161,9 @@ void Player::SetFreeLevelingPoints(int free_leveling_points) {
   free_leveling_points_ = free_leveling_points;
 }
 
-void Player::IncreaseLevelingPoint(LevelingMultipliers index) {
-  switch (index) {
-    case LevelingMultipliers::kMaxHp: {
+void Player::IncreaseLevelingPoint(LevelingSlots leveling_slot) {
+  switch (leveling_slot) {
+    case LevelingSlots::kMaxHp: {
       float part_to_set = GetHealthPoints() / GetMaxHealthPoints();
       SetMaxHealthPoints(GetMaxHealthPoints()
         * Constants::LevelingMultipliers::kMaxHp);
@@ -163,37 +171,37 @@ void Player::IncreaseLevelingPoint(LevelingMultipliers index) {
       break;
     }
 
-    case LevelingMultipliers::kHealthRegenRate: {
+    case LevelingSlots::kHealthRegenRate: {
       SetHealthRegenRate(GetHealthRegenRate()
       * Constants::LevelingMultipliers::kHealthRegenRate);
       break;
     }
 
-    case LevelingMultipliers::kSpeed: {
+    case LevelingSlots::kSpeed: {
       SetSpeedMultiplier(GetSpeedMultiplier()
                              * Constants::LevelingMultipliers::kSpeed);
       break;
     }
 
-    case LevelingMultipliers::kFovRadius: {
+    case LevelingSlots::kFovRadius: {
       SetFovRadius(GetFovRadius()
                        * Constants::LevelingMultipliers::kFovRadius);
       break;
     }
 
-    case LevelingMultipliers::kAccuracy: {
+    case LevelingSlots::kAccuracy: {
       weapon_->SetAccuracy(
           weapon_->GetAccuracy() * Constants::LevelingMultipliers::kAccuracy);
       break;
     }
 
-    case LevelingMultipliers::kBulletSpeed: {
+    case LevelingSlots::kBulletSpeed: {
       weapon_->SetBulletSpeed(weapon_->GetBulletSpeed()
                               * Constants::LevelingMultipliers::kBulletSpeed);
       break;
     }
 
-    case LevelingMultipliers::kRateOfFire: {
+    case LevelingSlots::kRateOfFire: {
       weapon_->SetRateOfFire(
           static_cast<int>(
               static_cast<float>(weapon_->GetRateOfFire())
@@ -201,19 +209,19 @@ void Player::IncreaseLevelingPoint(LevelingMultipliers index) {
       break;
     }
 
-    case LevelingMultipliers::kBulletRange: {
+    case LevelingSlots::kBulletRange: {
       weapon_->SetBulletRange(weapon_->GetBulletRange()
                             * Constants::LevelingMultipliers::kBulletRange);
       break;
     }
 
-    case LevelingMultipliers::kBulletDamage: {
+    case LevelingSlots::kBulletDamage: {
       weapon_->SetBulletDamage(weapon_->GetBulletDamage()
                              * Constants::LevelingMultipliers::kBulletDamage);
       break;
     }
 
-    case LevelingMultipliers::kReloadingTime: {
+    case LevelingSlots::kReloadingTime: {
       weapon_->SetReloadingTime(
           static_cast<int>(
               static_cast<float>(weapon_->GetReloadingTime())
@@ -224,7 +232,7 @@ void Player::IncreaseLevelingPoint(LevelingMultipliers index) {
     default:
       break;
   }
-  leveling_points_[static_cast<int>(index)]++;
+  leveling_points_[static_cast<int>(leveling_slot)]++;
   need_to_send_leveling_points_ = true;
 }
 

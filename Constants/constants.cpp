@@ -108,7 +108,7 @@ const float kBulletRange = 1.3f;
 const float kBulletDamage = 1.1f;
 const float kReloadingTime = 0.9f;
 
-}  // namespace LevelingMultipliers
+}  // namespace LevelingSlots
 
 const int kMaxPlayerBullets = 100000;
 

@@ -108,7 +108,7 @@ enum class EventType {
   kSendPlayerShooting,
 
   // [0] - <GameObjectId> sender_player_id
-  // LevelingMultipliers::SIZE times int
+  // LevelingSlots::SIZE times int
   kSendLevelingPoints,
 
   // [0] - <GameObjectId> player_id
