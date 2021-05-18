@@ -77,12 +77,12 @@ void ClientView::focusOutEvent(QFocusEvent* focus_event) {
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
-  if (key_event->key() == Qt::Key_F1) {
-    if (key_controller_->IsShown()) {
+  if (key_controller_->IsShown()) {
+    if (key_event->key() == Qt::Key_F1 || key_event->key() == Qt::Key_Escape) {
       key_controller_->Hide();
-    } else {
-      key_controller_->Show();
     }
+  } else if (key_event->key() == Qt::Key_F1) {
+    key_controller_->Show();
   }
   if (key_controller_->IsShown()) {
     key_controller_->keyPressEvent(key_event);
