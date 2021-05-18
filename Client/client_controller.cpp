@@ -453,7 +453,7 @@ void ClientController::ControlsHolding() {
     }
     key_controller_->ClearKeyPress(ControlsWrapper::Controls::kReload);
   }
-  
+
   if (key_controller_->IsHeld(Controls::kShoot)) {
     auto local_player = model_->GetLocalPlayer();
     auto timestamp = GetCurrentServerTime();
