@@ -73,7 +73,7 @@ std::vector<QVariant> Player::GetParams() const {
   return result;
 }
 
-void Player::DrawRelatively(Painter* painter) {
+void Player::DrawRelatively(Painter* painter) const {
   // Body [Temporary]
   painter->DrawEllipse(QPointF(), GetRadius(), GetRadius());
 
@@ -211,4 +211,26 @@ void Player::SetNeedToSendLevelingPoints(bool need_to_send_leveling_points) {
 
 float Player::GetExpIncrementForKill() const {
   return static_cast<float>(this->GetLevel()) * Constants::kExpMultiplier;
+}
+
+void Player::DrawNickname(Painter* painter,
+                          const QString& nickname) const {
+  painter->save();
+  QPointF translation(0.f,  -4.f);
+  painter->Translate(translation);
+  painter->setBrush(Qt::black);
+  float rect_width = 120.f;
+  float rect_height = 16.f;
+  QFont font = Constants::Painter::kBoldFont;
+  font.setPointSizeF(10.f);
+  painter->setFont(font);
+  QPen pen(Constants::Painter::kNicknameColor);
+  painter->setPen(pen);
+  QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
+                   rect_width, rect_height);
+
+  painter->drawText(text_rect, Qt::AlignCenter,
+                    nickname);
+  painter->Translate(-translation);
+  painter->restore();
 }

@@ -89,7 +89,7 @@ std::vector<QVariant> GameObject::GetParams() const {
   return result;
 }
 
-void GameObject::Draw(Painter* painter) {
+void GameObject::Draw(Painter* painter) const {
   painter->save();
   painter->Translate(position_);
   painter->RotateCounterClockWise(rotation_);

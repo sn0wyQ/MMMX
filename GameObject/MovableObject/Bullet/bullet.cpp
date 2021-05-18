@@ -63,7 +63,7 @@ void Bullet::SetStartPosition(QPointF start_position) {
   start_position_ = start_position;
 }
 
-void Bullet::DrawRelatively(Painter* painter) {
+void Bullet::DrawRelatively(Painter* painter) const {
   painter->DrawEllipse(QPointF(),
                        GetWidth() / 2.f, GetHeight() / 2.f);
 }

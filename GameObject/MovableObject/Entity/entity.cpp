@@ -71,7 +71,7 @@ std::shared_ptr<GameObject> Entity::Clone() const {
   return std::make_shared<Entity>(*this);
 }
 
-void Entity::DrawHealthBar(Painter* painter) {
+void Entity::DrawHealthBar(Painter* painter) const {
   painter->save();
   QPointF translation(0.f, -2.f);
   painter->Translate(translation);
@@ -141,9 +141,10 @@ void Entity::TickHealthPoints(int delta_time) {
   health_points_ = std::min(
       health_points_ + health_regen_rate_ * static_cast<float>(delta_time),
       max_health_points_);
+  qInfo() << health_points_ << "reg";
 }
 
-void Entity::DrawLevel(Painter* painter) {
+void Entity::DrawLevel(Painter* painter) const {
   painter->save();
   QPointF translation(0.f,  -3.f);
   painter->Translate(translation);

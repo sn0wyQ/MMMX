@@ -48,10 +48,12 @@ class GameObject {
   virtual ~GameObject() = default;
 
   virtual void OnTick(int delta_time) {}
-  void Draw(Painter* painter);
-  virtual void DrawHealthBar(Painter* painter) {}
-  virtual void DrawLevel(Painter* painter) {}
-  virtual void DrawRelatively(Painter* painter) {}
+  void Draw(Painter* painter) const;
+  virtual void DrawHealthBar(Painter* painter) const {}
+  virtual void DrawLevel(Painter* painter) const {}
+  virtual void DrawRelatively(Painter* painter) const {}
+  virtual void DrawNickname(Painter* painter,
+                            const QString& nickname) const {}
 
   virtual bool IsMovable() const;
 
