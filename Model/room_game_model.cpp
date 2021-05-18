@@ -129,7 +129,7 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
       return pair1.second < pair2.second;
     });
     int last_index = 0;
-    for (int i = 0; i < objects_in_chunk.size(); i++) {
+    for (int i = 0; i < static_cast<int>(objects_in_chunk.size()); i++) {
       if (objects_in_chunk[last_index].second !=
           objects_in_chunk[i].second) {
         std::shuffle(objects_in_chunk.begin() + last_index,
