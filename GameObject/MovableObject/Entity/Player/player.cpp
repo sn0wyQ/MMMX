@@ -166,38 +166,38 @@ void Player::IncreaseLevelingPoint(LevelingSlots leveling_slot) {
     case LevelingSlots::kMaxHp: {
       float part_to_set = GetHealthPoints() / GetMaxHealthPoints();
       SetMaxHealthPoints(GetMaxHealthPoints()
-        * Constants::LevelingMultipliers::kMaxHp);
+        * Constants::LevelingSlots::kMaxHp);
       SetHealthPoints(GetMaxHealthPoints() * part_to_set);
       break;
     }
 
     case LevelingSlots::kHealthRegenRate: {
       SetHealthRegenRate(GetHealthRegenRate()
-      * Constants::LevelingMultipliers::kHealthRegenRate);
+      * Constants::LevelingSlots::kHealthRegenRate);
       break;
     }
 
     case LevelingSlots::kSpeed: {
-      SetSpeedMultiplier(GetSpeedMultiplier()
-                             * Constants::LevelingMultipliers::kSpeed);
+      SetSpeedMultiplier(
+          GetSpeedMultiplier() * Constants::LevelingSlots::kSpeed);
       break;
     }
 
     case LevelingSlots::kFovRadius: {
       SetFovRadius(GetFovRadius()
-                       * Constants::LevelingMultipliers::kFovRadius);
+                       * Constants::LevelingSlots::kFovRadius);
       break;
     }
 
     case LevelingSlots::kAccuracy: {
       weapon_->SetAccuracy(
-          weapon_->GetAccuracy() * Constants::LevelingMultipliers::kAccuracy);
+          weapon_->GetAccuracy() * Constants::LevelingSlots::kAccuracy);
       break;
     }
 
     case LevelingSlots::kBulletSpeed: {
       weapon_->SetBulletSpeed(weapon_->GetBulletSpeed()
-                              * Constants::LevelingMultipliers::kBulletSpeed);
+                              * Constants::LevelingSlots::kBulletSpeed);
       break;
     }
 
@@ -205,19 +205,19 @@ void Player::IncreaseLevelingPoint(LevelingSlots leveling_slot) {
       weapon_->SetRateOfFire(
           static_cast<int>(
               static_cast<float>(weapon_->GetRateOfFire())
-                  * Constants::LevelingMultipliers::kRateOfFire));
+                  * Constants::LevelingSlots::kRateOfFire));
       break;
     }
 
     case LevelingSlots::kBulletRange: {
       weapon_->SetBulletRange(weapon_->GetBulletRange()
-                            * Constants::LevelingMultipliers::kBulletRange);
+                            * Constants::LevelingSlots::kBulletRange);
       break;
     }
 
     case LevelingSlots::kBulletDamage: {
       weapon_->SetBulletDamage(weapon_->GetBulletDamage()
-                             * Constants::LevelingMultipliers::kBulletDamage);
+                             * Constants::LevelingSlots::kBulletDamage);
       break;
     }
 
@@ -225,7 +225,7 @@ void Player::IncreaseLevelingPoint(LevelingSlots leveling_slot) {
       weapon_->SetReloadingTime(
           static_cast<int>(
               static_cast<float>(weapon_->GetReloadingTime())
-                  * Constants::LevelingMultipliers::kReloadingTime));
+                  * Constants::LevelingSlots::kReloadingTime));
       break;
     }
 
