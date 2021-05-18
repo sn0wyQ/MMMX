@@ -104,7 +104,7 @@ enum class EventType {
 
   // [0] - <int64> timestamp
   // [1] - <GameObjectId> sender_player_id
-  // [2] - QList<QVariant> random_shift
+  // [2] - QList<QVariant> random_shifts
   kSendPlayerShooting,
 
   // [0] - <GameObjectId> sender_player_id
