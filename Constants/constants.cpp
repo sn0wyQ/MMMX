@@ -92,7 +92,6 @@ float GetExpForLevel(int level) {
 
 const float kExpMultiplier = 5.f;
 
-const int kUpgradeSlots = 10;
 const int kCountOfLevels = 5;
 
 namespace LevelingMultipliers {

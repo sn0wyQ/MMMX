@@ -99,7 +99,6 @@ extern const int kAccuracy;
 float GetExpForLevel(int level);
 extern const float kExpMultiplier;
 
-extern const int kUpgradeSlots;
 extern const int kCountOfLevels;
 
 namespace LevelingMultipliers {

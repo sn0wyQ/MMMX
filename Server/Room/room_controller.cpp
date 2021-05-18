@@ -681,12 +681,12 @@ void RoomController::SendLevelingPointsEvent(const Event& event) {
   }
   auto player = model_->GetPlayerByPlayerId(player_id);
   std::vector<int> leveling_points;
-  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
+  for (int i = 0; i < static_cast<int>(LevelingMultipliers::SIZE); i++) {
     auto param = event.GetArg<int>(1 + i);
     leveling_points.push_back(param);
   }
   auto was_leveling_points = player->GetLevelingPoints();
-  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
+  for (int i = 0; i < static_cast<int>(LevelingMultipliers::SIZE); i++) {
     while (was_leveling_points[i] < leveling_points[i]) {
       player->IncreaseLevelingPoint(static_cast<LevelingMultipliers>(i));
       was_leveling_points[i]++;

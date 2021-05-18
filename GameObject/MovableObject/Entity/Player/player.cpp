@@ -2,7 +2,7 @@
 
 Player::Player(GameObjectId player_id)
     : Entity(player_id),
-      leveling_points_(Constants::kUpgradeSlots) {
+      leveling_points_(static_cast<int>(LevelingMultipliers::SIZE)) {
   free_leveling_points_ = 5;
 }
 
