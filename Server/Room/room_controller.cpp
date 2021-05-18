@@ -668,7 +668,7 @@ void RoomController::SendControlsEvent(const Event& event) {
     player_in_model->SetPosition(position_to_set);
     player_in_model->SetVelocity(velocity);
     player_in_model->SetRotation(rotation);
-    player_in_model->MovableObject::OnTick(models_cache_[model_id].delta_time);
+    player_in_model->OnTick(models_cache_[model_id].delta_time);
     position_to_set = player_in_model->GetPosition();
     model_id++;
   }

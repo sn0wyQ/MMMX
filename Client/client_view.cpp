@@ -30,7 +30,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   info_label_->move(10, 10);
   info_label_->setAlignment(Qt::AlignTop);
 
-  // ReloadingField
+  // Reloading Field
   reloading_field_ = new ReloadingField(this, controller_);
 
   // Respawn Button
