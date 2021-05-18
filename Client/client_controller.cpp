@@ -444,7 +444,7 @@ void ClientController::ControlsHolding() {
       if (local_player_weapon->IsPossibleToReload(timestamp)) {
         local_player_weapon->Reload(timestamp);
           this->AddEventToSend(Event(EventType::kSendPlayerReloading,
-                                   static_cast<qint64>(GetCurrentServerTime()),
+                                   static_cast<qint64>(timestamp),
                                    model_->GetLocalPlayer()->GetId()));
       }
     }
@@ -459,7 +459,7 @@ void ClientController::ControlsHolding() {
           && local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
         local_player->GetWeapon()->Reload(timestamp);
         this->AddEventToSend(Event(EventType::kSendPlayerReloading,
-                                   static_cast<qint64>(GetCurrentServerTime()),
+                                   static_cast<qint64>(timestamp),
                                    local_player->GetId()));
       } else if (local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
           local_player->GetWeapon()->SetLastTimeShot(timestamp);
@@ -473,6 +473,7 @@ void ClientController::ControlsHolding() {
 
         QList<QVariant> random_bullet_shifts;
         static std::mt19937 generator_(0);
+        // generate normalised accuracy
         std::uniform_real_distribution<> generate_shift_ =
             std::uniform_real_distribution<>(-1, 1);
         switch (local_player->GetWeapon()->GetWeaponType()) {

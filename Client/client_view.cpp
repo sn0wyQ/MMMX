@@ -166,7 +166,7 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
       (this->width() - stats_table_->width()) / 2.f,
       (this->height() - stats_table_->height() - height_of_bar_) / 2.f);
 
-  reloading_field_->resize(this->width() / 5, this->height() / 3);
+  reloading_field_->resize(this->width() / 3, this->height() / 2);
   reloading_field_->move(this->width() - reloading_field_->width(),
                          (this->height() - height_of_bar_
                              - reloading_field_->height()));

@@ -14,8 +14,8 @@
 
 namespace Constants::ReloadingField {
 
-const float kBulletHeight = 54.f;
-const float kBulletWidth = 9.f;
+const float kBulletHeight = 120.f;
+const float kBulletWidth = 20.f;
 const float kMinSpaceBetweenBullets = 1.5f;
 
 }  // namespace Constants::ReloadingField

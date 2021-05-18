@@ -8,8 +8,8 @@ ReloadingField::ReloadingField(QWidget* parent,
                                std::shared_ptr<ClientController> controller) :
     QWidget(parent), controller_{std::move(controller)} {
     QString base_path = "./Res/Icons/";
-    QSvgRenderer renderer_empty_bullet(base_path + "EmptyBullet.svg");
-    QSvgRenderer renderer_bullet(base_path + "GoldBullet.svg");
+    QSvgRenderer renderer_empty_bullet(base_path + "UnfilledBullet.svg");
+    QSvgRenderer renderer_bullet(base_path + "FilledBullet.svg");
     bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
     empty_bullet_pixmap_ = QPixmap(kBulletWidth, kBulletHeight);
     bullet_pixmap_.fill(Qt::transparent);

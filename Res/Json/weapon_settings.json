@@ -1,7 +1,7 @@
 [
   {
     "type": "kAssaultRifle",
-    "accuracy": 5,
+    "accuracy": 5.0,
     "bullet_damage": 13,
     "bullet_radius": 0.25,
     "bullet_range": 20,
@@ -12,7 +12,7 @@
   },
   {
     "type": "kCrossbow",
-    "accuracy": 2,
+    "accuracy": 2.0,
     "bullet_damage": 18,
     "bullet_radius": 0.3,
     "bullet_range": 30,
@@ -23,7 +23,7 @@
   },
   {
     "type": "kMachineGun",
-    "accuracy": 10,
+    "accuracy": 10.0,
     "bullet_damage": 6,
     "bullet_radius": 0.15,
     "bullet_range": 20,
@@ -34,7 +34,7 @@
   },
   {
     "type": "kShotgun",
-    "accuracy": 7,
+    "accuracy": 7.0,
     "bullet_damage": 19,
     "bullet_radius": 0.2,
     "bullet_range": 12,
