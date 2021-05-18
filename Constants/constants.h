@@ -101,7 +101,7 @@ extern const float kExpMultiplier;
 
 extern const int kCountOfLevels;
 
-namespace LevelingMultipliers {
+namespace LevelingSlots {
 
 extern const float kMaxHp;
 extern const float kHealthRegenRate;

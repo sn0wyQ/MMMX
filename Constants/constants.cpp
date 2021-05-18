@@ -94,7 +94,7 @@ const float kExpMultiplier = 5.f;
 
 const int kCountOfLevels = 5;
 
-namespace LevelingMultipliers {
+namespace LevelingSlots {
 
 const float kMaxHp = 1.5f;
 const float kHealthRegenRate = 2.1f;
