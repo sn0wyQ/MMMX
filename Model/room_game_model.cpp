@@ -4,6 +4,9 @@
 #include "Hash/hash_calculator.h"
 #include "room_game_model.h"
 
+using Constants::kChunksX;
+using Constants::kChunksY;
+
 RoomGameModel::RoomGameModel(const RoomGameModel& model) : GameModel(model) {
   next_game_object_id_ = model.next_game_object_id_;
   last_object_hash_ = model.last_object_hash_;
@@ -68,8 +71,6 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
   bool for_player = (game_object_type == GameObjectType::kPlayer);
   bool for_creep = (game_object_type == GameObjectType::kCreep);
   static std::mt19937 gen(QDateTime::currentSecsSinceEpoch());
-  int kChunksX = Constants::kChunksX;
-  int kChunksY = Constants::kChunksY;
   QPointF chunk_size(
       (Constants::kDefaultMapWidth - 2 * radius_from_object) / kChunksX,
       (Constants::kDefaultMapHeight - 2 * radius_from_object) / kChunksY);
@@ -96,7 +97,7 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
     for (size_t i = 0; i < distances.size(); i++) {
       auto distance =
           Math::DistanceBetweenPoints(QPointF(), chunks[i].center()) / max_dist;
-      distance = distance * real_distribution(gen);
+      distance *= real_distribution(gen);
       distances[i] = {chunks[i], distance};
     }
     std::sort(distances.begin(), distances.end(),

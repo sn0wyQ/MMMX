@@ -4,6 +4,7 @@ RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), model_(std::make_shared<RoomGameModel>()),
       room_settings_(room_settings) {
   this->StartTicking();
+  this->AddCreeps();
   this->AddConstantObjects();
 }
 
