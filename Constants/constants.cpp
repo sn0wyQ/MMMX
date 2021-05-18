@@ -101,13 +101,13 @@ const float kMaxHp = 1.5f;
 const float kHealthRegenRate = 2.1f;
 const float kSpeed = 1.1f;
 const float kFovRadius = 1.2f;
-const float kAccuracy = 1.2f;
+const float kAccuracy = 0.9f;
 
 const float kBulletSpeed = 1.2f;
 const float kRateOfFire = 1.1f;
 const float kBulletRange = 1.3f;
 const float kBulletDamage = 1.1f;
-const float kReloadingTime = 1.1f;
+const float kReloadingTime = 0.9f;
 
 }  // namespace LevelingMultipliers
 

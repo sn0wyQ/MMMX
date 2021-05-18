@@ -190,7 +190,7 @@ void PlayerBar::Clicked(int index) {
   if (free_leveling_points > 0
       && leveling_points[index] < Constants::kCountOfLevels) {
     free_leveling_points--;
-    local_player->IncreaseLevelingPoint(index);
+    local_player->IncreaseLevelingPoint(static_cast<LevelingMultipliers>(index));
     local_player->SetFreeLevelingPoints(free_leveling_points);
   }
 }

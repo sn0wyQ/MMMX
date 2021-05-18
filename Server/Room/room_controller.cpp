@@ -688,7 +688,7 @@ void RoomController::SendLevelingPointsEvent(const Event& event) {
   auto was_leveling_points = player->GetLevelingPoints();
   for (int i = 0; i < Constants::kUpgradeSlots; i++) {
     while (was_leveling_points[i] < leveling_points[i]) {
-      player->IncreaseLevelingPoint(i);
+      player->IncreaseLevelingPoint(static_cast<LevelingMultipliers>(i));
       was_leveling_points[i]++;
     }
   }

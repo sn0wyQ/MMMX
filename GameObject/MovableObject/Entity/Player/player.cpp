@@ -153,59 +153,78 @@ void Player::SetFreeLevelingPoints(int free_leveling_points) {
   free_leveling_points_ = free_leveling_points;
 }
 
-void Player::IncreaseLevelingPoint(int index) {
+void Player::IncreaseLevelingPoint(LevelingMultipliers index) {
   switch (index) {
-    case 0: {
+    case LevelingMultipliers::kMaxHp: {
       float part_to_set = GetHealthPoints() / GetMaxHealthPoints();
       SetMaxHealthPoints(GetMaxHealthPoints()
         * Constants::LevelingMultipliers::kMaxHp);
       SetHealthPoints(GetMaxHealthPoints() * part_to_set);
       break;
     }
-    case 1:
+
+    case LevelingMultipliers::kHealthRegenRate: {
       SetHealthRegenRate(GetHealthRegenRate()
       * Constants::LevelingMultipliers::kHealthRegenRate);
       break;
-    case 2:
+    }
+
+    case LevelingMultipliers::kSpeed: {
       SetSpeedMultiplier(GetSpeedMultiplier()
-      * Constants::LevelingMultipliers::kSpeed);
+                             * Constants::LevelingMultipliers::kSpeed);
       break;
-    case 3:
+    }
+
+    case LevelingMultipliers::kFovRadius: {
       SetFovRadius(GetFovRadius()
-      * Constants::LevelingMultipliers::kFovRadius);
+                       * Constants::LevelingMultipliers::kFovRadius);
       break;
-    case 4:
-      weapon_->SetAccuracy(weapon_->GetAccuracy()
-      / Constants::LevelingMultipliers::kAccuracy);
+    }
+
+    case LevelingMultipliers::kAccuracy: {
+      weapon_->SetAccuracy(
+          weapon_->GetAccuracy() * Constants::LevelingMultipliers::kAccuracy);
       break;
-    case 5:
+    }
+
+    case LevelingMultipliers::kBulletSpeed: {
       weapon_->SetBulletSpeed(weapon_->GetBulletSpeed()
-      * Constants::LevelingMultipliers::kBulletSpeed);
+                              * Constants::LevelingMultipliers::kBulletSpeed);
       break;
-    case 6:
+    }
+
+    case LevelingMultipliers::kRateOfFire: {
       weapon_->SetRateOfFire(
           static_cast<int>(
               static_cast<float>(weapon_->GetRateOfFire())
-              * Constants::LevelingMultipliers::kRateOfFire));
+                  * Constants::LevelingMultipliers::kRateOfFire));
       break;
-    case 7:
+    }
+
+    case LevelingMultipliers::kBulletRange: {
       weapon_->SetBulletRange(weapon_->GetBulletRange()
-      * Constants::LevelingMultipliers::kBulletRange);
+                            * Constants::LevelingMultipliers::kBulletRange);
       break;
-    case 8:
+    }
+
+    case LevelingMultipliers::kBulletDamage: {
       weapon_->SetBulletDamage(weapon_->GetBulletDamage()
-      * Constants::LevelingMultipliers::kBulletDamage);
+                             * Constants::LevelingMultipliers::kBulletDamage);
       break;
-    case 9:
+    }
+
+    case LevelingMultipliers::kReloadingTime: {
       weapon_->SetReloadingTime(
           static_cast<int>(
               static_cast<float>(weapon_->GetReloadingTime())
-                  / Constants::LevelingMultipliers::kReloadingTime));
+                  * Constants::LevelingMultipliers::kReloadingTime));
       break;
+    }
+
     default:
       break;
   }
-  leveling_points_[index]++;
+  leveling_points_[static_cast<int>(index)]++;
   need_to_send_leveling_points_ = true;
 }
 
