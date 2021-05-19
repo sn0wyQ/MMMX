@@ -106,12 +106,6 @@ class GameObject {
   void SetIsInterpolatedOnce(bool is_interpolated_once);
   bool IsInterpolatedOnce() const;
 
-  bool IsVisible() const;
-  void SetIsVisible(bool visible);
-
-  void SetVisibility(float visibility);
-  float GetVisibility() const;
-
   virtual bool IsAlive() const;
 
   bool IsNeedToDraw() const;
@@ -133,7 +127,6 @@ class GameObject {
   std::shared_ptr<RigidBody> rigid_body_;
   bool is_need_to_delete_{false};
   int64_t updated_time_{};
-  float visibility_{1.f};
   int64_t created_time_{};
   // Если мы только привязали объект к модели из интерполятора -
   // не можем его правильно проинтерполировать

@@ -112,7 +112,6 @@ void Entity::DrawHealthBar(Painter* painter) const {
 }
 
 void Entity::Revive(QPointF point_to_spawn) {
-  SetIsVisible(true);
   SetPosition(point_to_spawn);
   SetHealthPoints(GetMaxHealthPoints());
 }
