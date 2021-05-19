@@ -14,8 +14,9 @@ void Painter::SetClipCircle(float x,
   int doubled_r_scaled =
       static_cast<int>(converter_->ScaleFromGameToScreen(r * 2));
 
-  QRegion region(static_cast<int>(clip_center.x()),
-                 static_cast<int>(clip_center.y()),
+  QPoint clip_center_in_integers = clip_center.toPoint();
+  QRegion region(clip_center_in_integers.x(),
+                 clip_center_in_integers.y(),
                  doubled_r_scaled,
                  doubled_r_scaled,
                  QRegion::Ellipse);
@@ -35,13 +36,13 @@ void Painter::RotateCounterClockWise(float degree) {
 }
 
 void Painter::Translate(const QPointF& delta) {
-  translate(converter_->ScaleFromGameToScreen(delta));
+  translate(converter_->ScaleFromGameToScreen(delta).toPoint());
 }
 
 void Painter::DrawEllipse(const QPointF& center, float rx, float ry) {
-  drawEllipse(converter_->ScaleFromGameToScreen(center),
-              converter_->ScaleFromGameToScreen(rx),
-              converter_->ScaleFromGameToScreen(ry));
+  drawEllipse(converter_->ScaleFromGameToScreen(center).toPoint(),
+              static_cast<int>(converter_->ScaleFromGameToScreen(rx)),
+              static_cast<int>(converter_->ScaleFromGameToScreen(ry)));
 }
 
 void Painter::DrawPixmap(QPointF point,
@@ -67,7 +68,7 @@ void Painter::DrawRect(float x, float y, float width, float height) {
   drawRect(QRectF(converter_->ScaleFromGameToScreen(x),
                   converter_->ScaleFromGameToScreen(y),
                   converter_->ScaleFromGameToScreen(width),
-                  converter_->ScaleFromGameToScreen(height)));
+                  converter_->ScaleFromGameToScreen(height)).toRect());
 }
 
 void Painter::DrawSharedFrame(QPointF point,
@@ -91,10 +92,10 @@ void Painter::DrawSharedFrame(QPointF point,
 void Painter::DrawTriangle(const QPointF& p1,
                            const QPointF& p2,
                            const QPointF& p3) {
-  QPolygonF polygon;
-  polygon << converter_->ScaleFromGameToScreen(p1)
-          << converter_->ScaleFromGameToScreen(p2)
-          << converter_->ScaleFromGameToScreen(p3);
+  QPolygon polygon;
+  polygon << converter_->ScaleFromGameToScreen(p1).toPoint()
+          << converter_->ScaleFromGameToScreen(p2).toPoint()
+          << converter_->ScaleFromGameToScreen(p3).toPoint();
   drawPolygon(polygon);
 }
 
