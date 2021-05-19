@@ -326,6 +326,9 @@ void RoomController::AddClient(ClientId client_id) {
                         player->GetLevel());
   this->SendGameObjectsDataToPlayer(player_id, true);
   this->ForceSendPlayersStatsToPlayer(player_id);
+  this->SendPlayersStatsToPlayers();
+  this->AddEventToSendToAllPlayers(Event(EventType::kPlayerConnected,
+                                         player_id));
 
   qInfo().noquote().nospace() << "[ROOM ID: " << id_
                               << "] Connected client (ID: " << client_id << ")";

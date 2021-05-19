@@ -68,6 +68,7 @@ class BaseController : public QObject {
   virtual void ClientDisconnectedEvent(const Event& event) {}
   virtual void EndGameEvent(const Event& event) {}
   virtual void PlayerDisconnectedEvent(const Event& event) {}
+  virtual void PlayerConnectedEvent(const Event& event) {}
   virtual void SendEventToClientEvent(const Event& event) {}
   virtual void SendEventToRoomEvent(const Event& event) {}
   virtual void SendNicknameEvent(const Event& event) {}
