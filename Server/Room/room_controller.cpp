@@ -563,7 +563,7 @@ void RoomController::AddGarage(float x, float y, float rotation,
   model_->AddGameObject(GameObjectType::kGameObject,
                         {x, y, rotation, width, height,
                          static_cast<int>(RigidBodyType::kRectangle),
-                         width, height,
+                         width * 0.85f, height * 0.97f,
                          static_cast<int>(AnimationType::kGarage)});
 }
 
