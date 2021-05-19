@@ -106,6 +106,9 @@ enum class EventType {
   // Constants::kUpgradeSlots times int
   kSendLevelingPoints,
 
+  // [0] - <GameObjectId> attacker_id
+  kStartAttackAnimation,
+
   // [0] - <GameObjectId> shooter_player_id
   kStartShootingAnimation,
 

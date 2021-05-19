@@ -238,6 +238,8 @@ void RoomController::TickCreepsIntelligence(
         if (distance - closer_player->GetRigidBodyBoundingCircleRadius()
             - creep->GetRigidBodyBoundingCircleRadius()
             < creep->GetAttackDistance()) {
+          AddEventToSendToAllPlayers(Event(EventType::kStartAttackAnimation,
+                                           creep->GetId()));
           bool is_killed;
           EntityReceiveDamage(model_data, creep,
                               closer_player, creep->GetDamage(),

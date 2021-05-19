@@ -223,7 +223,8 @@ void Animation::SetAnimationState(AnimationState animation_state,
   }
 
   if (!restart && (animation_state_ == AnimationState::kDestroy
-                   || animation_state_ == AnimationState::kShoot)) {
+                   || animation_state_ == AnimationState::kShoot
+                   || animation_state_ == AnimationState::kAttack)) {
     return;
   }
 

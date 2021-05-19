@@ -34,6 +34,7 @@ const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
 };
 
 const std::unordered_map<QString, AnimationState> kAnimationStateLabels {
+    { "attack:", AnimationState::kAttack },
     { "destroy:", AnimationState::kDestroy },
     { "idle:", AnimationState::kIdle },
     { "move:", AnimationState::kMove },

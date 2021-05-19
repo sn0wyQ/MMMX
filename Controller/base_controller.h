@@ -98,6 +98,7 @@ class BaseController : public QObject {
   virtual void ReviveLocalPlayerEvent(const Event& event) {}
   virtual void IncreaseLocalPlayerExperienceEvent(const Event& event) {}
   virtual void ShootFailedEvent(const Event& event) {}
+  virtual void StartAttackAnimationEvent(const Event& event) {}
   virtual void StartShootingAnimationEvent(const Event& event) {}
 };
 

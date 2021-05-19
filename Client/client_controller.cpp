@@ -466,8 +466,9 @@ void ClientController::ControlsHolding() {
                                  static_cast<qint64>(timestamp),
                                  local_player->GetId()));
 
-    // Temporary nickname change
     local_player->SetAnimationState(AnimationState::kShoot, true);
+
+    // Temporary nickname change
     this->AddEventToSend(Event(EventType::kSendNickname,
                                model_->GetLocalPlayer()->GetId(),
                                QString("Shooter#") +
@@ -562,6 +563,15 @@ void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
   auto health_points = event.GetArg<float>(0);
   last_requested_respawn_time_ = GetCurrentServerTime();
   model_->GetLocalPlayer()->SetHealthPoints(health_points);
+}
+
+void ClientController::StartAttackAnimationEvent(const Event& event) {
+  auto attacker_id = event.GetArg<GameObjectId>(0);
+  if (!model_->IsGameObjectIdTaken(attacker_id)) {
+    return;
+  }
+  auto attacker = model_->GetPlayerByPlayerId(attacker_id);
+  attacker->SetAnimationState(AnimationState::kAttack, true);
 }
 
 void ClientController::StartShootingAnimationEvent(const Event& event) {
