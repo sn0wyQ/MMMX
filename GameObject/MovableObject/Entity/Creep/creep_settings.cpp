@@ -9,6 +9,17 @@ CreepSettings& CreepSettings::GetInstance() {
   return *instance_;
 }
 
+float LoadFloat(const QJsonObject& json_object, const QString& key, bool* ok) {
+  QJsonValue json_value = json_object.value("distribution_delta");
+  if (!json_value.isDouble()) {
+    *ok = false;
+    return 0.f;
+  } else {
+    *ok = true;
+    return static_cast<float>(json_value.toDouble());
+  }
+}
+
 CreepSettings::CreepSettings() {
   QFile file(":creep_settings.json");
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -17,35 +28,28 @@ CreepSettings::CreepSettings() {
 
   QJsonObject json_object = QJsonDocument::fromJson(file.readAll()).object();
 
-  QJsonValue json_value = json_object.value("distribution_delta");
-  if (!json_value.isDouble()) {
+
+  bool loaded_distribution_delta;
+  distribution_delta_ =
+      LoadFloat(json_object, "distribution_delta", &loaded_distribution_delta);
+  bool loaded_distribution_lambda;
+  distribution_lambda_ =
+      LoadFloat(json_object, "distribution_lambda", &loaded_distribution_lambda);
+  bool loaded_max_creep_width;
+  max_creep_size_.setWidth(LoadFloat(json_object,
+                                     "max_width",
+                                     &loaded_max_creep_width));
+  bool loaded_max_creep_height;
+  max_creep_size_.setHeight(LoadFloat(json_object,
+                                      "max_height",
+                                      &loaded_max_creep_height));
+
+  if (!loaded_distribution_delta || !loaded_distribution_lambda
+      || !loaded_max_creep_width || !loaded_max_creep_height) {
     qWarning() << "[CREEP SETTINGS] Json document has wrong format";
-  } else {
-    distribution_delta_ = static_cast<float>(json_value.toDouble());
   }
 
-  json_value = json_object.value("distribution_lambda");
-  if (!json_value.isDouble()) {
-    qWarning() << "[CREEP SETTINGS] Json document has wrong format";
-  } else {
-    distribution_lambda_ = static_cast<float>(json_value.toDouble());
-  }
-
-  json_value = json_object.value("max_width");
-  if (!json_value.isDouble()) {
-    qWarning() << "[CREEP SETTINGS] Json document has wrong format";
-  } else {
-    max_creep_size_.setWidth(json_value.toDouble());
-  }
-
-  json_value = json_object.value("max_height");
-  if (!json_value.isDouble()) {
-    qWarning() << "[CREEP SETTINGS] Json document has wrong format";
-  } else {
-    max_creep_size_.setHeight(json_value.toDouble());
-  }
-
-  json_value = json_object.value("creep_params_array");
+  QJsonValue json_value = json_object.value("creep_params_array");
   if (!json_value.isArray()) {
     qWarning() << "[CREEP SETTINGS] Json document has wrong format";
   } else {
