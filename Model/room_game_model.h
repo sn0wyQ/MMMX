@@ -29,7 +29,7 @@ class RoomGameModel : public GameModel {
   void UpdatePlayerStatsHashes();
 
   QPointF GetPointToSpawn(float radius_from_object,
-                          bool for_player = false) const;
+                          GameObjectType game_object_type) const;
 
  private:
   std::unordered_map<GameObjectId, GameObjectId> next_bullet_id_for_player_;
