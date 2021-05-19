@@ -614,6 +614,7 @@ void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
 }
 
 void ClientController::StartAttackAnimationEvent(const Event& event) {
+  qInfo() << "here";
   auto attacker_id = event.GetArg<GameObjectId>(0);
   if (!model_->IsGameObjectIdTaken(attacker_id)) {
     return;

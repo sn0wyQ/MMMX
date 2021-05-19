@@ -237,7 +237,6 @@ void Animation::SetAnimationState(AnimationState animation_state,
     return;
   }
 
-
   // Clearing current animation state's frames queue
   // and adding there first frame of sequence
   QSize saved_size;
