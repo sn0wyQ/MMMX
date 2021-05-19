@@ -38,13 +38,13 @@ void KillFeed::AddSpawnNotification(const QString& player_name) {
 }
 
 void KillFeed::AddPlayerConnectedNotification(const QString& player_name) {
-  this->AddNotification(new KillFeedNotification(this,
-                                                 player_name + " connected"));
+  this->AddNotification(
+      new KillFeedNotification(this, player_name + " connected"));
 }
 
 void KillFeed::AddPLayerDisconnectedNotification(const QString& player_name) {
-  this->AddNotification(new KillFeedNotification(this,
-                                                 player_name + " disconnected"));
+  this->AddNotification(
+      new KillFeedNotification(this, player_name + " disconnected"));
 }
 
 void KillFeed::paintEvent(QPaintEvent* paint_event) {
