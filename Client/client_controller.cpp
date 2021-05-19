@@ -286,6 +286,9 @@ void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
 }
 
 void ClientController::UpdateView() {
+  if (!is_time_difference_set_) {
+    return;
+  }
   auto time = QDateTime::currentMSecsSinceEpoch();
   auto delta_time = time - last_view_update_time_;
   last_view_update_time_ = time;

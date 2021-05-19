@@ -141,7 +141,6 @@ void Entity::TickHealthPoints(int delta_time) {
   health_points_ = std::min(
       health_points_ + health_regen_rate_ * static_cast<float>(delta_time),
       max_health_points_);
-  qInfo() << health_points_ << "reg";
 }
 
 void Entity::DrawLevel(Painter* painter) const {

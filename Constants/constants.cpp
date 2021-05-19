@@ -8,7 +8,7 @@ using RoomId = int;
 namespace Constants {
 
 // Build Options
-const bool kClientEnableIgnoreLevel = false;
+const bool kClientEnableIgnoreLevel = true;
 const QtMsgType kClientMessageIgnoreLevel = QtDebugMsg;
 const bool kServerEnableIgnoreLevel = true;
 const QtMsgType kServerMessageIgnoreLevel = QtDebugMsg;
