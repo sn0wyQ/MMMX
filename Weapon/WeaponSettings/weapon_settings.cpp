@@ -20,6 +20,7 @@ WeaponSettings::WeaponSettings() {
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qWarning() << "File cannot be open";
   }
+
   QJsonArray
       json_weapon_array(QJsonDocument::fromJson(file.readAll()).array());
   std::vector<QString> weapon_types_;
@@ -30,6 +31,7 @@ WeaponSettings::WeaponSettings() {
   for (int i = 0; i < json_weapon_array.size(); i++) {
     auto object = json_weapon_array[i].toObject();
     std::vector<QVariant> params;
+    params.emplace_back(object.value("accuracy"));
     params.emplace_back(object.value("bullet_damage"));
     params.emplace_back(object.value("bullet_range"));
     params.emplace_back(object.value("bullet_speed"));

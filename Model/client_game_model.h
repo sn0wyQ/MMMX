@@ -31,7 +31,8 @@ class ClientGameModel : public GameModel {
 
   void RemoveFromInterpolator(GameObjectId game_object_id);
 
-  void AddLocalBullets(int64_t timestamp);
+  void AddLocalBullets(int64_t timestamp,
+                       const QList<QVariant>& random_bullet_shifts);
 
   std::vector<std::shared_ptr<Bullet>> GetLocalBullets() const;
   void DeleteLocalBullet(GameObjectId bullet_id);

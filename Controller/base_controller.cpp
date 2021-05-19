@@ -38,6 +38,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::DeleteGameObjectEvent, this, _1));
   SetFunctionForEventType(EventType::kSendControls,
     std::bind(&BaseController::SendControlsEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendPlayerReloading,
+    std::bind(&BaseController::SendPlayerReloadingEvent, this, _1));
   SetFunctionForEventType(EventType::kSendPlayerShooting,
     std::bind(&BaseController::SendPlayerShootingEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateLocalPlayerHealthPoints,

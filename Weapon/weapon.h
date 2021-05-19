@@ -18,11 +18,15 @@ class Weapon {
   Weapon(const Weapon& weapon) = default;
 
   void Reload(int64_t cur_time);
+  bool IsPossibleToReload(int64_t cur_time) const;
   bool IsPossibleToShoot(int64_t cur_time) const;
   void SetLastTimeShot(int64_t cur_time);
   int64_t GetTimeBetweenShoots() const;
 
   virtual void DrawWeapon(Painter* painter) = 0;
+
+  void SetAccuracy(float accuracy);
+  float GetAccuracy() const;
 
   void SetBulletDamage(float bullet_damage);
   float GetBulletDamage() const;
@@ -45,30 +49,30 @@ class Weapon {
   int GetCurrentBulletsInClip() const;
   void SetCurrentBulletsInClip(int current_bullets_in_clip);
 
+  int64_t GetLastTimePressedReload() const;
+
   void SetParams(std::vector<QVariant> params);
 
-  std::vector<QVariant> GetBulletParams(GameObjectId parent_id,
-                                        float x,
-                                        float y,
-                                        float rotation,
-                                        float radius) const;
+  std::vector<QVariant> GetBulletParams(GameObjectId parent_id, float x,
+                                    float y, float rotation, float radius,
+                                    float random_bullet_shift) const;
 
   std::vector<std::vector<QVariant>> GetBulletsParams(
-      GameObjectId parent_id,
-      float x,
-      float y,
-      float rotation) const;
+                      GameObjectId parent_id, float x, float y, float rotation,
+                      const QList<QVariant>& random_bullet_shifts) const;
 
   virtual WeaponType GetWeaponType() const = 0;
+  virtual float GetBulletAngleByShift(float random_bullet_shift) const = 0;
 
  private:
+  float accuracy_{};  // точность/разброс
   float bullet_damage_{};  // дамаг (может прокачать герой)
   float bullet_range_{};  // расстояние полета пули
   float bullet_speed_{};  // скорость полета пули
   int clip_size_{};  // размер обоймы (может прокачать герой)
+  int current_bullets_in_clip_{};  // текущее кол-во патронов в обойме
   int rate_of_fire_{};  // скорострельность пушки (кол-во выстрелов в минуту)
   int64_t reloading_time_{};  // время перезарядки (может прокачать герой)
-  int current_bullets_in_clip_{};  // текущее кол-во патронов в обойме
 
   int64_t last_time_shot_{};
   int64_t last_time_pressed_reload_{};

@@ -179,11 +179,7 @@ void GameModel::AttachGameObject(
 
 bool GameModel::DoesObjectCollideByMoveWithSliding(
     const std::shared_ptr<GameObject>& game_object) const {
-  if (!game_object->IsVisible()) {
-    return false;
-  }
-  if (game_object->IsEntity() &&
-    !std::dynamic_pointer_cast<Entity>(game_object)->IsAlive()) {
+  if (!game_object->IsAlive()) {
     return false;
   }
   if (game_object->GetType() == GameObjectType::kBullet) {

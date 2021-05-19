@@ -70,6 +70,7 @@ set(SOURCES
         Animation/animation_enums.h
         Animation/animations_holder.cpp
         Animation/shared_frame.cpp
+        Client/KeyController/key_controller.cpp
         Client/abstract_client_view.h
         Client/client_controller.cpp
         Client/client_view.cpp
@@ -80,11 +81,11 @@ set(SOURCES
         Event/event_type.h
         GUI/GameView/KillFeed/kill_feed.cpp
         GUI/GameView/KillFeed/kill_feed_notification.cpp
+        GUI/GameView/RespawnButton/respawn_button.cpp
         GUI/GameView/game_view.cpp
         GUI/GameView/player_bar.cpp
+        GUI/GameView/reloading_field.cpp
         GUI/GameView/stats_table.cpp
-        GUI/GameView/RespawnButton/respawn_button.cpp
-        Client/KeyController/key_controller.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp
         GameObject/MovableObject/Entity/Creep/creep_enums.h

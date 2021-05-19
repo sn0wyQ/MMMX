@@ -71,14 +71,14 @@ std::shared_ptr<GameObject> Entity::Clone() const {
   return std::make_shared<Entity>(*this);
 }
 
-void Entity::DrawHealthBar(Painter* painter) {
+void Entity::DrawHealthBar(Painter* painter) const {
   painter->save();
   QPointF translation(0.f, -2.f);
   painter->Translate(translation);
   float rect_width = 75.f;
   float rect_height = 14.f;
-  auto cur_hp = static_cast<int>(this->GetHealthPoints());
-  auto max_hp = static_cast<int>(this->GetMaxHealthPoints());
+  auto cur_hp = static_cast<int>(std::round(this->GetHealthPoints()));
+  auto max_hp = static_cast<int>(std::round(this->GetMaxHealthPoints()));
   QString text = QString::number(cur_hp) + " / " +
       QString::number(max_hp);
   QFont font = painter->font();
@@ -107,12 +107,10 @@ void Entity::DrawHealthBar(Painter* painter) {
                     width, rect_height);
   painter->setBrush(brush);
   painter->setPen(pen);
-  painter->Translate(-translation);
   painter->restore();
 }
 
 void Entity::Revive(QPointF point_to_spawn) {
-  SetIsVisible(true);
   SetPosition(point_to_spawn);
   SetHealthPoints(GetMaxHealthPoints());
 }
@@ -143,7 +141,7 @@ void Entity::TickHealthPoints(int delta_time) {
       max_health_points_);
 }
 
-void Entity::DrawLevel(Painter* painter) {
+void Entity::DrawLevel(Painter* painter) const {
   painter->save();
   QPointF translation(0.f,  -3.f);
   painter->Translate(translation);
@@ -161,7 +159,6 @@ void Entity::DrawLevel(Painter* painter) {
 
   painter->drawText(text_rect, Qt::AlignCenter,
                     QString::number(this->GetLevel()));
-  painter->Translate(-translation);
   painter->restore();
 }
 

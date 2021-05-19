@@ -4,6 +4,7 @@ RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), model_(std::make_shared<RoomGameModel>()),
       room_settings_(room_settings) {
   this->StartTicking();
+  this->AddCreeps();
   this->AddConstantObjects();
 }
 
@@ -93,7 +94,7 @@ void RoomController::RevivePlayers(
       auto player = model_data.model->GetPlayerByPlayerId(player_id);
       QPointF point_to_spawn =
           model_->GetPointToSpawn(player->GetRigidBodyBoundingCircleRadius(),
-                                  true);
+                                  GameObjectType::kPlayer);
       player->Revive(point_to_spawn);
       this->AddEventToSendToSinglePlayer(
           Event(EventType::kReviveLocalPlayer, point_to_spawn),
@@ -127,6 +128,10 @@ void RoomController::EntityReceiveDamage(const ModelData& model_data,
                                          const std::shared_ptr<Entity>& killer,
                                          const std::shared_ptr<Entity>& entity,
                                          float damage, bool* is_killed) {
+  if (!entity->IsAlive()) {
+    *is_killed = false;
+    return;
+  }
   float cur_entity_hp = entity->GetHealthPoints();
   float hp_to_set = std::max(0.f, cur_entity_hp - damage);
   bool is_player = entity->GetType() == GameObjectType::kPlayer;
@@ -494,13 +499,14 @@ void RoomController::SendPlayersStatsToPlayers() {
 
 // Temporary -> AddPlayer(PlayerType)
 GameObjectId RoomController::AddPlayer() {
-  QPointF point =
-      model_->GetPointToSpawn(Constants::kDefaultPlayerRadius, true);
+  QPointF point = model_->GetPointToSpawn(Constants::kDefaultPlayerRadius,
+                                          GameObjectType::kPlayer);
 
   AnimationType animation_type = AnimationType::kNone;
   WeaponType weapon_type = WeaponType::kAssaultRifle;
   float width = 8.f;
   float height = 8.f;
+
   // Temporary
   int players_type =
       this->GetPlayersCount() % static_cast<int>(WeaponType::SIZE);
@@ -542,7 +548,6 @@ GameObjectId RoomController::AddPlayer() {
                 Constants::kDefaultPlayerRadius * 2.f,
                 Constants::kDefaultPlayerRadius * 2.f,
                 static_cast<int>(animation_type),
-                true,
                 0.f, 0.f, Constants::kDefaultSpeedMultiplier,
                 Constants::kDefaultEntityFov * 2.f,
                 Constants::kDefaultMaxHealthPoints,
@@ -559,14 +564,14 @@ void RoomController::AddGarage(float x, float y, float rotation,
                         {x, y, rotation, width, height,
                          static_cast<int>(RigidBodyType::kRectangle),
                          width, height,
-                         static_cast<int>(AnimationType::kGarage),
-                         true});
+                         static_cast<int>(AnimationType::kGarage)});
 }
 
 void RoomController::AddRandomGarage(float width, float height) {
   QPointF position = model_->GetPointToSpawn(
-      Math::DistanceBetweenPoints(
-          QPointF(), QPointF(width / 2.f, height / 2.f)));
+      Math::DistanceBetweenPoints(QPointF(),
+                                  QPointF(width / 2.f, height / 2.f)),
+      GameObjectType::kGameObject);
   static std::mt19937 rng(QDateTime::currentMSecsSinceEpoch());
   std::uniform_real_distribution<> random_rotation(0, 360);
   AddGarage(position.x(), position.y(), random_rotation(rng), width, height);
@@ -577,12 +582,12 @@ void RoomController::AddTree(float x, float y, float radius) {
                         {x, y, 0.f, radius * 2.f, radius * 2.f,
                          static_cast<int>(RigidBodyType::kCircle),
                          radius * 1.45f, radius * 1.45f,
-                         static_cast<int>(AnimationType::kTreeGreen),
-                         true});
+                         static_cast<int>(AnimationType::kTreeGreen)});
 }
 
 void RoomController::AddRandomTree(float radius) {
-  QPointF position = model_->GetPointToSpawn(radius);
+  QPointF position = model_->GetPointToSpawn(radius,
+                                             GameObjectType::kGameObject);
   AddTree(position.x(), position.y(), radius);
 }
 
@@ -602,11 +607,12 @@ void RoomController::AddCreep(float x, float y) {
 }
 
 std::vector<GameObjectId> RoomController::AddBullets(
-    const std::shared_ptr<RoomGameModel>& model,
-    GameObjectId parent_id, float x, float y, float rotation,
-    const std::shared_ptr<Weapon>& weapon) {
+    const std::shared_ptr<RoomGameModel>& model, GameObjectId parent_id,
+                               float x, float y, float rotation,
+                               const std::shared_ptr<Weapon>& weapon,
+                               const QList<QVariant>& random_bullet_shifts) {
   std::vector<std::vector<QVariant>> bullets_params =
-      weapon->GetBulletsParams(parent_id, x, y, rotation);
+      weapon->GetBulletsParams(parent_id, x, y, rotation, random_bullet_shifts);
   std::vector<GameObjectId> bullet_ids;
   for (const std::vector<QVariant>& bullet_params : bullets_params) {
     int bullet_id = model_->GenerateNextUnusedBulletId(parent_id);
@@ -626,22 +632,23 @@ void RoomController::AddConstantObjects() {
                          static_cast<int>(RigidBodyType::kRectangle),
                          Constants::kMapWidth,
                          Constants::kMapHeight,
-                         static_cast<int>(AnimationType::kNone),
-                         true});
+                         static_cast<int>(AnimationType::kNone)});
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 10; i++) {
     this->AddRandomGarage(10.f, 7.772f);
   }
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 20; i++) {
     this->AddRandomTree(4.f);
   }
 }
 
 void RoomController::AddCreeps() {
-  for (; creeps_count_ < 10; creeps_count_++) {
-    QPointF position = model_->GetPointToSpawn(std::max(
+  for (; creeps_count_ < 20; creeps_count_++) {
+    QPointF position = model_->GetPointToSpawn(
+        Math::DistanceBetweenPoints(QPointF(), QPointF(
         CreepSettings::GetInstance().GetMaxCreepSize().height(),
-        CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
+        CreepSettings::GetInstance().GetMaxCreepSize().width())),
+        GameObjectType::kCreep);
     this->AddCreep(position.x(), position.y());
   }
 }
@@ -688,7 +695,8 @@ void RoomController::SendControlsEvent(const Event& event) {
     if (!cur_model->IsGameObjectIdTaken(player_id)) {
       break;
     }
-    auto player_in_model = cur_model->GetPlayerByPlayerId(player_id);
+    auto player_in_model
+        = cur_model->GetPlayerByPlayerId(player_id);
     player_in_model->SetPosition(position_to_set);
     player_in_model->SetVelocity(velocity);
     player_in_model->SetRotation(rotation);
@@ -696,6 +704,52 @@ void RoomController::SendControlsEvent(const Event& event) {
     position_to_set = player_in_model->GetPosition();
     model_id++;
   }
+}
+
+void RoomController::SendLevelingPointsEvent(const Event& event) {
+  auto player_id = event.GetArg<GameObjectId>(0);
+  if (!model_->IsGameObjectIdTaken(player_id)) {
+    return;
+  }
+  auto player = model_->GetPlayerByPlayerId(player_id);
+  std::vector<int> leveling_points;
+  for (int i = 0; i < static_cast<int>(LevelingSlots::SIZE); i++) {
+    auto param = event.GetArg<int>(1 + i);
+    leveling_points.push_back(param);
+  }
+  auto prev_leveling_points = player->GetLevelingPoints();
+  for (int i = 0; i < static_cast<int>(LevelingSlots::SIZE); i++) {
+    while (prev_leveling_points[i] < leveling_points[i]) {
+      player->IncreaseLevelingPoint(static_cast<LevelingSlots>(i));
+      prev_leveling_points[i]++;
+    }
+  }
+}
+
+void RoomController::SendPlayerReloadingEvent(const Event& event) {
+  auto timestamp = event.GetArg<int64_t>(0);
+  auto model_id = GetModelIdByTimestamp(timestamp);
+  // Проигнорим, если чел нам прислал то, что он сделал очень давно
+  if (model_id < 0) {
+    return;
+  }
+  auto current_model_data = models_cache_[model_id];
+  auto player_id = event.GetArg<GameObjectId>(1);
+
+  if (!current_model_data.model->IsGameObjectIdTaken(player_id) ||
+      are_controls_blocked_[player_id]) {
+    return;
+  }
+
+  std::vector<GameObjectId> players_ids = this->GetAllPlayerIds();
+  for (size_t i = 0; i < players_ids.size(); i++) {
+    if (player_id == players_ids[i]) {
+      players_ids.erase(players_ids.begin() + i);
+      break;
+    }
+  }
+  this->AddEventToSendToPlayerList(Event(EventType::kSendPlayerReloading,
+                      static_cast<qint64>(timestamp), player_id), players_ids);
 }
 
 void RoomController::SendPlayerShootingEvent(const Event& event) {
@@ -709,7 +763,8 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
     return;
   }
   auto start_model = models_cache_[model_id].model;
-  if (!start_model->IsGameObjectIdTaken(player_id)) {
+  if (!start_model->IsGameObjectIdTaken(player_id) ||
+      are_controls_blocked_[player_id]) {
     return;
   }
 
@@ -718,10 +773,12 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
 
   auto player_in_model =
       start_model->GetPlayerByPlayerId(player_id);
-  std::vector<GameObjectId> bullet_ids =
-      AddBullets(start_model,
-                 player_id, player_in_model->GetX(), player_in_model->GetY(),
-                 player_in_model->GetRotation(), player_in_model->GetWeapon());
+
+  std::vector<GameObjectId> bullet_ids = AddBullets(
+      start_model, player_id, player_in_model->GetX(),
+      player_in_model->GetY(), player_in_model->GetRotation(),
+      player_in_model->GetWeapon(), event.GetArg<QList<QVariant>>(2));
+
   int start_model_id = model_id;
   for (int bullet_id : bullet_ids) {
     model_id = start_model_id;
@@ -789,26 +846,6 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
   }
 }
 
-void RoomController::SendLevelingPointsEvent(const Event& event) {
-  auto player_id = event.GetArg<GameObjectId>(0);
-  if (!model_->IsGameObjectIdTaken(player_id)) {
-    return;
-  }
-  auto player = model_->GetPlayerByPlayerId(player_id);
-  std::vector<int> leveling_points;
-  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
-    auto param = event.GetArg<int>(1 + i);
-    leveling_points.push_back(param);
-  }
-  auto was_leveling_points = player->GetLevelingPoints();
-  for (int i = 0; i < Constants::kUpgradeSlots; i++) {
-    while (was_leveling_points[i] < leveling_points[i]) {
-      player->IncreaseLevelingPoint(i);
-      was_leveling_points[i]++;
-    }
-  }
-}
-
 void RoomController::ReviveConfirmedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   if (!model_->IsGameObjectIdTaken(player_id)) {
@@ -826,7 +863,7 @@ void RoomController::RequestRespawnEvent(const Event& event) {
                                          player_id));
   auto player = model_->GetPlayerByPlayerId(player_id);
   QPointF point_to_spawn = model_->GetPointToSpawn(
-      player->GetRigidBodyBoundingCircleRadius(), true);
+      player->GetRigidBodyBoundingCircleRadius(), GameObjectType::kPlayer);
   player->Revive(point_to_spawn);
   this->AddEventToSendToSinglePlayer(
       Event(EventType::kReviveLocalPlayer, point_to_spawn), player_id);

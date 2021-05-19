@@ -86,6 +86,13 @@ extern const int64_t kReviveTime;
 extern const int64_t kRequestRespawnTime;
 extern const int64_t kHoldingRespawnTime;
 
+// Spawn settings
+extern const int kChunksX;
+extern const int kChunksY;
+// The less this constant is the more creeps will spawn in center
+extern const int kCreepSpawnShuffleRatio;
+extern const int kGenerationTries;
+
 // View
 void SetPainterHints(QPainter* painter);
 extern const float kCameraStiffnessRatio;
@@ -100,22 +107,23 @@ extern const int kAccuracy;
 float GetExpForLevel(int level);
 extern const float kExpMultiplier;
 
-extern const int kUpgradeSlots;
 extern const int kCountOfLevels;
 
-namespace LevelingMultipliers {
+namespace LevelingSlots {
 
 extern const float kMaxHp;
 extern const float kHealthRegenRate;
 extern const float kSpeed;
 extern const float kFovRadius;
+extern const float kAccuracy;
 
 extern const float kBulletSpeed;
 extern const float kRateOfFire;
 extern const float kBulletRange;
 extern const float kBulletDamage;
+extern const float kReloadingTime;
 
-}  // namespace LevelingMultipliers
+}  // namespace LevelingSlots
 
 template<class T>
 T GetEnumValueFromString(const QString& string) {

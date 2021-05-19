@@ -15,15 +15,16 @@
 #include <QPaintEvent>
 #include <QPainter>
 
+#include "Client/KeyController/key_controller.h"
 #include "Client/abstract_client_view.h"
 #include "Client/client_controller.h"
 #include "Event/event.h"
+#include "GUI/GameView/KillFeed/kill_feed.h"
+#include "GUI/GameView/RespawnButton/respawn_button.h"
 #include "GUI/GameView/game_view.h"
 #include "GUI/GameView/player_bar.h"
-#include "Client/KeyController/key_controller.h"
+#include "GUI/GameView/reloading_field.h"
 #include "GUI/GameView/stats_table.h"
-#include "GUI/GameView/RespawnButton/respawn_button.h"
-#include "GUI/GameView/KillFeed/kill_feed.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
@@ -58,6 +59,7 @@ class ClientView : public AbstractClientView {
   std::shared_ptr<ClientGameModel> model_;
   GameView* game_view_;
   PlayerBar* player_bar_;
+  ReloadingField* reloading_field_;
   StatsTable* stats_table_;
   QLabel* info_label_;
   int height_of_bar_{};

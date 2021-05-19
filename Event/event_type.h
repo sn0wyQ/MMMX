@@ -100,10 +100,15 @@ enum class EventType {
 
   // [0] - <int64> timestamp
   // [1] - <GameObjectId> sender_player_id
+  kSendPlayerReloading,
+
+  // [0] - <int64> timestamp
+  // [1] - <GameObjectId> sender_player_id
+  // [2] - QList<QVariant> random_shifts
   kSendPlayerShooting,
 
   // [0] - <GameObjectId> sender_player_id
-  // Constants::kUpgradeSlots times int
+  // LevelingSlots::SIZE times int
   kSendLevelingPoints,
 
   // [0] - <GameObjectId> attacker_id

@@ -106,11 +106,11 @@ class RoomController : public BaseController {
   void AddTree(float x, float y, float radius);
   void AddRandomTree(float radius);
   void AddCreep(float x, float y);
+
   std::vector<GameObjectId> AddBullets(
-      const std::shared_ptr<RoomGameModel>& model,
-      GameObjectId parent_id, float x, float y,
-      float rotation,
-      const std::shared_ptr<Weapon>& weapon);
+      const std::shared_ptr<RoomGameModel>& model, GameObjectId parent_id,
+      float x, float y, float rotation, const std::shared_ptr<Weapon>& weapon,
+      const QList<QVariant>& random_bullet_shifts);
   void AddConstantObjects();
   void AddCreeps();
 
@@ -126,8 +126,9 @@ class RoomController : public BaseController {
 
   // ------------------- GAME EVENTS -------------------
 
-  void SendPlayerShootingEvent(const Event& event) override;
   void SendControlsEvent(const Event& event) override;
+  void SendPlayerShootingEvent(const Event& event) override;
+  void SendPlayerReloadingEvent(const Event& event) override;
   void SendLevelingPointsEvent(const Event& event) override;
   void ReviveConfirmedEvent(const Event& event) override;
   void RequestRespawnEvent(const Event& event) override;

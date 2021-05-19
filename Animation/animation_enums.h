@@ -47,7 +47,7 @@ enum class AnimationInstructionType {
 Q_ENUM_NS(AnimationInstructionType)
 
 // Animation currently has 4 states:
-// 1) kAttack (creep attacking abd possibly moving)
+// 1) kAttack (creep attacking and possibly moving)
 // 2) kDestroy (after object is destroyed)
 // 3) kIdle (when not moving or doing anything)
 // 4) kMove (when only moving)

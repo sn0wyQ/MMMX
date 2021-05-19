@@ -18,8 +18,8 @@ class Entity : public MovableObject {
   void OnTick(int delta_time) override;
   void TickHealthPoints(int delta_time);
 
-  void DrawHealthBar(Painter* painter) override;
-  void DrawLevel(Painter* painter) override;
+  void DrawHealthBar(Painter* painter) const override;
+  void DrawLevel(Painter* painter) const override;
 
   float GetFovRadius() const;
   void SetFovRadius(float fov_radius);
@@ -39,7 +39,7 @@ class Entity : public MovableObject {
 
   bool IsEntity() const override;
 
-  void Revive(QPointF point_to_spawn);
+  virtual void Revive(QPointF point_to_spawn);
 
   void SetHealthRegenRate(float health_regen_rate);
   float GetHealthRegenRate() const;
@@ -53,7 +53,7 @@ class Entity : public MovableObject {
 
  private:
   float fov_radius_{Constants::kDefaultEntityFov};
-  float health_points_{};
+  float health_points_{0.f};
   float health_regen_rate_{};
   float max_health_points_{};
 };
