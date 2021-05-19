@@ -14,7 +14,7 @@ class Bullet : public MovableObject {
   GameObjectType GetType() const override;
 
   void OnTick(int delta_time) override;
-  void DrawRelatively(Painter* painter) override;
+  void DrawRelatively(Painter* painter) const override;
 
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;

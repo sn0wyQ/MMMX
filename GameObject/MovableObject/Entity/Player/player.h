@@ -35,7 +35,9 @@ class Player : public Entity {
   Player(const Player& other);
   virtual ~Player() = default;
 
-  void DrawRelatively(Painter* painter) override;
+  void DrawRelatively(Painter* painter) const override;
+  void DrawNickname(Painter* painter,
+                    const QString& nickname) const override;
 
   bool IsLocalPlayer() const;
   void SetIsLocalPlayer(bool is_local_player);
@@ -72,7 +74,7 @@ class Player : public Entity {
 
  private:
   bool is_local_player_{false};
-  std::shared_ptr<Weapon> weapon_;
+  std::shared_ptr<Weapon> weapon_{};
   WeaponType weapon_type_;
   float current_exp_{};
   int free_leveling_points_{};

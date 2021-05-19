@@ -179,7 +179,7 @@ std::shared_ptr<GameObject> GetObjectBulletCollidedWith(
           continue;
         }
       }
-      if (!object->IsVisible()) {
+      if (!object->IsAlive()) {
         continue;
       }
       QVector2D offset(object->GetPosition() - bullet_clone->GetPosition());

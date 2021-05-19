@@ -503,7 +503,6 @@ GameObjectId RoomController::AddPlayer() {
                 Constants::kDefaultPlayerRadius * 2,
                 Constants::kDefaultPlayerRadius * 2,
                 static_cast<int>(AnimationType::kNone),
-                true,
                 0.f, 0.f, Constants::kDefaultSpeedMultiplier,
                 Constants::kDefaultEntityFov * 2.f,
                 Constants::kDefaultMaxHealthPoints,
@@ -543,8 +542,7 @@ void RoomController::AddBox(float x, float y, float rotation,
                         {x, y, rotation, width, height,
                          static_cast<int>(RigidBodyType::kRectangle),
                          width, height,
-                         static_cast<int>(AnimationType::kNone),
-                         true});
+                         static_cast<int>(AnimationType::kNone)});
 }
 
 void RoomController::AddRandomBox(float width, float height) {
@@ -562,8 +560,7 @@ void RoomController::AddTree(float x, float y, float radius) {
                         {x, y, 0.f, radius * 2.f, radius * 2.f,
                          static_cast<int>(RigidBodyType::kCircle),
                          radius * 1.45f, radius * 1.45f,
-                         static_cast<int>(AnimationType::kTreeGreen),
-                         true});
+                         static_cast<int>(AnimationType::kTreeGreen)});
 }
 
 void RoomController::AddRandomTree(float radius) {
@@ -609,8 +606,7 @@ void RoomController::AddConstantObjects() {
                          static_cast<int>(RigidBodyType::kRectangle),
                          Constants::kDefaultMapWidth,
                          Constants::kDefaultMapHeight,
-                         static_cast<int>(AnimationType::kNone),
-                         true});
+                         static_cast<int>(AnimationType::kNone)});
 
   for (int i = 0; i < 10; i++) {
     this->AddRandomBox(7.f, 7.f);

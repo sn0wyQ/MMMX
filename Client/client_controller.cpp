@@ -34,7 +34,7 @@ int64_t ClientController::GetSecsToNextPossibleRevive() const {
   if (!model_->IsLocalPlayerSet()) {
     return -1;
   }
-  if (model_->GetLocalPlayer()->IsVisible()) {
+  if (model_->GetLocalPlayer()->IsAlive()) {
     auto delta_time =
         this->GetCurrentServerTime() - last_requested_respawn_time_;
     return (Constants::kRequestRespawnTime - delta_time) / 1000;
@@ -48,7 +48,7 @@ bool ClientController::GetIsHoldingRespawnButton() const {
   if (!model_->IsLocalPlayerSet()) {
     return false;
   }
-  if (model_->GetLocalPlayer()->IsVisible()) {
+  if (model_->GetLocalPlayer()->IsAlive()) {
     return key_controller_->IsHeld(Controls::kRespawn);
   }
   return true;
@@ -286,7 +286,14 @@ void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
 }
 
 void ClientController::UpdateView() {
+  if (!is_time_difference_set_) {
+    return;
+  }
   auto time = QDateTime::currentMSecsSinceEpoch();
+  if (last_view_update_time_ == -1) {
+    last_view_update_time_ = time;
+    return;
+  }
   auto delta_time = time - last_view_update_time_;
   last_view_update_time_ = time;
   if (delta_time == 0) {
@@ -603,7 +610,7 @@ void ClientController::LocalPlayerDiedEvent(const Event& event) {
   last_died_ = this->GetCurrentServerTime();
   are_controls_blocked_ = true;
   last_requested_respawn_time_ = GetCurrentServerTime();
-  model_->GetLocalPlayer()->SetIsVisible(false);
+  model_->GetLocalPlayer()->SetHealthPoints(0.f);
 }
 
 void ClientController::ReviveLocalPlayerEvent(const Event& event) {
@@ -613,7 +620,6 @@ void ClientController::ReviveLocalPlayerEvent(const Event& event) {
   auto local_player = model_->GetLocalPlayer();
   auto spawn_point = event.GetArg<QPointF>(0);
   local_player->Revive(spawn_point);
-  local_player->SetIsVisible(true);
   last_requested_respawn_time_ = this->GetCurrentServerTime();
   this->AddEventToSend(Event(EventType::kReviveConfirmed,
                              local_player->GetId()));

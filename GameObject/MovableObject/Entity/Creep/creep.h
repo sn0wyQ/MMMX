@@ -11,7 +11,7 @@ class Creep : public Entity {
   explicit Creep(GameObjectId player_id);
   virtual ~Creep() = default;
 
-  void DrawRelatively(Painter* painter) override;
+  void DrawRelatively(Painter* painter) const override;
 
   GameObjectType GetType() const override;
 
