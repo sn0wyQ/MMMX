@@ -28,7 +28,6 @@ CreepSettings::CreepSettings() {
 
   QJsonObject json_object = QJsonDocument::fromJson(file.readAll()).object();
 
-
   bool loaded_distribution_delta;
   distribution_delta_ = LoadFloat(json_object,
                                   "distribution_delta",
