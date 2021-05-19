@@ -32,7 +32,7 @@ class KillFeed : public QWidget {
                            WeaponType weapon_type);
   void AddSpawnNotification(const QString& player_name);
   void AddPlayerConnectedNotification(const QString& player_name);
-  void AddPLayerDisconnectedNotification(const QString& player_name);
+  void AddPlayerDisconnectedNotification(const QString& player_name);
 
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;

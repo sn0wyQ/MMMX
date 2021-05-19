@@ -136,7 +136,7 @@ void ClientController::OnTickGameNotStarted(int delta_time) {
   this->OnTickGameInProgress(delta_time);
 }
 
-void ClientController::SendPLayerDataToServer() {
+void ClientController::SendPlayerDataToServer() {
   if (!model_->IsLocalPlayerSet()) {
     return;
   }
@@ -160,7 +160,7 @@ void ClientController::SendPLayerDataToServer() {
 }
 
 void ClientController::OnTickGameInProgress(int delta_time) {
-  this->SendPLayerDataToServer();
+  this->SendPlayerDataToServer();
 }
 
 void ClientController::UpdateInterpolationInfo() {
@@ -583,7 +583,7 @@ void ClientController::PlayerConnectedEvent(const Event& event) {
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
-  view_->AddPLayerDisconnectedNotification(
+  view_->AddPlayerDisconnectedNotification(
       model_->GetPlayerStatsByPlayerId(player_id)->GetNickname());
   model_->DeleteGameObject(player_id);
   model_->DeletePlayerStats(player_id);

@@ -199,8 +199,8 @@ void ClientView::AddPlayerConnectedNotification(const QString& player_name) {
   kill_feed_->AddPlayerConnectedNotification(player_name);
 }
 
-void ClientView::AddPLayerDisconnectedNotification(const QString& player_name) {
-  kill_feed_->AddPLayerDisconnectedNotification(player_name);
+void ClientView::AddPlayerDisconnectedNotification(const QString& player_name) {
+  kill_feed_->AddPlayerDisconnectedNotification(player_name);
 }
 
 void ClientView::ProcessRespawnButton() {

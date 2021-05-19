@@ -24,7 +24,7 @@ class AbstractClientView : public QMainWindow {
   virtual std::shared_ptr<KeyController> GetKeyController() const = 0;
   virtual void AddRespawnNotification(const QString& player_name) = 0;
   virtual void AddPlayerConnectedNotification(const QString& player_name) = 0;
-  virtual void AddPLayerDisconnectedNotification(
+  virtual void AddPlayerDisconnectedNotification(
       const QString& player_name) = 0;
 };
 

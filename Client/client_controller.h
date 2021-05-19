@@ -48,7 +48,7 @@ class ClientController : public BaseController {
   void OnTickGameFinished(int) {}
   void OnTickGameInProgress(int delta_time);
   void OnTickGameNotStarted(int delta_time);
-  void SendPLayerDataToServer();
+  void SendPlayerDataToServer();
 
   std::shared_ptr<ClientGameModel> GetModel();
   int GetServerVar() const;

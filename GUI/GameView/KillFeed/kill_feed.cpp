@@ -42,7 +42,7 @@ void KillFeed::AddPlayerConnectedNotification(const QString& player_name) {
       new KillFeedNotification(this, player_name + " connected"));
 }
 
-void KillFeed::AddPLayerDisconnectedNotification(const QString& player_name) {
+void KillFeed::AddPlayerDisconnectedNotification(const QString& player_name) {
   this->AddNotification(
       new KillFeedNotification(this, player_name + " disconnected"));
 }

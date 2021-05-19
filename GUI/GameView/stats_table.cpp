@@ -134,7 +134,7 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
   };
   for (const auto& stat : stats) {
     if (stat->GetPlayerId() == model_->GetLocalPlayer()->GetId()) {
-      pen_.setColor(Constants::StatsTable::kLocalPLayerTextColor);
+      pen_.setColor(Constants::StatsTable::kLocalPlayerTextColor);
       font.setBold(true);
     } else {
       pen_.setColor(Constants::StatsTable::kTextColor);
