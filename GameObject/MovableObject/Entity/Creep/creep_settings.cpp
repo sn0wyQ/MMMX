@@ -30,11 +30,13 @@ CreepSettings::CreepSettings() {
 
 
   bool loaded_distribution_delta;
-  distribution_delta_ =
-      LoadFloat(json_object, "distribution_delta", &loaded_distribution_delta);
+  distribution_delta_ = LoadFloat(json_object,
+                                  "distribution_delta",
+                                  &loaded_distribution_delta);
   bool loaded_distribution_lambda;
-  distribution_lambda_ =
-      LoadFloat(json_object, "distribution_lambda", &loaded_distribution_lambda);
+  distribution_lambda_ = LoadFloat(json_object,
+                                   "distribution_lambda",
+                                   &loaded_distribution_lambda);
   bool loaded_max_creep_width;
   max_creep_size_.setWidth(LoadFloat(json_object,
                                      "max_width",
