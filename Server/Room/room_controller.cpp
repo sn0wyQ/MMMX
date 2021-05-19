@@ -512,24 +512,24 @@ GameObjectId RoomController::AddPlayer() {
       this->GetPlayersCount() % static_cast<int>(WeaponType::SIZE);
   switch (players_type) {
     case 0: {
-      animation_type = AnimationType::kJoCost;
+      animation_type = AnimationType::kSoldier;
       weapon_type = WeaponType::kAssaultRifle;
       break;
     }
     case 1: {
-      animation_type = AnimationType::kXaleKokhrap;
+      animation_type = AnimationType::kViking;
       weapon_type = WeaponType::kCrossbow;
       break;
     }
     case 2: {
-      animation_type = AnimationType::kSpider3_0;
+      animation_type = AnimationType::kSpider;
       weapon_type = WeaponType::kMachineGun;
       width = 3.f;
       height = 3.f;
       break;
     }
     case 3: {
-      animation_type = AnimationType::kShenandoah;
+      animation_type = AnimationType::kSmasher;
       weapon_type = WeaponType::kShotgun;
       break;
     }

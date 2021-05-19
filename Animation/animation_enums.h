@@ -76,11 +76,11 @@ enum class AnimationType {
   kGarage,
   kGiantStrong,
   kGiantWeak,
-  kJoCost,
-  kShenandoah,
-  kSpider3_0,
+  kSmasher,
+  kSoldier,
+  kSpider,
   kTreeGreen,
-  kXaleKokhrap
+  kViking
 };
 
 Q_ENUM_NS(AnimationType)

@@ -16,11 +16,11 @@ const std::unordered_map<AnimationType, bool> kIsSynchronizedAllOfThisType {
     {AnimationType::kGiantWeak, false },
     {AnimationType::kGiantStrong, false },
     { AnimationType::kBox, true },
-    { AnimationType::kJoCost, false },
-    { AnimationType::kShenandoah, false },
-    { AnimationType::kSpider3_0, false },
+    { AnimationType::kSmasher, false },
+    { AnimationType::kSoldier, false },
+    { AnimationType::kSpider, false },
     { AnimationType::kTreeGreen, true },
-    { AnimationType::kXaleKokhrap, false },
+    { AnimationType::kViking, false },
 };
 
 class AnimationsHolder {

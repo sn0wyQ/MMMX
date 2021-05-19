@@ -26,11 +26,11 @@ const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
     { AnimationType::kGiantWeak, "GiantWeak" },
     { AnimationType::kGiantStrong, "GiantStrong" },
     { AnimationType::kBox, "Box" },
-    { AnimationType::kJoCost, "JoCost" },
-    { AnimationType::kShenandoah, "Shenandoah" },
-    { AnimationType::kSpider3_0, "Spider3_0" },
+    { AnimationType::kSmasher, "Smasher" },
+    { AnimationType::kSoldier, "Soldier" },
+    { AnimationType::kSpider, "Spider" },
     { AnimationType::kTreeGreen, "TreeGreen" },
-    { AnimationType::kXaleKokhrap, "XaleKokhrap" }
+    { AnimationType::kViking, "Viking" }
 };
 
 const std::unordered_map<QString, AnimationState> kAnimationStateLabels {
