@@ -527,7 +527,6 @@ void ClientController::AddLocalPlayerGameObjectEvent(const Event& event) {
   model_->AddGameObject(game_object_id,
       GameObjectType::kPlayer,
       event.GetArgsSubVector(1));
-  qInfo() << model_->GetPlayerByPlayerId(game_object_id)->GetHealthPoints();
 }
 
 void ClientController::UpdateGameObjectDataEvent(const Event& event) {
