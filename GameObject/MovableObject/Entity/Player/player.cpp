@@ -266,7 +266,6 @@ void Player::DrawNickname(Painter* painter,
 
   painter->drawText(text_rect, Qt::AlignCenter,
                     nickname);
-  painter->Translate(-translation);
   painter->restore();
 }
 

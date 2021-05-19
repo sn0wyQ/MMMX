@@ -107,7 +107,6 @@ void Entity::DrawHealthBar(Painter* painter) const {
                     width, rect_height);
   painter->setBrush(brush);
   painter->setPen(pen);
-  painter->Translate(-translation);
   painter->restore();
 }
 
@@ -160,7 +159,6 @@ void Entity::DrawLevel(Painter* painter) const {
 
   painter->drawText(text_rect, Qt::AlignCenter,
                     QString::number(this->GetLevel()));
-  painter->Translate(-translation);
   painter->restore();
 }
 
