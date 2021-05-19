@@ -251,7 +251,7 @@ float Player::GetExpIncrementForKill() const {
 void Player::DrawNickname(Painter* painter,
                           const QString& nickname) const {
   painter->save();
-  QPointF translation(0.f,  -4.f);
+  QPointF translation(0.f, -4.f);
   painter->Translate(translation);
   painter->setBrush(Qt::black);
   float rect_width = 120.f;
@@ -268,6 +268,7 @@ void Player::DrawNickname(Painter* painter,
                     nickname);
   painter->Translate(-translation);
   painter->restore();
+}
 
 void Player::Revive(QPointF point_to_spawn) {
   Entity::Revive(point_to_spawn);
