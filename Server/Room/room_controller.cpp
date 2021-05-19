@@ -4,6 +4,7 @@ RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), model_(std::make_shared<RoomGameModel>()),
       room_settings_(room_settings) {
   this->StartTicking();
+  this->AddCreeps();
   this->AddConstantObjects();
 }
 
@@ -93,7 +94,7 @@ void RoomController::RevivePlayers(
       auto player = model_data.model->GetPlayerByPlayerId(player_id);
       QPointF point_to_spawn =
           model_->GetPointToSpawn(player->GetRigidBodyBoundingCircleRadius(),
-                                  true);
+                                  GameObjectType::kPlayer);
       player->Revive(point_to_spawn);
       this->AddEventToSendToSinglePlayer(
           Event(EventType::kReviveLocalPlayer, point_to_spawn),
@@ -486,7 +487,8 @@ void RoomController::SendPlayersStatsToPlayers() {
 // Temporary -> AddPlayer(PlayerType)
 GameObjectId RoomController::AddPlayer() {
   QPointF point =
-      model_->GetPointToSpawn(Constants::kDefaultPlayerRadius, true);
+      model_->GetPointToSpawn(Constants::kDefaultPlayerRadius,
+                              GameObjectType::kPlayer);
   std::vector<QVariant>
       params = {point.x(),
                 point.y(),
@@ -543,8 +545,9 @@ void RoomController::AddBox(float x, float y, float rotation,
 
 void RoomController::AddRandomBox(float width, float height) {
   QPointF position = model_->GetPointToSpawn(
-      Math::DistanceBetweenPoints(
-          QPointF(), QPointF(width / 2.f, height / 2.f)));
+      Math::DistanceBetweenPoints(QPointF(),
+                                  QPointF(width / 2.f, height / 2.f)),
+      GameObjectType::kGameObject);
   static std::mt19937 rng(QDateTime::currentMSecsSinceEpoch());
   std::uniform_real_distribution<> random_rotation(0, 360);
   AddBox(position.x(), position.y(), random_rotation(rng), width, height);
@@ -560,7 +563,8 @@ void RoomController::AddTree(float x, float y, float radius) {
 }
 
 void RoomController::AddRandomTree(float radius) {
-  QPointF position = model_->GetPointToSpawn(radius);
+  QPointF position = model_->GetPointToSpawn(radius,
+                                             GameObjectType::kGameObject);
   AddTree(position.x(), position.y(), radius);
 }
 
@@ -603,19 +607,21 @@ void RoomController::AddConstantObjects() {
                          static_cast<int>(AnimationType::kNone),
                          true});
 
-  for (int i = 0; i < 5; i++) {
+  for (int i = 0; i < 10; i++) {
     this->AddRandomBox(7.f, 7.f);
   }
-  for (int i = 0; i < 5; i++) {
-    this->AddRandomTree(5.f);
+  for (int i = 0; i < 20; i++) {
+    this->AddRandomTree(3.f);
   }
 }
 
 void RoomController::AddCreeps() {
-  for (; creeps_count_ < 10; creeps_count_++) {
-    QPointF position = model_->GetPointToSpawn(std::max(
+  for (; creeps_count_ < 20; creeps_count_++) {
+    QPointF position = model_->GetPointToSpawn(
+        Math::DistanceBetweenPoints(QPointF(), QPointF(
         CreepSettings::GetInstance().GetMaxCreepSize().height(),
-        CreepSettings::GetInstance().GetMaxCreepSize().width()) / 2.f);
+        CreepSettings::GetInstance().GetMaxCreepSize().width())),
+        GameObjectType::kCreep);
     this->AddCreep(position.x(), position.y());
   }
 }
@@ -797,7 +803,7 @@ void RoomController::RequestRespawnEvent(const Event& event) {
                                          player_id));
   auto player = model_->GetPlayerByPlayerId(player_id);
   QPointF point_to_spawn = model_->GetPointToSpawn(
-      player->GetRigidBodyBoundingCircleRadius(), true);
+      player->GetRigidBodyBoundingCircleRadius(), GameObjectType::kPlayer);
   player->Revive(point_to_spawn);
   this->AddEventToSendToSinglePlayer(
       Event(EventType::kReviveLocalPlayer, point_to_spawn), player_id);
