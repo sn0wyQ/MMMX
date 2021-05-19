@@ -137,7 +137,7 @@ bool KeyController::IsHeld(Controls control) {
     return false;
   }
   if (is_held_[control] &&
-      last_pressed_[control] < last_released_[control] &&
+      last_pressed_[control] <= last_released_[control] &&
       GetCurrentTime() - last_released_[control] > 50) {
     is_held_[control] = false;
   }

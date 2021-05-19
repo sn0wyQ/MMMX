@@ -72,6 +72,13 @@ const int64_t kReviveTime = 5000;
 const int64_t kRequestRespawnTime = 10000;
 const int64_t kHoldingRespawnTime = 1000;
 
+// Spawn settings
+const int kChunksX = 15;
+const int kChunksY = 15;
+// The less this constant is the more creeps will spawn in center
+const int kCreepSpawnShuffleRatio = 3;
+const int kGenerationTries = 15;
+
 // View
 void SetPainterHints(QPainter* painter) {
   painter->setRenderHints(
