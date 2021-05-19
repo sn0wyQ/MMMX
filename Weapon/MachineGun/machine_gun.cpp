@@ -14,3 +14,9 @@ void MachineGun::DrawWeapon(Painter* painter) {
 WeaponType MachineGun::GetWeaponType() const {
   return WeaponType::kMachineGun;
 }
+
+float MachineGun::GetBulletAngleByShift(float random_bullet_shift) const {
+  float accuracy_function = random_bullet_shift * random_bullet_shift *
+      MachineGun::GetAccuracy();
+  return (random_bullet_shift < 0) ? -accuracy_function : accuracy_function;
+}

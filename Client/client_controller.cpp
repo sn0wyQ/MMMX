@@ -428,6 +428,10 @@ void ClientController::MouseReleaseEvent(QMouseEvent* mouse_event) {
 }
 
 void ClientController::ControlsHolding() {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+
   if (key_controller_->IsHeld(Controls::kRespawn)) {
     if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
       this->AddEventToSend(Event(EventType::kRequestRespawn,
@@ -445,25 +449,74 @@ void ClientController::ControlsHolding() {
                 respawn_holding_current_ - controls_check_timer_.interval());
   }
 
+  if (key_controller_->WasPressed(ControlsWrapper::Controls::kReload)) {
+    auto local_player_weapon = model_->GetLocalPlayer()->GetWeapon();
+    auto timestamp = GetCurrentServerTime();
+    if (local_player_weapon->IsPossibleToReload(timestamp)) {
+      local_player_weapon->Reload(timestamp);
+      this->AddEventToSend(Event(EventType::kSendPlayerReloading,
+                                 static_cast<qint64>(timestamp),
+                                 model_->GetLocalPlayer()->GetId()));
+    }
+    key_controller_->ClearKeyPress(ControlsWrapper::Controls::kReload);
+  }
+
   if (key_controller_->IsHeld(Controls::kShoot)) {
-    if (model_->IsLocalPlayerSet()) {
-      auto local_player = model_->GetLocalPlayer();
-      auto timestamp = GetCurrentServerTime();
-      if (!local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
-        return;
-      }
-      // Temporary nickname change
-      this->AddEventToSend(Event(EventType::kSendNickname,
-                                 model_->GetLocalPlayer()->GetId(),
-                                 QString("Shooter#") +
-                                     QString::number(local_player->GetId())));
-      local_player->GetWeapon()->SetLastTimeShot(timestamp);
-      model_->AddLocalBullets(timestamp);
-      this->AddEventToSend(Event(EventType::kSendPlayerShooting,
+    auto local_player = model_->GetLocalPlayer();
+    auto timestamp = GetCurrentServerTime();
+
+    // Reload if Bullets In Clips is empty
+    if (local_player->GetWeapon()->GetCurrentBulletsInClip() <= 0 &&
+        local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
+      local_player->GetWeapon()->Reload(timestamp);
+      this->AddEventToSend(Event(EventType::kSendPlayerReloading,
                                  static_cast<qint64>(timestamp),
                                  local_player->GetId()));
+    } else if (local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
+      local_player->GetWeapon()->SetLastTimeShot(timestamp);
+
+      // Temporary nickname change
+      this->AddEventToSend(Event(
+          EventType::kSendNickname,
+          local_player->GetId(),
+          QString("Shooter#") +
+              QString::number(model_->GetLocalPlayer()->GetId())));
+
+      QList<QVariant> bullet_shifts;
+      static std::mt19937 generator_(QDateTime::currentMSecsSinceEpoch());
+      // generate normalised accuracy
+      std::uniform_real_distribution<> generate_shift_ =
+          std::uniform_real_distribution<>(-1, 1);
+      switch (local_player->GetWeapon()->GetWeaponType()) {
+        case WeaponType::kShotgun: {
+          bullet_shifts.push_back(generate_shift_(generator_));
+          bullet_shifts.push_back(generate_shift_(generator_));
+          bullet_shifts.push_back(generate_shift_(generator_));
+          break;
+        }
+
+        case WeaponType::kAssaultRifle:
+        case WeaponType::kCrossbow:
+        case WeaponType::kMachineGun: {
+          bullet_shifts.push_back(generate_shift_(generator_));
+          break;
+        }
+
+        default: {
+          qWarning() << "Invalid weapon type";
+          break;
+        }
+      }
+      local_player->GetWeapon()->SetCurrentBulletsInClip(
+          local_player->GetWeapon()->GetCurrentBulletsInClip()
+              - bullet_shifts.size());
+
+      model_->AddLocalBullets(timestamp, bullet_shifts);
+      this->AddEventToSend(Event(EventType::kSendPlayerShooting,
+                                 static_cast<qint64>(timestamp),
+                                 local_player->GetId(),
+                                 bullet_shifts));
     }
-    return;
   }
 }
 

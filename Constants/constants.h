@@ -106,22 +106,23 @@ extern const int kAccuracy;
 float GetExpForLevel(int level);
 extern const float kExpMultiplier;
 
-extern const int kUpgradeSlots;
 extern const int kCountOfLevels;
 
-namespace LevelingMultipliers {
+namespace LevelingSlots {
 
 extern const float kMaxHp;
 extern const float kHealthRegenRate;
 extern const float kSpeed;
 extern const float kFovRadius;
+extern const float kAccuracy;
 
 extern const float kBulletSpeed;
 extern const float kRateOfFire;
 extern const float kBulletRange;
 extern const float kBulletDamage;
+extern const float kReloadingTime;
 
-}  // namespace LevelingMultipliers
+}  // namespace LevelingSlots
 
 template<class T>
 T GetEnumValueFromString(const QString& string) {

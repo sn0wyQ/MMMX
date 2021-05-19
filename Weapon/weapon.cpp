@@ -1,9 +1,5 @@
 #include "weapon.h"
 
-void Weapon::SetCurrentBulletsInClip(int current_bullets_in_clip) {
-  current_bullets_in_clip_ = current_bullets_in_clip;
-}
-
 bool Weapon::IsPossibleToShoot(int64_t cur_time) const {
   if (cur_time - last_time_shot_ < GetTimeBetweenShoots()
       || GetCurrentBulletsInClip() <= 0
@@ -13,6 +9,10 @@ bool Weapon::IsPossibleToShoot(int64_t cur_time) const {
   return true;
 }
 
+bool Weapon::IsPossibleToReload(int64_t cur_time) const {
+  return (cur_time - last_time_pressed_reload_) >= GetReloadingTime();
+}
+
 void Weapon::Reload(int64_t cur_time) {
   last_time_pressed_reload_ = cur_time;
   SetCurrentBulletsInClip(GetClipSize());
@@ -20,6 +20,14 @@ void Weapon::Reload(int64_t cur_time) {
 
 int64_t Weapon::GetTimeBetweenShoots() const {
   return 60'000 / rate_of_fire_;
+}
+
+float Weapon::GetAccuracy() const {
+  return accuracy_;
+}
+
+void Weapon::SetAccuracy(float accuracy) {
+  accuracy_ = accuracy;
 }
 
 float Weapon::GetBulletDamage() const {
@@ -74,16 +82,23 @@ int Weapon::GetCurrentBulletsInClip() const {
   return current_bullets_in_clip_;
 }
 
+void Weapon::SetCurrentBulletsInClip(int current_bullets_in_clip) {
+  current_bullets_in_clip_ = current_bullets_in_clip;
+}
+
 void Weapon::SetLastTimeShot(int64_t cur_time) {
   last_time_shot_ = cur_time;
 }
 
+int64_t Weapon::GetLastTimePressedReload() const {
+  return last_time_pressed_reload_;
+}
+
 std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
-                                              float x,
-                                              float y,
-                                              float rotation,
-                                              float radius) const {
-  QVector2D velocity = Math::GetVectorByAngle(rotation);
+                              float x, float y, float rotation,
+                              float radius, float random_bullet_shift) const {
+  QVector2D velocity = Math::GetVectorByAngle(Math::GetNormalizeAngle(
+      rotation + GetBulletAngleByShift(random_bullet_shift)));
   float start_x = x + velocity.x();
   float start_y = y + velocity.y();
   velocity *= this->GetBulletSpeed();
@@ -101,10 +116,8 @@ std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
 }
 
 std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
-    GameObjectId parent_id,
-    float x,
-    float y,
-    float rotation) const {
+    GameObjectId parent_id, float x, float y, float rotation,
+    const QList<QVariant>& random_bullet_shifts) const {
   std::vector<std::vector<QVariant>> bullets_params;
   WeaponType weapon_type = GetWeaponType();
   auto bullet_radius = WeaponSettings::GetInstance().
@@ -115,30 +128,29 @@ std::vector<std::vector<QVariant>> Weapon::GetBulletsParams(
     case WeaponType::kMachineGun: {
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                          bullet_radius));
+        bullet_radius, random_bullet_shifts.front().toFloat()));
       break;
     }
     case WeaponType::kShotgun: {
       auto angle_between_bullets = WeaponSettings::GetInstance().
           GetWeaponSetting<float>(weapon_type, "angle_between_bullets");
       bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y,
-                          Math::GetNormalizeAngle(
+          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(
                               rotation + angle_between_bullets),
-                          bullet_radius));
+        bullet_radius, random_bullet_shifts.front().toFloat()));
       bullets_params.emplace_back(
           GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(rotation),
-                          bullet_radius));
+        bullet_radius, random_bullet_shifts.front().toFloat()));
       bullets_params.emplace_back(
-          GetBulletParams(parent_id, x, y,
-                          Math::GetNormalizeAngle(rotation
-                                                      - angle_between_bullets),
-                          bullet_radius));
+          GetBulletParams(parent_id, x, y, Math::GetNormalizeAngle(
+              rotation - angle_between_bullets),
+        bullet_radius, random_bullet_shifts.front().toFloat()));
       break;
     }
-
-    default:
+    default: {
+      qWarning() << "Invalid weapon type";
       break;
+    }
   }
   return bullets_params;
 }
@@ -155,6 +167,8 @@ void Weapon::SetParams(std::vector<QVariant> params) {
   this->SetBulletRange(params.back().toFloat());
   params.pop_back();
   this->SetBulletDamage(params.back().toFloat());
+  params.pop_back();
+  this->SetAccuracy(params.back().toFloat());
   params.pop_back();
   this->SetCurrentBulletsInClip(this->GetClipSize());
 }

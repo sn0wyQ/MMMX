@@ -6,6 +6,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   resize(1400, 960);
   height_of_bar_ = static_cast<int>(
       Constants::kPlayerBarHeightRatio * static_cast<float>(height()));
+
   setMinimumSize(1300, 700);
   setWindowTitle(Constants::kWindowTitle);
   setMouseTracking(true);
@@ -28,6 +29,9 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   info_label_ = new QLabel(this);
   info_label_->move(10, 10);
   info_label_->setAlignment(Qt::AlignTop);
+
+  // Reloading Field
+  reloading_field_ = new ReloadingField(this, controller_);
 
   // Respawn Button
   respawn_button_ = new RespawnButton(this);
@@ -73,12 +77,12 @@ void ClientView::focusOutEvent(QFocusEvent* focus_event) {
 }
 
 void ClientView::keyPressEvent(QKeyEvent* key_event) {
-  if (key_event->key() == Qt::Key_F1) {
-    if (key_controller_->IsShown()) {
+  if (key_controller_->IsShown()) {
+    if (key_event->key() == Qt::Key_F1 || key_event->key() == Qt::Key_Escape) {
       key_controller_->Hide();
-    } else {
-      key_controller_->Show();
     }
+  } else if (key_event->key() == Qt::Key_F1) {
+    key_controller_->Show();
   }
   if (key_controller_->IsShown()) {
     key_controller_->keyPressEvent(key_event);
@@ -161,6 +165,12 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
   stats_table_->move(
       (this->width() - stats_table_->width()) / 2.f,
       (this->height() - stats_table_->height() - height_of_bar_) / 2.f);
+
+  reloading_field_->resize(this->width() / 3, this->height() / 2);
+  reloading_field_->move(this->width() - reloading_field_->width(),
+                         (this->height() - height_of_bar_
+                             - reloading_field_->height()));
+
   kill_feed_->resize(this->width() / 3, this->height());
   kill_feed_->move(this->width() - kill_feed_->width(), 0);
   key_controller_->move(this->width() / 4, this->height() / 4);

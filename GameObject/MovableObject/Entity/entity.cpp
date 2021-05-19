@@ -77,8 +77,8 @@ void Entity::DrawHealthBar(Painter* painter) const {
   painter->Translate(translation);
   float rect_width = 75.f;
   float rect_height = 14.f;
-  auto cur_hp = static_cast<int>(this->GetHealthPoints());
-  auto max_hp = static_cast<int>(this->GetMaxHealthPoints());
+  auto cur_hp = static_cast<int>(std::round(this->GetHealthPoints()));
+  auto max_hp = static_cast<int>(std::round(this->GetMaxHealthPoints()));
   QString text = QString::number(cur_hp) + " / " +
       QString::number(max_hp);
   QFont font = painter->font();

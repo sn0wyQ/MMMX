@@ -12,6 +12,7 @@ class MachineGun : public Weapon {
   void DrawWeapon(Painter *painter) override;
 
   WeaponType GetWeaponType() const override;
+  float GetBulletAngleByShift(float random_bullet_shift) const override;
 };
 
 #endif  // WEAPON_MACHINEGUN_MACHINE_GUN_H_
