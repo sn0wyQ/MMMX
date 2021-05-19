@@ -248,7 +248,6 @@ float Player::GetExpIncrementForKill() const {
   return static_cast<float>(this->GetLevel()) * Constants::kExpMultiplier;
 }
 
-<<<<<<< HEAD
 void Player::DrawNickname(Painter* painter,
                           const QString& nickname) const {
   painter->save();
