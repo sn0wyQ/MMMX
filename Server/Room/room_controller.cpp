@@ -128,6 +128,10 @@ void RoomController::EntityReceiveDamage(const ModelData& model_data,
                                          const std::shared_ptr<Entity>& killer,
                                          const std::shared_ptr<Entity>& entity,
                                          float damage, bool* is_killed) {
+  if (!entity->IsAlive()) {
+    *is_killed = false;
+    return;
+  }
   float cur_entity_hp = entity->GetHealthPoints();
   float hp_to_set = std::max(0.f, cur_entity_hp - damage);
   bool is_player = entity->GetType() == GameObjectType::kPlayer;
