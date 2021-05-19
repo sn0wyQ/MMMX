@@ -100,10 +100,12 @@ void ReloadingField::DrawPixmaps(QPainter* painter, int bullets_in_clip) {
   int current_bullet = 0;
 
   while (current_bullet < max_clip_size) {
-    int x = static_cast<int>(static_cast<float>((current_bullet % bullet_columns_))
-        * (kBulletWidth + kMinSpaceBetweenBullets));
-    int y = static_cast<int>(static_cast<float>((current_bullet / bullet_columns_))
-        * (kBulletHeight + kMinSpaceBetweenBullets));
+    int x =
+        static_cast<int>(static_cast<float>((current_bullet % bullet_columns_))
+            * (kBulletWidth + kMinSpaceBetweenBullets));
+    int y =
+        static_cast<int>(static_cast<float>((current_bullet / bullet_columns_))
+            * (kBulletHeight + kMinSpaceBetweenBullets));
     if (current_bullet < delta) {
       current_bullet++;
       continue;
