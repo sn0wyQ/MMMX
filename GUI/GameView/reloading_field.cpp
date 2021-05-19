@@ -54,14 +54,14 @@ void ReloadingField::RecalculateFields() {
   int max_in_row = this->width() / (kMinSpaceBetweenBullets + kBulletWidth);
   clip_size_ = clip_size;
   if (max_in_row >= clip_size) {
-    in_rows_ = clip_size;
-    in_columns_ = 1;
+    bullet_columns_ = clip_size;
+    bullet_rows_ = 1;
   } else if (max_in_row * 2 >= clip_size) {
-    in_rows_ = clip_size / 2;
-    in_columns_ = 2;
+    bullet_columns_ = clip_size / 2;
+    bullet_rows_ = 2;
   } else {
-    in_columns_ =  (clip_size + max_in_row - 1) / max_in_row;
-    in_rows_ = (clip_size + in_columns_ - 1) / in_columns_;
+    bullet_rows_ =  (clip_size + max_in_row - 1) / max_in_row;
+    bullet_columns_ = (clip_size + bullet_rows_ - 1) / bullet_rows_;
   }
 }
 
@@ -89,20 +89,20 @@ void ReloadingField::DrawReload(QPainter* painter,
 void ReloadingField::DrawPixmaps(QPainter* painter, int bullets_in_clip) {
   painter->save();
 
-  int real_height = static_cast<int>(static_cast<float>(in_columns_)
+  int real_height = static_cast<int>(static_cast<float>(bullet_rows_)
       * (kMinSpaceBetweenBullets + kBulletHeight));
-  int real_width = static_cast<int>(static_cast<float>(in_rows_)
+  int real_width = static_cast<int>(static_cast<float>(bullet_columns_)
       * (kMinSpaceBetweenBullets + kBulletWidth));
   int shift_x = this->size().width() - real_width;
   int shift_y = this->size().height() - real_height;
-  int max_clip_size = in_columns_ * in_rows_;
+  int max_clip_size = bullet_rows_ * bullet_columns_;
   int delta = max_clip_size - clip_size_;
   int current_bullet = 0;
 
   while (current_bullet < max_clip_size) {
-    int x = static_cast<int>(static_cast<float>((current_bullet % in_rows_))
+    int x = static_cast<int>(static_cast<float>((current_bullet % bullet_columns_))
         * (kBulletWidth + kMinSpaceBetweenBullets));
-    int y = static_cast<int>(static_cast<float>((current_bullet / in_rows_))
+    int y = static_cast<int>(static_cast<float>((current_bullet / bullet_columns_))
         * (kBulletHeight + kMinSpaceBetweenBullets));
     if (current_bullet < delta) {
       current_bullet++;

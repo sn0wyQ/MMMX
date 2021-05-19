@@ -39,8 +39,8 @@ class ReloadingField : public QWidget {
   void RecalculateFields();
   QPixmap filled_bullet_pixmap_;
   QPixmap unfilled_bullet_pixmap_;
-  int in_rows_;
-  int in_columns_;
+  int bullet_columns_;
+  int bullet_rows_;
   int clip_size_;
 };
 
