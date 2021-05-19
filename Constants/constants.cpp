@@ -99,22 +99,23 @@ float GetExpForLevel(int level) {
 
 const float kExpMultiplier = 5.f;
 
-const int kUpgradeSlots = 10;
 const int kCountOfLevels = 5;
 
-namespace LevelingMultipliers {
+namespace LevelingSlots {
 
 const float kMaxHp = 1.5f;
 const float kHealthRegenRate = 2.1f;
 const float kSpeed = 1.1f;
-const float kFovRadius = 1.3f;
+const float kFovRadius = 1.2f;
+const float kAccuracy = 0.9f;
 
 const float kBulletSpeed = 1.2f;
 const float kRateOfFire = 1.1f;
 const float kBulletRange = 1.3f;
 const float kBulletDamage = 1.1f;
+const float kReloadingTime = 0.9f;
 
-}  // namespace LevelingMultipliers
+}  // namespace LevelingSlots
 
 const int kMaxPlayerBullets = 100000;
 

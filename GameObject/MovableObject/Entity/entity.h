@@ -39,7 +39,7 @@ class Entity : public MovableObject {
 
   bool IsEntity() const override;
 
-  void Revive(QPointF point_to_spawn);
+  virtual void Revive(QPointF point_to_spawn);
 
   void SetHealthRegenRate(float health_regen_rate);
   float GetHealthRegenRate() const;

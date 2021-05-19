@@ -15,6 +15,20 @@
 #include "Weapon/Shotgun/shotgun.h"
 #include "Constants/constants.h"
 
+enum class LevelingSlots {
+  kMaxHp,
+  kHealthRegenRate,
+  kSpeed,
+  kFovRadius,
+  kAccuracy,
+  kBulletSpeed,
+  kRateOfFire,
+  kBulletRange,
+  kBulletDamage,
+  kReloadingTime,
+  SIZE
+};
+
 class Player : public Entity {
  public:
   explicit Player(GameObjectId player_id);
@@ -49,10 +63,12 @@ class Player : public Entity {
   int GetFreeLevelingPoints() const;
 
   const std::vector<int>& GetLevelingPoints() const;
-  void IncreaseLevelingPoint(int index);
+  void IncreaseLevelingPoint(LevelingSlots leveling_slot);
 
   void SetNeedToSendLevelingPoints(bool need_to_send_leveling_points);
   bool IsNeedToSendLevelingPoints() const;
+
+  void Revive(QPointF point_to_spawn) override;
 
  private:
   bool is_local_player_{false};

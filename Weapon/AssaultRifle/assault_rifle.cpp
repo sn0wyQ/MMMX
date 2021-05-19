@@ -16,3 +16,9 @@ void AssaultRifle::DrawWeapon(Painter* painter) {
 WeaponType AssaultRifle::GetWeaponType() const {
   return WeaponType::kAssaultRifle;
 }
+
+float AssaultRifle::GetBulletAngleByShift(float random_bullet_shift) const {
+  float accuracy_function = random_bullet_shift * random_bullet_shift *
+      AssaultRifle::GetAccuracy();
+  return (random_bullet_shift < 0) ? -accuracy_function : accuracy_function;
+}
