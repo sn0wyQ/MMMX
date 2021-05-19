@@ -442,6 +442,10 @@ void ClientController::ControlsHolding() {
     return;
   }
 
+  if (are_controls_blocked_) {
+    return;
+  }
+
   if (key_controller_->IsHeld(Controls::kRespawn)) {
     if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
       this->AddEventToSend(Event(EventType::kRequestRespawn,
