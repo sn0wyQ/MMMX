@@ -11,7 +11,6 @@ enum class EventType {
   // After adding an event, add a function with the same name
   // to the BaseController private functions
 
-
   // [0] - <ClientId> client_id
   kClientDisconnected,
 
@@ -114,6 +113,9 @@ enum class EventType {
   // [0] - <GameObjectId> player_id
   // [1] - player_args
   kAddLocalPlayerGameObject,
+
+  // [0] - <GameObjectId> player_id
+  kPlayerConnected,
 
   // [0] - <GameObjectId> player_id
   kPlayerDisconnected,

@@ -10,6 +10,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::SetPlayerIdToClient, this, _1));
   SetFunctionForEventType(EventType::kStartGame,
     std::bind(&BaseController::StartGameEvent, this, _1));
+  SetFunctionForEventType(EventType::kPlayerConnected,
+    std::bind(&BaseController::PlayerConnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kPlayerDisconnected,
     std::bind(&BaseController::PlayerDisconnectedEvent, this, _1));
   SetFunctionForEventType(EventType::kSendEventToClient,

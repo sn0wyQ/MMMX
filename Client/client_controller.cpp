@@ -571,12 +571,20 @@ void ClientController::PlayerKilledNotificationEvent(const Event& event) {
 
 void ClientController::PlayerRespawnedEvent(const Event& event) {
   view_->AddRespawnNotification(
-      model_->GetPlayerStatsByPlayerId(event.GetArg<GameObjectId>(0))->
-          GetNickname());
+      model_->GetPlayerStatsByPlayerId(
+          event.GetArg<GameObjectId>(0))->GetNickname());
+}
+
+void ClientController::PlayerConnectedEvent(const Event& event) {
+  view_->AddPlayerConnectedNotification(
+      model_->GetPlayerStatsByPlayerId(
+          event.GetArg<GameObjectId>(0))->GetNickname());
 }
 
 void ClientController::PlayerDisconnectedEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
+  view_->AddPLayerDisconnectedNotification(
+      model_->GetPlayerStatsByPlayerId(player_id)->GetNickname());
   model_->DeleteGameObject(player_id);
   model_->DeletePlayerStats(player_id);
   model_->RemoveFromInterpolator(player_id);

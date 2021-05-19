@@ -42,6 +42,8 @@ class ClientView : public AbstractClientView {
 
   std::shared_ptr<KeyController> GetKeyController() const override;
   void AddRespawnNotification(const QString& player_name) override;
+  void AddPlayerConnectedNotification(const QString& player_name) override;
+  void AddPLayerDisconnectedNotification(const QString& player_name) override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;

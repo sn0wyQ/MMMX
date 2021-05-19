@@ -23,6 +23,9 @@ class AbstractClientView : public QMainWindow {
                                        WeaponType weapon_type) = 0;
   virtual std::shared_ptr<KeyController> GetKeyController() const = 0;
   virtual void AddRespawnNotification(const QString& player_name) = 0;
+  virtual void AddPlayerConnectedNotification(const QString& player_name) = 0;
+  virtual void AddPLayerDisconnectedNotification(
+      const QString& player_name) = 0;
 };
 
 #endif  // CLIENT_ABSTRACT_CLIENT_VIEW_H_

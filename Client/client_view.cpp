@@ -195,6 +195,14 @@ void ClientView::AddRespawnNotification(const QString& player_name) {
   kill_feed_->AddSpawnNotification(player_name);
 }
 
+void ClientView::AddPlayerConnectedNotification(const QString& player_name) {
+  kill_feed_->AddPlayerConnectedNotification(player_name);
+}
+
+void ClientView::AddPLayerDisconnectedNotification(const QString& player_name) {
+  kill_feed_->AddPLayerDisconnectedNotification(player_name);
+}
+
 void ClientView::ProcessRespawnButton() {
   respawn_button_->SetWaitValue(controller_->GetSecsToNextPossibleRevive());
   respawn_button_->SetValue(controller_->GetHoldingRespawnButtonMsecs());
