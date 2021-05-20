@@ -29,8 +29,9 @@ int main(int argc, char* argv[]) {
       QString::number(Constants::kServerPort));
 
   QSurfaceFormat surface_format = QSurfaceFormat::defaultFormat();
-  surface_format.setSamples(5);
+  surface_format.setSamples(Constants::kAntiAliasingSamples);
   QSurfaceFormat::setDefaultFormat(surface_format);
+
   QApplication app(argc, argv);
   QFontDatabase::addApplicationFont(":Res/Fonts/CynthoNext-Bold.ttf");
   QFontDatabase::addApplicationFont(":Res/Fonts/RobotoMono-Regular.ttf");

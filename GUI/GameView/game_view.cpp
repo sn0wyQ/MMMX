@@ -7,12 +7,7 @@ GameView::GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model)
       camera_motion_emulator_(Constants::kCameraStiffnessRatio,
                               Constants::kCameraFrictionRatio),
       fov_change_emulator_(Constants::kFovStiffnessRatio,
-                           Constants::kFovFrictionRatio) {
-  // setSurfaceType(QWindow::OpenGLSurface);
-  // QSurfaceFormat format;
-  // format.setSamples(4);
-  // this->setFormat(format);
-}
+                           Constants::kFovFrictionRatio) {}
 
 std::shared_ptr<Converter> GameView::GetConverter() {
   return converter_;
