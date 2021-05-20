@@ -46,6 +46,7 @@ const int64_t kInterpolationMSecs = 200;
 const int kControlsHoldingCheck = 30;
 
 // Graphics
+const int kAntiAliasingSamples = 5;
 const float kBaseViewWidth = 25.f;
 const float kBaseViewHeight = 25.f;
 const float kPlayerBarHeightRatio = 0.15f;
@@ -83,7 +84,9 @@ const int kGenerationTries = 15;
 // View
 void SetPainterHints(QPainter* painter) {
   painter->setRenderHints(
-      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+      QPainter::Antialiasing |
+      QPainter::SmoothPixmapTransform|
+      QPainter::TextAntialiasing);
 }
 const float kCameraStiffnessRatio = 0.008f;
 const float kCameraFrictionRatio = 0.15f;

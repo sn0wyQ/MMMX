@@ -27,6 +27,10 @@ int main(int argc, char* argv[]) {
   QUrl server_url =
       QUrl(QString("ws://") + server_ip + ":" +
       QString::number(Constants::kServerPort));
+
+  QSurfaceFormat surface_format = QSurfaceFormat::defaultFormat();
+  surface_format.setSamples(5);
+  QSurfaceFormat::setDefaultFormat(surface_format);
   QApplication app(argc, argv);
   QFontDatabase::addApplicationFont(":Res/Fonts/CynthoNext-Bold.ttf");
   QFontDatabase::addApplicationFont(":Res/Fonts/RobotoMono-Regular.ttf");
