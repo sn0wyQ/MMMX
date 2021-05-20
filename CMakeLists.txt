@@ -147,6 +147,7 @@ target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}
         ${RESOURCES_COMMON} ${SYSTEM_DEPENDENT_SOURCES})
+target_compile_definitions(MMMX-Server PUBLIC -DMMMX_SERVER)
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
 
 # Synchronize Res with output folder

@@ -5,11 +5,12 @@ int Animation::frames_to_preload_in_inactive_sequences_ = 2;
 
 Animation::Animation(AnimationType animation_type)
     : animation_type_(animation_type) {
-  if (animation_type == AnimationType::kNone) {
+#ifndef MMMX_SERVER
+  if (animation_type_ == AnimationType::kNone) {
     return;
   } else {
     base_path_ =
-        "./Res/Animation/" + kAnimationTypeStrings.at(animation_type) + "/";
+        "./Res/Animation/" + kAnimationTypeStrings.at(animation_type_) + "/";
 
     // Loading first frames of sequence for each animation state
     int animation_state_index = 0;
@@ -32,6 +33,7 @@ Animation::Animation(AnimationType animation_type)
 
     ParseAnimationDescription(base_path_ + "description.mmmx");
   }
+#endif  // MMMX_SERVER
 }
 
 void Animation::ParseAnimationDescription(const QString& description_path) {
