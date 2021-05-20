@@ -7,7 +7,8 @@
 
 #include <QPaintEvent>
 #include <QResizeEvent>
-#include <QWidget>
+#include <QOpenGLWidget>
+#include <QOpenGLPaintDevice>
 
 #include "Client/client_controller.h"
 #include "Converter/converter.h"
@@ -15,7 +16,7 @@
 #include "Painter/painter.h"
 #include "KillFeed/kill_feed.h"
 
-class GameView : public QWidget {
+class GameView : public QOpenGLWidget {
   Q_OBJECT
 
  public:
@@ -26,6 +27,7 @@ class GameView : public QWidget {
   void Update();
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
+  void paintGL() override;
 
   QPointF GetPlayerToCenterOffset() const;
 
@@ -33,16 +35,16 @@ class GameView : public QWidget {
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<Converter> converter_;
 
-  void DrawObjects(const std::vector<std::shared_ptr<GameObject>>& objects,
+  static void DrawObjects(const std::vector<std::shared_ptr<GameObject>>& objects,
                    const QRectF& view_rect,
-                   std::vector<std::shared_ptr<GameObject>>* drawn_objects);
-  void DrawBars(const std::shared_ptr<GameObject>& object);
+                   std::vector<std::shared_ptr<GameObject>>* drawn_objects,
+                   Painter* painter);
+  void DrawBars(const std::shared_ptr<GameObject>& object, Painter* painter);
 
-  bool was_player_set_;
+  bool need_to_update_{false};
+  bool was_player_set_{false};
   SpringEmulator<QVector2D, false> camera_motion_emulator_;
   SpringEmulator<float, false> fov_change_emulator_;
-  std::unique_ptr<QPixmap> canvas_;
-  std::unique_ptr<Painter> painter_;
 };
 
 #endif  // GUI_GAMEVIEW_GAME_VIEW_H_
