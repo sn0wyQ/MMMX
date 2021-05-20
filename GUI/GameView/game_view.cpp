@@ -68,11 +68,11 @@ void GameView::Update() {
   view_rect = QRectF(local_center - view_rect_offset,
                      local_center + view_rect_offset);
   painter.DrawEllipse(local_player->GetPosition(),
-                        last_player_fov,
-                        last_player_fov);
+                      last_player_fov,
+                      last_player_fov);
   painter.SetClipCircle(local_player->GetX(),
-                          local_player->GetY(),
-                          last_player_fov);
+                        local_player->GetY(),
+                        last_player_fov);
 
   this->DrawObjects(model_->GetFilteredByFovObjects(), view_rect,
                     &drawn_objects,
