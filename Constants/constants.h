@@ -59,6 +59,7 @@ extern const int64_t kInterpolationMSecs;
 extern const int kControlsHoldingCheck;
 
 // Graphics
+extern const int kAntiAliasingSamples;
 extern const float kBaseViewWidth;
 extern const float kBaseViewHeight;
 extern const float kPlayerBarHeightRatio;

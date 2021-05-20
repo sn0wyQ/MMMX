@@ -1,6 +1,6 @@
 #include "painter.h"
 
-Painter::Painter(QPixmap* device,
+Painter::Painter(QPaintDevice* device,
                  std::shared_ptr<Converter> converter)
     : QPainter(device),
       converter_(std::move(converter)) {}

@@ -196,7 +196,11 @@ void GameObject::SetAnimation(AnimationType animation_type) {
   if (animation_->GetType() != AnimationType::kNone) {
     return;
   }
+#ifdef MMMX_SERVER
+  animation_ = std::make_shared<Animation>(animation_type);
+#else
   animation_ = animations_holder_.GetAnimation(animation_type);
+#endif  // MMMX_SERVER
 }
 
 void GameObject::SetAnimationState(AnimationState animation_state,
