@@ -36,7 +36,7 @@ class GameView : public QOpenGLWidget {
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<Converter> converter_;
 
-  static void DrawObjects(
+  void DrawObjects(
       const std::vector<std::shared_ptr<GameObject>>& objects,
       const QRectF& view_rect,
       std::vector<std::shared_ptr<GameObject>>* drawn_objects,

@@ -49,7 +49,7 @@ void GameView::Update() {
   auto translation = QPointF(this->width(), this->height()) / 2.f
       - converter_->ScaleFromGameToScreen(
           local_center + QPointF(0, player_bar_offset));
-  painter.translate(translation);
+  painter.translate(translation.toPoint());
 
   auto view_rect_offset =
       QPointF(this->width(), this->height()) / 2.f;
