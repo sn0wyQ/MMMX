@@ -53,6 +53,7 @@ void ClientController::OnDisconnected() {
 
 void ClientController::OnByteArrayReceived(const QByteArray& message) {
   Event event(message);
+  // temp qInfo() << event;
   // Каждая миллисекунда важна для разницы времени,
   // так что не пропускаем через тик, а делаем сразу
   if (event.GetType() == EventType::kSetTimeDifference) {

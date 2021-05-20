@@ -47,7 +47,6 @@ void ViewPort::paintEvent(QPaintEvent* paint_event) {
                         local_player->GetY(),
                         local_player->GetFovRadius());
 
-
   std::vector<std::shared_ptr<GameObject>> filtered_objects
       = model_->GetFilteredByFovObjects();
   for (const auto& object : filtered_objects) {
