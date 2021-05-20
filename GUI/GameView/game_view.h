@@ -26,7 +26,9 @@ class GameView : public QOpenGLWidget {
 
   void Update();
   void paintEvent(QPaintEvent* paint_event) override;
-  void resizeEvent(QResizeEvent* resize_event) override;
+  // We use resizeGL instead of resizeEvent because
+  // https://doc.qt.io/qt-5/qopenglwidget.html#resizeEvent
+  void resizeGL(int w, int h) override;
 
   QPointF GetPlayerToCenterOffset() const;
 

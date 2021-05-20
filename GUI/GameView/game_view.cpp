@@ -98,7 +98,7 @@ void GameView::paintEvent(QPaintEvent* paint_event) {
   need_to_update_ = false;
 }
 
-void GameView::resizeEvent(QResizeEvent* resize_event) {
+void GameView::resizeGL(int w, int h) {
   converter_->UpdateCoefficient();
 }
 
