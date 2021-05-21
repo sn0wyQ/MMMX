@@ -10,13 +10,13 @@ ClientController::ClientController(const QUrl& url)
   web_socket_.open(url);
   connect(&shoot_check_timer, &QTimer::timeout, this,
           &ClientController::ShootHolding);
-  shoot_check_timer.start(Constants::kShootHoldingCheck);
   this->StartTicking();
 }
 
 void ClientController::ConnectToRoom(RoomId room_id) {
   room_id = 1;  // temporary
   this->AddEventToSend(Event(EventType::kConnectToRoomById, room_id));
+  shoot_check_timer.start(Constants::kShootHoldingCheck);
 }
 
 std::shared_ptr<ClientGameModel> ClientController::GetModel() {

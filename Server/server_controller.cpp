@@ -17,7 +17,8 @@ ServerController::ServerController()
 }
 
 void ServerController::SendEvent(const Event& event) {
-  //temp qInfo() << "Sending" << event << "to" << event.GetArg<ClientId>(0);
+  // temp
+  qInfo() << "Sending" << event << "to" << event.GetArg<ClientId>(0);
   BaseController::LogEvent(event);
   switch (event.GetType()) {
     case EventType::kSendEventToClient: {
