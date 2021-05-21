@@ -4,5 +4,7 @@
         <file>RespawnHeartGray.png</file>
         <file>FilledBullet.svg</file>
         <file>UnfilledBullet.svg</file>
+        <file>MAX LVL.svg</file>
+        <file>UPDATE LVL.svg</file>
     </qresource>
 </RCC>

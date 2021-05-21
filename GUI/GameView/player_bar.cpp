@@ -1,12 +1,33 @@
 #include "player_bar.h"
 
+using Constants::PlayerBar::kHealthBarHeight;
+using Constants::PlayerBar::kHealthBarWidth;
+using Constants::PlayerBar::kHealthBarX;
+using Constants::PlayerBar::kHealthBarY;
+
+using Constants::PlayerBar::kExpBarHeight;
+using Constants::PlayerBar::kExpBarWidth;
+using Constants::PlayerBar::kExpBarX;
+using Constants::PlayerBar::kExpBarY;
+
+using Constants::PlayerBar::kIntervalLr;
+using Constants::PlayerBar::kSmallIntervalLr;
+using Constants::PlayerBar::kPaddingU;
+using Constants::PlayerBar::kSmallPaddingU;
+using Constants::PlayerBar::kPictureHeight;
+using Constants::PlayerBar::kLevelingNames;
+using Constants::PlayerBar::kUpdatePixmapHeight;
+using Constants::PlayerBar::kBasePath;
+
 PlayerBar::PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel> model,
                      QPoint position, QSize size)
     : QWidget(parent), hp_emulator_(0.5f, 0.8f), xp_emulator_(0.5f, 0.8f),
       model_(std::move(model)),
-      buttons_(static_cast<int>(LevelingSlots::SIZE)) {
+      buttons_(static_cast<int>(LevelingSlots::SIZE)),
+      leveling_pixmaps_(static_cast<int>(LevelingSlots::SIZE)){
   hp_emulator_.SetCurrentValue(0.f);
   xp_emulator_.SetCurrentValue(0.f);
+
   this->move(position);
   this->resize(size);
   this->RecalculateSizes();
@@ -26,6 +47,8 @@ PlayerBar::PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel> model,
       this->Clicked(i);
     });
   }
+
+  this->InitializePixmapIcons();
 }
 
 void PlayerBar::paintEvent(QPaintEvent* paint_event) {
@@ -44,9 +67,10 @@ void PlayerBar::paintEvent(QPaintEvent* paint_event) {
   painter.setBrush(Qt::white);
   painter.drawRect(0, 0, width(), height());
 
-  DrawLeveling(&painter);
+  DrawLevelingButtons(&painter);
   DrawHealthRect(&painter);
   DrawExpRect(&painter);
+  DrawUpdateAndMaxButtons(&painter);
 }
 
 QRectF PlayerBar::RectWithPercents(
@@ -116,29 +140,36 @@ void PlayerBar::DrawExpRect(QPainter* painter) {
                         + QString::number(exp_for_level) + ")");
 }
 
-void PlayerBar::DrawLeveling(QPainter* painter) {
+void PlayerBar::DrawLevelingButtons(QPainter* painter) {
   auto local_player = model_->GetLocalPlayer();
   auto free_leveling_points = local_player->GetFreeLevelingPoints();
   auto leveling_points = local_player->GetLevelingPoints();
-
   for (int i = 0; i < static_cast<int>(LevelingSlots::SIZE); i++) {
     int draw_i = i % (static_cast<int>(LevelingSlots::SIZE) / 2);
-    if (free_leveling_points > 0) {
-      QColor clr(Qt::yellow);
-      clr.setAlphaF(0.2f);
-      painter->setBrush(clr);
-    }
-    float first = kIntervalLr + (picture_width_ + kIntervalLr) * draw_i;
+
     bool first_part = (i < static_cast<int>(LevelingSlots::SIZE) / 2);
-    if (!first_part) {
-      first = 100 - first - picture_width_;
-    }
-    painter->drawRect(
-        RectWithPercents(first,
-                         kPaddingU,
-                         picture_width_, kPictureHeight));
+    float position_x = first_part ?
+        (kIntervalLr + (picture_width_ + kIntervalLr) * draw_i) :
+        (100 - (picture_width_ + kIntervalLr) * (draw_i + 1));
     int get_i = first_part ? i : 3
         * static_cast<int>(LevelingSlots::SIZE) / 2 - 1 - i;
+
+    auto rect = RectWithPercents(position_x,
+                                 kPaddingU,
+                                 picture_width_,
+                                 kPictureHeight);
+    painter->drawRect(rect);
+    painter->drawPixmap(rect.x(), rect.y(), leveling_pixmaps_[i]);
+
+    if (leveling_points[get_i] == Constants::kCountOfLevels) {
+      painter->drawPixmap(rect.x(), rect.y() - max_lvl_button_pixmap_.height(), max_lvl_button_pixmap_);
+    } else {
+      if (free_leveling_points > 0) {
+        painter->drawPixmap(rect.x(), rect.y() - update_lvl_button_pixmap_.height(), update_lvl_button_pixmap_);
+      }
+    }
+
+    // draw level of a current button
     int current_leveling = leveling_points[get_i];
     painter->setBrush(Qt::darkYellow);
     for (int j = 0; j < Constants::kCountOfLevels; j++) {
@@ -147,39 +178,41 @@ void PlayerBar::DrawLeveling(QPainter* painter) {
       }
       painter->drawEllipse(
           RectWithPercents(
-              first
-                  + kSmallIntervalLr + (small_full_width_) * j,
+              position_x + kSmallIntervalLr + (small_full_width_) * j,
               kPaddingU + kPictureHeight + kSmallPaddingU,
               small_width_, small_height_));
     }
     painter->setBrush(Qt::white);
   }
-
-  for (int i = 0; i < static_cast<int>(LevelingSlots::SIZE); i++) {
-    painter->save();
-    int draw_i = i % (static_cast<int>(LevelingSlots::SIZE) / 2);
-    float first = kIntervalLr + (picture_width_ + kIntervalLr) * draw_i;
-    bool first_part = (i < static_cast<int>(LevelingSlots::SIZE) / 2);
-    if (!first_part) {
-      first = 100 - first - picture_width_;
-    }
-    auto rect = RectWithPercents(first + picture_width_ / 2.f,
-                                 kPaddingU + kPictureHeight / 2.f,
-                                 0, 0);
-    painter->translate(rect.x(), rect.y());
-    painter->rotate(45);
-    int get_i = first_part ? i : 3
-        * static_cast<int>(LevelingSlots::SIZE) / 2 - 1 - i;
-    painter->drawText(
-        RectWithPercents(-picture_width_ / 2.f - kIntervalLr / 2.f,
-                         -kPictureHeight / 2.f,
-                         picture_width_ + kIntervalLr, kPictureHeight),
-        Qt::AlignCenter,
-        kLevelingNames[get_i]);
-    painter->restore();
-  }
 }
 
+void PlayerBar::DrawUpdateAndMaxButtons(QPainter* painter) {
+  auto local_player = model_->GetLocalPlayer();
+  auto free_leveling_points = local_player->GetFreeLevelingPoints();
+  auto leveling_points = local_player->GetLevelingPoints();
+  for (int i = 0; i < static_cast<int>(LevelingSlots::SIZE); i++) {
+    int draw_i = i % (static_cast<int>(LevelingSlots::SIZE) / 2);
+
+    bool first_part = (i < static_cast<int>(LevelingSlots::SIZE) / 2);
+    float position_x = first_part ?
+                       (kIntervalLr + (picture_width_ + kIntervalLr) * draw_i) :
+                       (100 - (picture_width_ + kIntervalLr) * (draw_i + 1));
+    int get_i = first_part ? i : 3
+        * static_cast<int>(LevelingSlots::SIZE) / 2 - 1 - i;
+
+    auto rect = RectWithPercents(position_x,
+                                 kPaddingU,
+                                 picture_width_,
+                                 kPictureHeight);
+    if (leveling_points[get_i] == Constants::kCountOfLevels) {
+      painter->drawPixmap(rect.x(), rect.y() - max_lvl_button_pixmap_.height(), max_lvl_button_pixmap_);
+    } else {
+      if (free_leveling_points > 0) {
+        painter->drawPixmap(rect.x(), rect.y() - update_lvl_button_pixmap_.height(), update_lvl_button_pixmap_);
+      }
+    }
+  }
+}
 void PlayerBar::Clicked(int index) {
   if (!model_->IsLocalPlayerSet()) {
     return;
@@ -200,12 +233,11 @@ void PlayerBar::MoveButtons() {
   this->RecalculateSizes();
   for (int i = 0; i < static_cast<int>(LevelingSlots::SIZE); i++) {
     int draw_i = i % (static_cast<int>(LevelingSlots::SIZE) / 2);
-    float first = kIntervalLr + (picture_width_ + kIntervalLr) * draw_i;
     bool first_part = (i < static_cast<int>(LevelingSlots::SIZE) / 2);
-    if (!first_part) {
-      first = 100.f - first - picture_width_;
-    }
-    auto rect = RectWithPercents(first,
+    float position_x = first_part ?
+                       (kIntervalLr + (picture_width_ + kIntervalLr) * draw_i) :
+                       (100 - (picture_width_ + kIntervalLr) * (draw_i + 1));
+    auto rect = RectWithPercents(position_x,
                                  kPaddingU,
                                  picture_width_, kPictureHeight);
     int set_i = first_part ? i : 3
@@ -224,4 +256,29 @@ void PlayerBar::RecalculateSizes() {
 
 void PlayerBar::resizeEvent(QResizeEvent*) {
   MoveButtons();
+}
+
+void PlayerBar::InitializePixmapIcons() {
+  float current_width = this->height() * 0.45f;
+  for (size_t i = 0; i < leveling_pixmaps_.size(); i++) {
+    QString path = kBasePath /*+ kLevelingNames[i]*/ + "FilledBullet.svg";
+    QSvgRenderer current_icon_render(path);
+    leveling_pixmaps_[i] = QPixmap(current_width, current_width);
+    leveling_pixmaps_[i].fill(Qt::transparent);
+    QPainter painter_for_current_icon(&leveling_pixmaps_[i]);
+    current_icon_render.render(&painter_for_current_icon,
+                               leveling_pixmaps_[i].rect());
+  }
+  QSvgRenderer update_button_render(kBasePath + "UPDATE LVL.svg");
+  update_lvl_button_pixmap_ = QPixmap(current_width, this->height() * 0.2f);
+  update_lvl_button_pixmap_.fill(Qt::transparent);
+  QPainter painter_for_update(&update_lvl_button_pixmap_);
+  update_button_render.render(&painter_for_update,
+                             update_lvl_button_pixmap_.rect());
+  QSvgRenderer max_button_render(kBasePath + "MAX LVL.svg");
+  max_lvl_button_pixmap_ = QPixmap(current_width, this->height() * 0.2f);
+  max_lvl_button_pixmap_.fill(Qt::transparent);
+  QPainter painter_for_max(&max_lvl_button_pixmap_);
+  max_button_render.render(&painter_for_max,
+                              max_lvl_button_pixmap_.rect());
 }
