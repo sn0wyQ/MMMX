@@ -110,6 +110,10 @@ class GameObject {
 
   bool IsNeedToDraw() const;
 
+  virtual float GetOpacity() const;
+  virtual void SetAppearing();
+  virtual void SetDisappearing();
+
  private:
   // Holds animations for all GameObjects
   // Prevents same SharedFrame being loaded into RAM more than once at a time
@@ -132,6 +136,7 @@ class GameObject {
   // не можем его правильно проинтерполировать
   // мы не должны его рисовать
   bool is_interpolated_once_{false};
+  float opacity_{1.f};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_

@@ -38,7 +38,7 @@ SpringEmulator<T, DoSetBounds>::SpringEmulator(float stiffness_ratio,
 
 template <class T, bool DoSetBounds>
 void SpringEmulator<T, DoSetBounds>::MakeStepTo(const T& new_value) {
-  // Lets divide dt by 10 so the constants wont be too small
+  // Lets divide it by 10 so the constants won't be too small
   auto time = QDateTime::currentMSecsSinceEpoch();
   auto delta_time = static_cast<float>(time - last_time_updated_) / 10.f;
   last_time_updated_ = time;

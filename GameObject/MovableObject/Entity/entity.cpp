@@ -1,8 +1,17 @@
 #include "entity.h"
 
-Entity::Entity(GameObjectId id) : MovableObject(id) {}
+Entity::Entity(GameObjectId id) :
+    MovableObject(id),
+    opacity_emulator_(Constants::kOpacityChangeSpeed) {
+  opacity_emulator_.SetStopOnMax(true);
+  opacity_emulator_.SetStopOnMin(true);
+  opacity_emulator_.SetCurrentValue(0.f);
+  opacity_emulator_.SetPath(0.f, 1.f);
+}
 
-Entity::Entity(const Entity& other) : MovableObject(other) {
+Entity::Entity(const Entity& other) :
+    MovableObject(other),
+    opacity_emulator_(other.opacity_emulator_) {
   fov_radius_ = other.fov_radius_;
   health_points_ = other.health_points_;
   health_regen_rate_ = other.health_regen_rate_;
@@ -41,6 +50,9 @@ void Entity::SetFovRadius(float fov_radius) {
 
 void Entity::SetHealthPoints(float health_points) {
   health_points_ = health_points;
+  if (!this->IsAlive()) {
+    this->SetDisappearing();
+  }
 }
 
 float Entity::GetHealthPoints() const {
@@ -73,6 +85,7 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 
 void Entity::DrawHealthBar(Painter* painter) const {
   painter->save();
+  painter->setOpacity(this->GetOpacity());
   painter->Translate(QPointF(-2.5f, -2.5f));
   QRectF rect(0, 0, 75, 14);
 
@@ -81,6 +94,9 @@ void Entity::DrawHealthBar(Painter* painter) const {
   painter->drawRoundedRect(rect, 10, 10);
 
   float hp_ratio = this->GetHealthPoints() / this->GetMaxHealthPoints();
+  if (is_disappearing_) {
+    hp_ratio = 0.f;
+  }
   auto color = Constants::GetHealthPointsColor(hp_ratio);
   color.setAlphaF(0.8f);
   painter->setBrush(color);
@@ -102,6 +118,7 @@ void Entity::DrawHealthBar(Painter* painter) const {
 void Entity::Revive(QPointF point_to_spawn) {
   SetPosition(point_to_spawn);
   SetHealthPoints(GetMaxHealthPoints());
+  this->SetAppearing();
 }
 
 float Entity::GetHealthRegenRate() const {
@@ -132,11 +149,12 @@ void Entity::TickHealthPoints(int delta_time) {
 
 void Entity::DrawLevel(Painter* painter) const {
   painter->save();
+  painter->setOpacity(this->GetOpacity());
   QPointF translation(-3.f, -2.8f);
   painter->Translate(translation);
   painter->setBrush(Qt::black);
   QPixmap pixmap("../Res/Icons/level_arrow.png");
-  QRectF rect(0, 0, 24, 24);
+  QRectF rect(0, 0, 30, 25);
   painter->drawPixmap(rect, pixmap,
                       QRectF(0, 0, pixmap.width(), pixmap.height()));
   QFont font = painter->font();
@@ -152,4 +170,20 @@ void Entity::DrawLevel(Painter* painter) const {
 
 bool Entity::IsAlive() const {
   return GetHealthPoints() > 0;
+}
+
+float Entity::GetOpacity() const {
+  return opacity_emulator_.GetCurrentValue();
+}
+
+void Entity::SetAppearing() {
+  opacity_emulator_.SetCurrentValue(0.f);
+  opacity_emulator_.SetPath(0.f, 1.f);
+  is_disappearing_ = false;
+}
+
+void Entity::SetDisappearing() {
+  opacity_emulator_.SetCurrentValue(1.f);
+  opacity_emulator_.SetPath(1.f, 0.f);
+  is_disappearing_ = true;
 }
