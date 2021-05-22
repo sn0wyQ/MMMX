@@ -16,16 +16,16 @@ class LinearEmulator {
   void SetStopOnMax(bool do_stop);
 
   void SetCurrentValue(const T& value);
-  T GetCurrentValue();
+  T GetCurrentValue() const;
 
   void SetPath(T start, T finish);
 
  private:
-  float speed_;
+  mutable float speed_;
   bool stop_on_min_{false};
   bool stop_on_max_{false};
-  qint64 last_time_updated_{0};
-  T value_{};
+  mutable qint64 last_time_updated_{0};
+  mutable T value_{};
   T min_value_{};
   T max_value_{};
 };
@@ -51,7 +51,7 @@ void LinearEmulator<T>::SetCurrentValue(const T& value) {
 }
 
 template<class T>
-T LinearEmulator<T>::GetCurrentValue() {
+T LinearEmulator<T>::GetCurrentValue() const {
   // Lets divide dt by 10 so the constants wont be too small
   auto time = QDateTime::currentMSecsSinceEpoch();
   auto delta_time = static_cast<float>(time - last_time_updated_) / 10.f;

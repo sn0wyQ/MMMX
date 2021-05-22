@@ -8,12 +8,13 @@
 #include <QPainterPath>
 
 #include "GameObject/MovableObject/movable_object.h"
+#include "GUI/Animations/linear_emulator.h"
 
 class Entity : public MovableObject {
  public:
   explicit Entity(GameObjectId id);
   Entity(const Entity& other);
-  virtual ~Entity() = default;
+  ~Entity() override = default;
 
   void OnTick(int delta_time) override;
   void TickHealthPoints(int delta_time);
@@ -48,6 +49,10 @@ class Entity : public MovableObject {
 
   std::shared_ptr<GameObject> Clone() const override;
 
+  virtual float GetOpacity() const override;
+  virtual void SetAppearing() override;
+  virtual void SetDisappearing() override;
+
  protected:
   int level_{1};
 
@@ -56,6 +61,8 @@ class Entity : public MovableObject {
   float health_points_{0.f};
   float health_regen_rate_{};
   float max_health_points_{};
+  bool is_disappearing_{false};
+  LinearEmulator<float> opacity_emulator_;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_

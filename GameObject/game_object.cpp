@@ -89,6 +89,7 @@ void GameObject::Draw(Painter* painter) const {
   painter->save();
   painter->Translate(position_);
   painter->RotateCounterClockWise(rotation_);
+  painter->setOpacity(this->GetOpacity());
   if (!animation_ || animation_->GetType() == AnimationType::kNone) {
     this->DrawRelatively(painter);
   } else {
@@ -253,4 +254,16 @@ bool GameObject::IsNeedToDraw() const {
     return false;
   }
   return true;
+}
+
+float GameObject::GetOpacity() const {
+  return opacity_;
+}
+
+void GameObject::SetAppearing() {
+  opacity_ = 1.f;
+}
+
+void GameObject::SetDisappearing() {
+  opacity_ = 0.f;
 }

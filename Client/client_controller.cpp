@@ -540,6 +540,15 @@ void ClientController::UpdateGameObjectDataEvent(const Event& event) {
 void ClientController::DeleteGameObjectEvent(const Event& event) {
   auto game_object_id = event.GetArg<GameObjectId>(0);
   auto delete_time = event.GetArg<int64_t>(1);
+  if (model_->IsGameObjectIdTaken(game_object_id) &&
+      model_->GetGameObjectByGameObjectId(game_object_id)->IsEntity()) {
+    delete_time += Constants::kMaxDisappearTimeMsecs;
+    std::shared_ptr<Entity> entity =
+        std::dynamic_pointer_cast<Entity>(
+            model_->GetGameObjectByGameObjectId(game_object_id));
+    entity->SetDisappearing();
+    entity->SetHealthPoints(0);
+  }
   time_to_delete_.push({game_object_id, delete_time});
 }
 
