@@ -129,17 +129,13 @@ void KeyController::NativeButtonReleasedEvent(
     return;
   }
   auto control = native_button_to_control_[native_button];
-  last_released_[control] = this->GetCurrentTime();
+  last_released_[control] = GetCurrentTime();
+  is_held_[control] = false;
 }
 
 bool KeyController::IsHeld(Controls control) {
   if (this->IsShown()) {
     return false;
-  }
-  if (is_held_[control] &&
-      last_pressed_[control] <= last_released_[control] &&
-      GetCurrentTime() - last_released_[control] > 50) {
-    is_held_[control] = false;
   }
   return is_held_[control];
 }

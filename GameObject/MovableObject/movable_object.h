@@ -38,6 +38,8 @@ class MovableObject : public GameObject {
 
   std::shared_ptr<GameObject> Clone() const override;
 
+  void UpdateAnimationState(bool restart = false) override;
+
  private:
   QVector2D velocity_{};
   float speed_multiplier_{};

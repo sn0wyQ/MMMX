@@ -133,7 +133,7 @@ void StatsTable::DrawPlayersStats(QPainter* painter) {
                  table_column_points_[i] + offset_x + curr_offset_y);
   };
   for (const auto& stat : stats) {
-    if (stat->GetPlayerId() == model_->GetLocalPlayer()->GetId()) {
+    if (stat->GetPlayerId() == model_->GetLocalPlayerId()) {
       pen_.setColor(Constants::StatsTable::kLocalPlayerTextColor);
       font.setBold(true);
     } else {

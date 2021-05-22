@@ -101,8 +101,8 @@ class RoomController : public BaseController {
                            float damage, bool* is_killed);
 
   GameObjectId AddPlayer();
-  void AddBox(float x, float y, float rotation, float width, float height);
-  void AddRandomBox(float width, float height);
+  void AddGarage(float x, float y, float rotation, float width, float height);
+  void AddRandomGarage(float width, float height);
   void AddTree(float x, float y, float radius);
   void AddRandomTree(float radius);
   void AddCreep(float x, float y);

@@ -1,0 +1,12 @@
+# Spider
+
+idle:
+loop
+
+move:
+	play_frames 19	16
+loop
+
+shoot:
+	play_frames	6	32
+loop

@@ -279,6 +279,15 @@ void ClientController::UpdateLocalBullets(int delta_time) {
   }
 }
 
+void ClientController::UpdateGameObjects() {
+  for (const auto& object : model_->GetAllGameObjects()) {
+    // Bullets always move, so we will only use animation state kIdle for them
+    if (object->GetType() != GameObjectType::kBullet) {
+      object->UpdateAnimationState();
+    }
+  }
+}
+
 void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
   view_ = std::move(view);
   converter_ = view_->GetConverter();
@@ -302,6 +311,7 @@ void ClientController::UpdateView() {
   this->UpdateInterpolationInfo();
   this->UpdateLocalPlayer(delta_time);
   this->UpdateLocalBullets(delta_time);
+  this->UpdateGameObjects();
   this->UpdateAnimations(delta_time);
   view_->Update();
 }
@@ -432,10 +442,14 @@ void ClientController::ControlsHolding() {
     return;
   }
 
+  if (are_controls_blocked_) {
+    return;
+  }
+
   if (key_controller_->IsHeld(Controls::kRespawn)) {
     if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
       this->AddEventToSend(Event(EventType::kRequestRespawn,
-                                 model_->GetLocalPlayer()->GetId()));
+                                 model_->GetLocalPlayerId()));
       last_requested_respawn_time_ = GetCurrentServerTime();
       respawn_holding_current_ = 0;
       are_controls_blocked_ = true;
@@ -456,7 +470,7 @@ void ClientController::ControlsHolding() {
       local_player_weapon->Reload(timestamp);
       this->AddEventToSend(Event(EventType::kSendPlayerReloading,
                                  static_cast<qint64>(timestamp),
-                                 model_->GetLocalPlayer()->GetId()));
+                                 model_->GetLocalPlayerId()));
     }
     key_controller_->ClearKeyPress(ControlsWrapper::Controls::kReload);
   }
@@ -468,6 +482,7 @@ void ClientController::ControlsHolding() {
     // Reload if Bullets In Clips is empty
     if (local_player->GetWeapon()->GetCurrentBulletsInClip() <= 0 &&
         local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
+      local_player->UpdateAnimationState(true);
       local_player->GetWeapon()->Reload(timestamp);
       this->AddEventToSend(Event(EventType::kSendPlayerReloading,
                                  static_cast<qint64>(timestamp),
@@ -480,7 +495,7 @@ void ClientController::ControlsHolding() {
           EventType::kSendNickname,
           local_player->GetId(),
           QString("Shooter#") +
-              QString::number(model_->GetLocalPlayer()->GetId())));
+              QString::number(model_->GetLocalPlayerId())));
 
       QList<QVariant> bullet_shifts;
       static std::mt19937 generator_(QDateTime::currentMSecsSinceEpoch());
@@ -516,6 +531,12 @@ void ClientController::ControlsHolding() {
                                  static_cast<qint64>(timestamp),
                                  local_player->GetId(),
                                  bullet_shifts));
+      local_player->SetAnimationState(AnimationState::kShoot, true);
+    }
+  } else {
+    auto local_player = model_->GetLocalPlayer();
+    if (local_player->GetAnimation()->GetState() == AnimationState::kShoot) {
+      local_player->UpdateAnimationState(true);
     }
   }
 }
@@ -617,6 +638,30 @@ void ClientController::UpdateLocalPlayerHealthPointsEvent(const Event& event) {
   auto health_points = event.GetArg<float>(0);
   last_requested_respawn_time_ = GetCurrentServerTime();
   model_->GetLocalPlayer()->SetHealthPoints(health_points);
+}
+
+void ClientController::StartAttackAnimationEvent(const Event& event) {
+  auto attacker_id = event.GetArg<GameObjectId>(0);
+  if (!model_->IsGameObjectIdTaken(attacker_id)) {
+    return;
+  }
+  if (attacker_id == model_->GetLocalPlayerId()) {
+    return;
+  }
+  auto attacker = model_->GetGameObjectByGameObjectId(attacker_id);
+  attacker->SetAnimationState(AnimationState::kAttack, true);
+}
+
+void ClientController::StartShootingAnimationEvent(const Event& event) {
+  auto shooter_id = event.GetArg<GameObjectId>(0);
+  if (!model_->IsGameObjectIdTaken(shooter_id)) {
+    return;
+  }
+  if (shooter_id == model_->GetLocalPlayerId()) {
+    return;
+  }
+  auto shooter = model_->GetGameObjectByGameObjectId(shooter_id);
+  shooter->SetAnimationState(AnimationState::kShoot, true);
 }
 
 void ClientController::LocalPlayerDiedEvent(const Event& event) {

@@ -1,0 +1,12 @@
+# Smasher
+
+idle:
+loop
+
+move:
+	play_frames 39 16
+loop
+
+shoot:
+	play_frames 9 16
+loop

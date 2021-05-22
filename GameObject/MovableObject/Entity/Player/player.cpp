@@ -45,9 +45,9 @@ Player::Player(const Player& other) : Entity(other) {
 }
 
 void Player::SetParams(std::vector<QVariant> params) {
-  auto weapon_type = static_cast<WeaponType>(params.back().toInt());
-  weapon_type_ = weapon_type;
-  switch (weapon_type) {
+  weapon_type_ = static_cast<WeaponType>(params.back().toInt());
+  params.pop_back();
+  switch (weapon_type_) {
     case WeaponType::kAssaultRifle: {
       weapon_ = std::make_shared<AssaultRifle>();
       break;
@@ -73,7 +73,6 @@ void Player::SetParams(std::vector<QVariant> params) {
       break;
     }
   }
-  params.pop_back();
   Entity::SetParams(params);
 }
 

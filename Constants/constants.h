@@ -40,8 +40,8 @@ extern const int kMSecsToStore;
 extern const int64_t kTicksToStore;
 
 // Map
-extern const float kDefaultMapWidth;
-extern const float kDefaultMapHeight;
+extern const float kMapWidth;
+extern const float kMapHeight;
 
 // Room
 extern const int kDefaultMaxClients;
@@ -58,6 +58,7 @@ extern const int64_t kInterpolationMSecs;
 extern const int kControlsHoldingCheck;
 
 // Graphics
+extern const int kAntiAliasingSamples;
 extern const float kBaseViewWidth;
 extern const float kBaseViewHeight;
 extern const float kPlayerBarHeightRatio;
@@ -140,7 +141,6 @@ QString GetStringFromEnumValue(T value) {
 }
 
 extern const int kMaxPlayerBullets;
-
 }  // namespace Constants
 
 #endif  // CONSTANTS_CONSTANTS_H_

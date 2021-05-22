@@ -41,7 +41,7 @@ Q_DECLARE_METATYPE(DrawPixmapType)
 
 class Painter : public QPainter {
  public:
-  Painter(QPixmap* device,
+  Painter(QPaintDevice* device,
           std::shared_ptr<Converter> converter);
 
   void SetClipCircle(float x, float y, float r,

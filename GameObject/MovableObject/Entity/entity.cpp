@@ -137,8 +137,8 @@ void Entity::OnTick(int delta_time) {
   if (!IsAlive()) {
     return;
   }
-  MovableObject::OnTick(delta_time);
   TickHealthPoints(delta_time);
+  MovableObject::OnTick(delta_time);
 }
 
 void Entity::TickHealthPoints(int delta_time) {

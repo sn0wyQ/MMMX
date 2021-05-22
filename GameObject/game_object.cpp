@@ -43,7 +43,7 @@ void GameObject::SetParams(std::vector<QVariant> params) {
   float rigid_body_width = params.back().toFloat();
   params.pop_back();
   auto rigid_body_type = static_cast<RigidBodyType>(params.back().toInt());
-  if (rigid_body_ == nullptr) {
+  if (!rigid_body_) {
     switch (rigid_body_type) {
       case RigidBodyType::kCircle:
         rigid_body_ = std::make_shared<RigidBodyCircle>();
@@ -52,7 +52,8 @@ void GameObject::SetParams(std::vector<QVariant> params) {
         rigid_body_ = std::make_shared<RigidBodyRectangle>();
         break;
       default:
-        qWarning() << "[GAME OBJECT] Invalid rigid body type";
+        qWarning() << "[GAME OBJECT] Invalid rigid body type"
+                   << params.back().toInt();
         break;
     }
   }
@@ -193,7 +194,22 @@ std::shared_ptr<Animation> GameObject::GetAnimation() {
 }
 
 void GameObject::SetAnimation(AnimationType animation_type) {
+  if (animation_->GetType() != AnimationType::kNone) {
+    return;
+  }
+#ifdef MMMX_SERVER
+  animation_ = std::make_shared<Animation>(animation_type);
+#else
   animation_ = animations_holder_.GetAnimation(animation_type);
+#endif  // MMMX_SERVER
+}
+
+void GameObject::SetAnimationState(AnimationState animation_state,
+                                   bool restart) {
+  if (!animation_) {
+    return;
+  }
+  animation_->SetAnimationState(animation_state, restart);
 }
 
 AnimationsHolder& GameObject::GetAnimationsHolder() {

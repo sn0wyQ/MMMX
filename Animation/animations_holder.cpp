@@ -2,7 +2,8 @@
 
 std::shared_ptr<Animation>
     AnimationsHolder::GetAnimation(AnimationType animation_type) {
-  if (kIsSynchronizedAllOfThisType.at(animation_type)) {
+  auto sync_iter = kIsSynchronizedAllOfThisType.find(animation_type);
+  if (sync_iter != kIsSynchronizedAllOfThisType.end() && sync_iter->second) {
     auto iter = animations_.find(animation_type);
     if (iter == animations_.end()) {
       auto new_animation = std::make_shared<Animation>(animation_type);
@@ -12,6 +13,11 @@ std::shared_ptr<Animation>
       return iter->second;
     }
   } else {
+    if (sync_iter == kIsSynchronizedAllOfThisType.end()) {
+      qWarning() << "[ANIMATION] Animation type" << animation_type
+                 << "is not added to kIsSynchronizedAllOfThisType!";
+    }
+
     auto new_animation = std::make_shared<Animation>(animation_type);
     animations_.insert({animation_type, new_animation});
     return new_animation;
