@@ -110,6 +110,12 @@ enum class EventType {
   // LevelingSlots::SIZE times int
   kSendLevelingPoints,
 
+  // [0] - <GameObjectId> attacker_id
+  kStartAttackAnimation,
+
+  // [0] - <GameObjectId> shooter_player_id
+  kStartShootingAnimation,
+
   // [0] - <GameObjectId> player_id
   // [1] - player_args
   kAddLocalPlayerGameObject,

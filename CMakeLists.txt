@@ -88,6 +88,7 @@ set(SOURCES
         GUI/GameView/stats_table.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp
+        GameObject/MovableObject/Entity/Creep/creep_enums.h
         GameObject/MovableObject/Entity/Creep/creep_settings.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
@@ -146,6 +147,7 @@ target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}
         ${RESOURCES_COMMON} ${SYSTEM_DEPENDENT_SOURCES})
+target_compile_definitions(MMMX-Server PUBLIC -DMMMX_SERVER)
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
 
 # Synchronize Res with output folder

@@ -5,18 +5,18 @@ int Animation::frames_to_preload_in_inactive_sequences_ = 2;
 
 Animation::Animation(AnimationType animation_type)
     : animation_type_(animation_type) {
-  if (animation_type == AnimationType::kNone) {
+#ifndef MMMX_SERVER
+  if (animation_type_ == AnimationType::kNone) {
     return;
   } else {
     base_path_ =
-        "./Res/Animation/" + kAnimationTypeStrings.at(animation_type) + "/";
+        "./Res/Animation/" + kAnimationTypeStrings.at(animation_type_) + "/";
 
     // Loading first frames of sequence for each animation state
     int animation_state_index = 0;
     auto animation_state = static_cast<AnimationState>(0);
     while (animation_state < AnimationState::SIZE) {
       std::queue<SharedFrame> first_frames_of_state;
-      first_frames_of_state.emplace(base_path_, animation_state, 0);
       int current_frame_index = 0;
       while ((first_frames_of_state.empty()
               || first_frames_of_state.back().IsExists())
@@ -33,6 +33,7 @@ Animation::Animation(AnimationType animation_type)
 
     ParseAnimationDescription(base_path_ + "description.mmmx");
   }
+#endif  // MMMX_SERVER
 }
 
 void Animation::ParseAnimationDescription(const QString& description_path) {
@@ -93,6 +94,11 @@ void Animation::ParseAnimationDescription(const QString& description_path) {
       }
       ++line_index;
     }
+
+    if (animation_state != AnimationState::SIZE) {
+      throw std::runtime_error("[ANIMATION] Invalid animation instruction"
+                               "format - no end found");
+    }
   } else {
     qWarning() << "[ANIMATION] Error while opening " << description_path;
   }
@@ -106,6 +112,7 @@ void Animation::Update(int delta_time) {
   InstructionList&
       current_instruction_list = animation_instructions_.at(animation_state_);
 
+  // If we have only one instruction we don't do update
   if (current_instruction_list.size() == 1
       && current_instruction_list.at(0).type
          == AnimationInstructionType::kLoop) {
@@ -213,6 +220,16 @@ void Animation::Update(int delta_time) {
 
 void Animation::SetAnimationState(AnimationState animation_state,
                                   bool restart) {
+  if (animation_type_ == AnimationType::kNone) {
+    return;
+  }
+
+  if (!restart && (animation_state_ == AnimationState::kDestroy
+                   || animation_state_ == AnimationState::kShoot
+                   || animation_state_ == AnimationState::kAttack)) {
+    return;
+  }
+
   std::queue<SharedFrame>&
       current_sequence = animation_frames_.at(animation_state_);
 
@@ -233,27 +250,38 @@ void Animation::SetAnimationState(AnimationState animation_state,
     int current_frame_index = 1;
     while (current_sequence.back().IsExists()
            && current_frame_index < frames_to_preload_in_inactive_sequences_) {
-      current_sequence.emplace(base_path_,
-                               animation_state_,
-                               current_frame_index++,
-                               saved_size);
+      SharedFrame next_frame(base_path_,
+                             animation_state_,
+                             current_frame_index++,
+                             saved_size);
+      if (next_frame.IsExists()) {
+        current_sequence.push(next_frame);
+      } else {
+        break;
+      }
     }
   }
 
   animation_state_ = animation_state;
-  current_sequence = animation_frames_.at(animation_state_);
+  std::queue<SharedFrame>&
+      new_sequence = animation_frames_.at(animation_state_);
   animation_instruction_index_ = 0;
   go_to_next_instruction_time_ = current_animation_time_;
 
   // We guarantee that we always already have 0th frame
   // (if it exists in storage) and we also want to preload more frames
-  int current_frame_index = 1;
-  while (current_sequence.back().IsExists()
+  int current_frame_index = frames_to_preload_in_inactive_sequences_;
+  while (new_sequence.back().IsExists()
          && current_frame_index < frames_to_preload_in_active_sequence_) {
-    current_sequence.emplace(base_path_,
-                             animation_state_,
-                             current_frame_index++,
-                             saved_size);
+    SharedFrame next_frame(base_path_,
+                           animation_state_,
+                           current_frame_index++,
+                           saved_size);
+    if (next_frame.IsExists()) {
+      new_sequence.push(next_frame);
+    } else {
+      break;
+    }
   }
 }
 
@@ -268,6 +296,10 @@ void Animation::RenderFrame(Painter* painter, float w, float h) {
     return;
   }
   painter->DrawSharedFrame(QPointF(), w, h, frame_to_render);
+}
+
+AnimationState Animation::GetState() const {
+  return animation_state_;
 }
 
 AnimationType Animation::GetType() const {

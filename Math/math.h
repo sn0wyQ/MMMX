@@ -15,6 +15,7 @@
 namespace Math {
 // Constants
 constexpr float kPi = 3.1415927410125732421875f;
+constexpr float kEps = 1e-6f;
 
 constexpr float kDegToRad = kPi / 180.f;
 constexpr float kRadToDeg = 180.f / kPi;

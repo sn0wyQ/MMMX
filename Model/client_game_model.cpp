@@ -11,6 +11,10 @@ std::shared_ptr<Player> ClientGameModel::GetLocalPlayer() const {
   return GameModel::GetPlayerByPlayerId(local_player_id_);
 }
 
+GameObjectId ClientGameModel::GetLocalPlayerId() const {
+  return local_player_id_;
+}
+
 std::shared_ptr<PlayerStats> ClientGameModel::GetLocalPlayerStats() {
   return GameModel::GetPlayerStatsByPlayerId(local_player_id_);
 }

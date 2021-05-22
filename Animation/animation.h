@@ -4,6 +4,7 @@
 #include <exception>
 #include <memory>
 #include <queue>
+#include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -20,10 +21,20 @@
 #include "Painter/painter.h"
 
 const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
-    { AnimationType::kTreeGreen, "TreeGreen" }
+    { AnimationType::kElectricGenerator, "ElectricGenerator" },
+    { AnimationType::kGarage, "Garage" },
+    { AnimationType::kGiantWeak, "GiantWeak" },
+    { AnimationType::kGiantStrong, "GiantStrong" },
+    { AnimationType::kBox, "Box" },
+    { AnimationType::kSmasher, "Smasher" },
+    { AnimationType::kSoldier, "Soldier" },
+    { AnimationType::kSpider, "Spider" },
+    { AnimationType::kTreeGreen, "TreeGreen" },
+    { AnimationType::kViking, "Viking" }
 };
 
 const std::unordered_map<QString, AnimationState> kAnimationStateLabels {
+    { "attack:", AnimationState::kAttack },
     { "destroy:", AnimationState::kDestroy },
     { "idle:", AnimationState::kIdle },
     { "move:", AnimationState::kMove },
@@ -34,10 +45,10 @@ const std::unordered_map<QString, AnimationInstructionType>
     kAnimationCommandsToInstructions {
     { "end", AnimationInstructionType::kEnd },
     { "loop", AnimationInstructionType::kLoop },
-    { "nextframe", AnimationInstructionType::kNextFrame },
-    { "playframes", AnimationInstructionType::kPlayFrames },
+    { "next_frame", AnimationInstructionType::kNextFrame },
+    { "play_frames", AnimationInstructionType::kPlayFrames },
     { "wait", AnimationInstructionType::kWait },
-    { "waitrand", AnimationInstructionType::kWaitRand }
+    { "wait_rand", AnimationInstructionType::kWaitRand }
 };
 
 struct Instruction {
@@ -57,6 +68,7 @@ class Animation {
 
   void RenderFrame(Painter* painter, float w, float h);
 
+  AnimationState GetState() const;
   AnimationType GetType() const;
 
   static void SetNumberOfFramesToPreloadInActiveSequence(int number_of_frames);

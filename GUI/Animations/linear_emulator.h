@@ -85,9 +85,9 @@ void LinearEmulator<T>::SetPath(T start, T finish) {
   min_value_ = std::min(start, finish);
   max_value_ = std::max(start, finish);
   if (start < finish) {
-    speed_ = abs(speed_);
+    speed_ = std::abs(speed_);
   } else {
-    speed_ = -abs(speed_);
+    speed_ = -std::abs(speed_);
   }
 }
 
