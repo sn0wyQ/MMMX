@@ -64,6 +64,7 @@ extern const float kBaseViewHeight;
 extern const float kPlayerBarHeightRatio;
 extern const bool kRigidBodyShow;
 extern const int kAverageFpsFrames;
+extern const float kBulletDisappearRatio;
 
 // Animations
 extern const int kUnloadAnimationCheckTime;

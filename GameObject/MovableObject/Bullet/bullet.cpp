@@ -1,5 +1,7 @@
 #include "bullet.h"
 
+using Constants::kBulletDisappearRatio;
+
 Bullet::Bullet(GameObjectId bullet_id) : MovableObject(bullet_id) {}
 
 void Bullet::SetParams(std::vector<QVariant> params) {
@@ -64,8 +66,17 @@ void Bullet::SetStartPosition(QPointF start_position) {
 }
 
 void Bullet::DrawRelatively(Painter* painter) const {
+  painter->save();
+  auto distance = Math::DistanceBetweenPoints(this->GetPosition(),
+                                              this->GetStartPosition());
+  if (distance / bullet_range_ > kBulletDisappearRatio) {
+    painter->setOpacity(1.f -
+              (distance - kBulletDisappearRatio * bullet_range_) /
+              (bullet_range_ - kBulletDisappearRatio * bullet_range_));
+  }
   painter->DrawEllipse(QPointF(),
                        GetWidth() / 2.f, GetHeight() / 2.f);
+  painter->restore();
 }
 
 std::shared_ptr<GameObject> Bullet::Clone() const {

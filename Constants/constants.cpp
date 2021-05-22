@@ -49,8 +49,9 @@ const int kAntiAliasingSamples = 5;
 const float kBaseViewWidth = 25.f;
 const float kBaseViewHeight = 25.f;
 const float kPlayerBarHeightRatio = 0.15f;
-const bool kRigidBodyShow = true;
+const bool kRigidBodyShow = false;
 const int kAverageFpsFrames = 50;
+const float kBulletDisappearRatio = 0.5f;
 
 // Animations
 const int kUnloadAnimationCheckTime = 30;
