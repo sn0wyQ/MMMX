@@ -95,6 +95,7 @@ class ClientController : public BaseController {
 
  private:
   void EndGameEvent(const Event& event) override;
+  void PlayerConnectedEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
   void SetPlayerIdToClient(const Event& event) override;
   void SetTimeDifferenceEvent(const Event& event) override;

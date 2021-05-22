@@ -37,6 +37,16 @@ void KillFeed::AddSpawnNotification(const QString& player_name) {
       new KillFeedNotification(this, player_name + " respawned"));
 }
 
+void KillFeed::AddPlayerConnectedNotification(const QString& player_name) {
+  this->AddNotification(
+      new KillFeedNotification(this, player_name + " connected"));
+}
+
+void KillFeed::AddPlayerDisconnectedNotification(const QString& player_name) {
+  this->AddNotification(
+      new KillFeedNotification(this, player_name + " disconnected"));
+}
+
 void KillFeed::paintEvent(QPaintEvent* paint_event) {
   QPainter painter(this);
   Constants::SetPainterHints(&painter);
