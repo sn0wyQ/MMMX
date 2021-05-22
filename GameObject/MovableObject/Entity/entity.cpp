@@ -73,40 +73,29 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 
 void Entity::DrawHealthBar(Painter* painter) const {
   painter->save();
-  QPointF translation(0.f, -2.f);
-  painter->Translate(translation);
-  float rect_width = 75.f;
-  float rect_height = 14.f;
-  auto cur_hp = static_cast<int>(std::round(this->GetHealthPoints()));
-  auto max_hp = static_cast<int>(std::round(this->GetMaxHealthPoints()));
-  QString text = QString::number(cur_hp) + " / " +
-      QString::number(max_hp);
-  QFont font = painter->font();
-  float factor =
-      rect_width * 0.9f / painter->fontMetrics().horizontalAdvance(
-          QString::number(max_hp) + "/ " + QString::number(max_hp));
-  font.setPointSizeF(font.pointSizeF() * factor);
-  painter->setFont(font);
-  QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
-                   rect_width, rect_height);
-  painter->drawText(text_rect, Qt::AlignCenter,
-                    text);
-  auto pen = painter->pen();
-  QColor clr_back = Qt::gray;
-  clr_back.setAlphaF(0.4f);
-  painter->setPen(clr_back);
-  painter->drawRect(-rect_width / 2.f, -rect_height / 2.f,
-                    rect_width, rect_height);
-  auto brush = painter->brush();
-  QColor clr_main = Qt::darkGreen;
-  clr_main.setAlphaF(0.4f);
-  painter->setBrush(clr_main);
-  float part = this->GetHealthPoints() / this->GetMaxHealthPoints();
-  float width = part * rect_width;
-  painter->drawRect(-rect_width / 2.f, -rect_height / 2.f,
-                    width, rect_height);
-  painter->setBrush(brush);
-  painter->setPen(pen);
+  painter->Translate(QPointF(-2.5f, -2.5f));
+  QRectF rect(0, 0, 75, 14);
+
+  painter->setBrush(Qt::gray);
+  painter->setPen(Qt::transparent);
+  painter->drawRoundedRect(rect, 10, 10);
+
+  float hp_ratio = this->GetHealthPoints() / this->GetMaxHealthPoints();
+  auto color = Constants::GetHealthPointsColor(hp_ratio);
+  color.setAlphaF(0.8f);
+  painter->setBrush(color);
+
+  painter->setPen(Qt::transparent);
+  auto painter_clip = painter->clipRegion();
+  painter->setClipRegion(painter_clip.intersected(
+      QRect(0, 0, rect.width() * hp_ratio, rect.height())));
+  painter->drawRoundedRect(rect, 10, 10);
+  painter->setClipRegion(painter_clip);
+
+  painter->setBrush(Qt::transparent);
+  painter->setPen(QPen(Qt::black, 1.5f));
+  painter->drawRoundedRect(rect, 10, 10);
+
   painter->restore();
 }
 
@@ -143,22 +132,21 @@ void Entity::TickHealthPoints(int delta_time) {
 
 void Entity::DrawLevel(Painter* painter) const {
   painter->save();
-  QPointF translation(0.f,  -3.f);
+  QPointF translation(-3.f, -2.8f);
   painter->Translate(translation);
   painter->setBrush(Qt::black);
-  painter->drawEllipse(QPointF(), 10.f, 10.f);
-  float rect_width = 75.f;
-  float rect_height = 14.f;
+  QPixmap pixmap("../Res/Icons/level_arrow.png");
+  QRectF rect(0, 0, 24, 24);
+  painter->drawPixmap(rect, pixmap,
+                      QRectF(0, 0, pixmap.width(), pixmap.height()));
   QFont font = painter->font();
   font.setPointSizeF(10.f);
+  font.setBold(true);
   painter->setFont(font);
   QPen pen(Constants::Painter::kLevelColor);
   painter->setPen(pen);
-  QRectF text_rect(-rect_width / 2.f, -rect_height / 2.f,
-                   rect_width, rect_height);
 
-  painter->drawText(text_rect, Qt::AlignCenter,
-                    QString::number(this->GetLevel()));
+  painter->drawText(rect, Qt::AlignCenter, QString::number(this->GetLevel()));
   painter->restore();
 }
 

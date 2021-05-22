@@ -93,6 +93,7 @@ extern const int kCreepSpawnShuffleRatio;
 extern const int kGenerationTries;
 
 // View
+QColor GetHealthPointsColor(float hp_ratio);
 void SetPainterHints(QPainter* painter);
 extern const float kCameraStiffnessRatio;
 extern const float kCameraFrictionRatio;

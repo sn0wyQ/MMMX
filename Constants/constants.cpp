@@ -80,6 +80,11 @@ const int kCreepSpawnShuffleRatio = 3;
 const int kGenerationTries = 15;
 
 // View
+QColor GetHealthPointsColor(float hp_ratio) {
+  QColor color;
+  color.setHslF(0.25 * hp_ratio, 1.f, 0.5f);
+  return color;
+}
 void SetPainterHints(QPainter* painter) {
   painter->setRenderHints(
       QPainter::Antialiasing | QPainter::SmoothPixmapTransform);

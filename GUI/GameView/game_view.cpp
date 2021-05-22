@@ -146,7 +146,8 @@ void GameView::DrawBars(const std::shared_ptr<GameObject>& object) {
   painter_->Translate(object->GetPosition());
   object->DrawHealthBar(painter_.get());
   object->DrawLevel(painter_.get());
-  if (object->GetType() == GameObjectType::kPlayer) {
+  if (object->GetType() == GameObjectType::kPlayer &&
+      object->GetId() != model_->GetLocalPlayer()->GetId()) {
     QString nickname =
         model_->GetPlayerStatsByPlayerId(object->GetId())->GetNickname();
     object->DrawNickname(painter_.get(), nickname);
