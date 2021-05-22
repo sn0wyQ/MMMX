@@ -49,9 +49,9 @@ class Entity : public MovableObject {
 
   std::shared_ptr<GameObject> Clone() const override;
 
-  virtual float GetOpacity() const override;
-  virtual void SetAppearing() override;
-  virtual void SetDisappearing() override;
+  float GetOpacity() const override;
+  void SetAppearing() override;
+  void SetDisappearing() override;
 
  protected:
   int level_{1};
