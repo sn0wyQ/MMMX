@@ -58,7 +58,7 @@ const int kUnloadAnimationCheckTime = 30;
 const float kDefaultSpeedMultiplier = 0.01f;
 
 // Entity
-const int64_t kMaxDisappearTimeMsecs = 2000.f;
+const int64_t kMaxDisappearTimeMSecs = 2000.f;
 const float kOpacityChangeSpeed = 0.01f;
 const float kDefaultMaxHealthPoints = 100.f;
 

@@ -52,7 +52,7 @@ void LinearEmulator<T>::SetCurrentValue(const T& value) {
 
 template<class T>
 T LinearEmulator<T>::GetCurrentValue() const {
-  // Lets divide dt by 10 so the constants wont be too small
+  // Lets divide it by 10 so the constants won't be too small
   auto time = QDateTime::currentMSecsSinceEpoch();
   auto delta_time = static_cast<float>(time - last_time_updated_) / 10.f;
   last_time_updated_ = time;
