@@ -547,7 +547,7 @@ void ClientController::DeleteGameObjectEvent(const Event& event) {
         std::dynamic_pointer_cast<Entity>(
             model_->GetGameObjectByGameObjectId(game_object_id));
     entity->SetDisappearing();
-    entity->SetHealthPoints(0);
+    entity->SetHealthPoints(0.f);
   }
   time_to_delete_.push({game_object_id, delete_time});
 }
