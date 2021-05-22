@@ -118,10 +118,10 @@ void MovableObject::SetSpeedMultiplier(float speed_multiplier) {
   speed_multiplier_ = speed_multiplier;
 }
 
-void MovableObject::UpdateAnimationState() {
+void MovableObject::UpdateAnimationState(bool restart) {
   if (velocity_.length() > Math::kEps) {
-    this->SetAnimationState(AnimationState::kMove);
+    this->SetAnimationState(AnimationState::kMove, restart);
   } else {
-    this->SetAnimationState(AnimationState::kIdle);
+    this->SetAnimationState(AnimationState::kIdle, restart);
   }
 }

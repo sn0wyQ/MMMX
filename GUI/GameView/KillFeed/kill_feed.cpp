@@ -24,7 +24,7 @@ void KillFeed::AddKillNotification(const QString& killer_name,
                                    const QString& victim_name,
                                    WeaponType weapon_type) {
   QString message = killer_name + " killed " + victim_name;
-  if (weapon_type != WeaponType::kNull) {
+  if (weapon_type != WeaponType::kNone) {
     auto weapon_name_str = Constants::GetStringFromEnumValue(weapon_type);
     weapon_name_str.remove(0, 1);
     message += " with " + weapon_name_str;

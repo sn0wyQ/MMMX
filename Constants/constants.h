@@ -42,7 +42,6 @@ extern const int64_t kTicksToStore;
 // Map
 extern const float kMapWidth;
 extern const float kMapHeight;
-extern const float kMapMaxDistanceFromCenter;
 
 // Room
 extern const int kDefaultMaxClients;

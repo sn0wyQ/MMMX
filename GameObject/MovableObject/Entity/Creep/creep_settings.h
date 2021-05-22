@@ -37,8 +37,7 @@ class CreepSettings {
 
   template<class T>
   T GetCreepSetting(CreepType creep_type, const QString& setting_name) const {
-    QMap<CreepType, QVariantMap>::const_iterator
-        creep_iter = creeps_params_.constFind(creep_type);
+    auto creep_iter = creeps_params_.constFind(creep_type);
     if (creep_iter == creeps_params_.end()) {
       qWarning() << "[CREEP SETTINGS] No such creep type:" << creep_type;
       return T();
@@ -49,11 +48,11 @@ class CreepSettings {
         qWarning() << "[CREEP SETTINGS] No such setting name:" << setting_name;
         return T();
       } else {
-        if (!(*setting_iter).canConvert<T>()) {
+        if (!setting_iter->canConvert<T>()) {
           qWarning() << "[CREEP SETTINGS] Can not convert:" << setting_name
                      << "to type" << QMetaType::fromType<T>().name();
         }
-        return (*setting_iter).value<T>();
+        return setting_iter->value<T>();
       }
     }
   }
@@ -73,7 +72,7 @@ class CreepSettings {
   float GetAttackDistance(CreepType creep_type) const;
   int64_t GetReloadingTime(CreepType creep_type) const;
   float GetRunawayHpRatio(CreepType creep_type) const;
-  bool HasIntellect(CreepType creep_type) const;
+  bool HasIntelligence(CreepType creep_type) const;
 
   static void SetStaticParams(const std::shared_ptr<Creep>& creep);
 

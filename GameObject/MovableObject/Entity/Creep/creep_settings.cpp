@@ -10,7 +10,7 @@ CreepSettings& CreepSettings::GetInstance() {
 }
 
 float LoadFloat(const QJsonObject& json_object, const QString& key, bool* ok) {
-  QJsonValue json_value = json_object.value("distribution_delta");
+  QJsonValue json_value = json_object.value(key);
   if (!json_value.isDouble()) {
     *ok = false;
     return 0.f;
@@ -106,7 +106,10 @@ std::pair<int, CreepType>
       real_distribution(0.f, distribution_delta_ * 2.f);
   // TODO(Someone): rework for something more... equally distributed?
   float
-      normalized = distance_from_center / Constants::kMapMaxDistanceFromCenter;
+      normalized = distance_from_center /
+          Math::DistanceBetweenPoints(QPointF(),
+                                      QPointF(Constants::kMapWidth / 2.f,
+                                              Constants::kMapHeight / 2.f));
   float distributed = -std::log(normalized) / distribution_lambda_;
   float suitable_xp = distributed
                       + (real_distribution(gen) - distribution_delta_);
@@ -145,9 +148,10 @@ std::pair<int, CreepType>
     return { 3, CreepType::kBox };
   }
 
-  std::uniform_int_distribution<int>
-      final_distribution(0, static_cast<int>(suitable_pairs.size() - 1));
-  return suitable_pairs.at(final_distribution(gen));
+  // std::uniform_int_distribution<int>
+  //     final_distribution(0, static_cast<int>(suitable_pairs.size() - 1));
+  // return suitable_pairs.at(final_distribution(gen));
+  return suitable_pairs.at(gen() % suitable_pairs.size());
 }
 
 std::vector<QVariant>
@@ -269,8 +273,8 @@ float CreepSettings::GetRunawayHpRatio(CreepType creep_type) const {
   return GetCreepSetting<float>(creep_type, "runaway_hp_ratio");
 }
 
-bool CreepSettings::HasIntellect(CreepType creep_type) const {
-  return GetCreepSetting<bool>(creep_type, "has_intellect");
+bool CreepSettings::HasIntelligence(CreepType creep_type) const {
+  return GetCreepSetting<bool>(creep_type, "has_intelligence");
 }
 
 QSizeF CreepSettings::GetMaxCreepSize() const {

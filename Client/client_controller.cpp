@@ -449,7 +449,7 @@ void ClientController::ControlsHolding() {
   if (key_controller_->IsHeld(Controls::kRespawn)) {
     if (respawn_holding_current_ >= Constants::kHoldingRespawnTime) {
       this->AddEventToSend(Event(EventType::kRequestRespawn,
-                                 model_->GetLocalPlayer()->GetId()));
+                                 model_->GetLocalPlayerId()));
       last_requested_respawn_time_ = GetCurrentServerTime();
       respawn_holding_current_ = 0;
       are_controls_blocked_ = true;
@@ -470,7 +470,7 @@ void ClientController::ControlsHolding() {
       local_player_weapon->Reload(timestamp);
       this->AddEventToSend(Event(EventType::kSendPlayerReloading,
                                  static_cast<qint64>(timestamp),
-                                 model_->GetLocalPlayer()->GetId()));
+                                 model_->GetLocalPlayerId()));
     }
     key_controller_->ClearKeyPress(ControlsWrapper::Controls::kReload);
   }
@@ -482,6 +482,7 @@ void ClientController::ControlsHolding() {
     // Reload if Bullets In Clips is empty
     if (local_player->GetWeapon()->GetCurrentBulletsInClip() <= 0 &&
         local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
+      local_player->UpdateAnimationState(true);
       local_player->GetWeapon()->Reload(timestamp);
       this->AddEventToSend(Event(EventType::kSendPlayerReloading,
                                  static_cast<qint64>(timestamp),
@@ -494,7 +495,7 @@ void ClientController::ControlsHolding() {
           EventType::kSendNickname,
           local_player->GetId(),
           QString("Shooter#") +
-              QString::number(model_->GetLocalPlayer()->GetId())));
+              QString::number(model_->GetLocalPlayerId())));
 
       QList<QVariant> bullet_shifts;
       static std::mt19937 generator_(QDateTime::currentMSecsSinceEpoch());
@@ -531,6 +532,11 @@ void ClientController::ControlsHolding() {
                                  local_player->GetId(),
                                  bullet_shifts));
       local_player->SetAnimationState(AnimationState::kShoot, true);
+    }
+  } else {
+    auto local_player = model_->GetLocalPlayer();
+    if (local_player->GetAnimation()->GetState() == AnimationState::kShoot) {
+      local_player->UpdateAnimationState(true);
     }
   }
 }

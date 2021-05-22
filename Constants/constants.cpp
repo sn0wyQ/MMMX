@@ -30,7 +30,6 @@ const int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
 // Map
 const float kMapWidth = 100.f;
 const float kMapHeight = 100.f;
-const float kMapMaxDistanceFromCenter = 141.43f;
 
 // Room
 const int kDefaultMaxClients = 15;

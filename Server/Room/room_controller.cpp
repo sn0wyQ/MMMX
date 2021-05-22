@@ -162,7 +162,7 @@ void RoomController::EntityReceiveDamage(const ModelData& model_data,
                               GetCurrentServerTime() + Constants::kReviveTime});
       are_controls_blocked_[entity->GetId()] = true;
     } else if (is_creep) {
-      creeps_count_--;
+      --creeps_count_;
       entity->SetIsNeedToDelete(true);
     }
     *is_killed = true;
@@ -181,7 +181,7 @@ void RoomController::TickCreepsIntelligence(
   auto creeps = model_data.model->GetCreeps();
   auto players = model_data.model->GetAlivePlayers();
   for (auto& creep : creeps) {
-    if (!CreepSettings::GetInstance().HasIntellect(creep->GetCreepType())) {
+    if (!CreepSettings::GetInstance().HasIntelligence(creep->GetCreepType())) {
       continue;
     }
 
@@ -253,7 +253,7 @@ void RoomController::TickCreepsIntelligence(
             this->AddEventToSendToAllPlayers(
                 Event(EventType::kPlayerKilledNotification,
                       closer_player->GetId(), creep->GetId(),
-                      static_cast<int>(WeaponType::kNull)));
+                      static_cast<int>(WeaponType::kNone)));
           }
           creep->SetLastAttackedTime(timestamp);
         }
@@ -503,7 +503,7 @@ GameObjectId RoomController::AddPlayer() {
                                           GameObjectType::kPlayer);
 
   AnimationType animation_type = AnimationType::kNone;
-  WeaponType weapon_type = WeaponType::kAssaultRifle;
+  WeaponType weapon_type = WeaponType::kNone;
   float width = 8.f;
   float height = 8.f;
 
@@ -516,11 +516,13 @@ GameObjectId RoomController::AddPlayer() {
       weapon_type = WeaponType::kAssaultRifle;
       break;
     }
+
     case 1: {
       animation_type = AnimationType::kViking;
       weapon_type = WeaponType::kCrossbow;
       break;
     }
+
     case 2: {
       animation_type = AnimationType::kSpider;
       weapon_type = WeaponType::kMachineGun;
@@ -528,11 +530,13 @@ GameObjectId RoomController::AddPlayer() {
       height = 3.f;
       break;
     }
+
     case 3: {
       animation_type = AnimationType::kSmasher;
       weapon_type = WeaponType::kShotgun;
       break;
     }
+
     default: {
       qWarning() << "Invalid player type";
       break;
@@ -596,7 +600,6 @@ void RoomController::AddCreep(float x, float y) {
   auto params = CreepSettings::GetInstance().GetCreepParams(x, y, distance);
   if (params.empty()) {
     qWarning() << "[ROOM CONTROLLER] No suitable creep found";
-    // --creeps_count_;
     return;
   }
   auto game_object_id =

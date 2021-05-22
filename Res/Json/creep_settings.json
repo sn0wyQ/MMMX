@@ -29,9 +29,9 @@
       "base_damage": 0.0,
       "damage_multiplier": 0.0,
       "attack_distance": 0.0,
-      "reloading_time": 1000000000000,
+      "reloading_time": -1,
       "runaway_hp_ratio": 0.0,
-      "has_intellect": false
+      "has_intelligence": false
     },
     {
       "name": "Box",
@@ -56,9 +56,9 @@
       "base_damage": 0.0,
       "damage_multiplier": 0.0,
       "attack_distance": 0.0,
-      "reloading_time": 1000000000000,
+      "reloading_time": -1,
       "runaway_hp_ratio": 0.0,
-      "has_intellect": false
+      "has_intelligence": false
     },
     {
       "name": "Giant",
@@ -85,7 +85,7 @@
       "attack_distance": 0.01,
       "reloading_time": 350,
       "runaway_hp_ratio": 0.2,
-      "has_intellect": true
+      "has_intelligence": true
     },
     {
       "name": "Giant",
@@ -112,7 +112,7 @@
       "attack_distance": 0.01,
       "reloading_time": 350,
       "runaway_hp_ratio": 0.2,
-      "has_intellect": true
+      "has_intelligence": true
     }
   ]
 }
