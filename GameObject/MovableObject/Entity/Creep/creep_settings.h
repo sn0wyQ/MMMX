@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <exception>
 #include <map>
 #include <memory>
 #include <random>

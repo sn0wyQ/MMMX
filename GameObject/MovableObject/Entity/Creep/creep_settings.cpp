@@ -4,20 +4,32 @@ CreepSettings* CreepSettings::instance_{nullptr};
 
 CreepSettings& CreepSettings::GetInstance() {
   if (!instance_) {
-    instance_ = new CreepSettings();
+    try {
+      instance_ = new CreepSettings();
+    } catch (const std::exception& ex) {
+      qWarning() << ex.what();
+    }
   }
   return *instance_;
 }
 
-float LoadFloat(const QJsonObject& json_object, const QString& key, bool* ok) {
+float LoadFloat(const QJsonObject& json_object, const QString& key) {
   QJsonValue json_value = json_object.value(key);
   if (!json_value.isDouble()) {
-    *ok = false;
-    return 0.f;
-  } else {
-    *ok = true;
-    return static_cast<float>(json_value.toDouble());
+    throw std::runtime_error("[CREEP SETTINGS] Json document has wrong format");
   }
+
+  return static_cast<float>(json_value.toDouble());
+}
+
+template<typename T>
+T GetValueFromVariantMap(const QVariantMap& map, const QString& key) {
+  QVariant variant = map.value(key);
+  if (!variant.canConvert<T>()) {
+    throw std::runtime_error("[CREEP SETTINGS] Json document has wrong format");
+  }
+
+  return variant.value<T>();
 }
 
 CreepSettings::CreepSettings() {
@@ -28,27 +40,10 @@ CreepSettings::CreepSettings() {
 
   QJsonObject json_object = QJsonDocument::fromJson(file.readAll()).object();
 
-  bool loaded_distribution_delta;
-  distribution_delta_ = LoadFloat(json_object,
-                                  "distribution_delta",
-                                  &loaded_distribution_delta);
-  bool loaded_distribution_lambda;
-  distribution_lambda_ = LoadFloat(json_object,
-                                   "distribution_lambda",
-                                   &loaded_distribution_lambda);
-  bool loaded_max_creep_width;
-  max_creep_size_.setWidth(LoadFloat(json_object,
-                                     "max_width",
-                                     &loaded_max_creep_width));
-  bool loaded_max_creep_height;
-  max_creep_size_.setHeight(LoadFloat(json_object,
-                                      "max_height",
-                                      &loaded_max_creep_height));
-
-  if (!loaded_distribution_delta || !loaded_distribution_lambda
-      || !loaded_max_creep_width || !loaded_max_creep_height) {
-    qWarning() << "[CREEP SETTINGS] Json document has wrong format";
-  }
+  distribution_delta_ = LoadFloat(json_object, "distribution_delta");
+  distribution_lambda_ = LoadFloat(json_object, "distribution_lambda");
+  max_creep_size_.setWidth(LoadFloat(json_object, "max_width"));
+  max_creep_size_.setHeight(LoadFloat(json_object, "max_height"));
 
   QJsonValue json_value = json_object.value("creep_params_array");
   if (!json_value.isArray()) {
@@ -59,40 +54,31 @@ CreepSettings::CreepSettings() {
       if (!creep_params.isObject()) {
         qWarning() << "[CREEP SETTINGS] Json document has wrong format";
       } else {
-        QVariantMap
-            current_creep_params = creep_params.toObject().toVariantMap();
+        auto current_creep_params = creep_params.toObject().toVariantMap();
         QVariant current_creep_type = current_creep_params.value("type");
         if (!current_creep_type.isValid()
             || !current_creep_type.canConvert<QString>()) {
           qWarning() << "[CREEP SETTINGS] Json document has wrong format";
         } else {
-          bool found_min_level;
-          int min_level =
-              current_creep_params.value("min_level").toInt(&found_min_level);
-          bool found_max_level;
-          int max_level =
-              current_creep_params.value("max_level").toInt(&found_max_level);
-          bool found_base_xp;
+          auto min_level =
+              GetValueFromVariantMap<int>(current_creep_params, "min_level");
+          auto max_level =
+              GetValueFromVariantMap<int>(current_creep_params, "max_level");
           float base_xp =
-              current_creep_params.value("base_xp").toFloat(&found_base_xp);
-          bool found_xp_multiplier;
+              GetValueFromVariantMap<float>(current_creep_params, "base_xp");
           float xp_multiplier =
-              current_creep_params.value("xp_multiplier")
-                  .toFloat(&found_xp_multiplier);
-          if (!found_min_level || !found_max_level || !found_base_xp
-              || !found_xp_multiplier) {
-            qWarning() << "[CREEP SETTINGS] Json document has wrong format";
-          } else {
-            float min_level_xp = std::pow(xp_multiplier, min_level) * base_xp;
-            current_creep_params.insert("min_level_xp", min_level_xp);
-            float max_level_xp = std::pow(xp_multiplier, max_level) * base_xp;
-            current_creep_params.insert("max_level_xp", max_level_xp);
-            min_creep_xp_ = std::min(min_creep_xp_, min_level_xp);
-            max_creep_xp_ = std::max(max_creep_xp_, max_level_xp);
-            creeps_params_.insert(Constants::GetEnumValueFromString<CreepType>(
-                                      current_creep_type.toString()),
-                                  current_creep_params);
-          }
+              GetValueFromVariantMap<float>(current_creep_params,
+                                            "xp_multiplier");
+
+          float min_level_xp = std::pow(xp_multiplier, min_level) * base_xp;
+          current_creep_params.insert("min_level_xp", min_level_xp);
+          float max_level_xp = std::pow(xp_multiplier, max_level) * base_xp;
+          current_creep_params.insert("max_level_xp", max_level_xp);
+          min_creep_xp_ = std::min(min_creep_xp_, min_level_xp);
+          max_creep_xp_ = std::max(max_creep_xp_, max_level_xp);
+          creeps_params_.insert(Constants::GetEnumValueFromString<CreepType>(
+                                    current_creep_type.toString()),
+                                current_creep_params);
         }
       }
     }
@@ -148,9 +134,6 @@ std::pair<int, CreepType>
     return { 3, CreepType::kBox };
   }
 
-  // std::uniform_int_distribution<int>
-  //     final_distribution(0, static_cast<int>(suitable_pairs.size() - 1));
-  // return suitable_pairs.at(final_distribution(gen));
   return suitable_pairs.at(gen() % suitable_pairs.size());
 }
 
