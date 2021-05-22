@@ -47,41 +47,43 @@ CreepSettings::CreepSettings() {
 
   QJsonValue json_value = json_object.value("creep_params_array");
   if (!json_value.isArray()) {
-    qWarning() << "[CREEP SETTINGS] Json document has wrong format";
-  } else {
-    QJsonArray creeps_params = json_value.toArray();
-    for (const auto& creep_params : creeps_params) {
-      if (!creep_params.isObject()) {
-        qWarning() << "[CREEP SETTINGS] Json document has wrong format";
-      } else {
-        auto current_creep_params = creep_params.toObject().toVariantMap();
-        QVariant current_creep_type = current_creep_params.value("type");
-        if (!current_creep_type.isValid()
-            || !current_creep_type.canConvert<QString>()) {
-          qWarning() << "[CREEP SETTINGS] Json document has wrong format";
-        } else {
-          auto min_level =
-              GetValueFromVariantMap<int>(current_creep_params, "min_level");
-          auto max_level =
-              GetValueFromVariantMap<int>(current_creep_params, "max_level");
-          float base_xp =
-              GetValueFromVariantMap<float>(current_creep_params, "base_xp");
-          float xp_multiplier =
-              GetValueFromVariantMap<float>(current_creep_params,
-                                            "xp_multiplier");
+    throw std::runtime_error("[CREEP SETTINGS] Json document has wrong format");
+  }
 
-          float min_level_xp = std::pow(xp_multiplier, min_level) * base_xp;
-          current_creep_params.insert("min_level_xp", min_level_xp);
-          float max_level_xp = std::pow(xp_multiplier, max_level) * base_xp;
-          current_creep_params.insert("max_level_xp", max_level_xp);
-          min_creep_xp_ = std::min(min_creep_xp_, min_level_xp);
-          max_creep_xp_ = std::max(max_creep_xp_, max_level_xp);
-          creeps_params_.insert(Constants::GetEnumValueFromString<CreepType>(
-                                    current_creep_type.toString()),
-                                current_creep_params);
-        }
-      }
+  QJsonArray creeps_params = json_value.toArray();
+  for (const auto& creep_params : creeps_params) {
+    if (!creep_params.isObject()) {
+      throw std::runtime_error(
+          "[CREEP SETTINGS] Json document has wrong format");
     }
+
+    auto current_creep_params = creep_params.toObject().toVariantMap();
+    QVariant current_creep_type = current_creep_params.value("type");
+    if (!current_creep_type.isValid()
+        || !current_creep_type.canConvert<QString>()) {
+      throw std::runtime_error(
+          "[CREEP SETTINGS] Json document has wrong format");
+    }
+
+    auto min_level =
+        GetValueFromVariantMap<int>(current_creep_params, "min_level");
+    auto max_level =
+        GetValueFromVariantMap<int>(current_creep_params, "max_level");
+    float base_xp =
+        GetValueFromVariantMap<float>(current_creep_params, "base_xp");
+    float xp_multiplier =
+        GetValueFromVariantMap<float>(current_creep_params,
+                                      "xp_multiplier");
+
+    float min_level_xp = std::pow(xp_multiplier, min_level) * base_xp;
+    current_creep_params.insert("min_level_xp", min_level_xp);
+    float max_level_xp = std::pow(xp_multiplier, max_level) * base_xp;
+    current_creep_params.insert("max_level_xp", max_level_xp);
+    min_creep_xp_ = std::min(min_creep_xp_, min_level_xp);
+    max_creep_xp_ = std::max(max_creep_xp_, max_level_xp);
+    creeps_params_.insert(Constants::GetEnumValueFromString<CreepType>(
+                              current_creep_type.toString()),
+                          current_creep_params);
   }
 }
 
@@ -90,7 +92,6 @@ std::pair<int, CreepType>
   static std::mt19937 gen(QDateTime::currentMSecsSinceEpoch());
   std::uniform_real_distribution<float>
       real_distribution(0.f, distribution_delta_ * 2.f);
-  // TODO(Someone): rework for something more... equally distributed?
   float
       normalized = distance_from_center /
           Math::DistanceBetweenPoints(QPointF(),
@@ -106,9 +107,13 @@ std::pair<int, CreepType>
   for (const auto& creep_params : creeps_params_) {
     auto creep_type = Constants::GetEnumValueFromString<CreepType>(
                               creep_params.value("type").toString());
-    auto min_level_xp = GetCreepSetting<float>(creep_type, "min_level_xp");
-    auto max_level_xp = GetCreepSetting<float>(creep_type, "max_level_xp");
-    if (min_level_xp <= suitable_xp && suitable_xp <= max_level_xp) {
+    auto min_suitable_xp =
+        GetCreepSetting<float>(creep_type, "min_level_xp")
+        / GetCreepSetting<float>(creep_type, "xp_multiplier");
+    auto max_suitable_xp =
+        GetCreepSetting<float>(creep_type, "max_level_xp")
+        * GetCreepSetting<float>(creep_type, "xp_multiplier");
+    if (min_suitable_xp <= suitable_xp && suitable_xp <= max_suitable_xp) {
       int best_lvl = GetCreepSetting<int>(creep_type, "min_level");
       float best_xp_diff = std::abs(GetXp(creep_type, best_lvl)
                                     - suitable_xp);
@@ -130,7 +135,7 @@ std::pair<int, CreepType>
 
   if (suitable_pairs.empty()) {
     qWarning() << "[CREEP SETTINGS] Can not find suitable Creep for distance"
-               << distance_from_center;
+               << distance_from_center << ", suitable xp is" << suitable_xp;
     return { 3, CreepType::kBox };
   }
 

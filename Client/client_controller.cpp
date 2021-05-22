@@ -279,7 +279,7 @@ void ClientController::UpdateLocalBullets(int delta_time) {
   }
 }
 
-void ClientController::UpdateOtherGameObjects() {
+void ClientController::UpdateGameObjects() {
   for (const auto& object : model_->GetAllGameObjects()) {
     // Bullets always move, so we will only use animation state kIdle for them
     if (object->GetType() != GameObjectType::kBullet) {
@@ -311,7 +311,7 @@ void ClientController::UpdateView() {
   this->UpdateInterpolationInfo();
   this->UpdateLocalPlayer(delta_time);
   this->UpdateLocalBullets(delta_time);
-  this->UpdateOtherGameObjects();
+  this->UpdateGameObjects();
   this->UpdateAnimations(delta_time);
   view_->Update();
 }

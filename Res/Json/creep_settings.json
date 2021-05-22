@@ -1,5 +1,5 @@
 {
-  "distribution_delta": 0.15,
+  "distribution_delta": 0.25,
   "distribution_lambda": 12.5,
 
   "max_width": 4.0,
@@ -10,7 +10,7 @@
       "name": "Generator",
       "type": "kElectricGenerator",
       "base_xp": 2.5,
-      "xp_multiplier": 1.2,
+      "xp_multiplier": 1.3,
       "min_level": 1,
       "max_level": 5,
       "width": 2.0,
@@ -37,7 +37,7 @@
       "name": "Box",
       "type": "kBox",
       "base_xp": 1.0,
-      "xp_multiplier": 1.2,
+      "xp_multiplier": 1.3,
       "min_level": 1,
       "max_level": 5,
       "width": 1.5,
