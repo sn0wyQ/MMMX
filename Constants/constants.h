@@ -71,6 +71,8 @@ extern const int kUnloadAnimationCheckTime;
 extern const float kDefaultSpeedMultiplier;
 
 // Entity
+extern const int64_t kMaxDisappearTimeMSecs;
+extern const float kOpacityChangeSpeed;
 extern const float kDefaultMaxHealthPoints;
 
 // Player
