@@ -64,4 +64,4 @@ Github Actions use
 
     [Cal-lTel-luK](https://github.com/Cal-lTel-luK)
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/sn0wyQ/MMMX/contributors) who participated in this project.
