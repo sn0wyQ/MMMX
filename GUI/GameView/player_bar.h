@@ -48,6 +48,18 @@ namespace Constants::PlayerBar {
       "reload"
   };
 
+  const std::vector<QString> kLevelingToolTips {
+    "Player health",
+    "Regeneration",
+    "Player speed",
+    "Field of view",
+    "Accuracy",
+    "Bullet speed",
+    "Rate of fire",
+    "Range",
+    "Damage",
+    "Reload"
+  };
 }  // namespace Constants::PlayerBar
 
 class PlayerBar : public QWidget {

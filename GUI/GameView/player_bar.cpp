@@ -16,6 +16,7 @@ using Constants::PlayerBar::kPaddingU;
 using Constants::PlayerBar::kSmallPaddingU;
 using Constants::PlayerBar::kPictureHeight;
 using Constants::PlayerBar::kLevelingNames;
+using Constants::PlayerBar::kLevelingToolTips;
 using Constants::PlayerBar::kUpdatePixmapHeight;
 using Constants::PlayerBar::kBasePath;
 
@@ -38,7 +39,7 @@ PlayerBar::PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel> model,
     effect->setOpacity(0.f);
     buttons_[i]->setGraphicsEffect(effect);
     buttons_[i]->setFocusPolicy(Qt::NoFocus);
-    buttons_[i]->setToolTip(kLevelingNames[i]);
+    buttons_[i]->setToolTip(kLevelingToolTips[i]);
   }
 
   MoveButtons();
