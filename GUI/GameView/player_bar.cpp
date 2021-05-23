@@ -83,32 +83,43 @@ QRectF PlayerBar::RectWithPercents(
 }
 
 void PlayerBar::DrawHealthRect(QPainter* painter) {
-  painter->setBrush(Qt::gray);
-  painter->drawRoundedRect(RectWithPercents(kHealthBarX, kHealthBarY,
-                                            kHealthBarWidth,
-                                            kHealthBarHeight), 20, 20);
-  painter->setBrush(Qt::darkGreen);
   auto local_player = model_->GetLocalPlayer();
-  auto cur_hp = static_cast<int>(local_player->GetHealthPoints());
-  auto max_hp = static_cast<int>(local_player->GetMaxHealthPoints());
+  auto cur_hp = local_player->GetHealthPoints();
+  auto max_hp = local_player->GetMaxHealthPoints();
   hp_emulator_.SetBounds(0, max_hp);
   hp_emulator_.MakeStepTo(cur_hp);
   float hp_ratio = hp_emulator_.GetCurrentValue() / max_hp;
-  painter->setClipRect(RectWithPercents(
-      kHealthBarX, kHealthBarY,
-      kHealthBarWidth * hp_ratio, kHealthBarHeight));
+
+  painter->setBrush(Qt::gray);
+  painter->setPen(Qt::transparent);
+  painter->drawRoundedRect(RectWithPercents(kHealthBarX, kHealthBarY,
+                                            kHealthBarWidth,
+                                            kHealthBarHeight), 20, 20);
+
+  painter->setBrush(Constants::GetHealthPointsColor(hp_ratio));
+  painter->setClipRect(RectWithPercents(kHealthBarX,
+                                        kHealthBarY,
+                                        kHealthBarWidth * hp_ratio,
+                                        kHealthBarHeight));
   painter->drawRoundedRect(RectWithPercents(kHealthBarX, kHealthBarY,
                                             kHealthBarWidth,
                                             kHealthBarHeight), 20, 20);
   painter->setClipping(false);
+
+  painter->setBrush(Qt::transparent);
+  painter->setPen(QPen(Qt::black, 2));
+  painter->drawRoundedRect(RectWithPercents(kHealthBarX, kHealthBarY,
+                                            kHealthBarWidth,
+                                            kHealthBarHeight), 20, 20);
+
   float regen_hp_in_sec = local_player->GetHealthRegenRate() * 1000.f;
   auto regen_hp_in_sec_int =
       static_cast<float>(std::floor(regen_hp_in_sec * 100.f) / 100.f);
   painter->drawText(RectWithPercents(kHealthBarX, kHealthBarY,
                                      kHealthBarWidth,
                                      kHealthBarHeight), Qt::AlignCenter,
-                    QString::number(cur_hp) + " / "
-                        + QString::number(max_hp) + " (+"
+                    QString::number(static_cast<int>(cur_hp)) + " / "
+                        + QString::number(static_cast<int>(max_hp)) + " (+"
                         + QString::number(regen_hp_in_sec_int) + ")");
 }
 

@@ -30,6 +30,8 @@ const int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
 // Map
 const float kMapWidth = 100.f;
 const float kMapHeight = 100.f;
+const float kMapPictureWidth = 500.f;
+const float kMapPictureHeight = 500.f;
 
 // Room
 const int kDefaultMaxClients = 15;
@@ -49,11 +51,13 @@ const int kAntiAliasingSamples = 5;
 const float kBaseViewWidth = 25.f;
 const float kBaseViewHeight = 25.f;
 const float kPlayerBarHeightRatio = 0.15f;
-const bool kRigidBodyShow = true;
+const bool kRigidBodyShow = false;
 const int kAverageFpsFrames = 50;
+const float kBulletDisappearRatio = 0.5f;
 
 // Animations
 const int kUnloadAnimationCheckTime = 30;
+const int kCountOfPixmapsInSide = 50;
 
 // MovableObject
 const float kDefaultSpeedMultiplier = 0.01f;
@@ -89,6 +93,11 @@ const int kCreepSpawnShuffleRatio = 3;
 const int kGenerationTries = 15;
 
 // View
+QColor GetHealthPointsColor(float hp_ratio) {
+  QColor color;
+  color.setHslF(0.25 * hp_ratio, 1.f, 0.5f);
+  return color;
+}
 void SetPainterHints(QPainter* painter) {
   painter->setRenderHints(
       QPainter::Antialiasing |

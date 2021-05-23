@@ -42,6 +42,8 @@ extern const int64_t kTicksToStore;
 // Map
 extern const float kMapWidth;
 extern const float kMapHeight;
+extern const float kMapPictureWidth;
+extern const float kMapPictureHeight;
 
 // Room
 extern const int kDefaultMaxClients;
@@ -64,9 +66,11 @@ extern const float kBaseViewHeight;
 extern const float kPlayerBarHeightRatio;
 extern const bool kRigidBodyShow;
 extern const int kAverageFpsFrames;
+extern const float kBulletDisappearRatio;
 
 // Animations
 extern const int kUnloadAnimationCheckTime;
+extern const int kCountOfPixmapsInSide;
 
 // MovableObject
 extern const float kDefaultSpeedMultiplier;
@@ -102,6 +106,7 @@ extern const int kCreepSpawnShuffleRatio;
 extern const int kGenerationTries;
 
 // View
+QColor GetHealthPointsColor(float hp_ratio);
 void SetPainterHints(QPainter* painter);
 extern const float kCameraStiffnessRatio;
 extern const float kCameraFrictionRatio;

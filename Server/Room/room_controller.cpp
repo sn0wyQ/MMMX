@@ -584,12 +584,12 @@ std::vector<GameObjectId> RoomController::AddBullets(
 void RoomController::AddConstantObjects() {
   model_->AddGameObject(GameObjectType::kMapBorder,
                         {0.f, 0.f, 0.f,
-                         Constants::kMapWidth,
-                         Constants::kMapHeight,
+                         Constants::kMapPictureWidth,
+                         Constants::kMapPictureHeight,
                          static_cast<int>(RigidBodyType::kRectangle),
                          Constants::kMapWidth,
                          Constants::kMapHeight,
-                         static_cast<int>(AnimationType::kNone)});
+                         static_cast<int>(AnimationType::kMap)});
 
   for (int i = 0; i < 10; i++) {
     this->AddRandomGarage(10.f, 7.772f);
