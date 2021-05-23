@@ -24,6 +24,8 @@ class Creep : public Entity {
   float GetExpIncrementForKill() const override;
   float& GetMutableExpIncrementForKill();
 
+  float GetFrictionForce() const override;
+
   std::shared_ptr<GameObject> Clone() const override;
 
   void SetSpawnX(float spawn_x);

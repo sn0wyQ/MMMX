@@ -141,10 +141,20 @@ std::vector<QPointF> Math::GetCircleAndLineIntersections(
 }
 
 std::vector<QPointF> Math::GetRectWithLineIntersections(const QRectF& rect,
-                                                        const Line& line) {
+                                                        const Line& line,
+                                                        float angle) {
+  angle = angle * 2 * kPi / 360.f;
   std::vector<QPointF> answer;
+  auto top_left = rect.center() +
+      PointToNewCoordinates(rect.topLeft() - rect.center(), angle);
+  auto top_right = rect.center() +
+      PointToNewCoordinates(rect.topRight() - rect.center(), angle);
+  auto bottom_left = rect.center() +
+      PointToNewCoordinates(rect.bottomLeft() - rect.center(), angle);
+  auto bottom_right = rect.center() +
+      PointToNewCoordinates(rect.bottomRight() - rect.center(), angle);
   {
-    Math::Line rect_line(rect.topLeft(), rect.topRight());
+    Math::Line rect_line(top_left, top_right);
     auto dot = GetLinesIntersection(rect_line, line);
     if (!dot.isNull() && IsDotOnSegment(dot, rect_line) &&
         IsDotOnSegment(dot, line)) {
@@ -152,7 +162,7 @@ std::vector<QPointF> Math::GetRectWithLineIntersections(const QRectF& rect,
     }
   }
   {
-    Math::Line rect_line(rect.topRight(), rect.bottomRight());
+    Math::Line rect_line(top_right, bottom_right);
     auto dot = GetLinesIntersection(rect_line, line);
     if (!dot.isNull() && IsDotOnSegment(dot, rect_line) &&
         IsDotOnSegment(dot, line)) {
@@ -160,7 +170,7 @@ std::vector<QPointF> Math::GetRectWithLineIntersections(const QRectF& rect,
     }
   }
   {
-    Math::Line rect_line(rect.bottomRight(), rect.bottomLeft());
+    Math::Line rect_line(bottom_right, bottom_left);
     auto dot = GetLinesIntersection(rect_line, line);
     if (!dot.isNull() && IsDotOnSegment(dot, rect_line) &&
         IsDotOnSegment(dot, line)) {
@@ -168,7 +178,7 @@ std::vector<QPointF> Math::GetRectWithLineIntersections(const QRectF& rect,
     }
   }
   {
-    Math::Line rect_line(rect.bottomLeft(), rect.topLeft());
+    Math::Line rect_line(bottom_left, top_left);
     auto dot = GetLinesIntersection(rect_line, line);
     if (!dot.isNull() && IsDotOnSegment(dot, rect_line) &&
         IsDotOnSegment(dot, line)) {
@@ -191,4 +201,9 @@ bool Math::IsDotOnSegment(const QPointF& dot, const Line& line) {
       is_less_or_equal(dot.x(), std::max(start_dot.x(), finish_dot.x())) &&
       is_less_or_equal(std::min(start_dot.y(), finish_dot.y()), dot.y()) &&
       is_less_or_equal(dot.y(), std::max(start_dot.y(), finish_dot.y())));
+}
+
+QPointF Math::PointToNewCoordinates(const QPointF& point, float angle) {
+  return {point.x() * std::cos(angle) - point.y() * std::sin(angle),
+          point.x() * std::sin(angle) + point.y() * std::cos(angle)};
 }

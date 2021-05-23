@@ -146,7 +146,8 @@ void Creep::TickIntelligence(
       if (player->GetType() == GameObjectType::kPlayer) {
         bool visible = true;
         for (const auto& game_object : near_game_objects) {
-          if (game_object->Intersects(Math::Line(this->GetPosition(),
+          if (!game_object->IsEntity() &&
+              game_object->Intersects(Math::Line(this->GetPosition(),
                                                  player->GetPosition()))) {
             visible = false;
             break;
@@ -244,7 +245,8 @@ QPointF Creep::GetPatrollingPoint(
       4.f * this->GetRigidBodyBoundingCircleRadius(),
       this->GetFovRadius());
 
-  while (true) {
+  int count = 1000;
+  while (count--) {
     if (!patrolling_point_.isNull() &&
         Math::DistanceBetweenPoints(this->GetPosition(), patrolling_point_) >
             this->GetRigidBodyBoundingCircleRadius() &&
@@ -269,5 +271,13 @@ QPointF Creep::GetPatrollingPoint(
     patrolling_point_ = this->GetSpawnPoint() + QPointF(rho * std::cos(phi),
                                                         rho * std::sin(phi));
   }
+  if (count <= 0) {
+    qWarning() << "SOOO GAY";
+  }
   return patrolling_point_;
+}
+
+float Creep::GetFrictionForce() const {
+  // return GameObject::GetFrictionForce();
+  return 0.002f;
 }

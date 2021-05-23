@@ -3,6 +3,8 @@
 RoomController::RoomController(RoomId id, RoomSettings room_settings)
     : id_(id), model_(std::make_shared<RoomGameModel>()),
       room_settings_(room_settings) {
+  Math::GetRectWithLineIntersections(QRectF(2, 6, 5, 3), Math::Line(QPointF(2, 1),
+                                                                    QPointF(7, 2)));
   this->StartTicking();
   this->AddCreeps();
   this->AddConstantObjects();
@@ -118,9 +120,6 @@ void RoomController::DeleteReadyToBeDeletedObjects(
 }
 
 void RoomController::TickObjectsInModel(const ModelData& model_data) {
-  // qWarning() << Math::GetRectWithLineIntersections(QRectF(2, 3, 5, 3),
-  //                                                  Math::Line(QPointF(2, 1),
-  //                                                             QPointF(7, 2)));
   auto game_objects = model_data.model->GetAllGameObjects();
   for (const auto& game_object : game_objects) {
     game_object->OnTick(model_data.delta_time);

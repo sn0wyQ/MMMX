@@ -81,8 +81,11 @@ bool IsDotOnLine(const QPointF& dot, const Line& line);
 std::vector<QPointF> GetCircleAndLineIntersections(
     const QPointF& circle_center, float circle_radius, const Line& line);
 std::vector<QPointF> GetRectWithLineIntersections(const QRectF& rect,
-                                                  const Line& line);
+                                                  const Line& line,
+                                                  float angle = 0.f);
 bool IsDotOnSegment(const QPointF& dot, const Line& line);
+// Angle must be in radians
+QPointF PointToNewCoordinates(const QPointF& point, float angle);
 
 }  // namespace Math
 
