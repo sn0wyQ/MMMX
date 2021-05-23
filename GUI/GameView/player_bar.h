@@ -35,16 +35,16 @@ namespace Constants::PlayerBar {
   const QString kBasePath = "./Res/Icons/";
 
   const std::vector<QString> kLevelingNames = {
-      "MAX HP",
-      "REGEN",
-      "SPEED",
+      "Player health",
+      "Regeneration",
+      "Player speed",
       "FOV",
-      "ACCURACY",
-      "BULLET SPEED",
-      "RATE OF FIRE",
-      "RANGE",
-      "DAMAGE",
-      "RELOAD"
+      "Accuracy",
+      "Bullet speed",
+      "Rate of fire",
+      "Range",
+      "Damage",
+      "Reload"
   };
 }
 
@@ -63,7 +63,6 @@ class PlayerBar : public QWidget {
   void DrawLevelingButtons(QPainter* painter);
   void DrawHealthRect(QPainter* painter);
   void DrawExpRect(QPainter* painter);
-  void DrawUpdateAndMaxButtons(QPainter* painter);
 
   QRectF RectWithPercents(float x1, float y1, float width, float height);
 

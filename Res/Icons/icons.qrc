@@ -6,5 +6,15 @@
         <file>UnfilledBullet.svg</file>
         <file>MAX LVL.svg</file>
         <file>UPDATE LVL.svg</file>
+        <file>Player health.svg</file>
+        <file>Regeneration.svg</file>
+        <file>Player speed.svg</file>
+        <file>FOV.svg</file>
+        <file>Accuracy.svg</file>
+        <file>Bullet speed.svg</file>
+        <file>Rate of fire.svg</file>
+        <file>Range.svg</file>
+        <file>Damage.svg</file>
+        <file>Reload.svg</file>
     </qresource>
 </RCC>
