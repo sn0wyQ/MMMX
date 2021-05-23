@@ -51,7 +51,7 @@ Github Actions use
 * **Matvey Maximov** 
     - *FOV*
     - *Player Stats*
-    - *Creep intellegence*
+    - *Creep intelligence*
     - *Creep Settings*
     - *All smooth UI animations*
     - *Spawn Generator*
