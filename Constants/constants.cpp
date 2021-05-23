@@ -53,6 +53,7 @@ const float kBaseViewHeight = 25.f;
 const float kPlayerBarHeightRatio = 0.15f;
 const bool kRigidBodyShow = false;
 const int kAverageFpsFrames = 50;
+const float kBulletDisappearRatio = 0.5f;
 
 // Animations
 const int kUnloadAnimationCheckTime = 30;
@@ -92,6 +93,11 @@ const int kCreepSpawnShuffleRatio = 3;
 const int kGenerationTries = 15;
 
 // View
+QColor GetHealthPointsColor(float hp_ratio) {
+  QColor color;
+  color.setHslF(0.25 * hp_ratio, 1.f, 0.5f);
+  return color;
+}
 void SetPainterHints(QPainter* painter) {
   painter->setRenderHints(
       QPainter::Antialiasing |

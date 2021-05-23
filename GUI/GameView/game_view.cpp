@@ -144,12 +144,14 @@ void GameView::DrawBars(const std::shared_ptr<GameObject>& object,
                         Painter* painter) {
   painter->save();
   painter->Translate(object->GetPosition());
-  object->DrawHealthBar(painter);
-  object->DrawLevel(painter);
-  if (object->GetType() == GameObjectType::kPlayer) {
-    QString nickname =
-        model_->GetPlayerStatsByPlayerId(object->GetId())->GetNickname();
-    object->DrawNickname(painter, nickname);
+  if (object->GetId() != model_->GetLocalPlayer()->GetId()) {
+    object->DrawHealthBar(painter);
+    object->DrawLevel(painter);
+    if (object->GetType() == GameObjectType::kPlayer) {
+      QString nickname =
+          model_->GetPlayerStatsByPlayerId(object->GetId())->GetNickname();
+      object->DrawNickname(painter, nickname);
+    }
   }
   painter->restore();
 }
