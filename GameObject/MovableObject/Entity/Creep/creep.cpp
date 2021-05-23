@@ -116,11 +116,11 @@ void Creep::TickIntelligence(
     return;
   }
 
-  std::shared_ptr<Player> focused_player{nullptr};
+  std::shared_ptr<Player> focused_player;
   std::vector<std::shared_ptr<GameObject>> nearby_game_objects;
   std::shared_ptr<GameObject> map_border;
   bool is_revenging = false;
-  std::shared_ptr<Player> last_aggressive_player{nullptr};
+  std::shared_ptr<Player> last_aggressive_player;
 
   for (const auto& game_object : game_objects) {
     if (game_object->GetType() == GameObjectType::kPlayer &&
@@ -212,7 +212,7 @@ GameObjectId Creep::GetPlayerToDamage(
   }
 
   std::shared_ptr<Player> closer_player{nullptr};
-  float best_distance = 1e9;
+  float best_distance = std::numeric_limits<float>::max();
   for (const auto& player : players) {
     auto distance = Math::DistanceBetweenPoints(this->GetPosition(),
                                                 player->GetPosition());

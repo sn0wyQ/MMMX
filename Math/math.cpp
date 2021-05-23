@@ -65,34 +65,34 @@ std::vector<QPointF> Math::GetRotatedRect(const QRectF& rect, float rotation) {
   return points;
 }
 
-Math::Line::Line(double a_, double b_, double c_) : a(a_), b(b_), c(c_) {}
+Math::Line::Line(float a_, float b_, float c_) : a(a_), b(b_), c(c_) {}
 
 Math::Line::Line(QPointF point1_, QPointF point2_) : point1(point1_),
                                                      point2(point2_) {
-  double x1 = point1_.x();
-  double y1 = point1_.y();
-  double x2 = point2_.x();
-  double y2 = point2_.y();
+  float x1 = point1_.x();
+  float y1 = point1_.y();
+  float x2 = point2_.x();
+  float y2 = point2_.y();
   a = y2 - y1;
   b = x1 - x2;
   c = x2 * y1 - x1 * y2;
 }
 
 QPointF Math::GetLinesIntersection(const Line& line1, const Line& line2) {
-  double a1 = line1.a;
-  double b1 = line1.b;
-  double c1 = line1.c;
-  double a2 = line2.a;
-  double b2 = line2.b;
-  double c2 = line2.c;
+  float a1 = line1.a;
+  float b1 = line1.b;
+  float c1 = line1.c;
+  float a2 = line2.a;
+  float b2 = line2.b;
+  float c2 = line2.c;
 
-  if (fabs(b2 * a1 - b1 * a2) < kEps) {
+  if (std::fabs(b2 * a1 - b1 * a2) < kEps) {
     return {};
   }
 
-  double x = (b1 * c2 - b2 * c1) / (b2 * a1 - b1 * a2);
-  double y;
-  if (fabs(b1) > kEps) {
+  float x = (b1 * c2 - b2 * c1) / (b2 * a1 - b1 * a2);
+  float y;
+  if (std::fabs(b1) > kEps) {
     y = -(a1 * x + c1) / b1;
   } else {
     y = -(a2 * x + c2) / b2;
@@ -100,52 +100,52 @@ QPointF Math::GetLinesIntersection(const Line& line1, const Line& line2) {
   return {x, y};
 }
 
-double Math::GetDistanceFromPointToLine(const QPointF& point,
+float Math::GetDistanceFromPointToLine(const QPointF& point,
                                         const Line& line) {
-  double a = line.a;
-  double b = line.b;
-  double c = line.c;
-  return fabs(a * point.x() + b * point.y() + c) / sqrt(a * a + b * b);
+  float a = line.a;
+  float b = line.b;
+  float c = line.c;
+  return std::fabs(a * point.x() + b * point.y() + c) / std::sqrt(a * a + b * b);
 }
 
 bool Math::IsPointOnCircle(const QPointF& point, const QPointF& circle_center,
                          float circle_radius) {
-  return fabs(DistanceBetweenPoints(point, circle_center) - circle_radius)
+  return std::fabs(DistanceBetweenPoints(point, circle_center) - circle_radius)
       < kEps;
 }
 
 bool Math::IsPointOnLine(const QPointF& point, const Line& line) {
-  return fabs(line.a * point.x() + line.b * point.y() + line.c) < kEps;
+  return std::fabs(line.a * point.x() + line.b * point.y() + line.c) < kEps;
 }
 
 std::vector<QPointF> Math::GetCircleAndLineIntersections(
     const QPointF& circle_center, float circle_radius, const Line& line) {
-  double center_x = circle_center.x();
-  double center_y = circle_center.y();
+  float center_x = circle_center.x();
+  float center_y = circle_center.y();
 
-  double perp_a = line.b;
-  double perp_b = -line.a;
-  double perp_c = line.c;
+  float perp_a = line.b;
+  float perp_b = -line.a;
+  float perp_c = line.c;
 
-  if (fabs(perp_a) > Math::kEps) {
-    double temp_x = (-perp_b * center_y - perp_c) / perp_a;
+  if (std::fabs(perp_a) > Math::kEps) {
+    float temp_x = (-perp_b * center_y - perp_c) / perp_a;
     perp_c -= perp_a * (center_x - temp_x);
   } else {
-    double temp_y = (-perp_a * center_x - perp_c) / perp_b;
+    float temp_y = (-perp_a * center_x - perp_c) / perp_b;
     perp_c -= perp_b * (center_y - temp_y);
   }
 
   QPointF tangent_point = GetLinesIntersection(line,
                                                Line(perp_a, perp_b, perp_c));
-  double a = line.a;
-  double b = line.b;
-  double distance_to_line = GetDistanceFromPointToLine(circle_center, line);
-  double segment_length =
-      sqrt(fabs(circle_radius * circle_radius - distance_to_line *
+  float a = line.a;
+  float b = line.b;
+  float distance_to_line = GetDistanceFromPointToLine(circle_center, line);
+  float segment_length =
+      std::sqrt(std::fabs(circle_radius * circle_radius - distance_to_line *
           distance_to_line));
-  double delta_y = segment_length * sin(atan(-a / b));
-  double delta_x =
-      sqrt(fabs(segment_length * segment_length - delta_y * delta_y));
+  float delta_y = segment_length * sin(atan(-a / b));
+  float delta_x =
+      std::sqrt(std::fabs(segment_length * segment_length - delta_y * delta_y));
   QPointF res1(tangent_point.x() + delta_x, tangent_point.y() + delta_y);
   QPointF res2(tangent_point.x() - delta_x, tangent_point.y() - delta_y);
   std::vector<QPointF> result;
