@@ -129,7 +129,8 @@ void Creep::TickIntelligence(
     }
     if (game_object->GetType() == GameObjectType::kMapBorder) {
       map_border = game_object;
-    } else if ((!game_object->IsEntity() || game_object->GetType() == GameObjectType::kCreep) &&
+    } else if ((!game_object->IsEntity() ||
+        game_object->GetType() == GameObjectType::kCreep) &&
         Math::DistanceBetweenPoints(this->GetSpawnPoint(),
                                     game_object->GetPosition())
             < this->GetFovRadius() +
@@ -145,6 +146,7 @@ void Creep::TickIntelligence(
     is_revenging = true;
     focused_player = last_aggressive_player;
   } else {
+    float best_distance = 1e9;
     for (const auto& player : game_objects) {
       if (player->GetType() == GameObjectType::kPlayer) {
         bool visible = true;
@@ -159,12 +161,11 @@ void Creep::TickIntelligence(
         if (!visible) {
           continue;
         }
-        if (!focused_player ||
-            Math::DistanceBetweenPoints(this->GetPosition(),
-                                        player->GetPosition()) <
-                Math::DistanceBetweenPoints(this->GetPosition(),
-                                            focused_player->GetPosition())) {
+        auto distance = Math::DistanceBetweenPoints(this->GetPosition(),
+                                                    player->GetPosition());
+        if (distance < best_distance) {
           focused_player = std::dynamic_pointer_cast<Player>(player);
+          best_distance = distance;
         }
       }
     }

@@ -13,6 +13,9 @@ float Math::RadiansToDegrees(float radians) {
 }
 
 bool Math::IsPointOnSegment(QPointF first, QPointF second, QPointF point) {
+  if (!IsPointOnLine(point, Line(first, second))) {
+    return false;
+  }
   float min_x = std::min(first.x(), second.x());
   float max_x = std::max(first.x(), second.x());
   float min_y = std::min(first.y(), second.y());
@@ -64,11 +67,12 @@ std::vector<QPointF> Math::GetRotatedRect(const QRectF& rect, float rotation) {
 
 Math::Line::Line(double a_, double b_, double c_) : a(a_), b(b_), c(c_) {}
 
-Math::Line::Line(QPointF dot1_, QPointF dot2_) : dot1(dot1_), dot2(dot2_) {
-  double x1 = dot1_.x();
-  double y1 = dot1_.y();
-  double x2 = dot2_.x();
-  double y2 = dot2_.y();
+Math::Line::Line(QPointF point1_, QPointF point2_) : point1(point1_),
+                                                     point2(point2_) {
+  double x1 = point1_.x();
+  double y1 = point1_.y();
+  double x2 = point2_.x();
+  double y2 = point2_.y();
   a = y2 - y1;
   b = x1 - x2;
   c = x2 * y1 - x1 * y2;
@@ -82,7 +86,7 @@ QPointF Math::GetLinesIntersection(const Line& line1, const Line& line2) {
   double b2 = line2.b;
   double c2 = line2.c;
 
-  if(fabs(b2 * a1 - b1 * a2) < kEps) {
+  if (fabs(b2 * a1 - b1 * a2) < kEps) {
     return {};
   }
 
@@ -96,20 +100,21 @@ QPointF Math::GetLinesIntersection(const Line& line1, const Line& line2) {
   return {x, y};
 }
 
-double Math::GetDistanceFromDotToLine(const QPointF& dot, const Line& line) {
+double Math::GetDistanceFromPointToLine(const QPointF& point,
+                                        const Line& line) {
   double a = line.a;
   double b = line.b;
   double c = line.c;
-  return fabs(a * dot.x() + b * dot.y() + c) / sqrt(a * a + b * b);
+  return fabs(a * point.x() + b * point.y() + c) / sqrt(a * a + b * b);
 }
 
-bool Math::IsDotOnCircle(const QPointF& dot, const QPointF& circle_center,
+bool Math::IsPointOnCircle(const QPointF& point, const QPointF& circle_center,
                          float circle_radius) {
-  return fabs(DistanceBetweenPoints(dot, circle_center) - circle_radius) < kEps;
+  return fabs(DistanceBetweenPoints(point, circle_center) - circle_radius) < kEps;
 }
 
-bool Math::IsDotOnLine(const QPointF& dot, const Line& line) {
-  return fabs(line.a * dot.x() + line.b * dot.y() + line.c) < kEps;
+bool Math::IsPointOnLine(const QPointF& point, const Line& line) {
+  return fabs(line.a * point.x() + line.b * point.y() + line.c) < kEps;
 }
 
 std::vector<QPointF> Math::GetCircleAndLineIntersections(
@@ -133,7 +138,7 @@ std::vector<QPointF> Math::GetCircleAndLineIntersections(
                                                Line(perp_a, perp_b, perp_c));
   double a = line.a;
   double b = line.b;
-  double distance_to_line = GetDistanceFromDotToLine(circle_center, line);
+  double distance_to_line = GetDistanceFromPointToLine(circle_center, line);
   double segment_length =
       sqrt(fabs(circle_radius * circle_radius - distance_to_line *
           distance_to_line));
@@ -143,12 +148,12 @@ std::vector<QPointF> Math::GetCircleAndLineIntersections(
   QPointF res1(tangent_point.x() + delta_x, tangent_point.y() + delta_y);
   QPointF res2(tangent_point.x() - delta_x, tangent_point.y() - delta_y);
   std::vector<QPointF> result;
-  if (IsDotOnCircle(res1, circle_center, circle_radius) &&
-      IsDotOnSegment(res1, line)) {
+  if (IsPointOnCircle(res1, circle_center, circle_radius) &&
+      IsPointOnSegment(line.point1, line.point2, res1)) {
     result.push_back(res1);
   }
-  if (IsDotOnCircle(res2, circle_center, circle_radius) &&
-      IsDotOnSegment(res2, line)) {
+  if (IsPointOnCircle(res2, circle_center, circle_radius) &&
+      IsPointOnSegment(line.point1, line.point2, res2)) {
     result.push_back(res2);
   }
   return result;
@@ -162,28 +167,14 @@ std::vector<QPointF> Math::GetRectWithLineIntersections(const QRectF& rect,
   rect_points.push_back(rect_points[0]);
   for (size_t i = 1; i < rect_points.size(); i++) {
     Math::Line rect_line(rect_points[i - 1], rect_points[i]);
-    auto dot = GetLinesIntersection(rect_line, line);
-    if (!dot.isNull() && IsDotOnSegment(dot, rect_line) &&
-        IsDotOnSegment(dot, line)) {
-      answer.push_back(dot);
+    auto point = GetLinesIntersection(rect_line, line);
+    if (!point.isNull() &&
+        IsPointOnSegment(rect_line.point1, rect_line.point2, point) &&
+        IsPointOnSegment(line.point1, line.point2, point)) {
+      answer.push_back(point);
     }
   }
   return answer;
-}
-
-bool Math::IsDotOnSegment(const QPointF& dot, const Line& line) {
-  if (!IsDotOnLine(dot, Line(line.dot1, line.dot2))) {
-    return false;
-  }
-  auto start_dot = line.dot1;
-  auto finish_dot = line.dot2;
-  auto is_less_or_equal = [] (double a, double b) {
-    return (a < b) || fabs(a - b) < kEps;
-  };
-  return (is_less_or_equal(std::min(start_dot.x(), finish_dot.x()), dot.x()) &&
-      is_less_or_equal(dot.x(), std::max(start_dot.x(), finish_dot.x())) &&
-      is_less_or_equal(std::min(start_dot.y(), finish_dot.y()), dot.y()) &&
-      is_less_or_equal(dot.y(), std::max(start_dot.y(), finish_dot.y())));
 }
 
 QPointF Math::PointToNewCoordinates(const QPointF& point, float angle) {

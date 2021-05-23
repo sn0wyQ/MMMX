@@ -51,25 +51,24 @@ std::vector<QPointF> GetRectanglePoints(QPointF position, float rotation,
 struct Line {
   Line() = default;
   Line(double a_, double b_, double c_);
-  Line(QPointF dot1_, QPointF dot2_);
+  Line(QPointF point1_, QPointF point2_);
   double a{0.};
   double b{0.};
   double c{0.};
-  QPointF dot1;
-  QPointF dot2;
+  QPointF point1;
+  QPointF point2;
 };
 
 QPointF GetLinesIntersection(const Line& line1, const Line& line2);
-double GetDistanceFromDotToLine(const QPointF& dot, const Line& line);
-bool IsDotOnCircle(const QPointF& dot, const QPointF& circle_center,
+double GetDistanceFromPointToLine(const QPointF& point, const Line& line);
+bool IsPointOnCircle(const QPointF& point, const QPointF& circle_center,
                    float circle_radius);
-bool IsDotOnLine(const QPointF& dot, const Line& line);
+bool IsPointOnLine(const QPointF& point, const Line& line);
 std::vector<QPointF> GetCircleAndLineIntersections(
     const QPointF& circle_center, float circle_radius, const Line& line);
 std::vector<QPointF> GetRectWithLineIntersections(const QRectF& rect,
                                                   const Line& line,
                                                   float angle = 0.f);
-bool IsDotOnSegment(const QPointF& dot, const Line& line);
 // Angle must be in radians
 QPointF PointToNewCoordinates(const QPointF& point, float angle);
 
