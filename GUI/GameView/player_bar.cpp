@@ -66,7 +66,7 @@ void PlayerBar::paintEvent(QPaintEvent* paint_event) {
   font.setPointSizeF(10.f);
   painter.setFont(font);
 
-  painter.setBrush(Qt::white);
+  painter.setBrush(Qt::transparent);
   painter.drawRect(0, 0, width(), height());
 
   DrawLevelingButtons(&painter);
