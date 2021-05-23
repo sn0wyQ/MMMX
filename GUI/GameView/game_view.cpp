@@ -1,22 +1,24 @@
 #include "game_view.h"
 
 GameView::GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model)
-    : QWidget(parent),
+    : QOpenGLWidget(parent),
       model_(std::move(model)),
       converter_(std::make_shared<Converter>(this)),
       camera_motion_emulator_(Constants::kCameraStiffnessRatio,
                               Constants::kCameraFrictionRatio),
       fov_change_emulator_(Constants::kFovStiffnessRatio,
-                           Constants::kFovFrictionRatio),
-      canvas_(std::make_unique<QPixmap>(this->size())),
-      painter_(std::make_unique<Painter>(canvas_.get(), converter_)) {}
+                           Constants::kFovFrictionRatio) {}
 
 std::shared_ptr<Converter> GameView::GetConverter() {
   return converter_;
 }
 
 void GameView::Update() {
-  Constants::SetPainterHints(painter_.get());
+  Painter painter(this, this->GetConverter());
+  painter.setBrush(QBrush(Qt::white));
+  painter.drawRect(0, 0, this->width(), this->height());
+  painter.setBrush(QBrush(Qt::transparent));
+  Constants::SetPainterHints(&painter);
 
   // If LocalPlayer isn't set we don't want to draw anything
   if (!model_->IsLocalPlayerSet()) {
@@ -47,8 +49,7 @@ void GameView::Update() {
   auto translation = QPointF(this->width(), this->height()) / 2.f
       - converter_->ScaleFromGameToScreen(
           local_center + QPointF(0, player_bar_offset));
-  painter_->translate(translation);
-  canvas_->fill();
+  painter.translate(translation.toPoint());
 
   auto view_rect_offset =
       QPointF(this->width(), this->height()) / 2.f;
@@ -58,49 +59,46 @@ void GameView::Update() {
 
   std::vector<std::shared_ptr<GameObject>> drawn_objects;
   this->DrawObjects(model_->GetNotFilteredByFovObjects(), view_rect,
-                    &drawn_objects);
+                    &drawn_objects,
+                    &painter);
 
   // Temporary FOV show
   view_rect_offset = QPointF(this->height(), this->height()) / 2.f;
   view_rect_offset = converter_->ScaleFromScreenToGame(view_rect_offset);
   view_rect = QRectF(local_center - view_rect_offset,
                      local_center + view_rect_offset);
-  painter_->DrawEllipse(local_player->GetPosition(),
-                        last_player_fov,
+  painter.DrawEllipse(local_player->GetPosition(),
+                      last_player_fov,
+                      last_player_fov);
+  painter.SetClipCircle(local_player->GetX(),
+                        local_player->GetY(),
                         last_player_fov);
-  painter_->SetClipCircle(local_player->GetX(),
-                          local_player->GetY(),
-                          last_player_fov);
 
   this->DrawObjects(model_->GetFilteredByFovObjects(), view_rect,
-                    &drawn_objects);
+                    &drawn_objects,
+                    &painter);
 
   for (const auto& object : model_->GetLocalBullets()) {
     if (view_rect.intersects(object->GetBoundingRect())) {
-      object->Draw(painter_.get());
+      object->Draw(&painter);
     }
   }
 
   for (const auto& object : drawn_objects) {
-    DrawBars(object);
+    DrawBars(object, &painter);
   }
-
-  painter_->ResetClip();
-  painter_->translate(-translation);
+  need_to_update_ = true;
+  this->update();
 }
 
 void GameView::paintEvent(QPaintEvent* paint_event) {
-  QPainter painter(this);
-  painter.drawPixmap(0, 0, *canvas_);
+  if (!need_to_update_) {
+    return;
+  }
+  need_to_update_ = false;
 }
 
-void GameView::resizeEvent(QResizeEvent* resize_event) {
-  painter_->end();
-  // waiting for painter to finish before deleting it
-  while (painter_->isActive()) {}
-  canvas_ = std::make_unique<QPixmap>(resize_event->size());
-  canvas_->fill();
-  painter_ = std::make_unique<Painter>(canvas_.get(), converter_);
+void GameView::resizeGL(int w, int h) {
   converter_->UpdateCoefficient();
 }
 
@@ -118,12 +116,13 @@ QPointF GameView::GetPlayerToCenterOffset() const {
 void GameView::DrawObjects(
     const std::vector<std::shared_ptr<GameObject>>& objects,
     const QRectF& view_rect,
-    std::vector<std::shared_ptr<GameObject>>* drawn_objects) {
+    std::vector<std::shared_ptr<GameObject>>* drawn_objects,
+    Painter* painter) {
   for (const auto& object : objects) {
     if (!object->IsMovable()) {
       if (view_rect.intersects(object->GetBoundingRect())) {
         if (object->IsNeedToDraw()) {
-          object->Draw(painter_.get());
+          object->Draw(painter);
           drawn_objects->emplace_back(object);
         }
       }
@@ -133,7 +132,7 @@ void GameView::DrawObjects(
     if (object->IsMovable()) {
       if (view_rect.intersects(object->GetBoundingRect())) {
         if (object->IsNeedToDraw()) {
-          object->Draw(painter_.get());
+          object->Draw(painter);
           drawn_objects->emplace_back(object);
         }
       }
@@ -141,15 +140,16 @@ void GameView::DrawObjects(
   }
 }
 
-void GameView::DrawBars(const std::shared_ptr<GameObject>& object) {
-  painter_->save();
-  painter_->Translate(object->GetPosition());
-  object->DrawHealthBar(painter_.get());
-  object->DrawLevel(painter_.get());
+void GameView::DrawBars(const std::shared_ptr<GameObject>& object,
+                        Painter* painter) {
+  painter->save();
+  painter->Translate(object->GetPosition());
+  object->DrawHealthBar(painter);
+  object->DrawLevel(painter);
   if (object->GetType() == GameObjectType::kPlayer) {
     QString nickname =
         model_->GetPlayerStatsByPlayerId(object->GetId())->GetNickname();
-    object->DrawNickname(painter_.get(), nickname);
+    object->DrawNickname(painter, nickname);
   }
-  painter_->restore();
+  painter->restore();
 }

@@ -36,8 +36,8 @@ class ClientController : public BaseController {
   Q_OBJECT
 
  public:
-  ClientController(const QUrl& url,
-                   int fps_max = Constants::kDefaultFpsMax);
+  explicit ClientController(const QUrl& url,
+                            int fps_max = Constants::kDefaultFpsMax);
   ~ClientController() override = default;
 
   QString GetControllerName() const override;
@@ -68,6 +68,7 @@ class ClientController : public BaseController {
   void UpdateAnimations(int delta_time);
   void UpdateLocalPlayer(int delta_time);
   void UpdateLocalBullets(int delta_time);
+  void UpdateGameObjects();
   void UpdateInterpolationInfo();
   int64_t GetCurrentServerTime() const override;
 
@@ -115,6 +116,8 @@ class ClientController : public BaseController {
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;
   void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;
+  void StartAttackAnimationEvent(const Event& event) override;
+  void StartShootingAnimationEvent(const Event& event) override;
 
   QString GetEntityName(GameObjectId game_object_id) const;
 

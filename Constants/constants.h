@@ -40,8 +40,8 @@ extern const int kMSecsToStore;
 extern const int64_t kTicksToStore;
 
 // Map
-extern const float kDefaultMapWidth;
-extern const float kDefaultMapHeight;
+extern const float kMapWidth;
+extern const float kMapHeight;
 
 // Room
 extern const int kDefaultMaxClients;
@@ -58,6 +58,7 @@ extern const int64_t kInterpolationMSecs;
 extern const int kControlsHoldingCheck;
 
 // Graphics
+extern const int kAntiAliasingSamples;
 extern const float kBaseViewWidth;
 extern const float kBaseViewHeight;
 extern const float kPlayerBarHeightRatio;
@@ -71,6 +72,8 @@ extern const int kUnloadAnimationCheckTime;
 extern const float kDefaultSpeedMultiplier;
 
 // Entity
+extern const int64_t kMaxDisappearTimeMSecs;
+extern const float kOpacityChangeSpeed;
 extern const float kDefaultMaxHealthPoints;
 
 // Player
@@ -79,6 +82,12 @@ extern const float kDefaultPlayerRotation;
 extern const float kDefaultPlayerRadius;
 extern const float kDefaultHealthRegenSpeed;
 extern const int kMaxLevel;
+
+// Creep
+extern const int kTriesToFindPatrollingPoint;
+extern const float kRunawaySpeedMultiplier;
+extern const float kPatrollingSpeedDivider;
+extern const int64_t kRevengingTimeMSecs;
 
 // Revive
 extern const int64_t kReviveTime;
@@ -137,7 +146,6 @@ QString GetStringFromEnumValue(T value) {
 }
 
 extern const int kMaxPlayerBullets;
-
 }  // namespace Constants
 
 #endif  // CONSTANTS_CONSTANTS_H_

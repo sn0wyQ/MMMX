@@ -32,6 +32,7 @@ SharedFrame::SharedFrame(const QString& path_prefix,
     is_exists_ = true;
   }
 
+#ifndef MMMX_SERVER
   if (!resource_unloader_->isActive()) {
     resource_unloader_->start(Constants::kUnloadAnimationCheckTime);
     resource_unloader_->callOnTimeout(SharedFrame::UnloadUnusedResources);
@@ -48,6 +49,7 @@ SharedFrame::SharedFrame(const QString& path_prefix,
   if (predicted_size.isValid()) {
     GetRenderedPixmap(predicted_size.width(), predicted_size.height());
   }
+#endif  // MMMX_SERVER
 }
 
 bool SharedFrame::IsExists() const {
@@ -63,6 +65,7 @@ QSize SharedFrame::GetPixmapSize() const {
 }
 
 std::shared_ptr<QPixmap> SharedFrame::GetRenderedPixmap(int w, int h) {
+#ifndef MMMX_SERVER
   if (pixmap_->isNull() || pixmap_->size() != QSize(w, h)) {
     auto iter = rendered_pixmaps_.find({path_, {w, h}});
     if (iter != rendered_pixmaps_.end()) {
@@ -75,6 +78,7 @@ std::shared_ptr<QPixmap> SharedFrame::GetRenderedPixmap(int w, int h) {
       rendered_pixmaps_[{path_, {w, h}}] = pixmap_;
     }
   }
+#endif  // MMMX_SERVER
 
   return pixmap_;
 }

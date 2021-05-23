@@ -28,8 +28,8 @@ const int kMSecsToStore = 1000;
 const int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
 
 // Map
-const float kDefaultMapWidth = 100.f;
-const float kDefaultMapHeight = 100.f;
+const float kMapWidth = 100.f;
+const float kMapHeight = 100.f;
 
 // Room
 const int kDefaultMaxClients = 15;
@@ -45,6 +45,7 @@ const int64_t kInterpolationMSecs = 200;
 const int kControlsHoldingCheck = 30;
 
 // Graphics
+const int kAntiAliasingSamples = 5;
 const float kBaseViewWidth = 25.f;
 const float kBaseViewHeight = 25.f;
 const float kPlayerBarHeightRatio = 0.15f;
@@ -58,6 +59,8 @@ const int kUnloadAnimationCheckTime = 30;
 const float kDefaultSpeedMultiplier = 0.01f;
 
 // Entity
+const int64_t kMaxDisappearTimeMSecs = 1000.f;
+const float kOpacityChangeSpeed = 0.01f;
 const float kDefaultMaxHealthPoints = 100.f;
 
 // Player
@@ -66,6 +69,12 @@ const float kDefaultPlayerRotation = 0.f;
 const float kDefaultPlayerRadius = 1.f;
 const float kDefaultHealthRegenSpeed = 0.002f;
 const int kMaxLevel = 30;
+
+// Creep
+const int kTriesToFindPatrollingPoint = 20;
+const float kRunawaySpeedMultiplier = 2.f;
+const float kPatrollingSpeedDivider = 2.f;
+const int64_t kRevengingTimeMSecs = 15'000;
 
 // Revive
 const int64_t kReviveTime = 5000;
@@ -82,7 +91,9 @@ const int kGenerationTries = 15;
 // View
 void SetPainterHints(QPainter* painter) {
   painter->setRenderHints(
-      QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+      QPainter::Antialiasing |
+      QPainter::SmoothPixmapTransform|
+      QPainter::TextAntialiasing);
 }
 const float kCameraStiffnessRatio = 0.008f;
 const float kCameraFrictionRatio = 0.15f;

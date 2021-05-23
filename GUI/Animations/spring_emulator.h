@@ -38,13 +38,13 @@ SpringEmulator<T, DoSetBounds>::SpringEmulator(float stiffness_ratio,
 
 template <class T, bool DoSetBounds>
 void SpringEmulator<T, DoSetBounds>::MakeStepTo(const T& new_value) {
-  // Lets divide dt by 10 so the constants wont be too small
+  // Lets divide it by 10 so the constants won't be too small
   auto time = QDateTime::currentMSecsSinceEpoch();
   auto delta_time = static_cast<float>(time - last_time_updated_) / 10.f;
   last_time_updated_ = time;
 
   float sample_rate = 0.4f;
-  for (float now = 0; now < delta_time; now += sample_rate) {
+  for (float now = 0.f; now < delta_time; now += sample_rate) {
     // By the Hooke's Law: F = -k * x where x = |A - B| - l_0.
     // Owr "spring's" length is 0, so l_0 = 0
     T f = -stiffness_ratio_ * (value_ - new_value);

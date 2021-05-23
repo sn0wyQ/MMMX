@@ -1,8 +1,17 @@
 #include "entity.h"
 
-Entity::Entity(GameObjectId id) : MovableObject(id) {}
+Entity::Entity(GameObjectId id) :
+    MovableObject(id),
+    opacity_emulator_(Constants::kOpacityChangeSpeed) {
+  opacity_emulator_.SetStopOnMax(true);
+  opacity_emulator_.SetStopOnMin(true);
+  opacity_emulator_.SetCurrentValue(0.f);
+  opacity_emulator_.SetPath(0.f, 1.f);
+}
 
-Entity::Entity(const Entity& other) : MovableObject(other) {
+Entity::Entity(const Entity& other) :
+    MovableObject(other),
+    opacity_emulator_(other.opacity_emulator_) {
   fov_radius_ = other.fov_radius_;
   health_points_ = other.health_points_;
   health_regen_rate_ = other.health_regen_rate_;
@@ -41,6 +50,9 @@ void Entity::SetFovRadius(float fov_radius) {
 
 void Entity::SetHealthPoints(float health_points) {
   health_points_ = health_points;
+  if (!this->IsAlive()) {
+    this->SetDisappearing();
+  }
 }
 
 float Entity::GetHealthPoints() const {
@@ -73,11 +85,15 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 
 void Entity::DrawHealthBar(Painter* painter) const {
   painter->save();
+  painter->setOpacity(this->GetOpacity());
   QPointF translation(0.f, -2.f);
   painter->Translate(translation);
   float rect_width = 75.f;
   float rect_height = 14.f;
   auto cur_hp = static_cast<int>(std::round(this->GetHealthPoints()));
+  if (is_disappearing_) {
+    cur_hp = 0.f;
+  }
   auto max_hp = static_cast<int>(std::round(this->GetMaxHealthPoints()));
   QString text = QString::number(cur_hp) + " / " +
       QString::number(max_hp);
@@ -113,6 +129,7 @@ void Entity::DrawHealthBar(Painter* painter) const {
 void Entity::Revive(QPointF point_to_spawn) {
   SetPosition(point_to_spawn);
   SetHealthPoints(GetMaxHealthPoints());
+  this->SetAppearing();
 }
 
 float Entity::GetHealthRegenRate() const {
@@ -131,8 +148,8 @@ void Entity::OnTick(int delta_time) {
   if (!IsAlive()) {
     return;
   }
-  MovableObject::OnTick(delta_time);
   TickHealthPoints(delta_time);
+  MovableObject::OnTick(delta_time);
 }
 
 void Entity::TickHealthPoints(int delta_time) {
@@ -143,6 +160,7 @@ void Entity::TickHealthPoints(int delta_time) {
 
 void Entity::DrawLevel(Painter* painter) const {
   painter->save();
+  painter->setOpacity(this->GetOpacity());
   QPointF translation(0.f,  -3.f);
   painter->Translate(translation);
   painter->setBrush(Qt::black);
@@ -164,4 +182,28 @@ void Entity::DrawLevel(Painter* painter) const {
 
 bool Entity::IsAlive() const {
   return GetHealthPoints() > 0;
+}
+
+float Entity::GetOpacity() const {
+  return opacity_emulator_.GetCurrentValue();
+}
+
+void Entity::SetAppearing() {
+  opacity_emulator_.SetCurrentValue(0.f);
+  opacity_emulator_.SetPath(0.f, 1.f);
+  is_disappearing_ = false;
+}
+
+void Entity::SetDisappearing() {
+  opacity_emulator_.SetCurrentValue(1.f);
+  opacity_emulator_.SetPath(1.f, 0.f);
+  is_disappearing_ = true;
+}
+
+void Entity::UpdateAnimationState(bool restart) {
+  if (!is_disappearing_ && this->GetVelocity().length() > Math::kEps) {
+    this->SetAnimationState(AnimationState::kMove, restart);
+  } else {
+    this->SetAnimationState(AnimationState::kIdle, restart);
+  }
 }

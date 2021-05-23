@@ -34,9 +34,9 @@ class MovableObject : public GameObject {
 
   bool IsFilteredByFov() const override;
 
-  float GetShortestDistance(const std::shared_ptr<GameObject>& object);
-
   std::shared_ptr<GameObject> Clone() const override;
+
+  void UpdateAnimationState(bool restart = false) override;
 
  private:
   QVector2D velocity_{};

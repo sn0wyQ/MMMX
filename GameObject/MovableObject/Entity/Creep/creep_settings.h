@@ -1,42 +1,80 @@
 #ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_SETTINGS_H_
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_SETTINGS_H_
 
+#include <algorithm>
+#include <cmath>
+#include <exception>
+#include <limits>
 #include <map>
 #include <memory>
+#include <random>
 #include <utility>
 #include <vector>
 
-#include <QRandomGenerator>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
+#include <QLineF>
+#include <QRandomGenerator>
 #include <QSizeF>
+#include <QVariantMap>
 
 #include "Animation/animation_enums.h"
-#include "GameObject/MovableObject/Entity/Creep/creep.h"
 #include "Constants/constants.h"
+#include "GameObject/MovableObject/Entity/Creep/creep.h"
+#include "GameObject/MovableObject/Entity/Creep/creep_enums.h"
+#include "GameObject/RigidBody/rigid_body.h"
 
 class CreepSettings {
  public:
   static CreepSettings& GetInstance();
 
-  std::vector<QVariant> GetCreepParams(float x, float y, float rotation,
+  std::vector<QVariant> GetCreepParams(float x, float y,
                                        float distance_from_center) const;
 
-  std::pair<int, int> GetMinAndMaxCreepLevelByDistance(float distance) const;
-
-  QSizeF GetCreepSizeByLevel(int level) const;
   QSizeF GetMaxCreepSize() const;
-  int GetCreepLevel(float distance_from_center) const;
+  std::pair<int, CreepType>
+      GenerateCreepLevelAndType(float distance_from_center) const;
 
   template<class T>
-  T GetCreepSetting(const QString& setting_name) const {
-    if (!json_object_.contains(setting_name)) {
-      qWarning() << "No such setting name:" << setting_name;
+  T GetCreepSetting(CreepType creep_type, const QString& setting_name) const {
+    auto creep_iter = creeps_params_.constFind(creep_type);
+    if (creep_iter == creeps_params_.end()) {
+      qWarning() << "[CREEP SETTINGS] No such creep type:" << creep_type;
+      return T();
     }
-    return json_object_.value(setting_name).toVariant().value<T>();
+
+    QVariantMap::const_iterator
+        setting_iter = creep_iter->constFind(setting_name);
+    if (setting_iter == creep_iter->end()) {
+      qWarning() << "[CREEP SETTINGS] No such setting name:" << setting_name;
+      return T();
+    }
+
+    if (!setting_iter->canConvert<T>()) {
+      qWarning() << "[CREEP SETTINGS] Can not convert:" << setting_name
+                 << "to type" << QMetaType::fromType<T>().name();
+    }
+    return setting_iter->value<T>();
   }
 
-  float CalculateFov(int level) const;
-  float CalculateDamage(int level) const;
+  float GetXp(CreepType creep_type, int level) const;
+  float GetWidth(CreepType creep_type) const;
+  float GetHeight(CreepType creep_type) const;
+  RigidBodyType GetRigidBodyType(CreepType creep_type) const;
+  float GetRigidBodyWidth(CreepType creep_type) const;
+  float GetRigidBodyHeight(CreepType creep_type) const;
+  AnimationType GetAnimationType(CreepType creep_type) const;
+  float GetSpeed(CreepType creep_type, int level) const;
+  float GetFov(CreepType creep_type) const;
+  float GetMaxHp(CreepType creep_type, int level) const;
+  float GetRegenRate(CreepType creep_type, int level) const;
+  float GetDamage(CreepType creep_type, int level) const;
+  float GetAttackDistance(CreepType creep_type) const;
+  int64_t GetReloadingTime(CreepType creep_type) const;
+  float GetRunawayHpRatio(CreepType creep_type) const;
+  bool HasIntelligence(CreepType creep_type) const;
 
   static void SetStaticParams(const std::shared_ptr<Creep>& creep);
 
@@ -44,13 +82,12 @@ class CreepSettings {
   CreepSettings();
   static CreepSettings* instance_;
 
-  QJsonObject json_object_;
-  float CalculateExpIncrement(int level) const;
-  float CalculateMaxHp(int level) const;
-  float CalculateRegenRate(int level) const;
-  float CalculateWidth(int level) const;
-  float CalculateHeight(int level) const;
-  float CalculateSpeed(int level) const;
+  QMap<CreepType, QVariantMap> creeps_params_;
+  float min_creep_xp_{std::numeric_limits<float>::max()};
+  float max_creep_xp_{std::numeric_limits<float>::min()};
+  float distribution_delta_{};
+  float distribution_lambda_{};
+  QSizeF max_creep_size_{};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_SETTINGS_H_

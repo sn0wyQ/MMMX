@@ -72,11 +72,11 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
   bool for_creep = (game_object_type == GameObjectType::kCreep);
   static std::mt19937 gen(QDateTime::currentSecsSinceEpoch());
   QPointF chunk_size(
-      (Constants::kDefaultMapWidth - 2 * radius_from_object) / kChunksX,
-      (Constants::kDefaultMapHeight - 2 * radius_from_object) / kChunksY);
+      (Constants::kMapWidth - 2 * radius_from_object) / kChunksX,
+      (Constants::kMapHeight - 2 * radius_from_object) / kChunksY);
   QPointF top_left_dot(
-      -Constants::kDefaultMapWidth / 2.f + radius_from_object,
-      -Constants::kDefaultMapHeight / 2.f + radius_from_object);
+      -Constants::kMapWidth / 2.f + radius_from_object,
+      -Constants::kMapHeight / 2.f + radius_from_object);
   std::vector<QRectF> chunks;
   for (int i = 0; i < kChunksX; i++) {
     for (int j = 0; j < kChunksY; j++) {
@@ -88,12 +88,12 @@ QPointF RoomGameModel::GetPointToSpawn(float radius_from_object,
   }
 
   if (for_creep) {
-    std::uniform_real_distribution<double> real_distribution(0.01, 20);
+    std::uniform_real_distribution<double> real_distribution(0.01f, 20.f);
     std::vector<std::pair<QRectF, double>> distances(chunks.size());
     double max_dist =
         Math::DistanceBetweenPoints(QPointF(),
-                                    QPointF(Constants::kDefaultMapWidth,
-                                            Constants::kDefaultMapHeight));
+                                    QPointF(Constants::kMapWidth,
+                                            Constants::kMapHeight));
     for (size_t i = 0; i < distances.size(); i++) {
       auto distance =
           Math::DistanceBetweenPoints(QPointF(), chunks[i].center()) / max_dist;

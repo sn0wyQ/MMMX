@@ -89,7 +89,10 @@ class GameObject {
 
   std::shared_ptr<Animation> GetAnimation();
   void SetAnimation(AnimationType animation_type);
+  void SetAnimationState(AnimationState animation_state,
+                         bool restart = false);
   static AnimationsHolder& GetAnimationsHolder();
+  virtual void UpdateAnimationState(bool restart = false) {}
 
   virtual bool IsEntity() const;
 
@@ -109,6 +112,12 @@ class GameObject {
   virtual bool IsAlive() const;
 
   bool IsNeedToDraw() const;
+
+  virtual float GetOpacity() const;
+  virtual void SetAppearing();
+  virtual void SetDisappearing();
+
+  bool Intersects(const Math::Line& line);
 
  private:
   // Holds animations for all GameObjects
@@ -132,6 +141,7 @@ class GameObject {
   // не можем его правильно проинтерполировать
   // мы не должны его рисовать
   bool is_interpolated_once_{false};
+  float opacity_{1.f};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_

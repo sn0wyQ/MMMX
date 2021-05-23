@@ -1,0 +1,12 @@
+# GiantWeak
+
+attack:
+	play_frames	20	16
+end
+
+idle:
+loop
+
+move:
+	play_frames 39 16
+loop
