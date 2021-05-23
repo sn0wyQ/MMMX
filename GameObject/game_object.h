@@ -117,6 +117,8 @@ class GameObject {
   virtual void SetAppearing();
   virtual void SetDisappearing();
 
+  bool Intersects(const Math::Line& line);
+
  private:
   // Holds animations for all GameObjects
   // Prevents same SharedFrame being loaded into RAM more than once at a time

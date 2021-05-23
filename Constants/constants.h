@@ -84,6 +84,12 @@ extern const float kDefaultPlayerRadius;
 extern const float kDefaultHealthRegenSpeed;
 extern const int kMaxLevel;
 
+// Creep
+extern const int kTriesToFindPatrollingPoint;
+extern const float kRunawaySpeedMultiplier;
+extern const float kPatrollingSpeedDivider;
+extern const int64_t kRevengingTimeMSecs;
+
 // Revive
 extern const int64_t kReviveTime;
 extern const int64_t kRequestRespawnTime;
