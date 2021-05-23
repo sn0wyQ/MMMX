@@ -56,7 +56,7 @@ const int kAverageFpsFrames = 50;
 
 // Animations
 const int kUnloadAnimationCheckTime = 30;
-const int kCountOfPixmapsInSide = 125;
+const int kCountOfPixmapsInSide = 50;
 
 // MovableObject
 const float kDefaultSpeedMultiplier = 0.01f;
