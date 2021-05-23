@@ -30,6 +30,8 @@ const int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
 // Map
 const float kMapWidth = 100.f;
 const float kMapHeight = 100.f;
+const float kMapPictureWidth = 500.f;
+const float kMapPictureHeight = 500.f;
 
 // Room
 const int kDefaultMaxClients = 15;
@@ -55,6 +57,7 @@ const float kBulletDisappearRatio = 0.5f;
 
 // Animations
 const int kUnloadAnimationCheckTime = 30;
+const int kCountOfPixmapsInSide = 50;
 
 // MovableObject
 const float kDefaultSpeedMultiplier = 0.01f;

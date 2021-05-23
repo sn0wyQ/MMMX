@@ -71,7 +71,6 @@ class Entity : public MovableObject {
   bool is_disappearing_{false};
   LinearEmulator<float> opacity_emulator_;
   mutable LinearEmulator<float> hp_bar_opacity_emulator_;
-  bool is_hiding_hp_bar_{false};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_
