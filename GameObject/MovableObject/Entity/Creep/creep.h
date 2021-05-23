@@ -24,8 +24,6 @@ class Creep : public Entity {
   float GetExpIncrementForKill() const override;
   float& GetMutableExpIncrementForKill();
 
-  float GetFrictionForce() const override;
-
   std::shared_ptr<GameObject> Clone() const override;
 
   void SetSpawnX(float spawn_x);
@@ -64,7 +62,8 @@ class Creep : public Entity {
 
  private:
   QPointF GetPatrollingPoint(
-      const std::vector<std::shared_ptr<GameObject>>& near_game_objects);
+      const std::vector<std::shared_ptr<GameObject>>& nearby_game_objects,
+      const std::shared_ptr<GameObject>& map_border);
 
   float exp_increment_{};
   float spawn_x_;

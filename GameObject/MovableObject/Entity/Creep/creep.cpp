@@ -117,7 +117,8 @@ void Creep::TickIntelligence(
   }
 
   std::shared_ptr<Player> focused_player{nullptr};
-  std::vector<std::shared_ptr<GameObject>> near_game_objects;
+  std::vector<std::shared_ptr<GameObject>> nearby_game_objects;
+  std::shared_ptr<GameObject> map_border;
   bool is_revenging = false;
   std::shared_ptr<Player> last_aggressive_player{nullptr};
 
@@ -126,26 +127,28 @@ void Creep::TickIntelligence(
         game_object->GetId() == last_aggressive_player_) {
       last_aggressive_player = std::dynamic_pointer_cast<Player>(game_object);
     }
-    if ((!game_object->IsEntity() || game_object->GetType() == GameObjectType::kCreep) &&
-        game_object->GetType() != GameObjectType::kMapBorder &&
+    if (game_object->GetType() == GameObjectType::kMapBorder) {
+      map_border = game_object;
+    } else if ((!game_object->IsEntity() || game_object->GetType() == GameObjectType::kCreep) &&
         Math::DistanceBetweenPoints(this->GetSpawnPoint(),
                                     game_object->GetPosition())
             < this->GetFovRadius() +
                 game_object->GetRigidBodyBoundingCircleRadius() &&
         game_object->GetId() != this->GetId()) {
-      near_game_objects.push_back(game_object);
+      nearby_game_objects.push_back(game_object);
     }
   }
 
   if (last_aggressive_player &&
-      QDateTime::currentMSecsSinceEpoch() - last_taken_damage_time_ < 10000) {
+      QDateTime::currentMSecsSinceEpoch() - last_taken_damage_time_ <
+          Constants::kRevengingTimeMSecs) {
     is_revenging = true;
     focused_player = last_aggressive_player;
   } else {
     for (const auto& player : game_objects) {
       if (player->GetType() == GameObjectType::kPlayer) {
         bool visible = true;
-        for (const auto& game_object : near_game_objects) {
+        for (const auto& game_object : nearby_game_objects) {
           if (!game_object->IsEntity() &&
               game_object->Intersects(Math::Line(this->GetPosition(),
                                                  player->GetPosition()))) {
@@ -177,22 +180,23 @@ void Creep::TickIntelligence(
     point_to_go = focused_player->GetPosition();
     is_patrolling = false;
   } else {
-    point_to_go = this->GetPatrollingPoint(near_game_objects);
+    point_to_go = this->GetPatrollingPoint(nearby_game_objects, map_border);
   }
-
-  this->SetRotation(Math::VectorAngle(this->GetPosition(), point_to_go));
 
   force_ = QVector2D(point_to_go - this->GetPosition());
 
   auto runaway_hp = this->GetMaxHealthPoints()
       * CreepSettings::GetInstance().GetRunawayHpRatio(this->GetCreepType());
   if (!is_patrolling && this->GetHealthPoints() < runaway_hp) {
-    force_ *= -1;
+    force_ *= -Constants::kRunawaySpeedMultiplier;
+    this->SetRotation(Math::GetNormalizeAngle(
+        180 + Math::VectorAngle(this->GetPosition(), point_to_go)));
+  } else {
+    this->SetRotation(Math::VectorAngle(this->GetPosition(), point_to_go));
   }
-
   force_.normalize();
   if (is_patrolling) {
-    force_ /= 2.f;
+    force_ /= Constants::kPatrollingSpeedDivider;
   }
 }
 
@@ -207,21 +211,20 @@ GameObjectId Creep::GetPlayerToDamage(
   }
 
   std::shared_ptr<Player> closer_player{nullptr};
+  float best_distance = 1e9;
   for (const auto& player : players) {
-    if (!closer_player ||
-        Math::DistanceBetweenPoints(this->GetPosition(),
-                                    player->GetPosition()) <
-            Math::DistanceBetweenPoints(this->GetPosition(),
-                                        closer_player->GetPosition())) {
+    auto distance = Math::DistanceBetweenPoints(this->GetPosition(),
+                                                player->GetPosition());
+    if (distance < best_distance) {
       closer_player = player;
+      best_distance = distance;
     }
   }
   if (closer_player) {
-    float distance = Math::DistanceBetweenPoints(
-        this->GetPosition(), closer_player->GetPosition());
-    if (distance - closer_player->GetRigidBodyBoundingCircleRadius()
-        - this->GetRigidBodyBoundingCircleRadius()
-        < this->GetAttackDistance()) {
+    if (best_distance <
+        closer_player->GetRigidBodyBoundingCircleRadius()
+            + this->GetRigidBodyBoundingCircleRadius()
+            + this->GetAttackDistance()) {
       return closer_player->GetId();
     }
   }
@@ -238,31 +241,38 @@ QPointF Creep::GetSpawnPoint() const {
 }
 
 QPointF Creep::GetPatrollingPoint(
-    const std::vector<std::shared_ptr<GameObject>>& near_game_objects) {
+    const std::vector<std::shared_ptr<GameObject>>& nearby_game_objects,
+    const std::shared_ptr<GameObject>& map_border) {
   static std::mt19937 gen(QDateTime::currentSecsSinceEpoch());
-  static std::uniform_real_distribution<float> get_phi(-M_PI / 4, M_PI / 4);
+  static std::uniform_real_distribution<float> get_phi(0.f, 2.f * Math::kPi);
   static std::uniform_real_distribution<float> get_rho(
-      4.f * this->GetRigidBodyBoundingCircleRadius(),
-      this->GetFovRadius());
+      this->GetRigidBodyBoundingCircleRadius(), this->GetFovRadius());
 
-  int count = 1000;
-  while (count--) {
+  for (int i = 0; i < Constants::kTriesToFindPatrollingPoint; i++) {
+    auto dist_from_spawn =
+        Math::DistanceBetweenPoints(this->GetSpawnPoint(), patrolling_point_);
+    auto dist_from_current_pos =
+        Math::DistanceBetweenPoints(this->GetPosition(), patrolling_point_);
     if (!patrolling_point_.isNull() &&
-        Math::DistanceBetweenPoints(this->GetPosition(), patrolling_point_) >
-            this->GetRigidBodyBoundingCircleRadius() &&
-        Math::DistanceBetweenPoints(this->GetSpawnPoint(), patrolling_point_) <
-            this->GetFovRadius()) {
-      bool ok = true;
-      for (const auto& object : near_game_objects) {
-        if (Math::DistanceBetweenPoints(patrolling_point_,
-                                        object->GetPosition()) <
-                                        object->GetRigidBodyBoundingCircleRadius() + this->GetRigidBodyBoundingCircleRadius()  ||
-            object->Intersects(Math::Line(this->GetPosition(), patrolling_point_))) {
-          ok = false;
+        dist_from_current_pos > this->GetRigidBodyBoundingCircleRadius() &&
+        dist_from_spawn < this->GetFovRadius() &&
+        map_border->GetBoundingRect().contains(patrolling_point_)) {
+      bool current_point_is_good = true;
+      for (const auto& object : nearby_game_objects) {
+        auto dist_from_object =
+            Math::DistanceBetweenPoints(patrolling_point_,
+                                        object->GetPosition());
+        auto min_dist_between_objects =
+            object->GetRigidBodyBoundingCircleRadius() +
+            this->GetRigidBodyBoundingCircleRadius();
+        if (dist_from_object < min_dist_between_objects ||
+            object->Intersects(Math::Line(this->GetPosition(),
+                                          patrolling_point_))) {
+          current_point_is_good = false;
           break;
         }
       }
-      if (ok) {
+      if (current_point_is_good) {
         break;
       }
     }
@@ -271,13 +281,5 @@ QPointF Creep::GetPatrollingPoint(
     patrolling_point_ = this->GetSpawnPoint() + QPointF(rho * std::cos(phi),
                                                         rho * std::sin(phi));
   }
-  if (count <= 0) {
-    qWarning() << "SOOO GAY";
-  }
   return patrolling_point_;
-}
-
-float Creep::GetFrictionForce() const {
-  // return GameObject::GetFrictionForce();
-  return 0.002f;
 }

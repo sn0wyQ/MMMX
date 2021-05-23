@@ -59,7 +59,7 @@ const int kUnloadAnimationCheckTime = 30;
 const float kDefaultSpeedMultiplier = 0.01f;
 
 // Entity
-const int64_t kMaxDisappearTimeMSecs = 2000.f;
+const int64_t kMaxDisappearTimeMSecs = 1000.f;
 const float kOpacityChangeSpeed = 0.01f;
 const float kDefaultMaxHealthPoints = 100.f;
 
@@ -69,6 +69,12 @@ const float kDefaultPlayerRotation = 0.f;
 const float kDefaultPlayerRadius = 1.f;
 const float kDefaultHealthRegenSpeed = 0.002f;
 const int kMaxLevel = 30;
+
+// Creep
+const int kTriesToFindPatrollingPoint = 20;
+const float kRunawaySpeedMultiplier = 2.f;
+const float kPatrollingSpeedDivider = 2.f;
+const int64_t kRevengingTimeMSecs = 15'000;
 
 // Revive
 const int64_t kReviveTime = 5000;

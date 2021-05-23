@@ -38,28 +38,14 @@ float DistanceBetweenPoints(QPointF first, QPointF second);
 // always return angle [0; 360)
 float GetNormalizeAngle(float angle);
 
+std::vector<QPointF> GetRotatedRect(const QRectF& rect, float rotation);
+
 template <typename T>
 std::vector<QPointF> GetRectanglePoints(QPointF position, float rotation,
                                         const std::shared_ptr<T>& object) {
-  std::vector<QPointF> points;
-  points.emplace_back(- object->GetWidth() / 2.f,
-                      - object->GetHeight() / 2.f);
-  points.emplace_back(+ object->GetWidth() / 2.f,
-                      - object->GetHeight() / 2.f);
-  points.emplace_back(+ object->GetWidth() / 2.f,
-                      + object->GetHeight() / 2.f);
-  points.emplace_back(- object->GetWidth() / 2.f,
-                      + object->GetHeight() / 2.f);
-  float rotation_rad = Math::DegreesToRadians(rotation);
-  for (auto& point : points) {
-    auto x = static_cast<float>(point.x());
-    auto y = static_cast<float>(point.y());
-    point.setX(x * std::cos(rotation_rad) + y * std::sin(rotation_rad));
-    point.setY(-x * std::sin(rotation_rad) + y * std::cos(rotation_rad));
-    point.rx() += position.x();
-    point.ry() += position.y();
-  }
-  return points;
+  QPointF offset(object->GetWidth() / 2.f,
+                 object->GetHeight() / 2.f);
+  return GetRotatedRect(QRectF(position - offset, position + offset), rotation);
 }
 
 struct Line {

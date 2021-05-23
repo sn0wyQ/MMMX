@@ -199,3 +199,11 @@ void Entity::SetDisappearing() {
   opacity_emulator_.SetPath(1.f, 0.f);
   is_disappearing_ = true;
 }
+
+void Entity::UpdateAnimationState(bool restart) {
+  if (!is_disappearing_ && velocity_.length() > Math::kEps) {
+    this->SetAnimationState(AnimationState::kMove, restart);
+  } else {
+    this->SetAnimationState(AnimationState::kIdle, restart);
+  }
+}

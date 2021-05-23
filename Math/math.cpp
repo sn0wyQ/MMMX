@@ -48,6 +48,20 @@ float Math::GetNormalizeAngle(float angle) {
   return std::fmod(angle, 360.f);
 }
 
+std::vector<QPointF> Math::GetRotatedRect(const QRectF& rect, float rotation) {
+  std::vector<QPointF> points;
+  float angle = DegreesToRadians(rotation);
+  points.push_back(rect.center() +
+      PointToNewCoordinates(rect.topLeft() - rect.center(), angle));
+  points.push_back(rect.center() +
+      PointToNewCoordinates(rect.topRight() - rect.center(), angle));
+  points.push_back(rect.center() +
+      PointToNewCoordinates(rect.bottomRight() - rect.center(), angle));
+  points.push_back(rect.center() +
+      PointToNewCoordinates(rect.bottomLeft() - rect.center(), angle));
+  return points;
+}
+
 Math::Line::Line(double a_, double b_, double c_) : a(a_), b(b_), c(c_) {}
 
 Math::Line::Line(QPointF dot1_, QPointF dot2_) : dot1(dot1_), dot2(dot2_) {
@@ -143,42 +157,11 @@ std::vector<QPointF> Math::GetCircleAndLineIntersections(
 std::vector<QPointF> Math::GetRectWithLineIntersections(const QRectF& rect,
                                                         const Line& line,
                                                         float angle) {
-  angle = angle * 2 * kPi / 360.f;
   std::vector<QPointF> answer;
-  auto top_left = rect.center() +
-      PointToNewCoordinates(rect.topLeft() - rect.center(), angle);
-  auto top_right = rect.center() +
-      PointToNewCoordinates(rect.topRight() - rect.center(), angle);
-  auto bottom_left = rect.center() +
-      PointToNewCoordinates(rect.bottomLeft() - rect.center(), angle);
-  auto bottom_right = rect.center() +
-      PointToNewCoordinates(rect.bottomRight() - rect.center(), angle);
-  {
-    Math::Line rect_line(top_left, top_right);
-    auto dot = GetLinesIntersection(rect_line, line);
-    if (!dot.isNull() && IsDotOnSegment(dot, rect_line) &&
-        IsDotOnSegment(dot, line)) {
-      answer.push_back(dot);
-    }
-  }
-  {
-    Math::Line rect_line(top_right, bottom_right);
-    auto dot = GetLinesIntersection(rect_line, line);
-    if (!dot.isNull() && IsDotOnSegment(dot, rect_line) &&
-        IsDotOnSegment(dot, line)) {
-      answer.push_back(dot);
-    }
-  }
-  {
-    Math::Line rect_line(bottom_right, bottom_left);
-    auto dot = GetLinesIntersection(rect_line, line);
-    if (!dot.isNull() && IsDotOnSegment(dot, rect_line) &&
-        IsDotOnSegment(dot, line)) {
-      answer.push_back(dot);
-    }
-  }
-  {
-    Math::Line rect_line(bottom_left, top_left);
+  auto rect_points = GetRotatedRect(rect, angle);
+  rect_points.push_back(rect_points[0]);
+  for (size_t i = 1; i < rect_points.size(); i++) {
+    Math::Line rect_line(rect_points[i - 1], rect_points[i]);
     auto dot = GetLinesIntersection(rect_line, line);
     if (!dot.isNull() && IsDotOnSegment(dot, rect_line) &&
         IsDotOnSegment(dot, line)) {
@@ -204,6 +187,6 @@ bool Math::IsDotOnSegment(const QPointF& dot, const Line& line) {
 }
 
 QPointF Math::PointToNewCoordinates(const QPointF& point, float angle) {
-  return {point.x() * std::cos(angle) - point.y() * std::sin(angle),
-          point.x() * std::sin(angle) + point.y() * std::cos(angle)};
+  return {point.x() * std::cos(angle) + point.y() * std::sin(angle),
+          -point.x() * std::sin(angle) + point.y() * std::cos(angle)};
 }
