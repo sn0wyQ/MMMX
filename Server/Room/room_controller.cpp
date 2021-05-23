@@ -600,7 +600,7 @@ void RoomController::AddConstantObjects() {
 }
 
 void RoomController::AddCreeps() {
-  for (; creeps_count_ < 20; creeps_count_++) {
+  for (; creeps_count_ < 12; creeps_count_++) {
     QPointF position = model_->GetPointToSpawn(
         Math::DistanceBetweenPoints(QPointF(), QPointF(
         CreepSettings::GetInstance().GetMaxCreepSize().height(),
