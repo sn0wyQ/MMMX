@@ -74,13 +74,14 @@ set(SOURCES
         Client/GUI/GameView/ViewPort/viewport.cpp
         Client/GUI/GameView/KillFeed/kill_feed.cpp
         Client/GUI/GameView/KillFeed/kill_feed_notification.cpp
+        Client/GUI/GameView/RespawnButton/respawn_button.cpp
+        Client/GUI/GameView/ReloadingField/reloading_field.cpp
+        Client/GUI/GameView/StatsTable/stats_table.cpp
         Client/GUI/GameView/game_view.cpp
         Client/GUI/MainMenu/RoomsInfoList/SingleRoomInfo/single_room_info.cpp
         Client/GUI/MainMenu/RoomsInfoList/rooms_info_list.cpp
         Client/GUI/MainMenu/main_menu.cpp
-        Client/GUI/GameView/RespawnButton/respawn_button.cpp
-        Client/GUI/GameView/ReloadingField/reloading_field.cpp
-        Client/GUI/GameView/StatsTable/stats_table.cpp
+        Client/GUI/SettingsWindow/settings_window.cpp
         Client/GUI/abstract_client_view.h
         Client/GUI/client_view.cpp
         Client/KeyController/key_controller.cpp
