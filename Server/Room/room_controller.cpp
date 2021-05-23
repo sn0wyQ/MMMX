@@ -633,8 +633,8 @@ std::vector<GameObjectId> RoomController::AddBullets(
 void RoomController::AddConstantObjects() {
   model_->AddGameObject(GameObjectType::kMapBorder,
                         {0.f, 0.f, 0.f,
-                         Constants::kMapWidth,
-                         Constants::kMapHeight,
+                         Constants::kMapPictureWidth,
+                         Constants::kMapPictureHeight,
                          static_cast<int>(RigidBodyType::kRectangle),
                          Constants::kMapWidth,
                          Constants::kMapHeight,

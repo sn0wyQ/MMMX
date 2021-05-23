@@ -100,6 +100,14 @@ void GameObject::Draw(Painter* painter) const {
     painter->setPen(Qt::red);
     rigid_body_->Draw(painter);
   }
+  if (this->GetType() == GameObjectType::kMapBorder) {
+    QPen pen(Qt::red);
+    pen.setWidth(4);
+    float w = rigid_body_->GetWidth();
+    float h = rigid_body_->GetHeight();
+    painter->setPen(pen);
+    painter->DrawRect(-w / 2.f, -h / 2.f, w, h);
+  }
   painter->restore();
 }
 

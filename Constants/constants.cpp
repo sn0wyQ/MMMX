@@ -30,6 +30,8 @@ const int64_t kTicksToStore = kMSecsToStore / kTimeToTick;
 // Map
 const float kMapWidth = 100.f;
 const float kMapHeight = 100.f;
+const float kMapPictureWidth = 500.f;
+const float kMapPictureHeight = 500.f;
 
 // Room
 const int kDefaultMaxClients = 15;
@@ -49,12 +51,12 @@ const int kAntiAliasingSamples = 5;
 const float kBaseViewWidth = 25.f;
 const float kBaseViewHeight = 25.f;
 const float kPlayerBarHeightRatio = 0.15f;
-const bool kRigidBodyShow = true;
+const bool kRigidBodyShow = false;
 const int kAverageFpsFrames = 50;
 
 // Animations
 const int kUnloadAnimationCheckTime = 30;
-const float kMapPixmapSize = 30.f;
+const int kCountOfPixmapsInSide = 125;
 
 // MovableObject
 const float kDefaultSpeedMultiplier = 0.01f;
