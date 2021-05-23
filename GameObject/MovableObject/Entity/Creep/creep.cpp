@@ -163,7 +163,7 @@ void Creep::TickIntelligence(
         }
         auto distance = Math::DistanceBetweenPoints(this->GetPosition(),
                                                     player->GetPosition());
-        if (distance < best_distance) {
+        if (distance < best_distance && player->IsAlive()) {
           focused_player = std::dynamic_pointer_cast<Player>(player);
           best_distance = distance;
         }
