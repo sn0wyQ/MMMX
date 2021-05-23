@@ -101,7 +101,7 @@ QPointF Math::GetLinesIntersection(const Line& line1, const Line& line2) {
 }
 
 float Math::GetDistanceFromPointToLine(const QPointF& point,
-                                        const Line& line) {
+                                       const Line& line) {
   float a = line.a;
   float b = line.b;
   float c = line.c;
@@ -109,7 +109,7 @@ float Math::GetDistanceFromPointToLine(const QPointF& point,
 }
 
 bool Math::IsPointOnCircle(const QPointF& point, const QPointF& circle_center,
-                         float circle_radius) {
+                           float circle_radius) {
   return std::fabs(DistanceBetweenPoints(point, circle_center) - circle_radius)
       < kEps;
 }
