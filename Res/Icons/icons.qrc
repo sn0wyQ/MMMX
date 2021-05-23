@@ -16,5 +16,6 @@
         <file>range.svg</file>
         <file>damage.svg</file>
         <file>reload.svg</file>
+        <file>LevelStar.svg</file>
     </qresource>
 </RCC>

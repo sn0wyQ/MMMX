@@ -12,13 +12,14 @@
 #include <QSize>
 
 #include "Animation/shared_frame.h"
+#include "Math/math.h"
 #include "Converter/converter.h"
 
 namespace Constants::Painter {
 
 const QFont kDefaultFont("Roboto Mono", -1, QFont::Weight::Normal);
 const QFont kBoldFont("Roboto Mono", -1, QFont::Weight::Bold);
-const QColor kLevelColor(238, 230, 23);
+const QColor kLevelColor(Qt::black);
 const QColor kNicknameColor(130, 25, 55);
 
 }  // namespace Constants::Painter
@@ -54,20 +55,16 @@ class Painter : public QPainter {
   void Translate(const QPointF& delta);
 
   void DrawEllipse(const QPointF& center, float rx, float ry);
-  void DrawPixmap(QPointF point, float w, float h, const QPixmap& pixmap,
-                  DrawPixmapType draw_image_type =
-                      DrawPixmapType::kUsePointAsCenter);
   void DrawRect(float x, float y, float width, float height);
   void DrawSharedFrame(QPointF point, float w, float h,
                        SharedFrame* shared_frame,
                        DrawPixmapType draw_pixmap_type =
                            DrawPixmapType::kUsePointAsCenter);
+  void DrawSharedMapFrame(QPointF point, float w, float h,
+                          SharedFrame* shared_frame,
+                          DrawPixmapType draw_pixmap_type =
+                          DrawPixmapType::kUsePointAsCenter);
   void DrawTriangle(const QPointF& p1, const QPointF& p2, const QPointF& p3);
-
-  void RenderSvg(QPointF point, float w, float h,
-                 const std::shared_ptr<QSvgRenderer>& svg_renderer,
-                 DrawPixmapType draw_pixmap_type =
-                     DrawPixmapType::kUsePointAsCenter);
 
  private:
   std::shared_ptr<Converter> converter_;

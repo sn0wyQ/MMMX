@@ -199,6 +199,11 @@ void ClientController::UpdateInterpolationInfo() {
     game_object->SetIsInterpolatedOnce(false);
     Interpolator::InterpolateObject(game_object, game_object_to_be_interpolated,
                                     time_to_interpolate);
+    if (game_object->GetType() == GameObjectType::kPlayer) {
+      std::dynamic_pointer_cast<Player>(game_object)->SetLevel(
+          std::dynamic_pointer_cast<Player>(
+              game_object_to_be_interpolated)->GetLevel());
+    }
   }
 
   int count_collisions_with_local_player = 0;
@@ -625,8 +630,10 @@ void ClientController::UpdatePlayersStatsEvent(const Event& event) {
   auto player_id = event.GetArg<GameObjectId>(0);
   model_->GetPlayerStatsByPlayerId(player_id)->SetParams(
       event.GetArgsSubVector(1));
-  if (model_->IsGameObjectIdTaken(player_id)) {
-    model_->GetPlayerByPlayerId(player_id)->SetLevel(
+  if (model_->IsGameObjectInInterpolation(player_id)) {
+    auto inter_player = std::dynamic_pointer_cast<Player>(
+        model_->GetGameObjectByGameObjectIdToBeInterpolated(player_id));
+    inter_player->SetLevel(
         model_->GetPlayerStatsByPlayerId(player_id)->GetLevel());
   }
 }

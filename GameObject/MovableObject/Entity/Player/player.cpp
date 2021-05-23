@@ -250,13 +250,13 @@ float Player::GetExpIncrementForKill() const {
 void Player::DrawNickname(Painter* painter,
                           const QString& nickname) const {
   painter->save();
-  QPointF translation(0.f, -4.f);
+  QPointF translation(0.f, -4.8f);
   painter->Translate(translation);
-  painter->setBrush(Qt::black);
+  painter->setBrush(Qt::red);
   float rect_width = 120.f;
   float rect_height = 16.f;
   QFont font = Constants::Painter::kBoldFont;
-  font.setPointSizeF(10.f);
+  font.setPointSizeF(12.f);
   painter->setFont(font);
   QPen pen(Constants::Painter::kNicknameColor);
   painter->setPen(pen);
