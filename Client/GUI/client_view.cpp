@@ -2,9 +2,8 @@
 
 ClientView::ClientView(std::shared_ptr<ClientController> controller)
     : AbstractClientView(),
-      controller_(std::move(controller)) {
-  model_ = controller_->GetModel();
-
+      controller_(std::move(controller)),
+      model_(controller_->GetModel()) {
   this->resize(700, 700);
   this->setMinimumSize(310, 70);
   this->setWindowTitle(Constants::kWindowTitle);
@@ -14,6 +13,8 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   key_controller_->Hide();
 
   game_view_ = new GameView(this, controller_, key_controller_);
+  game_view_->setMouseTracking(true);
+
   main_menu_ = new MainMenu(this, controller_);
 
   stacked_widget_ = new QStackedWidget(this);

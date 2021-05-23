@@ -5,6 +5,8 @@
 #include <utility>
 
 #include <QLabel>
+#include <QMouseEvent>
+#include <QPaintEvent>
 #include <QResizeEvent>
 #include <QWidget>
 
@@ -29,6 +31,7 @@ class GameView : public QWidget {
 
   void Update();
 
+  void mouseMoveEvent(QMouseEvent* mouse_event) override;
   void paintEvent(QPaintEvent* event) override;
   void resizeEvent(QResizeEvent* event) override;
 

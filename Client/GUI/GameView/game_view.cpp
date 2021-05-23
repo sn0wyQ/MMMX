@@ -12,6 +12,10 @@ GameView::GameView(AbstractClientView* parent,
   view_port_->move(0, 0);
   view_port_->setMouseTracking(true);
 
+  kill_feed_ = new KillFeed(this);
+
+  height_of_bar_ = static_cast<int>(
+      Constants::kPlayerBarHeightRatio * static_cast<float>(parent_->height()));
   player_bar_ = new PlayerBar(this, model_,
                               QPoint(0, height() - height_of_bar_),
                               QSize(width(), height_of_bar_));
@@ -47,6 +51,10 @@ void GameView::Update() {
 
   view_port_->Update();
   this->update();
+}
+
+void GameView::mouseMoveEvent(QMouseEvent* mouse_event) {
+  controller_->MouseMoveEvent(mouse_event);
 }
 
 void GameView::paintEvent(QPaintEvent* event) {
@@ -93,11 +101,27 @@ void GameView::resizeEvent(QResizeEvent* event) {
   int width = event->size().width();
   int height = event->size().height();
 
+  respawn_button_->Resize(QSize(150, 150));
+  respawn_button_default_position_ =
+      QPoint(10,
+             this->height() - height_of_bar_ - respawn_button_->height() - 10);
+  respawn_button_->Move(respawn_button_default_position_);
   view_port_->resize(event->size());
+  player_bar_->resize(width, height_of_bar_);
+  player_bar_->move(0, height - height_of_bar_);
+  stats_table_->Resize(QSize(width * 0.9f, (height - height_of_bar_) * 0.9f));
+  stats_table_->move((width - stats_table_->width()) / 2.f,
+                     (height - stats_table_->height() - height_of_bar_) / 2.f);
 
-  int height_of_bar = (height * 15) / 100;
-  player_bar_->move(0, height - height_of_bar);
-  player_bar_->resize(width, height_of_bar);
+  reloading_field_->resize(width / 3, height / 2);
+  reloading_field_->move(width - reloading_field_->width(),
+                         (height - height_of_bar_
+                          - reloading_field_->height()));
+
+  kill_feed_->resize(width / 3, height);
+  kill_feed_->move(width - kill_feed_->width(), 0);
+  key_controller_->move(width / 4, height / 4);
+  key_controller_->resize(width / 2, height);
 }
 
 void GameView::ProcessRespawnButton() {
