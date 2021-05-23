@@ -71,7 +71,7 @@ const float kDefaultHealthRegenSpeed = 0.002f;
 const int kMaxLevel = 30;
 
 // Creep
-const int kTriesToFindPatrollingPoint = 20;
+const int kTriesToFindPatrollingPoint = 10;
 const float kRunawaySpeedMultiplier = 2.f;
 const float kPatrollingSpeedDivider = 2.f;
 const int64_t kRevengingTimeMSecs = 15'000;
