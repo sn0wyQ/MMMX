@@ -17,7 +17,7 @@ void RoomsInfoList::UpdateRoomsInfoList() {
   for (const auto& room_info : model_->GetRoomsInfo()) {
     auto room_iter = rooms_.find(room_info.id);
     if (room_iter != rooms_.end()) {
-      room_iter->second->UpdateInfo(room_info);
+      room_iter->second->SetRoomInfo(room_info);
     } else {
       auto* new_room_info_widget = new SingleRoomInfo(this, model_, room_info);
       layout_->addWidget(new_room_info_widget);
@@ -41,6 +41,9 @@ RoomId RoomsInfoList::GetSelectedRoom() const {
 
 void RoomsInfoList::SelectRoom(RoomId room_id) {
   selected_room_id_ = room_id;
+  for (auto&[room_id, room] : rooms_) {
+    room->repaint();
+  }
 }
 
 void RoomsInfoList::resizeEvent(QResizeEvent* event) {

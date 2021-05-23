@@ -8,6 +8,8 @@
 class AbstractRoomsInfoList : public QWidget {
  public:
   explicit AbstractRoomsInfoList(QWidget* parent) : QWidget(parent) {}
+
+  virtual RoomId GetSelectedRoom() const = 0;
   virtual void SelectRoom(RoomId room_id) = 0;
 };
 
