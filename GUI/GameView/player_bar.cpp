@@ -248,13 +248,13 @@ void PlayerBar::InitializePixmapIcons() {
     current_icon_render.render(&painter_for_current_icon,
                                leveling_pixmaps_[i].rect());
   }
-  QSvgRenderer update_button_render(kBasePath + "UPDATE LVL.svg");
+  QSvgRenderer update_button_render(kBasePath + "update_lvl.svg");
   update_lvl_button_pixmap_ = QPixmap(current_width, this->height() * 0.2f);
   update_lvl_button_pixmap_.fill(Qt::transparent);
   QPainter painter_for_update(&update_lvl_button_pixmap_);
   update_button_render.render(&painter_for_update,
                              update_lvl_button_pixmap_.rect());
-  QSvgRenderer max_button_render(kBasePath + "MAX LVL.svg");
+  QSvgRenderer max_button_render(kBasePath + "max_lvl.svg");
   max_lvl_button_pixmap_ = QPixmap(current_width, this->height() * 0.2f);
   max_lvl_button_pixmap_.fill(Qt::transparent);
   QPainter painter_for_max(&max_lvl_button_pixmap_);

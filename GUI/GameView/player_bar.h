@@ -15,6 +15,7 @@
 #include "Painter/painter.h"
 
 namespace Constants::PlayerBar {
+
   const float kHealthBarHeight = 25.f;
   const float kHealthBarWidth = 30.f;
   const float kHealthBarX = 50.f - kHealthBarWidth / 2.f;
@@ -35,24 +36,25 @@ namespace Constants::PlayerBar {
   const QString kBasePath = "./Res/Icons/";
 
   const std::vector<QString> kLevelingNames = {
-      "Player health",
-      "Regeneration",
-      "Player speed",
-      "FOV",
-      "Accuracy",
-      "Bullet speed",
-      "Rate of fire",
-      "Range",
-      "Damage",
-      "Reload"
+      "player_health",
+      "regeneration",
+      "player_speed",
+      "fov",
+      "accuracy",
+      "bullet_speed",
+      "rate_of_fire",
+      "range",
+      "damage",
+      "reload"
   };
+
 }  // namespace Constants::PlayerBar
 
 class PlayerBar : public QWidget {
   Q_OBJECT
 
  public:
-  PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel>  model,
+  PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel> model,
             QPoint position, QSize size);
 
   void paintEvent(QPaintEvent* paint_event) override;
