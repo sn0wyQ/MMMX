@@ -2,15 +2,17 @@
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_
 
 #include <memory>
+#include <limits>
 #include <vector>
 
 #include "GameObject/MovableObject/Entity/entity.h"
+#include "GameObject/MovableObject/Entity/Player/player.h"
 #include "GameObject/MovableObject/Entity/Creep/creep_enums.h"
 
 class Creep : public Entity {
  public:
   explicit Creep(GameObjectId player_id);
-  virtual ~Creep() = default;
+  ~Creep() override = default;
 
   void DrawRelatively(Painter* painter) const override;
 
@@ -30,9 +32,7 @@ class Creep : public Entity {
 
   void SetSpawnY(float spawn_y);
   float GetSpawnY() const;
-
-  void SetIsGoingToSpawn(bool is_going_to_spawn);
-  bool IsGoingToSpawn() const;
+  QPointF GetSpawnPoint() const;
 
   void SetAttackDistance(float attack_distance);
   float GetAttackDistance() const;
@@ -51,16 +51,33 @@ class Creep : public Entity {
   void SetCreepType(CreepType creep_type);
   CreepType GetCreepType() const;
 
+  QVector2D GetForce() const;
+
+  void SetAggressivePlayer(const std::shared_ptr<Player>& player);
+
+  void TickIntelligence(
+      const std::vector<std::shared_ptr<GameObject>>& game_objects);
+
+  GameObjectId GetPlayerToDamage(
+      const std::vector<std::shared_ptr<Player>>& players) const;
+
  private:
+  QPointF GetPatrollingPoint(
+      const std::vector<std::shared_ptr<GameObject>>& nearby_game_objects,
+      const std::shared_ptr<GameObject>& map_border);
+
   float exp_increment_{};
   float spawn_x_;
   float spawn_y_;
-  bool is_going_to_spawn_{false};
   float attack_distance_;
   float damage_;
+  QVector2D force_;
   int64_t last_attacked_time_{0};
   int64_t reloading_time_;
   CreepType creep_type_{CreepType::kNone};
+  GameObjectId last_aggressive_player_;
+  int64_t last_taken_damage_time_{0};
+  QPointF patrolling_point_;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_

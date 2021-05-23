@@ -68,44 +68,6 @@ bool MovableObject::IsFilteredByFov() const {
   return true;
 }
 
-float MovableObject::GetShortestDistance(
-    const std::shared_ptr<GameObject>& object) {
-  // Здесь учитываем, что мувабл - всегда круг
-  std::vector<QPointF> points =
-      Math::GetRectanglePoints(object->GetPosition(), object->GetRotation(),
-                               object);
-  float min_distance =
-      QLineF(this->GetPosition(), object->GetPosition()).length();
-  for (int i = 0; i < 4; i++) {
-    QPointF first = points[i];
-    QPointF second = points[(i + 1) % 4];
-    min_distance = std::min(
-        min_distance,
-        static_cast<float>(QLineF(this->GetPosition(), first).length()));
-    // Формула нахождения расстояния между точкой и отрезком
-    float a_x = static_cast<float>(second.x() - first.x());
-    float a_y = static_cast<float>(second.y() - first.y());
-    float n_x = -a_y;
-    float n_y = a_x;
-    auto a = static_cast<float>(second.y() - first.y());
-    auto b = static_cast<float>(first.x() - second.x());
-    auto c
-        = static_cast<float>(first.y() * second.x() - first.x() * second.y());
-    float x_0 = this->GetX();
-    float y_0 = this->GetY();
-    float t = (-a * x_0 - b * y_0 - c) / (a * n_x + b * n_y);
-    float x_1 = x_0 + n_x * t;
-    float y_1 = y_0 + n_y * t;
-    QPointF point(x_1, y_1);
-    if (Math::IsPointOnSegment(first, second, point)) {
-      min_distance = std::min(
-          min_distance,
-          static_cast<float>(QLineF(this->GetPosition(), point).length()));
-    }
-  }
-  return min_distance;
-}
-
 std::shared_ptr<GameObject> MovableObject::Clone() const {
   return std::make_shared<MovableObject>(*this);
 }

@@ -53,6 +53,8 @@ class Entity : public MovableObject {
   void SetAppearing() override;
   void SetDisappearing() override;
 
+  void UpdateAnimationState(bool restart = false) override;
+
  protected:
   int level_{1};
 
