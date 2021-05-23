@@ -295,7 +295,11 @@ void Animation::RenderFrame(Painter* painter, float w, float h) {
   if (!frame_to_render->IsExists()) {
     return;
   }
-  painter->DrawSharedFrame(QPointF(), w, h, frame_to_render);
+  if (this->GetType() == AnimationType::kMap) {
+    painter->DrawSharedMapFrame(QPointF(), w, h, frame_to_render);
+  } else {
+    painter->DrawSharedFrame(QPointF(), w, h, frame_to_render);
+  }
 }
 
 AnimationState Animation::GetState() const {

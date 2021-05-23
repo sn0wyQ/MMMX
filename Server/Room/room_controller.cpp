@@ -638,7 +638,7 @@ void RoomController::AddConstantObjects() {
                          static_cast<int>(RigidBodyType::kRectangle),
                          Constants::kMapWidth,
                          Constants::kMapHeight,
-                         static_cast<int>(AnimationType::kNone)});
+                         static_cast<int>(AnimationType::kMap)});
 
   for (int i = 0; i < 10; i++) {
     this->AddRandomGarage(10.f, 7.772f);

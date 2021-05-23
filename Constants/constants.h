@@ -67,6 +67,7 @@ extern const int kAverageFpsFrames;
 
 // Animations
 extern const int kUnloadAnimationCheckTime;
+extern const float kMapPixmapSize;
 
 // MovableObject
 extern const float kDefaultSpeedMultiplier;
