@@ -46,7 +46,7 @@ namespace Constants::PlayerBar {
       "Damage",
       "Reload"
   };
-}
+}  // namespace Constants::PlayerBar
 
 class PlayerBar : public QWidget {
   Q_OBJECT

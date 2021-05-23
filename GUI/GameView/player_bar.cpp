@@ -24,7 +24,7 @@ PlayerBar::PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel> model,
     : QWidget(parent), hp_emulator_(0.5f, 0.8f), xp_emulator_(0.5f, 0.8f),
       model_(std::move(model)),
       buttons_(static_cast<int>(LevelingSlots::SIZE)),
-      leveling_pixmaps_(static_cast<int>(LevelingSlots::SIZE)){
+      leveling_pixmaps_(static_cast<int>(LevelingSlots::SIZE)) {
   hp_emulator_.SetCurrentValue(0.f);
   xp_emulator_.SetCurrentValue(0.f);
 
