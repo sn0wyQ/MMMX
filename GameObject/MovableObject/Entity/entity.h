@@ -59,12 +59,19 @@ class Entity : public MovableObject {
   int level_{1};
 
  private:
+  void HideHealthPointBar() const;
+  void ShowHealthPointBar() const;
+
+  mutable int64_t last_changed_hp_{0};
+  mutable float hp_bar_opacity_{0.f};
   float fov_radius_{Constants::kDefaultEntityFov};
   float health_points_{0.f};
   float health_regen_rate_{};
   float max_health_points_{};
   bool is_disappearing_{false};
   LinearEmulator<float> opacity_emulator_;
+  mutable LinearEmulator<float> hp_bar_opacity_emulator_;
+  bool is_hiding_hp_bar_{false};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_

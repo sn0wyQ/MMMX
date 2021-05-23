@@ -62,14 +62,14 @@ T LinearEmulator<T>::GetCurrentValue() const {
     if (value_ > max_value_ && speed_ > 0.f) {
       value_ = max_value_;
       if (stop_on_max_) {
-        break;
+        continue;
       }
       speed_ = -abs(speed_);
     }
     if (value_ < min_value_ && speed_ < 0.f) {
       value_ = min_value_;
       if (stop_on_min_) {
-        break;
+        continue;
       }
       speed_ = abs(speed_);
     }

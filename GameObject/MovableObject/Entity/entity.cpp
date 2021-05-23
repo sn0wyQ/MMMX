@@ -2,21 +2,33 @@
 
 Entity::Entity(GameObjectId id) :
     MovableObject(id),
-    opacity_emulator_(Constants::kOpacityChangeSpeed) {
+    opacity_emulator_(Constants::kOpacityChangeSpeed),
+    hp_bar_opacity_emulator_(0.002f) {
   opacity_emulator_.SetStopOnMax(true);
   opacity_emulator_.SetStopOnMin(true);
   opacity_emulator_.SetCurrentValue(0.f);
   opacity_emulator_.SetPath(0.f, 1.f);
+  hp_bar_opacity_emulator_.SetStopOnMax(true);
+  hp_bar_opacity_emulator_.SetStopOnMin(true);
+  hp_bar_opacity_emulator_.SetCurrentValue(0.f);
+  hp_bar_opacity_emulator_.SetPath(1.f, 0.f);
+  last_changed_hp_ = QDateTime::currentMSecsSinceEpoch();
+  this->HideHealthPointBar();
 }
 
 Entity::Entity(const Entity& other) :
     MovableObject(other),
-    opacity_emulator_(other.opacity_emulator_) {
+    opacity_emulator_(other.opacity_emulator_),
+    hp_bar_opacity_emulator_(other.hp_bar_opacity_emulator_) {
   fov_radius_ = other.fov_radius_;
   health_points_ = other.health_points_;
   health_regen_rate_ = other.health_regen_rate_;
   max_health_points_ = other.max_health_points_;
   level_ = other.level_;
+  hp_bar_opacity_ = other.hp_bar_opacity_;
+  last_changed_hp_ = other.last_changed_hp_;
+  is_hiding_hp_bar_ = other.is_hiding_hp_bar_;
+  this->HideHealthPointBar();
 }
 
 void Entity::SetParams(std::vector<QVariant> params) {
@@ -49,9 +61,13 @@ void Entity::SetFovRadius(float fov_radius) {
 }
 
 void Entity::SetHealthPoints(float health_points) {
-  health_points_ = health_points;
-  if (!this->IsAlive()) {
-    this->SetDisappearing();
+  if (std::fabs(health_points - health_points_) > Math::kEps) {
+    last_changed_hp_ = QDateTime::currentMSecsSinceEpoch();
+    this->ShowHealthPointBar();
+    health_points_ = health_points;
+    if (!this->IsAlive()) {
+      this->SetDisappearing();
+    }
   }
 }
 
@@ -85,7 +101,13 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 
 void Entity::DrawHealthBar(Painter* painter) const {
   painter->save();
-  painter->setOpacity(this->GetOpacity());
+  auto time = QDateTime::currentMSecsSinceEpoch();
+  if (time - last_changed_hp_ > 1000) {
+    this->HideHealthPointBar();
+  } else {
+    this->ShowHealthPointBar();
+  }
+  painter->setOpacity(hp_bar_opacity_emulator_.GetCurrentValue());
   painter->Translate(QPointF(-2.5f, -2.5f));
   QRectF rect(0, 0, 75, 14);
 
@@ -94,12 +116,12 @@ void Entity::DrawHealthBar(Painter* painter) const {
   painter->drawRoundedRect(rect, 10, 10);
 
   float hp_ratio = this->GetHealthPoints() / this->GetMaxHealthPoints();
-  if (is_disappearing_) {
-    hp_ratio = 0.f;
-  }
   auto color = Constants::GetHealthPointsColor(hp_ratio);
   color.setAlphaF(0.8f);
   painter->setBrush(color);
+
+  painter->setPen(Qt::green);
+  painter->drawText(0, 0, QString::number(health_points_) + " " + QString::number(max_health_points_));
 
   painter->setPen(Qt::transparent);
   auto painter_clip = painter->clipRegion();
@@ -142,21 +164,24 @@ void Entity::OnTick(int delta_time) {
 }
 
 void Entity::TickHealthPoints(int delta_time) {
-  health_points_ = std::min(
+  this->SetHealthPoints(std::min(
       health_points_ + health_regen_rate_ * static_cast<float>(delta_time),
-      max_health_points_);
+      max_health_points_));
 }
 
 void Entity::DrawLevel(Painter* painter) const {
   painter->save();
   painter->setOpacity(this->GetOpacity());
-  QPointF translation(-3.f, -2.8f);
+  QPointF translation(-2.5f, -2.5f);
   painter->Translate(translation);
   painter->setBrush(Qt::black);
-  QPixmap pixmap("../Res/Icons/level_arrow.png");
-  QRectF rect(0, 0, 30, 25);
-  painter->drawPixmap(rect, pixmap,
-                      QRectF(0, 0, pixmap.width(), pixmap.height()));
+  QSvgRenderer renderer(QString("../Res/Icons/star.svg"));
+  QRectF rect(-15, -8, 30, 25);
+  QPixmap pixmap(rect.width(), rect.height());
+  pixmap.fill(Qt::transparent);
+  QPainter pixmap_painter(&pixmap);
+  renderer.render(&pixmap_painter, pixmap.rect());
+  painter->drawPixmap(rect, pixmap, pixmap.rect());
   QFont font = painter->font();
   font.setPointSizeF(10.f);
   font.setBold(true);
@@ -183,6 +208,7 @@ void Entity::SetAppearing() {
 }
 
 void Entity::SetDisappearing() {
+  this->HideHealthPointBar();
   opacity_emulator_.SetCurrentValue(1.f);
   opacity_emulator_.SetPath(1.f, 0.f);
   is_disappearing_ = true;
@@ -194,4 +220,12 @@ void Entity::UpdateAnimationState(bool restart) {
   } else {
     this->SetAnimationState(AnimationState::kIdle, restart);
   }
+}
+
+void Entity::HideHealthPointBar() const {
+  hp_bar_opacity_emulator_.SetPath(1.f, 0.f);
+}
+
+void Entity::ShowHealthPointBar() const {
+  hp_bar_opacity_emulator_.SetPath(0.f, 1.f);
 }
