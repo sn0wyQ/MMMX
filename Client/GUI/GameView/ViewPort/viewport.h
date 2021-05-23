@@ -1,5 +1,5 @@
-#ifndef GUI_GAMEVIEW_GAME_VIEW_H_
-#define GUI_GAMEVIEW_GAME_VIEW_H_
+#ifndef CLIENT_GUI_GAMEVIEW_VIEWPORT_VIEWPORT_H_
+#define CLIENT_GUI_GAMEVIEW_VIEWPORT_VIEWPORT_H_
 
 #include <memory>
 #include <utility>
@@ -54,4 +54,4 @@ class ViewPort : public QOpenGLWidget {
   SpringEmulator<float, false> fov_change_emulator_;
 };
 
-#endif  // GUI_GAMEVIEW_GAME_VIEW_H_
+#endif  // CLIENT_GUI_GAMEVIEW_VIEWPORT_VIEWPORT_H_

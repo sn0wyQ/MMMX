@@ -1,5 +1,5 @@
-#ifndef MODEL_CLIENT_GAME_MODEL_H_
-#define MODEL_CLIENT_GAME_MODEL_H_
+#ifndef CLIENT_CLIENT_GAME_MODEL_H_
+#define CLIENT_CLIENT_GAME_MODEL_H_
 
 #include <deque>
 #include <memory>
@@ -54,4 +54,4 @@ class ClientGameModel : public GameModel {
   QList<RoomInfo> rooms_info_;
 };
 
-#endif  // MODEL_CLIENT_GAME_MODEL_H_
+#endif  // CLIENT_CLIENT_GAME_MODEL_H_

@@ -1,5 +1,5 @@
-#ifndef GUI_GAMEVIEW_PLAYER_BAR_H_
-#define GUI_GAMEVIEW_PLAYER_BAR_H_
+#ifndef CLIENT_GUI_GAMEVIEW_PLAYERBAR_PLAYER_BAR_H_
+#define CLIENT_GUI_GAMEVIEW_PLAYERBAR_PLAYER_BAR_H_
 
 #include <memory>
 #include <utility>
@@ -79,4 +79,4 @@ class PlayerBar : public QWidget {
   };
 };
 
-#endif  // GUI_GAMEVIEW_PLAYER_BAR_H_
+#endif  // CLIENT_GUI_GAMEVIEW_PLAYERBAR_PLAYER_BAR_H_

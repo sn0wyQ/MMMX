@@ -1,5 +1,5 @@
-#ifndef CLIENT_ABSTRACT_CLIENT_VIEW_H_
-#define CLIENT_ABSTRACT_CLIENT_VIEW_H_
+#ifndef CLIENT_GUI_ABSTRACT_CLIENT_VIEW_H_
+#define CLIENT_GUI_ABSTRACT_CLIENT_VIEW_H_
 
 #include <memory>
 
@@ -47,4 +47,4 @@ class AbstractClientView : public QMainWindow {
       const QString& player_name) = 0;
 };
 
-#endif  // CLIENT_ABSTRACT_CLIENT_VIEW_H_
+#endif  // CLIENT_GUI_ABSTRACT_CLIENT_VIEW_H_

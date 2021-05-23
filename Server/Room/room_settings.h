@@ -32,8 +32,7 @@ const std::vector<FirstPartOfTheName> kFirstPartsOfTheName{
     {"Fight",
      {"at", "for the", "in the", "of", "of the"}},
     {"Massacre", {"at", "in the"}},
-    {"Skirmish", {"at", "in the"}},
-
+    {"Skirmish", {"at", "in the"}}
 };
 
 // [preposition, second_part]
@@ -42,7 +41,7 @@ const std::unordered_map<QString, std::vector<QString>> kSecondPartsOfTheName {
     {"for the", {"King's Crown", "Satan's Soul", "Throne", "Unlimited Power"}},
     {"in the", {"Flowery Gardens", "Greenwood Forest", "Evening Sunshine"}},
     {"of", {"Animals", "Champions", "Marathon", "Hastings", "Tours"}},
-    {"of the", {"Baggage", "Lost Time", "Mermaid Lake", "Night Power", "Pit"}},
+    {"of the", {"Baggage", "Lost Time", "Mermaid Lake", "Night Power", "Pit"}}
 };
 
 class RoomSettings {

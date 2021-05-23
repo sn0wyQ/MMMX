@@ -1,5 +1,5 @@
-#ifndef SETTINGS_WINDOW_H_
-#define SETTINGS_WINDOW_H_
+#ifndef CLIENT_GUI_SETTINGSWINDOW_SETTINGS_WINDOW_H_
+#define CLIENT_GUI_SETTINGSWINDOW_SETTINGS_WINDOW_H_
 
 #include <memory>
 #include <utility>
@@ -18,7 +18,7 @@ class SettingsWindow : public QWidget {
 
   QString GetNickname() const;
 
- public Q_SLOTS:
+  public Q_SLOTS:
   void OnSetNicknameButtonClicked();
 
  private:
@@ -29,4 +29,4 @@ class SettingsWindow : public QWidget {
   QTextEdit* nickname_edit_;
 };
 
-#endif  // SETTINGS_WINDOW_H_
+#endif  // CLIENT_GUI_SETTINGSWINDOW_SETTINGS_WINDOW_H_

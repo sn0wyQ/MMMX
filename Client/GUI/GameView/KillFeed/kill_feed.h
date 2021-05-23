@@ -1,5 +1,5 @@
-#ifndef GUI_GAMEVIEW_KILLFEED_KILL_FEED_H_
-#define GUI_GAMEVIEW_KILLFEED_KILL_FEED_H_
+#ifndef CLIENT_GUI_GAMEVIEW_KILLFEED_KILL_FEED_H_
+#define CLIENT_GUI_GAMEVIEW_KILLFEED_KILL_FEED_H_
 
 #include <deque>
 
@@ -45,4 +45,4 @@ class KillFeed : public QWidget {
   int next_to_disappear_index_{0};
 };
 
-#endif  // GUI_GAMEVIEW_KILLFEED_KILL_FEED_H_
+#endif  // CLIENT_GUI_GAMEVIEW_KILLFEED_KILL_FEED_H_

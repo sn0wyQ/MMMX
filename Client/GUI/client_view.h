@@ -1,5 +1,5 @@
-#ifndef CLIENT_CLIENT_VIEW_H_
-#define CLIENT_CLIENT_VIEW_H_
+#ifndef CLIENT_GUI_CLIENT_VIEW_H_
+#define CLIENT_GUI_CLIENT_VIEW_H_
 
 #include <deque>
 #include <memory>
@@ -66,4 +66,4 @@ class ClientView : public AbstractClientView {
   std::shared_ptr<KeyController> key_controller_;
 };
 
-#endif  // CLIENT_CLIENT_VIEW_H_
+#endif  // CLIENT_GUI_CLIENT_VIEW_H_

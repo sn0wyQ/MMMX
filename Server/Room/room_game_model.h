@@ -1,5 +1,5 @@
-#ifndef MODEL_ROOM_GAME_MODEL_H_
-#define MODEL_ROOM_GAME_MODEL_H_
+#ifndef SERVER_ROOM_ROOM_GAME_MODEL_H_
+#define SERVER_ROOM_ROOM_GAME_MODEL_H_
 
 #include <algorithm>
 #include <random>
@@ -38,4 +38,4 @@ class RoomGameModel : public GameModel {
   std::unordered_map<GameObjectId, QByteArray> last_player_stats_hash_;
 };
 
-#endif  // MODEL_ROOM_GAME_MODEL_H_
+#endif  // SERVER_ROOM_ROOM_GAME_MODEL_H_

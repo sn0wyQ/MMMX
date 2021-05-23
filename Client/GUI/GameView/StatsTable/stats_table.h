@@ -1,5 +1,5 @@
-#ifndef GUI_GAMEVIEW_STATS_TABLE_H_
-#define GUI_GAMEVIEW_STATS_TABLE_H_
+#ifndef CLIENT_GUI_GAMEVIEW_STATSTABLE_STATS_TABLE_H_
+#define CLIENT_GUI_GAMEVIEW_STATSTABLE_STATS_TABLE_H_
 
 #include <algorithm>
 #include <memory>
@@ -74,4 +74,4 @@ class StatsTable : public QWidget {
   SpringEmulator<float, true> opacity_emulator_;
 };
 
-#endif  // GUI_GAMEVIEW_STATS_TABLE_H_
+#endif  // CLIENT_GUI_GAMEVIEW_STATSTABLE_STATS_TABLE_H_

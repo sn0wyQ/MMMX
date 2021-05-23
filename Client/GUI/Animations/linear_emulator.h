@@ -1,5 +1,5 @@
-#ifndef GUI_ANIMATIONS_LINEAR_EMULATOR_H_
-#define GUI_ANIMATIONS_LINEAR_EMULATOR_H_
+#ifndef CLIENT_GUI_ANIMATIONS_LINEAR_EMULATOR_H_
+#define CLIENT_GUI_ANIMATIONS_LINEAR_EMULATOR_H_
 
 #include "../../../../../Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/algorithm"
 
@@ -100,4 +100,4 @@ void LinearEmulator<T>::SetPath(T start, T finish) {
   }
 }
 
-#endif  // GUI_ANIMATIONS_LINEAR_EMULATOR_H_
+#endif  // CLIENT_GUI_ANIMATIONS_LINEAR_EMULATOR_H_

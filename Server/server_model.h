@@ -1,5 +1,5 @@
-#ifndef MODEL_SERVER_MODEL_H_
-#define MODEL_SERVER_MODEL_H_
+#ifndef SERVER_SERVER_MODEL_H_
+#define SERVER_SERVER_MODEL_H_
 
 #include <map>
 #include <memory>
@@ -60,4 +60,4 @@ class ServerModel {
   std::map<RoomId, std::shared_ptr<RoomController>> rooms_;
 };
 
-#endif  // MODEL_SERVER_MODEL_H_
+#endif  // SERVER_SERVER_MODEL_H_

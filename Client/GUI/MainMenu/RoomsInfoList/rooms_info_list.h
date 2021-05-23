@@ -1,6 +1,7 @@
-#ifndef ROOMS_INFO_H_
-#define ROOMS_INFO_H_
+#ifndef CLIENT_GUI_MAINMENU_ROOMSINFOLIST_ROOMS_INFO_LIST_H_
+#define CLIENT_GUI_MAINMENU_ROOMSINFOLIST_ROOMS_INFO_LIST_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <utility>
@@ -40,4 +41,4 @@ class RoomsInfoList : public AbstractRoomsInfoList {
   QVBoxLayout* layout_;
 };
 
-#endif  // ROOMS_INFO_H_
+#endif  // CLIENT_GUI_MAINMENU_ROOMSINFOLIST_ROOMS_INFO_LIST_H_

@@ -1,6 +1,7 @@
-#ifndef MAIN_MENU_H_
-#define MAIN_MENU_H_
+#ifndef CLIENT_GUI_MAINMENU_MAIN_MENU_H_
+#define CLIENT_GUI_MAINMENU_MAIN_MENU_H_
 
+#include <memory>
 #include <utility>
 
 #include <QDebug>
@@ -34,4 +35,4 @@ class MainMenu : public QWidget {
   QPushButton* start_game_;
 };
 
-#endif  // MAIN_MENU_H
+#endif  // CLIENT_GUI_MAINMENU_MAIN_MENU_H_

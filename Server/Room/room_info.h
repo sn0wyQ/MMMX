@@ -1,5 +1,5 @@
-#ifndef ROOM_INFO_H_
-#define ROOM_INFO_H_
+#ifndef SERVER_ROOM_ROOM_INFO_H_
+#define SERVER_ROOM_ROOM_INFO_H_
 
 #include <QList>
 #include <QVariant>
@@ -42,4 +42,4 @@ struct RoomInfo {
   }
 };
 
-#endif  // ROOM_INFO_H_
+#endif  // SERVER_ROOM_ROOM_INFO_H_

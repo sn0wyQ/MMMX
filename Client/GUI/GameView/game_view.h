@@ -1,6 +1,7 @@
-#ifndef GAME_VIEW_H_
-#define GAME_VIEW_H_
+#ifndef CLIENT_GUI_GAMEVIEW_GAME_VIEW_H_
+#define CLIENT_GUI_GAMEVIEW_GAME_VIEW_H_
 
+#include <deque>
 #include <memory>
 #include <utility>
 
@@ -66,4 +67,4 @@ class GameView : public QWidget {
   std::shared_ptr<KeyController> key_controller_;
 };
 
-#endif  // GAME_VIEW_H
+#endif  // CLIENT_GUI_GAMEVIEW_GAME_VIEW_H_

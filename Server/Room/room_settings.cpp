@@ -75,8 +75,7 @@ QString RoomSettings::GetKeyCode() const {
 }
 
 void RoomSettings::SetRandomKeyCode() {
-  static auto RandomChar = []() -> char
-  {
+  static auto RandomChar = []() -> char {
     const char charset[] =
         "0123456789"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
