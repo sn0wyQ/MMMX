@@ -89,8 +89,9 @@ void Painter::DrawSharedMapFrame(QPointF point,
 
   float pixmap_w = w / Constants::kCountOfPixmapsInSide;
   float pixmap_h = h / Constants::kCountOfPixmapsInSide;
-  auto pixmap = *shared_frame->GetRenderedPixmap(static_cast<int>(std::ceil(pixmap_w)),
-                                                 static_cast<int>(std::ceil(pixmap_h)));
+  auto pixmap = *shared_frame->GetRenderedPixmap(
+      static_cast<int>(std::ceil(pixmap_w)),
+      static_cast<int>(std::ceil(pixmap_h)));
   QPointF new_point = point;
   for (int i = 0; i < Constants::kCountOfPixmapsInSide; i++) {
     for (int j = 0; j < Constants::kCountOfPixmapsInSide; j++) {
