@@ -24,6 +24,14 @@ void ClientGameModel::SetLocalPlayerId(GameObjectId player_id) {
   this->GetLocalPlayer()->SetIsLocalPlayer(true);
 }
 
+void ClientGameModel::SetLocalPlayerNickname(const QString& nickname) {
+  local_player_nickname_ = nickname;
+}
+
+QString ClientGameModel::GetLocalPlayerNickname() const {
+  return local_player_nickname_;
+}
+
 void ClientGameModel::AddInterpolateInfo(GameObjectId game_object_id,
                                          GameObjectType game_object_type,
                                          int64_t server_time) {

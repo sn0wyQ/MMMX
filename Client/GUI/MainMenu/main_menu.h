@@ -24,7 +24,7 @@ class MainMenu : public QWidget {
 
   void resizeEvent(QResizeEvent* event) override;
 
- public Q_SLOTS:
+  public Q_SLOTS:
   void OnStartGameButtonClicked();
 
  private:

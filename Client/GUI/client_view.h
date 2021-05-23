@@ -19,6 +19,7 @@
 
 #include "Client/GUI/GameView/game_view.h"
 #include "Client/GUI/MainMenu/main_menu.h"
+#include "Client/GUI/SettingsWindow/settings_window.h"
 #include "Client/GUI/abstract_client_view.h"
 #include "Client/client_controller.h"
 #include "Client/client_game_model.h"
@@ -62,6 +63,7 @@ class ClientView : public AbstractClientView {
   QStackedWidget* stacked_widget_;
   GameView* game_view_;
   MainMenu* main_menu_;
+  SettingsWindow* settings_window_;
 
   std::shared_ptr<KeyController> key_controller_;
 };

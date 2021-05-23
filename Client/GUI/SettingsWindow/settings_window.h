@@ -16,8 +16,6 @@ class SettingsWindow : public QWidget {
  public:
   SettingsWindow(QWidget* parent, std::shared_ptr<ClientController> controller);
 
-  QString GetNickname() const;
-
   public Q_SLOTS:
   void OnSetNicknameButtonClicked();
 
@@ -25,7 +23,6 @@ class SettingsWindow : public QWidget {
   std::shared_ptr<ClientController> controller_;
 
   QPushButton* set_nickname_;
-  QString nickname_{"Player"};
   QTextEdit* nickname_edit_;
 };
 

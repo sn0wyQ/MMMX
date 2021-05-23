@@ -11,10 +11,6 @@ SettingsWindow::SettingsWindow(QWidget* parent,
           &SettingsWindow::OnSetNicknameButtonClicked);
 }
 
-QString SettingsWindow::GetNickname() const {
-  return nickname_;
-}
-
 void SettingsWindow::OnSetNicknameButtonClicked() {
   nickname_ = nickname_edit_->toPlainText();
 }

@@ -21,6 +21,8 @@ class ClientGameModel : public GameModel {
   std::shared_ptr<PlayerStats> GetLocalPlayerStats();
   bool IsLocalPlayerSet() const;
   void SetLocalPlayerId(GameObjectId player_id);
+  void SetLocalPlayerNickname(const QString& nickname);
+  QString GetLocalPlayerNickname() const;
 
   void AddInterpolateInfo(GameObjectId game_object_id,
                           GameObjectType game_object_type,
@@ -45,6 +47,7 @@ class ClientGameModel : public GameModel {
   void SetRoomsInfo(const QList<QVariant>& rooms_info);
 
  private:
+  QString local_player_nickname_{"Player"};
   GameObjectId local_player_id_{Constants::kNullGameObjectId};
   std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> interpolator_;
 

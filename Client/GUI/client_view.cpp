@@ -17,6 +17,8 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
 
   main_menu_ = new MainMenu(this, controller_);
 
+  settings_window_ = new SettingsWindow(this, controller_);
+
   stacked_widget_ = new QStackedWidget(this);
   stacked_widget_->addWidget(game_view_);
   stacked_widget_->addWidget(main_menu_);

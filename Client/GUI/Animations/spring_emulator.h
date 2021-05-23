@@ -1,11 +1,11 @@
 #ifndef CLIENT_GUI_ANIMATIONS_SPRING_EMULATOR_H_
 #define CLIENT_GUI_ANIMATIONS_SPRING_EMULATOR_H_
 
-#include "../../../../../Qt/Tools/mingw810_64/lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/algorithm"
+#include <algorithm>
 
-#include "../../../../../Qt/5.15.2/mingw81_64/include/QtCore/QDateTime"
-#include "../../../../../Qt/5.15.2/mingw81_64/include/QtCore/QDebug"
-#include "../../../../../Qt/5.15.2/mingw81_64/include/QtGui/QVector2D"
+#include <QDateTime>
+#include <QDebug>
+#include <QVector2D>
 
 template <class T, bool DoSetBounds>
 class SpringEmulator {
