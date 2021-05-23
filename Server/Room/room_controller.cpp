@@ -118,6 +118,9 @@ void RoomController::DeleteReadyToBeDeletedObjects(
 }
 
 void RoomController::TickObjectsInModel(const ModelData& model_data) {
+  // qWarning() << Math::GetRectWithLineIntersections(QRectF(2, 3, 5, 3),
+  //                                                  Math::Line(QPointF(2, 1),
+  //                                                             QPointF(7, 2)));
   auto game_objects = model_data.model->GetAllGameObjects();
   for (const auto& game_object : game_objects) {
     game_object->OnTick(model_data.delta_time);
@@ -177,86 +180,32 @@ void RoomController::EntityReceiveDamage(const ModelData& model_data,
 }
 
 void RoomController::TickCreepsIntelligence(
-  const RoomController::ModelData& model_data) {
+    const RoomController::ModelData& model_data) {
   auto creeps = model_data.model->GetCreeps();
   auto players = model_data.model->GetAlivePlayers();
   for (auto& creep : creeps) {
-    if (!CreepSettings::GetInstance().HasIntelligence(creep->GetCreepType())) {
-      continue;
-    }
-
-    std::shared_ptr<Player> closer_player{nullptr};
-    auto creep_position = creep->GetPosition();
-    auto creep_spawn_position = QPointF(creep->GetSpawnX(), creep->GetSpawnY());
-    for (const auto& player : players) {
-      float distance =
-          Math::DistanceBetweenPoints(
-              creep_spawn_position,
-              player->GetPosition())
-              - player->GetRigidBodyBoundingCircleRadius()
-              - creep->GetRigidBodyBoundingCircleRadius();
-      if (!closer_player) {
-        if (distance < creep->GetFovRadius()) {
-          closer_player = player;
-        }
-      } else if (distance < Math::DistanceBetweenPoints(
-          creep_position, closer_player->GetPosition())) {
-        closer_player = player;
-      }
-    }
-
-    QVector2D force;
-    float distance_from_spawn =
-        Math::DistanceBetweenPoints(creep_position, creep_spawn_position);
-    if (creep->IsGoingToSpawn()) {
-      if (distance_from_spawn < creep->GetRigidBodyBoundingCircleRadius()) {
-        creep->SetIsGoingToSpawn(false);
-      }
-    } else if (distance_from_spawn > creep->GetFovRadius()) {
-      creep->SetIsGoingToSpawn(true);
-    }
-    if (creep->IsGoingToSpawn()) {
-      force = QVector2D(
-          QPointF(creep->GetSpawnX(), creep->GetSpawnY()) - creep_position);
-    } else if (closer_player) {
-      force = QVector2D(closer_player->GetPosition() - creep_position);
-    }
-
-    auto runaway_hp = creep->GetMaxHealthPoints()
-        * CreepSettings::GetInstance().GetRunawayHpRatio(creep->GetCreepType());
-    if (!creep->IsGoingToSpawn() &&
-        creep->GetHealthPoints() < runaway_hp) {
-      force *= -1;
-    }
-
-    force.normalize();
+    creep->TickIntelligence(model_->GetAllGameObjects());
     ObjectCollision::MoveWithSlidingCollision(
         creep, model_->GetGameObjectsToMoveWithSliding(),
-        force, model_data.delta_time);
-    creep->SetRotation(Math::VectorAngle(QPointF(), force.toPointF()));
-
-    if (closer_player) {
-      auto timestamp = GetCurrentServerTime();
-      if (creep->IsPossibleToAttack(timestamp)) {
-        float distance = Math::DistanceBetweenPoints(
-            creep_position, closer_player->GetPosition());
-        if (distance - closer_player->GetRigidBodyBoundingCircleRadius()
-            - creep->GetRigidBodyBoundingCircleRadius()
-            < creep->GetAttackDistance()) {
-          AddEventToSendToAllPlayers(Event(EventType::kStartAttackAnimation,
-                                           creep->GetId()));
-          bool is_killed;
-          EntityReceiveDamage(model_data, creep,
-                              closer_player, creep->GetDamage(),
-                              &is_killed);
-          if (is_killed) {
-            this->AddEventToSendToAllPlayers(
-                Event(EventType::kPlayerKilledNotification,
-                      closer_player->GetId(), creep->GetId(),
-                      static_cast<int>(WeaponType::kNone)));
-          }
-          creep->SetLastAttackedTime(timestamp);
+        creep->GetForce(), model_data.delta_time);
+    auto timestamp = GetCurrentServerTime();
+    if (creep->IsPossibleToAttack(timestamp)) {
+      auto player_id_to_damage = creep->GetPlayerToDamage(players);
+      if (player_id_to_damage != Constants::kNullGameObjectId) {
+        auto player = model_->GetPlayerByPlayerId(player_id_to_damage);
+        AddEventToSendToAllPlayers(Event(EventType::kStartAttackAnimation,
+                                         creep->GetId()));
+        bool is_killed;
+        EntityReceiveDamage(model_data, creep,
+                            player, creep->GetDamage(),
+                            &is_killed);
+        if (is_killed) {
+          this->AddEventToSendToAllPlayers(
+              Event(EventType::kPlayerKilledNotification,
+                    player->GetId(), creep->GetId(),
+                    static_cast<int>(WeaponType::kNone)));
         }
+        creep->SetLastAttackedTime(timestamp);
       }
     }
   }
@@ -281,23 +230,28 @@ void RoomController::ProcessBulletHits(
             object_collided_id);
     if (actual_object_collided->IsEntity() &&
         actual_object_collided->IsAlive()) {
-      auto entity = std::dynamic_pointer_cast<Entity>(actual_object_collided);
+      auto injured = std::dynamic_pointer_cast<Entity>(actual_object_collided);
       bool is_killed;
-      auto killer =
+      auto damager =
           model_data_bullet.model->IsGameObjectIdTaken(bullet->GetParentId()) ?
           std::dynamic_pointer_cast<Entity>(
               model_data_bullet.model->GetGameObjectByGameObjectId(
                   bullet->GetParentId())) : nullptr;
       EntityReceiveDamage(model_data_bullet,
-                          killer, entity,
+                          damager, injured,
                           bullet->GetBulletDamage(), &is_killed);
+      if (injured->GetType() == GameObjectType::kCreep &&
+          damager->GetType() == GameObjectType::kPlayer) {
+        std::dynamic_pointer_cast<Creep>(injured)->SetAggressivePlayer(
+            std::dynamic_pointer_cast<Player>(damager));
+      }
 
-      if (is_killed && entity->GetType() == GameObjectType::kPlayer) {
+      if (is_killed && injured->GetType() == GameObjectType::kPlayer) {
         this->AddEventToSendToAllPlayers(
             Event(EventType::kPlayerKilledNotification,
-                  entity->GetId(),
+                  injured->GetId(),
                   bullet->GetParentId(),
-                  static_cast<int>(std::dynamic_pointer_cast<Player>(killer)->
+                  static_cast<int>(std::dynamic_pointer_cast<Player>(damager)->
                       GetWeapon()->GetWeaponType())));
       }
     }

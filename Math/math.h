@@ -9,6 +9,7 @@
 #include <QLineF>
 #include <QPointF>
 #include <QVector2D>
+#include <QRectF>
 
 #include "GameObject/RigidBody/intersect_constants.h"
 
@@ -60,6 +61,28 @@ std::vector<QPointF> GetRectanglePoints(QPointF position, float rotation,
   }
   return points;
 }
+
+struct Line {
+  Line() = default;
+  Line(double a_, double b_, double c_);
+  Line(QPointF dot1_, QPointF dot2_);
+  double a{0.};
+  double b{0.};
+  double c{0.};
+  QPointF dot1;
+  QPointF dot2;
+};
+
+QPointF GetLinesIntersection(const Line& line1, const Line& line2);
+double GetDistanceFromDotToLine(const QPointF& dot, const Line& line);
+bool IsDotOnCircle(const QPointF& dot, const QPointF& circle_center,
+                   float circle_radius);
+bool IsDotOnLine(const QPointF& dot, const Line& line);
+std::vector<QPointF> GetCircleAndLineIntersections(
+    const QPointF& circle_center, float circle_radius, const Line& line);
+std::vector<QPointF> GetRectWithLineIntersections(const QRectF& rect,
+                                                  const Line& line);
+bool IsDotOnSegment(const QPointF& dot, const Line& line);
 
 }  // namespace Math
 

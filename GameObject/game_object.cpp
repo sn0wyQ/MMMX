@@ -283,3 +283,24 @@ void GameObject::SetAppearing() {
 void GameObject::SetDisappearing() {
   opacity_ = 0.f;
 }
+
+bool GameObject::Intersects(const Math::Line& line) {
+  switch (rigid_body_->GetType()) {
+    case RigidBodyType::kCircle:
+      // return !Math::GetCircleAndLineIntersections(
+      //     this->GetPosition(), this->GetRigidBodyBoundingCircleRadius(),
+      //     line).empty();
+
+    case RigidBodyType::kRectangle: {
+      QPointF offset(rigid_body_->GetWidth() / 2.f,
+                     rigid_body_->GetHeight() / 2.f);
+      return !Math::GetRectWithLineIntersections(
+          QRectF(this->position_ - offset, this->position_ + offset),
+          line).empty();
+    }
+
+    default:
+      qWarning() << "Invalid rigid body type";
+      return false;
+  }
+}
