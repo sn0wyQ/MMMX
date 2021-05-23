@@ -3,8 +3,6 @@
 MainMenu::MainMenu(AbstractClientView* parent,
                    std::shared_ptr<ClientController> controller)
     : QWidget(parent), parent_(parent), controller_(std::move(controller)) {
-  this->setMouseTracking(false);
-
   rooms_info_list_ = new RoomsInfoList(this, controller_->GetModel());
 
   start_game_ = new QPushButton(tr("Start Game"), this);
@@ -33,7 +31,11 @@ void MainMenu::resizeEvent(QResizeEvent* event) {
 }
 
 void MainMenu::OnStartGameButtonClicked() {
+  RoomId selected_room = rooms_info_list_->GetSelectedRoom();
   // TODO(Klim): some check like "if room is OK" etc.
-  parent_->ConnectToRoom(rooms_info_list_->GetSelectedRoom());
+  if (selected_room == Constants::kNullRoomId) {
+    return;
+  }
+  parent_->ConnectToRoom(selected_room);
   parent_->SetWindow(ClientWindowType::kGameView);
 }

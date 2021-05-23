@@ -335,7 +335,7 @@ void RoomController::SendGameObjectsDataToPlayer(GameObjectId player_id) {
       }
       is_first_in_fov_of_second_.insert(sender_receiver_pair);
     } else if (is_first_in_fov_of_second_.find(sender_receiver_pair)
-        != is_first_in_fov_of_second_.end()) {
+               != is_first_in_fov_of_second_.end()) {
       is_first_in_fov_of_second_.erase(sender_receiver_pair);
       this->AddEventToSendToSinglePlayer(
           GetEventOfGameObjectLeftFov(object->GetId()), player_id);

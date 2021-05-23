@@ -2,9 +2,7 @@
 
 RoomsInfoList::RoomsInfoList(QWidget* parent,
                              std::shared_ptr<ClientGameModel> model)
-    : QWidget(parent), model_(std::move(model)) {
-  this->setMouseTracking(false);
-
+    : AbstractRoomsInfoList(parent), model_(std::move(model)) {
   layout_ = new QVBoxLayout(this);
   this->setLayout(layout_);
 

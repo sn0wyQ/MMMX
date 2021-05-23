@@ -1,14 +1,20 @@
 #include "viewport.h"
 
-ViewPort::ViewPort(QWidget* parent, std::shared_ptr<ClientGameModel> model)
-  : QWidget(parent), model_(std::move(model)) {
+ViewPort::ViewPort(QWidget* parent,
+                   std::shared_ptr<ClientController> controller)
+  : QWidget(parent),
+    controller_(std::move(controller)),
+    model_(controller_->GetModel()) {
   this->setMouseTracking(true);
-
   converter_ = std::make_shared<Converter>(this);
 }
 
 std::shared_ptr<Converter> ViewPort::GetConverter() {
   return converter_;
+}
+
+void ViewPort::mouseMoveEvent(QMouseEvent* mouse_event) {
+  controller_->MouseMoveEvent(mouse_event);
 }
 
 void ViewPort::paintEvent(QPaintEvent* paint_event) {

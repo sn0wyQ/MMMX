@@ -23,7 +23,6 @@ Q_ENUM_NS(ClientWindowType)
 using ClientWindowType = ClientWindowTypeWrapper::ClientWindowType;
 Q_DECLARE_METATYPE(ClientWindowType)
 
-
 class AbstractClientView : public QMainWindow {
   Q_OBJECT
 

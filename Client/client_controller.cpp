@@ -14,7 +14,6 @@ ClientController::ClientController(const QUrl& url)
 }
 
 void ClientController::ConnectToRoom(RoomId room_id) {
-  room_id = 1;  // temporary
   this->AddEventToSend(Event(EventType::kConnectToRoomById, room_id));
   shoot_check_timer.start(Constants::kShootHoldingCheck);
 }
@@ -53,7 +52,6 @@ void ClientController::OnDisconnected() {
 
 void ClientController::OnByteArrayReceived(const QByteArray& message) {
   Event event(message);
-  // temp qInfo() << event;
   // Каждая миллисекунда важна для разницы времени,
   // так что не пропускаем через тик, а делаем сразу
   if (event.GetType() == EventType::kSetTimeDifference) {
@@ -370,7 +368,6 @@ void ClientController::AddLocalPlayerGameObjectEvent(const Event& event) {
 }
 
 void ClientController::UpdateGameObjectDataEvent(const Event& event) {
-  qInfo() << event;
   auto game_object_id = event.GetArg<GameObjectId>(0);
   auto params = event.GetArgsSubVector(1);
   auto game_object =

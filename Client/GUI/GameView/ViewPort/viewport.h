@@ -5,6 +5,7 @@
 #include <utility>
 #include <vector>
 
+#include <QMouseEvent>
 #include <QPaintEvent>
 #include <QResizeEvent>
 #include <QWidget>
@@ -17,14 +18,17 @@ class ViewPort : public QWidget {
   Q_OBJECT
 
  public:
-  ViewPort(QWidget* parent, std::shared_ptr<ClientGameModel> model);
+  ViewPort(QWidget* parent,
+           std::shared_ptr<ClientController> controller);
 
   std::shared_ptr<Converter> GetConverter();
 
+  void mouseMoveEvent(QMouseEvent* mouse_event) override;
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
  private:
+  std::shared_ptr<ClientController> controller_;
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<Converter> converter_;
 };

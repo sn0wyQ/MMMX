@@ -5,7 +5,7 @@ GameView::GameView(AbstractClientView* parent,
     : parent_(parent), controller_(std::move(controller)) {
   model_ = controller_->GetModel();
 
-  view_port_ = new ViewPort(this, model_);
+  view_port_ = new ViewPort(this, controller_);
   view_port_->move(0, 0);
 
   player_bar_ = new PlayerBar(this, model_);

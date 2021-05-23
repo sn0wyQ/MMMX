@@ -8,7 +8,6 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   this->resize(700, 700);
   this->setMinimumSize(310, 70);
   this->setWindowTitle(Constants::kWindowTitle);
-  this->setMouseTracking(true);
   this->setFocusPolicy(Qt::StrongFocus);
 
   game_view_ = new GameView(this, controller_);

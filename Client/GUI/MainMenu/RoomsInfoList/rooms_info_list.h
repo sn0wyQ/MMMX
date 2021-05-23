@@ -13,17 +13,20 @@
 #include <QWidget>
 
 #include "Client/GUI/MainMenu/RoomsInfoList/SingleRoomInfo/single_room_info.h"
+#include "Client/GUI/MainMenu/RoomsInfoList/abstract_rooms_info_list.h"
 #include "Client/client_game_model.h"
 #include "Server/Room/room_info.h"
 
-class RoomsInfoList : public QWidget {
+class RoomsInfoList : public AbstractRoomsInfoList {
+  Q_OBJECT
+
  public:
   RoomsInfoList(QWidget* parent, std::shared_ptr<ClientGameModel> model);
 
   void UpdateRoomsInfoList();
 
   RoomId GetSelectedRoom() const;
-  void SelectRoom(RoomId room_id);
+  void SelectRoom(RoomId room_id) override;
 
   void resizeEvent(QResizeEvent* event) override;
 

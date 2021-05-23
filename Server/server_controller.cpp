@@ -17,8 +17,6 @@ ServerController::ServerController()
 }
 
 void ServerController::SendEvent(const Event& event) {
-  // temp
-  qInfo() << "Sending" << event << "to" << event.GetArg<ClientId>(0);
   BaseController::LogEvent(event);
   switch (event.GetType()) {
     case EventType::kSendEventToClient: {
@@ -98,6 +96,13 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
   qDebug().noquote() << "[SERVER] Received" << event
                      << "from Client ID:" << client_id;
 
+  if (event.GetType() == EventType::kSetTimeDifference) {
+    // Важная каждая миллисекунда - отправляем ответ сразу без тика
+    this->ReplyWithTimeToClient(client_id,
+                                event.GetArg<int64_t>(0));
+    return;
+  }
+
   if (server_model_.GetRoomIdByClientId(client_id) == Constants::kNullRoomId) {
     if (event.GetType() == EventType::kConnectToRoomById) {
       auto room_id = event.GetArg<RoomId>(0);
@@ -114,11 +119,6 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
                                  this->GetVar(),
                                  server_model_.GetRoomByClientId(client_id)
                                   ->GetVar()));
-    return;
-  } else if (event.GetType() == EventType::kSetTimeDifference) {
-    // Важная каждая миллисекунда - отправляем ответ сразу без тика
-    this->ReplyWithTimeToClient(client_id,
-                                event.GetArg<int64_t>(0));
     return;
   }
 
