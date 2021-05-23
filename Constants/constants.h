@@ -42,6 +42,8 @@ extern const int64_t kTicksToStore;
 // Map
 extern const float kMapWidth;
 extern const float kMapHeight;
+extern const float kMapPictureWidth;
+extern const float kMapPictureHeight;
 
 // Room
 extern const int kDefaultMaxClients;
@@ -67,6 +69,7 @@ extern const int kAverageFpsFrames;
 
 // Animations
 extern const int kUnloadAnimationCheckTime;
+extern const int kCountOfPixmapsInSide;
 
 // MovableObject
 extern const float kDefaultSpeedMultiplier;
