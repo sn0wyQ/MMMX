@@ -257,7 +257,8 @@ QPointF Creep::GetPatrollingPoint(
     if (!patrolling_point_.isNull() &&
         dist_from_current_pos > this->GetRigidBodyBoundingCircleRadius() &&
         dist_from_spawn < this->GetFovRadius() &&
-        map_border->GetBoundingRect().contains(patrolling_point_)) {
+        !map_border->Intersects(Math::Line(this->GetPosition(),
+                                           patrolling_point_))) {
       bool current_point_is_good = true;
       for (const auto& object : nearby_game_objects) {
         auto dist_from_object =
