@@ -66,6 +66,8 @@ void Entity::SetHealthPoints(float health_points) {
     health_points_ = health_points;
     if (!this->IsAlive()) {
       this->SetDisappearing();
+    } else {
+      this->SetAppearing();
     }
   }
 }
