@@ -62,11 +62,11 @@ void Entity::SetFovRadius(float fov_radius) {
 void Entity::SetHealthPoints(float health_points) {
   if (std::fabs(health_points - health_points_) > Math::kEps) {
     last_changed_hp_ = QDateTime::currentMSecsSinceEpoch();
-    this->ShowHealthPointBar();
-    health_points_ = health_points;
-    if (!this->IsAlive()) {
-      this->SetDisappearing();
-    }
+  }
+  this->ShowHealthPointBar();
+  health_points_ = health_points;
+  if (!this->IsAlive()) {
+    this->SetDisappearing();
   }
 }
 
