@@ -1,6 +1,6 @@
 #include "animation.h"
 
-int Animation::frames_to_preload_in_active_sequence_ = 5;
+int Animation::frames_to_preload_in_active_sequence_ = 2;
 int Animation::frames_to_preload_in_inactive_sequences_ = 2;
 
 Animation::Animation(AnimationType animation_type)
