@@ -105,7 +105,8 @@ float Math::GetDistanceFromPointToLine(const QPointF& point,
   float a = line.a;
   float b = line.b;
   float c = line.c;
-  return std::fabs(a * point.x() + b * point.y() + c) / std::sqrt(a * a + b * b);
+  return std::fabs(a * point.x() + b * point.y() + c) /
+      std::sqrt(a * a + b * b);
 }
 
 bool Math::IsPointOnCircle(const QPointF& point, const QPointF& circle_center,

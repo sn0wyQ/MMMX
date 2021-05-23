@@ -2,6 +2,7 @@
 #define GAMEOBJECT_MOVABLEOBJECT_ENTITY_CREEP_CREEP_H_
 
 #include <memory>
+#include <limits>
 #include <vector>
 
 #include "GameObject/MovableObject/Entity/entity.h"
