@@ -110,7 +110,8 @@ double Math::GetDistanceFromPointToLine(const QPointF& point,
 
 bool Math::IsPointOnCircle(const QPointF& point, const QPointF& circle_center,
                          float circle_radius) {
-  return fabs(DistanceBetweenPoints(point, circle_center) - circle_radius) < kEps;
+  return fabs(DistanceBetweenPoints(point, circle_center) - circle_radius)
+      < kEps;
 }
 
 bool Math::IsPointOnLine(const QPointF& point, const Line& line) {
