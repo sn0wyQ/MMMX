@@ -22,6 +22,9 @@ Build project using MINGW by QT and CMake.
 Run MMMX-Server. By default, the game server will be running on localhost:1337.
 After you need to run MMMX-Client with -local flag to connect to localhost, otherwise client will try to connect to global server in Moscow.
 
+### Master branch build status
+[![Build Status](https://github.com/sn0wyQ/MMMX/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/sn0wyQ/MMMX/actions/workflows/ci.yml)
+
 ## Running the codding style tests
 
 Github Actions use 
