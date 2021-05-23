@@ -14,6 +14,7 @@ class MovableObject : public GameObject {
  public:
   explicit MovableObject(GameObjectId game_object_id);
   MovableObject(const MovableObject& other);
+  virtual ~MovableObject() = default;
 
   void OnTick(int delta_time) override;
   bool IsMovable() const override;
@@ -25,19 +26,21 @@ class MovableObject : public GameObject {
                                        int delta_time) const;
   void ApplyVelocity(int delta_time);
 
-  float GetCurrentSpeed() const;
+  void SetSpeedMultiplier(float speed_multiplier);
+  float GetSpeedMultiplier() const;
 
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
 
   bool IsFilteredByFov() const override;
 
-  float GetShortestDistance(const std::shared_ptr<GameObject>& object);
-
   std::shared_ptr<GameObject> Clone() const override;
+
+  void UpdateAnimationState(bool restart = false) override;
 
  private:
   QVector2D velocity_{};
+  float speed_multiplier_{};
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_MOVABLE_OBJECT_H_

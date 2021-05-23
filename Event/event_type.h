@@ -84,12 +84,18 @@ enum class EventType {
   // [1+] - game_object_args : relative SetParams
   kUpdateGameObjectData,
 
+  // [0] - <GameObjectId> game_object_id that should be deleted
+  // [1] - <int64_t> sent_time
+  kDeleteGameObject,
+
+  // ]]]]]]]]]
+
   // [0] - <GameObjectId> player_id
   // [1+] - player_stats_args
   kUpdatePlayersStats,
 
-  // [0] - <GameObjectId> game_object_id that left receiver player FOV
-  kGameObjectLeftFov,
+  // [0] - <int64_t> timestamp
+  kShootFailed,
 
   // [0] - <int64> timestamp
   // [1] - <GameObjectId> sender_player_id,
@@ -101,23 +107,57 @@ enum class EventType {
 
   // [0] - <int64> timestamp
   // [1] - <GameObjectId> sender_player_id
+  kSendPlayerReloading,
+
+  // [0] - <int64> timestamp
+  // [1] - <GameObjectId> sender_player_id
+  // [2] - QList<QVariant> random_shifts
   kSendPlayerShooting,
+
+  // [0] - <GameObjectId> sender_player_id
+  // LevelingSlots::SIZE times int
+  kSendLevelingPoints,
+
+  // [0] - <GameObjectId> attacker_id
+  kStartAttackAnimation,
+
+  // [0] - <GameObjectId> shooter_player_id
+  kStartShootingAnimation,
 
   // [0] - <GameObjectId> player_id
   // [1] - player_args
   kAddLocalPlayerGameObject,
 
   // [0] - <GameObjectId> player_id
+  kPlayerConnected,
+
+  // [0] - <GameObjectId> player_id
   kPlayerDisconnected,
+
+  // [0] - <GameObjectId> victim player_id
+  // [1] - <GameObjectId> killer entity_id
+  // [2] - <int> used weapon (WeaponType)
+  kPlayerKilledNotification,
+
+  // [0] - <GameObjectId> player_id
+  kPlayerRespawned,
 
   // [0] - <float> experience_to_add
   kIncreaseLocalPlayerExperience,
 
-  // [0] - <QPointF> point_to_spawn
   kLocalPlayerDied,
+
+  // [0] - <QPointF> point_to_spawn
+  kReviveLocalPlayer,
+
+  // [0] - <GameObjectId> player_id
+  kReviveConfirmed,
 
   // [0] - <float> health_points
   kUpdateLocalPlayerHealthPoints,
+
+  // [0] - <GameObjectId> player_id
+  kRequestRespawn,
 
   SIZE
 };

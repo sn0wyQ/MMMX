@@ -10,7 +10,10 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   this->setWindowTitle(Constants::kWindowTitle);
   this->setFocusPolicy(Qt::StrongFocus);
 
-  game_view_ = new GameView(this, controller_);
+  key_controller_ = std::make_shared<KeyController>(this);
+  key_controller_->Hide();
+
+  game_view_ = new GameView(this, controller_, key_controller_);
   main_menu_ = new MainMenu(this, controller_);
 
   stacked_widget_ = new QStackedWidget(this);
@@ -20,6 +23,8 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   this->setCentralWidget(stacked_widget_);
 
   controller_->SetView(std::shared_ptr<ClientView>(this));
+
+  this->resize(1400, 960);
 }
 
 void ClientView::ConnectToRoom(RoomId room_id) {
@@ -39,7 +44,7 @@ void ClientView::SetWindow(ClientWindowType window_type) {
 }
 
 void ClientView::Update() {
-  this->update();
+  game_view_->Update();
 }
 
 void ClientView::UpdateRoomsInfoList() {
@@ -80,4 +85,30 @@ void ClientView::resizeEvent(QResizeEvent* resize_event) {
 
 void ClientView::mouseReleaseEvent(QMouseEvent* mouse_event) {
   controller_->MouseReleaseEvent(mouse_event);
+}
+
+QPointF ClientView::GetPlayerToCenterOffset() const {
+  return game_view_->GetPlayerToCenterOffset();
+}
+
+void ClientView::AddKillFeedNotification(const QString& killer_name,
+                                         const QString& victim_name,
+                                         WeaponType weapon_type) {
+  game_view_->AddKillFeedNotification(killer_name, victim_name, weapon_type);
+}
+
+void ClientView::AddRespawnNotification(const QString& player_name) {
+  game_view_->AddRespawnNotification(player_name);
+}
+
+void ClientView::AddPlayerConnectedNotification(const QString& player_name) {
+  game_view_->AddPlayerConnectedNotification(player_name);
+}
+
+void ClientView::AddPlayerDisconnectedNotification(const QString& player_name) {
+  game_view_->AddPlayerDisconnectedNotification(player_name);
+}
+
+std::shared_ptr<KeyController> ClientView::GetKeyController() const {
+  return std::shared_ptr<KeyController>(key_controller_);
 }

@@ -17,6 +17,7 @@ class RoomGameModel : public GameModel {
   RoomGameModel(const RoomGameModel& model);
 
   GameObjectId GenerateNextUnusedGameObjectId();
+  GameObjectId GenerateNextUnusedBulletId(GameObjectId player_id);
 
   GameObjectId AddGameObject(GameObjectType type,
                              const std::vector<QVariant>& params);
@@ -24,14 +25,14 @@ class RoomGameModel : public GameModel {
   void UpdateGameObjectHashes();
 
   void AddPlayerStats(GameObjectId player_id, QString nickname, int level);
-  std::vector<std::shared_ptr<PlayerStats>> GetAllPlayersStats();
   bool IsNeededToSendPlayerStats(GameObjectId player_id);
   void UpdatePlayerStatsHashes();
 
   QPointF GetPointToSpawn(float radius_from_object,
-                          bool for_player = false) const;
+                          GameObjectType game_object_type) const;
 
  private:
+  std::unordered_map<GameObjectId, GameObjectId> next_bullet_id_for_player_;
   GameObjectId next_game_object_id_{1};
   std::unordered_map<GameObjectId, QByteArray> last_object_hash_;
   std::unordered_map<GameObjectId, QByteArray> last_player_stats_hash_;

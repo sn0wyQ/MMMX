@@ -9,8 +9,9 @@
 
 #include <QDateTime>
 #include <QDebug>
+#include <QString>
 
-#include "constants.h"
+#include "Constants/constants.h"
 
 namespace Constants::RoomSettings {
 

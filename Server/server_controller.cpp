@@ -4,8 +4,7 @@ ServerController::ServerController()
   : web_socket_server_(Constants::kServerName,
                        QWebSocketServer::NonSecureMode) {
   if (web_socket_server_.listen(QHostAddress::Any,  Constants::kServerPort)) {
-    qInfo().noquote().nospace() << "Server is running on "
-      << Constants::kServerUrl.host() << ":"
+    qInfo().noquote().nospace() << "Server is running on port "
       << web_socket_server_.serverPort();
     connect(&web_socket_server_,
             &QWebSocketServer::newConnection,
@@ -178,8 +177,7 @@ void ServerController::OnSocketDisconnected() {
   }
 }
 
-void ServerController::SendToClient(int client_id,
-                                    const Event& event) {
+void ServerController::SendToClient(int client_id, const Event& event) {
   auto client_ptr = server_model_.GetClientByClientId(client_id);
   if (client_ptr) {
     try {

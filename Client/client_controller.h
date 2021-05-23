@@ -1,10 +1,14 @@
 #ifndef CLIENT_CLIENT_CONTROLLER_H_
 #define CLIENT_CLIENT_CONTROLLER_H_
 
+#include <algorithm>
+#include <ctime>
 #include <memory>
+#include <random>
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <queue>
 
 #include <QByteArray>
 #include <QDebug>
@@ -22,34 +26,6 @@
 #include "Math/math.h"
 #include "client_game_model.h"
 
-// TODO(Everyone): make class Hotkeys instead of enum Controls
-// (with possibility to rebind keys)
-
-#ifdef WIN32
-enum class Controls {
-  kKeyW = 17,
-  kKeyA = 30,
-  kKeyS = 31,
-  kKeyD = 32
-};
-#else
-enum class Controls {
-  kKeyW = 25,
-  kKeyA = 38,
-  kKeyS = 39,
-  kKeyD = 40
-};
-#endif
-
-enum class Direction {
-  kUp,
-  kRight,
-  kDown,
-  kLeft,
-
-  SIZE
-};
-
 enum class GameState {
   kGameFinished,
   kGameInProgress,
@@ -60,7 +36,8 @@ class ClientController : public BaseController {
   Q_OBJECT
 
  public:
-  explicit ClientController(const QUrl& url = Constants::kServerUrl);
+  explicit ClientController(const QUrl& url,
+                            int fps_max = Constants::kDefaultFpsMax);
   ~ClientController() override = default;
 
   void ConnectToRoom(RoomId room_id);
@@ -73,6 +50,7 @@ class ClientController : public BaseController {
   void OnTickGameFinished(int) {}
   void OnTickGameInProgress(int delta_time);
   void OnTickGameNotStarted(int delta_time);
+  void SendPlayerDataToServer();
 
   std::shared_ptr<ClientGameModel> GetModel();
   int GetServerVar() const;
@@ -82,10 +60,17 @@ class ClientController : public BaseController {
 
   bool IsGameInProgress() const;
 
-  void SetView(std::shared_ptr<AbstractClientView> view);
+  int64_t GetHoldingRespawnButtonMsecs() const;
+  int64_t GetSecsToNextPossibleRevive() const;
+  bool GetIsHoldingRespawnButton() const;
 
+  void SetView(std::shared_ptr<AbstractClientView> view);
+  void UpdateView();
+
+  void UpdateAnimations(int delta_time);
   void UpdateLocalPlayer(int delta_time);
   void UpdateLocalBullets(int delta_time);
+  void UpdateGameObjects();
   void UpdateInterpolationInfo();
   int64_t GetCurrentServerTime() const override;
 
@@ -108,10 +93,11 @@ class ClientController : public BaseController {
   void OnByteArrayReceived(const QByteArray& message);
   void UpdateVarsAndPing();
   void SetPing(int elapsed_time);
-  void ShootHolding();
+  void ControlsHolding();
 
  private:
   void EndGameEvent(const Event& event) override;
+  void PlayerConnectedEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
   void SendVisibleRoomsInfoEvent(const Event& event) override;
   void SetPlayerIdToClient(const Event& event) override;
@@ -122,16 +108,25 @@ class ClientController : public BaseController {
   // ------------------- GAME EVENTS -------------------
 
   void AddLocalPlayerGameObjectEvent(const Event& event) override;
-  void GameObjectLeftFovEvent(const Event& event) override;
+  void DeleteGameObjectEvent(const Event& event) override;
+  void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
+  void ShootFailedEvent(const Event& event) override;
+  void LocalPlayerDiedEvent(const Event& event) override;
+  void ReviveLocalPlayerEvent(const Event& event) override;
   void SendGameInfoToInterpolateEvent(const Event& event) override;
+  void PlayerKilledNotificationEvent(const Event& event) override;
+  void PlayerRespawnedEvent(const Event& event) override;
   void UpdateGameObjectDataEvent(const Event& event) override;
   void UpdatePlayersStatsEvent(const Event& event) override;
   void UpdateLocalPlayerHealthPointsEvent(const Event& event) override;
-  void LocalPlayerDiedEvent(const Event& event) override;
-  void IncreaseLocalPlayerExperienceEvent(const Event& event) override;
+  void StartAttackAnimationEvent(const Event& event) override;
+  void StartShootingAnimationEvent(const Event& event) override;
+
+  QString GetEntityName(GameObjectId game_object_id) const;
 
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<AbstractClientView> view_;
+  std::shared_ptr<KeyController> key_controller_;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;
@@ -140,24 +135,22 @@ class ClientController : public BaseController {
   int room_var_{0};
   int client_var_{0};
   int ping_{0};
-  QTimer timer_for_server_var_;
+  int fps_max_{Constants::kDefaultFpsMax};
+  QTimer server_var_timer_;
+  QTimer view_update_timer_;
   std::shared_ptr<Converter> converter_;
   bool is_time_difference_set_{false};
   int64_t time_difference_{0};
-  std::unordered_map<Controls, Direction> key_to_direction_{
-      {Controls::kKeyW, Direction::kUp},
-      {Controls::kKeyD, Direction::kRight},
-      {Controls::kKeyS, Direction::kDown},
-      {Controls::kKeyA, Direction::kLeft}
-  };
-  std::unordered_map<Direction, bool> is_direction_by_keys_{
-      {Direction::kUp, false},
-      {Direction::kRight, false},
-      {Direction::kDown, false},
-      {Direction::kLeft, false}
-  };
-  QTimer shoot_check_timer;
-  bool is_holding_{false};
+  int64_t last_view_update_time_{-1};
+  QPointF last_mouse_position_;
+  QTimer controls_check_timer_;
+  bool are_controls_blocked_{false};
+
+  int64_t last_died_{0};
+  int64_t last_requested_respawn_time_{0};
+  int64_t respawn_holding_current_{0};
+
+  std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

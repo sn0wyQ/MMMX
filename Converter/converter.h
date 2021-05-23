@@ -1,10 +1,12 @@
 #ifndef CONVERTER_CONVERTER_H_
 #define CONVERTER_CONVERTER_H_
 
+#include <cmath>
+
 #include <QPointF>
 #include <QWidget>
 
-#include "constants.h"
+#include "Constants/constants.h"
 
 class Converter {
  public:
@@ -20,13 +22,17 @@ class Converter {
   QPointF PointFromGameToScreen(const QPointF& point) const;
   QPointF PointFromScreenToGame(const QPointF& point) const;
 
+  float ScaleFromGameToScreen(float x) const {
+    return std::round(x * coefficient_);
+  }
   template<typename T>
   T ScaleFromGameToScreen(const T& object) const {
     return object * coefficient_;
   }
   template<typename T>
   T ScaleFromGameToScreen(T* object) const {
-    return (*object) *= coefficient_;
+    *object = ScaleFromGameToScreen(*object);
+    return *object;
   }
 
   template<typename T>

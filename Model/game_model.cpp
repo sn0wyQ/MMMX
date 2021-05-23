@@ -1,7 +1,7 @@
 #include "game_model.h"
 
 GameModel::GameModel(const GameModel& other) {
-  for (const auto& [game_object_id, game_object] : other.game_objects_) {
+  for (const auto&[game_object_id, game_object] : other.game_objects_) {
     game_objects_.emplace(game_object_id, game_object->Clone());
   }
   for (const auto& [game_object_id, player_stats] : other.players_stats_) {
@@ -42,8 +42,14 @@ std::shared_ptr<GameObject> GameModel::GetNewEmptyGameObject(
     case GameObjectType::kBullet:
       object = std::make_shared<Bullet>(game_object_id);
       break;
+    case GameObjectType::kCreep:
+      object = std::make_shared<Creep>(game_object_id);
+      break;
     case GameObjectType::kMapBorder:
       object = std::make_shared<MapBorder>(game_object_id);
+      break;
+    default:
+      qWarning() << "Invalid game object type";
       break;
   }
   return object;
@@ -59,17 +65,30 @@ void GameModel::AddGameObject(GameObjectId game_object_id,
       GetNewEmptyGameObject(game_object_id, type);
   object->SetParams(params);
   game_objects_.emplace(std::make_pair(game_object_id, object));
-  qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Added new GameObject:" << game_object_id
                     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
-                        .valueToKey(static_cast<uint32_t>(type)));
+                        .valueToKey(static_cast<int>(type)));
 }
 
-std::shared_ptr<PlayerStats> GameModel::GetPlayerStatsByPlayerId(
-    GameObjectId player_id) {
+std::vector<std::shared_ptr<PlayerStats>>
+    GameModel::GetAllPlayersStats() const {
+  std::vector<std::shared_ptr<PlayerStats>> result;
+  for (const auto& it : players_stats_) {
+    result.emplace_back(it.second);
+  }
+  return result;
+}
+
+std::shared_ptr<PlayerStats>
+    GameModel::GetPlayerStatsByPlayerId(GameObjectId player_id) {
   if (players_stats_.find(player_id) == players_stats_.end()) {
     players_stats_[player_id] = std::make_shared<PlayerStats>(PlayerStats());
   }
   return players_stats_[player_id];
+}
+
+void GameModel::DeletePlayerStats(GameObjectId player_id) {
+  players_stats_.erase(player_id);
 }
 
 void GameModel::DeleteGameObject(GameObjectId game_object_id) {
@@ -79,9 +98,9 @@ void GameModel::DeleteGameObject(GameObjectId game_object_id) {
   }
   GameObjectType type = iter->second->GetType();
   game_objects_.erase(iter);
-  qInfo().noquote() << "[MODEL] Removed GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Removed GameObject:" << game_object_id
     << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
-        .valueToKey(static_cast<uint32_t>(type)));
+        .valueToKey(static_cast<int>(type)));
 }
 
 std::vector<std::shared_ptr<Player>> GameModel::GetPlayers() const {
@@ -93,9 +112,21 @@ std::vector<std::shared_ptr<Player>> GameModel::GetPlayers() const {
   }
   return result;
 }
+
+std::vector<std::shared_ptr<Creep>> GameModel::GetCreeps() const {
+  std::vector<std::shared_ptr<Creep>> result;
+  for (const auto& game_object : game_objects_) {
+    if (game_object.second->GetType() == GameObjectType::kCreep) {
+      result.push_back(std::dynamic_pointer_cast<Creep>(game_object.second));
+    }
+  }
+  return result;
+}
+
 bool GameModel::IsGameObjectIdTaken(GameObjectId game_object_id) const {
   return game_objects_.find(game_object_id) != game_objects_.end();
 }
+
 std::vector<std::shared_ptr<GameObject>>
   GameModel::GetAllGameObjects() const {
   std::vector<std::shared_ptr<GameObject>> result;
@@ -141,7 +172,52 @@ void GameModel::AttachGameObject(
     GameObjectId game_object_id,
     const std::shared_ptr<GameObject>& game_object) {
   game_objects_[game_object_id] = game_object;
-  qInfo().noquote() << "[MODEL] Added new GameObject:" << game_object_id
+  qDebug().noquote() << "[MODEL] Added new GameObject:" << game_object_id
      << "type =" << QString(QMetaEnum::fromType<GameObjectType>()
-         .valueToKey(static_cast<uint32_t>(game_object->GetType())));
+         .valueToKey(static_cast<int>(game_object->GetType())));
+}
+
+bool GameModel::DoesObjectCollideByMoveWithSliding(
+    const std::shared_ptr<GameObject>& game_object) const {
+  if (!game_object->IsAlive()) {
+    return false;
+  }
+  if (game_object->GetType() == GameObjectType::kBullet) {
+    return false;
+  }
+  return true;
+}
+
+std::vector<std::shared_ptr<GameObject>>
+  GameModel::GetGameObjectsToMoveWithSliding() const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& game_object : GetAllExistGameObjects()) {
+    if (DoesObjectCollideByMoveWithSliding(game_object)) {
+      result.emplace_back(game_object);
+    }
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<GameObject>>
+  GameModel::GetAllExistGameObjects() const {
+  std::vector<std::shared_ptr<GameObject>> result;
+  for (const auto& game_object : game_objects_) {
+    if (game_object.second->IsEntity() &&
+      !std::dynamic_pointer_cast<Entity>(game_object.second)->IsAlive()) {
+      continue;
+    }
+    result.emplace_back(game_object.second);
+  }
+  return result;
+}
+
+std::vector<std::shared_ptr<Player>> GameModel::GetAlivePlayers() const {
+  std::vector<std::shared_ptr<Player>> result;
+  for (const auto& player : GetPlayers()) {
+    if (player->IsAlive()) {
+      result.push_back(player);
+    }
+  }
+  return result;
 }

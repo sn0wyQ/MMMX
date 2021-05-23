@@ -1,32 +1,37 @@
 #ifndef GAMEOBJECT_GAME_OBJECT_H_
 #define GAMEOBJECT_GAME_OBJECT_H_
 
-#include <vector>
-#include <utility>
-#include <memory>
 #include <deque>
+#include <memory>
+#include <utility>
+#include <vector>
 
-#include <QPoint>
 #include <QDebug>
+#include <QPoint>
+#include <QString>
 
-#include "constants.h"
+#include "Animation/animation.h"
+#include "Animation/animations_holder.h"
 #include "Painter/painter.h"
 #include "Math/math.h"
 #include "GameObject/RigidBody/intersect_constants.h"
 #include "GameObject/RigidBody/rigid_body.h"
 #include "GameObject/RigidBody/rigid_body_circle.h"
 #include "GameObject/RigidBody/rigid_body_rectangle.h"
+#include "Constants/constants.h"
 
 namespace GameObjectTypeWrapper {
 
 Q_NAMESPACE
 
 // enum for sending events
+// MUST be sorted in alphabet order
 enum class GameObjectType {
   kBullet,
-  kPlayer,
+  kCreep,
   kGameObject,
-  kMapBorder
+  kMapBorder,
+  kPlayer
 };
 
 Q_ENUM_NS(GameObjectType)
@@ -40,12 +45,15 @@ class GameObject {
  public:
   explicit GameObject(GameObjectId id);
   GameObject(const GameObject& other);
+  virtual ~GameObject() = default;
 
   virtual void OnTick(int delta_time) {}
-  void Draw(Painter* painter);
-  virtual void DrawHealthBar(Painter* painter) {}
-  virtual void DrawLevel(Painter* painter) {}
-  virtual void DrawRelatively(Painter* painter) {}
+  void Draw(Painter* painter) const;
+  virtual void DrawHealthBar(Painter* painter) const {}
+  virtual void DrawLevel(Painter* painter) const {}
+  virtual void DrawRelatively(Painter* painter) const {}
+  virtual void DrawNickname(Painter* painter,
+                            const QString& nickname) const {}
 
   virtual bool IsMovable() const;
 
@@ -67,6 +75,7 @@ class GameObject {
   float GetHeight() const;
   void SetWidth(float width);
   void SetHeight(float height);
+  QRectF GetBoundingRect() const;
 
   virtual GameObjectType GetType() const;
 
@@ -76,9 +85,14 @@ class GameObject {
   bool IsNeedToDelete() const;
   void SetIsNeedToDelete(bool is_need_to_delete);
 
-  bool IsInFov() const;
-  void SetIsInFov(bool is_in_fov);
   virtual bool IsFilteredByFov() const;
+
+  std::shared_ptr<Animation> GetAnimation();
+  void SetAnimation(AnimationType animation_type);
+  void SetAnimationState(AnimationState animation_state,
+                         bool restart = false);
+  static AnimationsHolder& GetAnimationsHolder();
+  virtual void UpdateAnimationState(bool restart = false) {}
 
   virtual bool IsEntity() const;
 
@@ -87,10 +101,31 @@ class GameObject {
   void SetUpdatedTime(int64_t updated_time);
   int64_t GetUpdatedTime() const;
 
-  float GetBoundingCircleRadius() const;
+  float GetRigidBodyBoundingCircleRadius() const;
+
+  void SetCreatedTime(int64_t created_time);
+  int64_t GetCreatedTime() const;
+
+  void SetIsInterpolatedOnce(bool is_interpolated_once);
+  bool IsInterpolatedOnce() const;
+
+  virtual bool IsAlive() const;
+
+  bool IsNeedToDraw() const;
+
+  virtual float GetOpacity() const;
+  virtual void SetAppearing();
+  virtual void SetDisappearing();
+
+  bool Intersects(const Math::Line& line);
 
  private:
+  // Holds animations for all GameObjects
+  // Prevents same SharedFrame being loaded into RAM more than once at a time
+  static AnimationsHolder animations_holder_;
   GameObjectId id_{Constants::kNullGameObjectId};
+  std::shared_ptr<Animation>
+      animation_ = std::make_shared<Animation>(AnimationType::kNone);
   QPointF position_{0.f, 0.f};
   // 0 is direction from left to right
   // Increasing counterclockwise
@@ -99,9 +134,14 @@ class GameObject {
   float width_{0.f};
   float height_{0.f};
   std::shared_ptr<RigidBody> rigid_body_;
-  bool is_in_fov_{false};
   bool is_need_to_delete_{false};
   int64_t updated_time_{};
+  int64_t created_time_{};
+  // Если мы только привязали объект к модели из интерполятора -
+  // не можем его правильно проинтерполировать
+  // мы не должны его рисовать
+  bool is_interpolated_once_{false};
+  float opacity_{1.f};
 };
 
 #endif  // GAMEOBJECT_GAME_OBJECT_H_

@@ -1,0 +1,9 @@
+<RCC>
+    <qresource>
+        <file>RespawnHeart.png</file>
+        <file>RespawnHeartGray.png</file>
+        <file>FilledBullet.svg</file>
+        <file>UnfilledBullet.svg</file>
+        <file>LevelStar.svg</file>
+    </qresource>
+</RCC>

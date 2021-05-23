@@ -9,11 +9,12 @@
 class Bullet : public MovableObject {
  public:
   explicit Bullet(GameObjectId bullet_id);
+  virtual ~Bullet() = default;
 
-  virtual GameObjectType GetType() const;
+  GameObjectType GetType() const override;
 
   void OnTick(int delta_time) override;
-  void DrawRelatively(Painter* painter) override;
+  void DrawRelatively(Painter* painter) const override;
 
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;

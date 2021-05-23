@@ -1,6 +1,7 @@
 #ifndef CLIENT_CLIENT_VIEW_H_
 #define CLIENT_CLIENT_VIEW_H_
 
+#include <deque>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -35,6 +36,15 @@ class ClientView : public AbstractClientView {
   void Update() override;
   void UpdateRoomsInfoList() override;
   std::shared_ptr<Converter> GetConverter() override;
+  QPointF GetPlayerToCenterOffset() const override;
+  void AddKillFeedNotification(const QString& killer_name,
+                               const QString& victim_name,
+                               WeaponType weapon_type) override;
+
+  std::shared_ptr<KeyController> GetKeyController() const override;
+  void AddRespawnNotification(const QString& player_name) override;
+  void AddPlayerConnectedNotification(const QString& player_name) override;
+  void AddPlayerDisconnectedNotification(const QString& player_name) override;
 
  private:
   void focusOutEvent(QFocusEvent* focus_event) override;
@@ -52,6 +62,8 @@ class ClientView : public AbstractClientView {
   QStackedWidget* stacked_widget_;
   GameView* game_view_;
   MainMenu* main_menu_;
+
+  std::shared_ptr<KeyController> key_controller_;
 };
 
 #endif  // CLIENT_CLIENT_VIEW_H_

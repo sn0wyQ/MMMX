@@ -17,9 +17,15 @@ set(CMAKE_PREFIX_PATH ${Qt_DIR})
 # Set Qt version
 set(QT_VERSION 5)
 # Set necessary Qt modules
-set(REQUIRED_LIBS Core Widgets Multimedia WebSockets Network)
+set(REQUIRED_LIBS Core Multimedia Network Svg WebSockets Widgets)
 # Set corresponding Qt libraries
-set(REQUIRED_LIBS_QUALIFIED Qt5::Core Qt5::Widgets Qt5::Multimedia Qt5::WebSockets Qt5::Network)
+set(REQUIRED_LIBS_QUALIFIED
+        Qt5::Core
+        Qt5::Multimedia
+        Qt5::Network
+        Qt5::Svg
+        Qt5::WebSockets
+        Qt5::Widgets)
 find_package(Qt${QT_VERSION} COMPONENTS ${REQUIRED_LIBS} REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -56,25 +62,39 @@ set(UBSAN_FLAGS
         FORCE)
 
 # Build Types
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g ${TSAN_FLAGS}")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g ${UBSAN_FLAGS}")
 
 # Add code files
 set(SOURCES
+        Animation/animation.cpp
+        Animation/animation_enums.h
+        Animation/animations_holder.cpp
+        Animation/shared_frame.cpp
         Client/GUI/GameView/PlayerBar/player_bar.cpp
         Client/GUI/GameView/ViewPort/viewport.cpp
+        Client/GUI/GameView/KillFeed/kill_feed.cpp
+        Client/GUI/GameView/KillFeed/kill_feed_notification.cpp
         Client/GUI/GameView/game_view.cpp
         Client/GUI/MainMenu/RoomsInfoList/SingleRoomInfo/single_room_info.cpp
         Client/GUI/MainMenu/RoomsInfoList/rooms_info_list.cpp
         Client/GUI/MainMenu/main_menu.cpp
+        Client/GUI/GameView/RespawnButton/respawn_button.cpp
+        Client/GUI/GameView/ReloadingField/reloading_field.cpp
+        Client/GUI/GameView/StatsTable/stats_table.cpp
         Client/GUI/abstract_client_view.h
         Client/GUI/client_view.cpp
+        Client/KeyController/key_controller.cpp
         Client/client_controller.cpp
         Client/client_game_model.cpp
+        Constants/constants.cpp
         Controller/base_controller.cpp
         Converter/converter.cpp
         Event/event.cpp
         Event/event_type.h
         GameObject/MovableObject/Bullet/bullet.cpp
+        GameObject/MovableObject/Entity/Creep/creep.cpp
+        GameObject/MovableObject/Entity/Creep/creep_enums.h
+        GameObject/MovableObject/Entity/Creep/creep_settings.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
@@ -89,6 +109,7 @@ set(SOURCES
         Hash/hash_calculator.cpp
         Interpolator/interpolator.cpp
         Math/math.cpp
+        MessageHandler/message_handler.cpp
         Model/game_model.cpp
         Server/Room/room_game_model.cpp
         Server/server_model.cpp
@@ -106,12 +127,43 @@ set(SOURCES
         Weapon/weapon.cpp
         )
 
-# If necessary, add resources files
-qt5_add_big_resources(RESOURCES_COMMON
-        Res/Json/weapon_settings.qrc)
+if (WIN32)
+    set(SYSTEM_DEPENDENT_SOURCES
+            Client/KeyController/key_names_windows.cpp)
+else()
+    set(SYSTEM_DEPENDENT_SOURCES
+            Client/KeyController/key_names_unix.cpp)
+endif (WIN32)
 
-add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_COMMON})
+# If necessary, add resources files
+qt5_add_big_resources(RESOURCES_CLIENT
+        Res/Icons/icons.qrc
+        Res/Fonts/fonts.qrc)
+qt5_add_big_resources(RESOURCES_SERVER
+        )
+qt5_add_big_resources(RESOURCES_COMMON
+        Res/Json/creep_settings.qrc
+        Res/Json/weapon_settings.qrc
+        )
+
+add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
+        ${RESOURCES_COMMON} ${SYSTEM_DEPENDENT_SOURCES})
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
-add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_COMMON})
+add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}
+        ${RESOURCES_COMMON} ${SYSTEM_DEPENDENT_SOURCES})
+target_compile_definitions(MMMX-Server PUBLIC -DMMMX_SERVER)
 target_link_libraries(MMMX-Server ${REQUIRED_LIBS_QUALIFIED})
+
+# Synchronize Res with output folder
+if (WIN32)
+    add_custom_command(TARGET MMMX-Client POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E remove_directory
+            ${CMAKE_BINARY_DIR}/Res)
+    add_custom_command(TARGET MMMX-Client POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+            ${CMAKE_SOURCE_DIR}/Res/ ${CMAKE_BINARY_DIR}/Res)
+else()
+    file(REMOVE ${CMAKE_CURRENT_SOURCE_DIR}/Res)
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/Res DESTINATION ${CMAKE_BINARY_DIR})
+endif (WIN32)
