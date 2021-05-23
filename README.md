@@ -1,6 +1,7 @@
 # MMMX GAME
 
 Multiplayer 2D shooter with upper view.
+![image](https://user-images.githubusercontent.com/45922618/119276771-99327f00-bc24-11eb-864a-9105292ec3d2.png)
 
 ## Getting Started
 
