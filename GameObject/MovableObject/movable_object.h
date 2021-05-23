@@ -38,7 +38,7 @@ class MovableObject : public GameObject {
 
   void UpdateAnimationState(bool restart = false) override;
 
- protected:
+ private:
   QVector2D velocity_{};
   float speed_multiplier_{};
 };

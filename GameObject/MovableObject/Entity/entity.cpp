@@ -201,7 +201,7 @@ void Entity::SetDisappearing() {
 }
 
 void Entity::UpdateAnimationState(bool restart) {
-  if (!is_disappearing_ && velocity_.length() > Math::kEps) {
+  if (!is_disappearing_ && this->GetVelocity().length() > Math::kEps) {
     this->SetAnimationState(AnimationState::kMove, restart);
   } else {
     this->SetAnimationState(AnimationState::kIdle, restart);
