@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <QVector2D>
 
+#include "Math/math.h"
+
 template<class T>
 class LinearEmulator {
  public:
@@ -28,6 +30,8 @@ class LinearEmulator {
   mutable T value_{};
   T min_value_{};
   T max_value_{};
+  T last_start_{};
+  T last_finish_{};
 };
 
 template<class T>
@@ -62,14 +66,14 @@ T LinearEmulator<T>::GetCurrentValue() const {
     if (value_ > max_value_ && speed_ > 0.f) {
       value_ = max_value_;
       if (stop_on_max_) {
-        continue;
+        break;
       }
       speed_ = -abs(speed_);
     }
     if (value_ < min_value_ && speed_ < 0.f) {
       value_ = min_value_;
       if (stop_on_min_) {
-        continue;
+        break;
       }
       speed_ = abs(speed_);
     }
@@ -81,13 +85,18 @@ T LinearEmulator<T>::GetCurrentValue() const {
 
 template<class T>
 void LinearEmulator<T>::SetPath(T start, T finish) {
-  last_time_updated_ = QDateTime::currentMSecsSinceEpoch();
+  if (std::fabs(last_start_ - start) > Math::kEps ||
+      std::fabs(last_finish_ - finish) > Math::kEps) {
+    last_time_updated_ = QDateTime::currentMSecsSinceEpoch();
+  }
+  last_start_ = start;
+  last_finish_ = finish;
   min_value_ = std::min(start, finish);
   max_value_ = std::max(start, finish);
   if (start < finish) {
-    speed_ = std::abs(speed_);
+    speed_ = std::fabs(speed_);
   } else {
-    speed_ = -std::abs(speed_);
+    speed_ = -std::fabs(speed_);
   }
 }
 

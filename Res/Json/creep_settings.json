@@ -93,7 +93,7 @@
       "base_xp": 5.0,
       "xp_multiplier": 1.4,
       "min_level": 6,
-      "max_level": 10,
+      "max_level": 15,
       "width": 8.0,
       "height": 8.0,
       "rigid_body_type": "kCircle",

@@ -3,7 +3,7 @@
 Entity::Entity(GameObjectId id) :
     MovableObject(id),
     opacity_emulator_(Constants::kOpacityChangeSpeed),
-    hp_bar_opacity_emulator_(0.002f) {
+    hp_bar_opacity_emulator_(0.02f) {
   opacity_emulator_.SetStopOnMax(true);
   opacity_emulator_.SetStopOnMin(true);
   opacity_emulator_.SetCurrentValue(0.f);
@@ -102,37 +102,40 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 void Entity::DrawHealthBar(Painter* painter) const {
   painter->save();
   auto time = QDateTime::currentMSecsSinceEpoch();
-  if (time - last_changed_hp_ > 1000) {
+  if (is_disappearing_ || time - last_changed_hp_ > 1000) {
     this->HideHealthPointBar();
   } else {
     this->ShowHealthPointBar();
   }
   painter->setOpacity(hp_bar_opacity_emulator_.GetCurrentValue());
-  painter->Translate(QPointF(-2.5f, -2.5f));
-  QRectF rect(0, 0, 75, 14);
+  painter->Translate(QPointF(0, -4.f));
+  float width = 75.f;
+  float height = 8.f;
+  QRectF rect(-width / 2.f, -height / 2.f, width, height);
 
   painter->setBrush(Qt::gray);
   painter->setPen(Qt::transparent);
   painter->drawRoundedRect(rect, 10, 10);
 
   float hp_ratio = this->GetHealthPoints() / this->GetMaxHealthPoints();
+  if (is_disappearing_) {
+    hp_ratio = 0.f;
+  }
   auto color = Constants::GetHealthPointsColor(hp_ratio);
   color.setAlphaF(0.8f);
   painter->setBrush(color);
 
-  painter->setPen(Qt::green);
-  painter->drawText(0, 0, QString::number(health_points_) + " " + QString::number(max_health_points_));
-
   painter->setPen(Qt::transparent);
   auto painter_clip = painter->clipRegion();
   painter->setClipRegion(painter_clip.intersected(
-      QRect(0, 0, rect.width() * hp_ratio, rect.height())));
-  painter->drawRoundedRect(rect, 10, 10);
+      QRect(-width / 2.f, -height / 2.f,
+            rect.width() * hp_ratio, rect.height())));
+  painter->drawRoundedRect(rect, 5, 5);
   painter->setClipRegion(painter_clip);
 
   painter->setBrush(Qt::transparent);
   painter->setPen(QPen(Qt::black, 1.5f));
-  painter->drawRoundedRect(rect, 10, 10);
+  painter->drawRoundedRect(rect, 5, 5);
 
   painter->restore();
 }
@@ -172,23 +175,22 @@ void Entity::TickHealthPoints(int delta_time) {
 void Entity::DrawLevel(Painter* painter) const {
   painter->save();
   painter->setOpacity(this->GetOpacity());
-  QPointF translation(-2.5f, -2.5f);
+  QPointF translation(0.f, -3.f);
   painter->Translate(translation);
-  painter->setBrush(Qt::black);
-  QSvgRenderer renderer(QString("../Res/Icons/star.svg"));
-  QRectF rect(-15, -8, 30, 25);
+  painter->setBrush(Qt::green);
+  static QSvgRenderer renderer(QString(":LevelStar.svg"));
+  QRectF rect(-15, -8, 30, 28);
   QPixmap pixmap(rect.width(), rect.height());
   pixmap.fill(Qt::transparent);
   QPainter pixmap_painter(&pixmap);
   renderer.render(&pixmap_painter, pixmap.rect());
   painter->drawPixmap(rect, pixmap, pixmap.rect());
   QFont font = painter->font();
-  font.setPointSizeF(10.f);
+  font.setPointSizeF(7.f);
   font.setBold(true);
   painter->setFont(font);
   QPen pen(Constants::Painter::kLevelColor);
   painter->setPen(pen);
-
   painter->drawText(rect, Qt::AlignCenter, QString::number(this->GetLevel()));
   painter->restore();
 }
