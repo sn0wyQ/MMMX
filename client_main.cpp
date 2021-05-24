@@ -18,8 +18,6 @@ void MessageHandlerWrapper(QtMsgType type,
   message_handler.Handle(type, context, message);
 }
 
-#include "Event/packed_event.h"
-
 int main(int argc, char* argv[]) {
   bool is_remote = true;
   if (argc > 1 && strcmp(argv[1], "-local") == 0) {
