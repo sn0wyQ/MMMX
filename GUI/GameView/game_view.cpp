@@ -33,6 +33,7 @@ GameView::GameView(AbstractClientView* parent,
   stats_table_->setMouseTracking(true);
 
   disconnect_button_ = new QPushButton("Disconnect", this);
+  disconnect_button_->setFocusPolicy(Qt::NoFocus);
   connect(disconnect_button_,
           &QPushButton::clicked,
           this,
