@@ -6,6 +6,7 @@
 #include <utility>
 #include <vector>
 
+#include <QCloseEvent>
 #include <QFocusEvent>
 #include <QKeyEvent>
 #include <QLabel>
@@ -49,6 +50,7 @@ class ClientView : public AbstractClientView {
   void QuitApp() override;
 
  private:
+  void closeEvent(QCloseEvent* close_event) override;
   void focusOutEvent(QFocusEvent* focus_event) override;
   void keyPressEvent(QKeyEvent* key_event) override;
   void keyReleaseEvent(QKeyEvent* key_event) override;
