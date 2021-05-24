@@ -45,6 +45,8 @@ class Player : public Entity {
   void SetRadius(float radius);
   float GetRadius() const;
 
+  bool IsPlayer() const override;
+
   GameObjectType GetType() const override;
 
   void SetParams(std::vector<QVariant> params) override;

@@ -39,6 +39,7 @@ class Entity : public MovableObject {
   int GetLevel() const;
 
   bool IsEntity() const override;
+  virtual bool IsPlayer() const;
 
   virtual void Revive(QPointF point_to_spawn);
 
@@ -68,7 +69,7 @@ class Entity : public MovableObject {
   float health_points_{0.f};
   float health_regen_rate_{};
   float max_health_points_{};
-  bool is_disappearing_{false};
+  bool is_alive_{true};
   LinearEmulator<float> opacity_emulator_;
   mutable LinearEmulator<float> hp_bar_opacity_emulator_;
 };
