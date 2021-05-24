@@ -38,9 +38,9 @@ class GameView : public QWidget {
   void resizeEvent(QResizeEvent* event) override;
 
   QPointF GetPlayerToCenterOffset() const;
-  void AddKillFeedNotification(const QString& killer_name,
-                               const QString& victim_name,
-                               WeaponType weapon_type);
+  void AddKillNotification(const QString& killer_name,
+                           const QString& victim_name,
+                           WeaponType weapon_type);
   void AddRespawnNotification(const QString& player_name);
   void AddPlayerConnectedNotification(const QString& player_name);
   void AddPlayerDisconnectedNotification(const QString& player_name);
