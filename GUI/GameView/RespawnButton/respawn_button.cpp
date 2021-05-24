@@ -61,8 +61,8 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
   QPainter painter(this);
   Constants::SetPainterHints(&painter);
 
-  QPixmap gray_heart(":RespawnHeartGray.png");
-  QPixmap rgb_heart(":RespawnHeart.png");
+  QPixmap gray_heart(":respawn_heart_gray.png");
+  QPixmap rgb_heart(":respawn_heart.png");
   QPixmap canvas(this->size());
   canvas.fill(Qt::transparent);
   QPainter canvas_painter(&canvas);

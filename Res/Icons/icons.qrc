@@ -1,9 +1,21 @@
 <RCC>
     <qresource>
-        <file>RespawnHeart.png</file>
-        <file>RespawnHeartGray.png</file>
-        <file>FilledBullet.svg</file>
-        <file>UnfilledBullet.svg</file>
-        <file>LevelStar.svg</file>
+        <file>respawn_heart.png</file>
+        <file>respawn_heart_gray.png</file>
+        <file>filled_bullet.svg</file>
+        <file>unfilled_bullet.svg</file>
+        <file>max_lvl.svg</file>
+        <file>update_lvl.svg</file>
+        <file>player_health.svg</file>
+        <file>regeneration.svg</file>
+        <file>player_speed.svg</file>
+        <file>fov.svg</file>
+        <file>accuracy.svg</file>
+        <file>bullet_speed.svg</file>
+        <file>rate_of_fire.svg</file>
+        <file>range.svg</file>
+        <file>damage.svg</file>
+        <file>reload.svg</file>
+        <file>level_star.svg</file>
     </qresource>
 </RCC>
