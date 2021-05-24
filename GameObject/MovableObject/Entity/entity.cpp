@@ -27,6 +27,7 @@ Entity::Entity(const Entity& other) :
   level_ = other.level_;
   hp_bar_opacity_ = other.hp_bar_opacity_;
   last_changed_hp_ = other.last_changed_hp_;
+  is_alive_ = other.is_alive_;
   this->HideHealthPointBar();
 }
 
