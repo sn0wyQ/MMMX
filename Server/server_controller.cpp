@@ -118,6 +118,10 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
         == Constants::kNullRoomId) {
       if (event.GetType() == EventType::kConnectToRoomById) {
         auto room_id = event.GetArg<RoomId>(0);
+        auto rooms = server_model_.GetRooms();
+        if (rooms.find(room_id) == rooms.end()) {
+          return;
+        }
         auto nickname = event.GetArg<QString>(1);
         server_model_.AddClientToRoom(room_id, client_id, nickname);
         auto client = server_model_.GetClientByClientId(client_id);
