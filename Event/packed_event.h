@@ -14,8 +14,8 @@ class PackedEvent {
   void Clear();
 
  private:
-  static QByteArray Int32ToByteArray(uint32_t n);
-  static uint32_t ByteArrayToInt32(const QByteArray& byte_array);
+  static QByteArray Uint32ToByteArray(uint32_t n);
+  static uint32_t ByteArrayToUint32(const QByteArray& byte_array);
 
   std::vector<Event> cache_;
 };
