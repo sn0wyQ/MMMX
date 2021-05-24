@@ -68,15 +68,15 @@ void KillFeed::resizeEvent(QResizeEvent* resize_event) {
 }
 
 void KillFeed::AddNotification(KillFeedNotification* kill_feed_notification) {
-  if (kill_feed_notification->GetMessage() == last_string_notification_ &&
+  if (kill_feed_notification->GetMessage() == last_notification_string_ &&
     QDateTime::currentMSecsSinceEpoch() < last_notification_time_ + 1000) {
     last_notification_time_ = QDateTime::currentMSecsSinceEpoch();
-    last_string_notification_ = kill_feed_notification->GetMessage();
+    last_notification_string_ = kill_feed_notification->GetMessage();
     delete kill_feed_notification;
     return;
   }
   last_notification_time_ = QDateTime::currentMSecsSinceEpoch();
-  last_string_notification_ = kill_feed_notification->GetMessage();
+  last_notification_string_ = kill_feed_notification->GetMessage();
 
   notifications_y_emulator_.SetCurrentValue(kOutOfScreenAnimationOffset);
   notifications_.push_back(kill_feed_notification);
