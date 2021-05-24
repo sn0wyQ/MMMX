@@ -35,6 +35,7 @@ class KillFeedNotification : public QWidget {
   void Draw(QPainter* painter);
   QColor GetColorWithOpacity(const QColor& color,
                              int opacity = -1);
+  QString GetMessage() const;
 
  private:
   QString message_;
