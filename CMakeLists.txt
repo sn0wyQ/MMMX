@@ -78,13 +78,14 @@ set(SOURCES
         Converter/converter.cpp
         Event/event.cpp
         Event/event_type.h
-        GUI/GameView/PlayerBar/player_bar.cpp
-        GUI/GameView/ViewPort/viewport.cpp
+        Event/packed_event.cpp
         GUI/GameView/KillFeed/kill_feed.cpp
         GUI/GameView/KillFeed/kill_feed_notification.cpp
+        GUI/GameView/PlayerBar/player_bar.cpp
         GUI/GameView/RespawnButton/respawn_button.cpp
         GUI/GameView/ReloadingField/reloading_field.cpp
         GUI/GameView/StatsTable/stats_table.cpp
+        GUI/GameView/ViewPort/viewport.cpp
         GUI/GameView/game_view.cpp
         GUI/MainMenu/RoomsInfoList/SingleRoomInfo/single_room_info.cpp
         GUI/MainMenu/RoomsInfoList/rooms_info_list.cpp

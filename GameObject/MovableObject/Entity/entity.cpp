@@ -66,6 +66,8 @@ void Entity::SetHealthPoints(float health_points) {
     health_points_ = health_points;
     if (!this->IsAlive()) {
       this->SetDisappearing();
+    } else {
+      this->SetAppearing();
     }
   }
 }
@@ -177,7 +179,7 @@ void Entity::DrawLevel(Painter* painter) const {
   QPointF translation(0.f, -3.f);
   painter->Translate(translation);
   painter->setBrush(Qt::green);
-  static QSvgRenderer renderer(QString(":LevelStar.svg"));
+  static QSvgRenderer renderer(QString(":level_star.svg"));
   QRectF rect(-15, -8, 30, 28);
   QPixmap pixmap(rect.width(), rect.height());
   pixmap.fill(Qt::transparent);
@@ -203,14 +205,12 @@ float Entity::GetOpacity() const {
 }
 
 void Entity::SetAppearing() {
-  opacity_emulator_.SetCurrentValue(0.f);
   opacity_emulator_.SetPath(0.f, 1.f);
   is_disappearing_ = false;
 }
 
 void Entity::SetDisappearing() {
   this->HideHealthPointBar();
-  opacity_emulator_.SetCurrentValue(1.f);
   opacity_emulator_.SetPath(1.f, 0.f);
   is_disappearing_ = true;
 }

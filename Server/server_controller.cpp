@@ -70,6 +70,18 @@ void ServerController::OnTick(int delta_time) {
   }
 
   this->ProcessEventsFromRooms();
+
+  for (auto& [client_id, cache] : event_cache_) {
+    auto client_ptr = server_model_.GetClientByClientId(client_id);
+    if (client_ptr) {
+      try {
+        client_ptr->socket->sendBinaryMessage(cache.ToByteArray());
+      } catch (std::exception& e) {
+        qInfo() << "[SERVER] Caught exception" << e.what();
+      }
+    }
+  }
+  event_cache_.clear();
 }
 
 void ServerController::ProcessEventsFromRooms() {
@@ -90,54 +102,56 @@ void ServerController::ProcessEventsFromRoom(
 void ServerController::OnByteArrayReceived(const QByteArray& message) {
   auto client_socket_ptr = qobject_cast<QWebSocket*>(sender());
   auto client_id = server_model_.GetClientIdByWebSocket(client_socket_ptr);
-  Event event(message);
+  auto events = PackedEvent(message).GetEvents();
+  for (const auto& event : events) {
+    qDebug().noquote() << "[SERVER] Received" << event
+                       << "from Client ID:" << client_id;
 
-  qDebug().noquote() << "[SERVER] Received" << event
-                     << "from Client ID:" << client_id;
-
-  if (event.GetType() == EventType::kSetTimeDifference) {
-    // Важная каждая миллисекунда - отправляем ответ сразу без тика
-    this->ReplyWithTimeToClient(client_id,
-                                event.GetArg<int64_t>(0));
-    return;
-  }
-
-  if (server_model_.GetRoomIdByClientId(client_id) == Constants::kNullRoomId) {
-    if (event.GetType() == EventType::kConnectToRoomById) {
-      auto room_id = event.GetArg<RoomId>(0);
-      auto nickname = event.GetArg<QString>(1);
-      server_model_.AddClientToRoom(room_id, client_id, nickname);
-      auto client = server_model_.GetClientByClientId(client_id);
-      client->room_id = room_id;
-      client->nickname = nickname;
+    if (event.GetType() == EventType::kSetTimeDifference) {
+      // Важная каждая миллисекунда - отправляем ответ сразу без тика
+      this->ReplyWithTimeToClient(client_id,
+                                  event.GetArg<int64_t>(0));
+      return;
     }
-    return;
+
+    if (server_model_.GetRoomIdByClientId(client_id)
+        == Constants::kNullRoomId) {
+      if (event.GetType() == EventType::kConnectToRoomById) {
+        auto room_id = event.GetArg<RoomId>(0);
+        auto nickname = event.GetArg<QString>(1);
+        server_model_.AddClientToRoom(room_id, client_id, nickname);
+        auto client = server_model_.GetClientByClientId(client_id);
+        client->room_id = room_id;
+        client->nickname = nickname;
+      }
+      return;
+    }
+
+    if (event.GetType() == EventType::kDisconnectFromRoom) {
+      auto client = server_model_.GetClientByClientId(client_id);
+      server_model_.GetRoomByRoomId(client->room_id)->RemoveClient(client_id);
+      client->room_id = Constants::kNullRoomId;
+      return;
+    }
+
+    if (event.GetType() == EventType::kSendGetVars) {
+      this->AddEventToHandle(Event(EventType::kSendEventToClient,
+                                   client_id,
+                                   static_cast<int>(EventType::kUpdateVars),
+                                   this->GetVar(),
+                                   server_model_.GetRoomByClientId(client_id)
+                                       ->GetVar()));
+      return;
+    }
+
+    std::vector<QVariant>
+        args{server_model_.GetRoomByClientId(client_id)->GetId(),
+             static_cast<int>(event.GetType())};
+    std::vector<QVariant> old_args = event.GetArgs();
+    args.insert(args.end(), old_args.begin(), old_args.end());
+
+    this->AddEventToHandle(Event(EventType::kSendEventToRoom, args));
   }
-
-  if (event.GetType() == EventType::kDisconnectFromRoom) {
-    auto client = server_model_.GetClientByClientId(client_id);
-    server_model_.GetRoomByRoomId(client->room_id)->RemoveClient(client_id);
-    client->room_id = Constants::kNullRoomId;
-    return;
-  }
-
-  if (event.GetType() == EventType::kSendGetVars) {
-    this->AddEventToHandle(Event(EventType::kSendEventToClient,
-                                 client_id,
-                                 static_cast<int>(EventType::kUpdateVars),
-                                 this->GetVar(),
-                                 server_model_.GetRoomByClientId(client_id)
-                                  ->GetVar()));
-    return;
-  }
-
-  std::vector<QVariant>
-      args{server_model_.GetRoomByClientId(client_id)->GetId(),
-           static_cast<int>(event.GetType())};
-  std::vector<QVariant> old_args = event.GetArgs();
-  args.insert(args.end(), old_args.begin(), old_args.end());
-
-  this->AddEventToHandle(Event(EventType::kSendEventToRoom, args));
 }
 
 void ServerController::OnNewClient() {
@@ -188,14 +202,7 @@ void ServerController::OnSocketDisconnected() {
 }
 
 void ServerController::SendToClient(int client_id, const Event& event) {
-  auto client_ptr = server_model_.GetClientByClientId(client_id);
-  if (client_ptr) {
-    try {
-      client_ptr->socket->sendBinaryMessage(event.ToByteArray());
-    } catch (std::exception& e) {
-      qInfo() << "[SERVER] Caught exception" << e.what();
-    }
-  }
+  event_cache_[client_id].AddEvent(event);
 }
 
 void ServerController::SendToRoom(int room_id,

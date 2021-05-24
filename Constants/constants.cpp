@@ -20,7 +20,7 @@ const int kPatchVersion = 0;
 
 // Server
 const int kServerPort = 1337;
-const int kTickrate = 64;
+const int kTickrate = 32;
 const int kTimeToTick = 1000 / kTickrate;
 const QCryptographicHash::Algorithm kHashAlgorithm =
     QCryptographicHash::Algorithm::Md5;
@@ -75,7 +75,7 @@ const float kDefaultHealthRegenSpeed = 0.002f;
 const int kMaxLevel = 30;
 
 // Creep
-const int kTriesToFindPatrollingPoint = 20;
+const int kTriesToFindPatrollingPoint = 10;
 const float kRunawaySpeedMultiplier = 2.f;
 const float kPatrollingSpeedDivider = 2.f;
 const int64_t kRevengingTimeMSecs = 15'000;

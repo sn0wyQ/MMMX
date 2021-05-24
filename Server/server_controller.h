@@ -2,6 +2,7 @@
 #define SERVER_SERVER_CONTROLLER_H_
 
 #include <memory>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -10,7 +11,8 @@
 #include <QWebSocketServer>
 
 #include "Controller/base_controller.h"
-#include "server_model.h"
+#include "Event/packed_event.h"
+#include "Server/server_model.h"
 
 namespace Constants::ServerController {
 
@@ -53,6 +55,8 @@ class ServerController : public BaseController {
   void ClientDisconnectedEvent(const Event& event) override;
   void SendEventToClientEvent(const Event& event) override;
   void SendEventToRoomEvent(const Event& event) override;
+
+  std::unordered_map<ClientId, PackedEvent> event_cache_;
 };
 
 #endif  // SERVER_SERVER_CONTROLLER_H_

@@ -163,7 +163,7 @@ void Creep::TickIntelligence(
         }
         auto distance = Math::DistanceBetweenPoints(this->GetPosition(),
                                                     player->GetPosition());
-        if (distance < best_distance) {
+        if (distance < best_distance && player->IsAlive()) {
           focused_player = std::dynamic_pointer_cast<Player>(player);
           best_distance = distance;
         }
@@ -257,7 +257,8 @@ QPointF Creep::GetPatrollingPoint(
     if (!patrolling_point_.isNull() &&
         dist_from_current_pos > this->GetRigidBodyBoundingCircleRadius() &&
         dist_from_spawn < this->GetFovRadius() &&
-        map_border->GetBoundingRect().contains(patrolling_point_)) {
+        !map_border->Intersects(Math::Line(this->GetPosition(),
+                                           patrolling_point_))) {
       bool current_point_is_good = true;
       for (const auto& object : nearby_game_objects) {
         auto dist_from_object =

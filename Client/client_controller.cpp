@@ -23,8 +23,8 @@ void ClientController::ConnectToRoom(RoomId room_id) {
 }
 
 void ClientController::DisconnectFromRoom() {
-  this->AddEventToSend(Event(EventType::kDisconnectFromRoom));
   controls_check_timer_.stop();
+  this->AddEventToSend(Event(EventType::kDisconnectFromRoom));
 }
 
 std::shared_ptr<ClientGameModel> ClientController::GetModel() {
@@ -91,14 +91,16 @@ void ClientController::OnDisconnected() {
 }
 
 void ClientController::OnByteArrayReceived(const QByteArray& message) {
-  Event event(message);
-  // Каждая миллисекунда важна для разницы времени,
-  // так что не пропускаем через тик, а делаем сразу
-  if (event.GetType() == EventType::kSetTimeDifference) {
-    this->HandleEvent(event);
-    return;
+  auto events = PackedEvent(message).GetEvents();
+  for (const auto& event : events) {
+    // Каждая миллисекунда важна для разницы времени,
+    // так что не пропускаем через тик, а делаем сразу
+    if (event.GetType() == EventType::kSetTimeDifference) {
+      this->HandleEvent(event);
+      continue;
+    }
+    this->AddEventToHandle(event);
   }
-  this->AddEventToHandle(event);
 }
 
 void ClientController::EndGameEvent(const Event& event) {
@@ -118,10 +120,12 @@ void ClientController::StartGameEvent(const Event& event) {
 
 void ClientController::SendEvent(const Event& event) {
   BaseController::LogEvent(event);
-  web_socket_.sendBinaryMessage(event.ToByteArray());
+  event_cache_.AddEvent(event);
 }
 
 void ClientController::OnTick(int delta_time) {
+  web_socket_.sendBinaryMessage(event_cache_.ToByteArray());
+  event_cache_.Clear();
   if (!is_time_difference_set_) {
     return;
   }
