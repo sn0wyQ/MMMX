@@ -81,6 +81,10 @@ void ClientView::mousePressEvent(QMouseEvent* mouse_event) {
   controller_->MousePressEvent(mouse_event);
 }
 
+void ClientView::closeEvent(QCloseEvent* close_event) {
+  this->QuitApp();
+}
+
 void ClientView::paintEvent(QPaintEvent* paint_event) {
   qDebug().noquote().nospace() << "[VIEW] Repainted";
 }
@@ -120,5 +124,5 @@ std::shared_ptr<KeyController> ClientView::GetKeyController() const {
 }
 
 void ClientView::QuitApp() {
-  this->close();
+  this->deleteLater();
 }
