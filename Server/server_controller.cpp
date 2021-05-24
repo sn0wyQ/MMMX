@@ -133,8 +133,13 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
 
     if (event.GetType() == EventType::kDisconnectFromRoom) {
       auto client = server_model_.GetClientByClientId(client_id);
-      server_model_.GetRoomByRoomId(client->room_id)->RemoveClient(client_id);
+      auto rooms = server_model_.GetRooms();
+      auto room_iter = rooms.find(client->room_id);
+      if (room_iter != rooms.end()) {
+        room_iter->second->RemoveClient(client_id);
+      }
       client->room_id = Constants::kNullRoomId;
+
       // We need to wait a bit,
       // because sometimes server can not update server list fast enough
       QTimer::singleShot(50, this, [this, client_id] () {
