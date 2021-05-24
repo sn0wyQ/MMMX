@@ -23,6 +23,7 @@ int main(int argc, char* argv[]) {
   if (argc > 1 && strcmp(argv[1], "-local") == 0) {
     is_remote = false;
   }
+
   QString server_ip = is_remote ? "188.120.224.70" : "localhost";
   QUrl server_url =
       QUrl(QString("ws://") + server_ip + ":" +

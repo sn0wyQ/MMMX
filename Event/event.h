@@ -23,6 +23,7 @@ class Event {
     args_ = { args... };
   }
   explicit Event(const QByteArray& message);
+  explicit Event(const QList<QVariant>& list);
 
   EventType GetType() const;
   QVariant GetArg(int index) const;
@@ -70,6 +71,7 @@ class Event {
   }
 
   QByteArray ToByteArray() const;
+  QList<QVariant> ToQList() const;
 
   friend QDebug operator<<(QDebug debug, const Event& event);
 

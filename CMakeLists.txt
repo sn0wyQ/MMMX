@@ -79,6 +79,7 @@ set(SOURCES
         Converter/converter.cpp
         Event/event.cpp
         Event/event_type.h
+        Event/packed_event.cpp
         GUI/GameView/KillFeed/kill_feed.cpp
         GUI/GameView/KillFeed/kill_feed_notification.cpp
         GUI/GameView/RespawnButton/respawn_button.cpp
