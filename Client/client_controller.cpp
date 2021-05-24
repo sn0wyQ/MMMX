@@ -112,7 +112,6 @@ void ClientController::StartGameEvent(const Event& event) {
 void ClientController::SendEvent(const Event& event) {
   BaseController::LogEvent(event);
   event_cache_.AddEvent(event);
-  // web_socket_.sendBinaryMessage(event.ToByteArray());
 }
 
 void ClientController::OnTick(int delta_time) {
