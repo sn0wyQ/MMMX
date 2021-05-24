@@ -2,6 +2,7 @@
 #define SERVER_SERVER_CONTROLLER_H_
 
 #include <memory>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -47,7 +48,7 @@ class ServerController : public BaseController {
   void SendEventToClientEvent(const Event& event) override;
   void SendEventToRoomEvent(const Event& event) override;
 
-  std::map<ClientId, PackedEvent> event_cache_;
+  std::unordered_map<ClientId, PackedEvent> event_cache_;
 };
 
 #endif  // SERVER_SERVER_CONTROLLER_H_

@@ -1,7 +1,9 @@
-#ifndef PACKED_EVENT_H_
-#define PACKED_EVENT_H_
+#ifndef EVENT_PACKED_EVENT_H_
+#define EVENT_PACKED_EVENT_H_
 
 #include "Event/event.h"
+
+#include <vector>
 
 class PackedEvent {
  public:
@@ -20,4 +22,4 @@ class PackedEvent {
   std::vector<Event> cache_;
 };
 
-#endif  // PACKED_EVENT_H_
+#endif  // EVENT_PACKED_EVENT_H_
