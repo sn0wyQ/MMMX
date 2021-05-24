@@ -273,3 +273,7 @@ void Player::Revive(QPointF point_to_spawn) {
   this->GetWeapon()->SetCurrentBulletsInClip(
       this->GetWeapon()->GetClipSize());
 }
+
+bool Player::IsPlayer() const {
+  return true;
+}
