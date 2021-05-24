@@ -46,11 +46,12 @@ class ClientGameModel : public GameModel {
   const QList<RoomInfo>& GetRoomsInfo() const;
   void SetRoomsInfo(const QList<QVariant>& rooms_info);
 
+  void Clear() override;
+
  private:
   QString local_player_nickname_{"Player"};
   GameObjectId local_player_id_{Constants::kNullGameObjectId};
   std::unordered_map<GameObjectId, std::shared_ptr<GameObject>> interpolator_;
-
   std::unordered_map<GameObjectId, std::shared_ptr<Bullet>> local_bullets_;
   int bullet_id_to_set_{1};
 

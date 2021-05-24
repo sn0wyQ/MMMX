@@ -55,6 +55,8 @@ class GameModel {
   std::vector<std::shared_ptr<GameObject>>
     GetGameObjectsToMoveWithSliding() const;
 
+  virtual void Clear();
+
  protected:
   std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;
 
