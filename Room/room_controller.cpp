@@ -35,8 +35,12 @@ void RoomController::AddEventToSendToAllClients(const Event& event) {
 
 void RoomController::AddEventToSendToSinglePlayer(const Event& event,
                                                   GameObjectId player_id) {
-  this->AddEventToSendToSingleClient(
-      event, this->PlayerIdToClientId(player_id));
+  try {
+    ClientId client_id = this->PlayerIdToClientId(player_id);
+    this->AddEventToSendToSingleClient(event, client_id);
+  } catch (std::exception& e) {
+    qWarning() << e.what() << "Maybe original player already disconnected?";
+  }
 }
 
 void RoomController::AddEventToSendToPlayerList(
