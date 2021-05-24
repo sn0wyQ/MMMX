@@ -54,9 +54,9 @@ void MessageHandler::Handle(QtMsgType type,
         .arg(context.line) << Qt::endl;
   }
 
-  QTextStream text_stream(&log_file_);
-  text_stream << QTime::currentTime().toString("[hh:mm:ss.zzz] - ")
-              << txt << Qt::endl;
+  // QTextStream text_stream(&log_file_);
+  // text_stream << QTime::currentTime().toString("[hh:mm:ss.zzz] - ")
+  //             << txt << Qt::endl;
 }
 
 int MessageHandler::LevelByMessageType(QtMsgType msg_type) {

@@ -24,6 +24,7 @@
 #include "GameObject/RigidBody/object_collision.h"
 #include "Math/math.h"
 #include "Model/client_game_model.h"
+#include "Event/packed_event.h"
 #include "Interpolator/interpolator.h"
 
 enum class GameState {
@@ -147,6 +148,8 @@ class ClientController : public BaseController {
   int64_t respawn_holding_current_{0};
 
   std::queue<std::pair<GameObjectId, int64_t>> time_to_delete_;
+
+  PackedEvent event_cache_;
 };
 
 #endif  // CLIENT_CLIENT_CONTROLLER_H_

@@ -11,6 +11,7 @@
 
 #include "Controller/base_controller.h"
 #include "Model/server_model.h"
+#include "Event/packed_event.h"
 
 class ServerController : public BaseController {
   Q_OBJECT
@@ -45,6 +46,8 @@ class ServerController : public BaseController {
   void ClientDisconnectedEvent(const Event& event) override;
   void SendEventToClientEvent(const Event& event) override;
   void SendEventToRoomEvent(const Event& event) override;
+
+  std::map<ClientId, PackedEvent> event_cache_;
 };
 
 #endif  // SERVER_SERVER_CONTROLLER_H_

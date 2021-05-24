@@ -18,6 +18,13 @@ Event::Event(const QByteArray& message) {
   }
 }
 
+Event::Event(const QList<QVariant>& list) {
+  type_ = static_cast<EventType>(list[0].toInt());
+  for (int i = 1; i < list.size(); i++) {
+    args_.push_back(list[i]);
+  }
+}
+
 EventType Event::GetType() const {
   return type_;
 }
@@ -64,6 +71,15 @@ QByteArray Event::ToByteArray() const {
     data_stream << arg;
   }
   return result;
+}
+
+QList<QVariant> Event::ToQList() const {
+  QList<QVariant> res;
+  res.push_back(static_cast<int>(type_));
+  for (const auto& qvariant : args_) {
+    res.push_back(qvariant);
+  }
+  return res;
 }
 
 QDebug operator<<(QDebug debug, const Event& event) {

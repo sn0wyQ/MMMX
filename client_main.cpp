@@ -18,11 +18,24 @@ void MessageHandlerWrapper(QtMsgType type,
   message_handler.Handle(type, context, message);
 }
 
+#include "Event/packed_event.h"
+
 int main(int argc, char* argv[]) {
   bool is_remote = true;
   if (argc > 1 && strcmp(argv[1], "-local") == 0) {
     is_remote = false;
   }
+
+  PackedEvent packed_event;
+  packed_event.AddEvent(Event(EventType::kSendNickname, QVariant(5)));
+  packed_event.AddEvent(Event(EventType::kPlayerRespawned, QVariant("GAYs")));
+  packed_event.AddEvent(Event(EventType::kSendControls, QVariant("SGAY")));
+  auto bytes = packed_event.ToByteArray();
+  auto new_packed = PackedEvent(bytes);
+  for (auto event : new_packed.GetEvents()) {
+    qWarning() << event;
+  }
+
   QString server_ip = is_remote ? "188.120.224.70" : "localhost";
   QUrl server_url =
       QUrl(QString("ws://") + server_ip + ":" +

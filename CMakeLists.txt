@@ -120,6 +120,7 @@ set(SOURCES
         Weapon/Shotgun/shotgun.cpp
         Weapon/WeaponSettings/weapon_settings.cpp
         Weapon/weapon.cpp
+        Event/packed_event.cpp
         )
 
 if (WIN32)

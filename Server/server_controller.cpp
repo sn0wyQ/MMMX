@@ -55,6 +55,18 @@ void ServerController::OnTick(int delta_time) {
   }
 
   this->ProcessEventsFromRooms();
+
+  for (auto& [client_id, cache] : event_cache_) {
+    auto client_ptr = server_model_.GetClientByClientId(client_id);
+    if (client_ptr) {
+      try {
+        client_ptr->socket->sendBinaryMessage(cache.ToByteArray());
+      } catch (std::exception& e) {
+        qInfo() << "[SERVER] Caught exception" << e.what();
+      }
+    }
+  }
+  event_cache_.clear();
 }
 
 void ServerController::ProcessEventsFromRooms() {
@@ -75,33 +87,33 @@ void ServerController::ProcessEventsFromRoom(
 void ServerController::OnByteArrayReceived(const QByteArray& message) {
   auto client_socket_ptr = qobject_cast<QWebSocket*>(sender());
   auto client_id = server_model_.GetClientIdByWebSocket(client_socket_ptr);
-  Event event(message);
 
-  qDebug().noquote() << "[SERVER] Received" << event
-                     << "from Client ID:" << client_id;
+  auto events = PackedEvent(message).GetEvents();
+  // Event event(message);
+  for (const auto& event : events) {
+    if (event.GetType() == EventType::kSendGetVars) {
+      this->AddEventToHandle(Event(EventType::kSendEventToClient,
+                                   client_id,
+                                   static_cast<int>(EventType::kUpdateVars),
+                                   this->GetVar(),
+                                   server_model_.GetRoomByClientId(client_id)
+                                       ->GetVar()));
+      return;
+    } else if (event.GetType() == EventType::kSetTimeDifference) {
+      // Важная каждая миллисекунда - отправляем ответ сразу без тика
+      this->ReplyWithTimeToClient(client_id,
+                                  event.GetArg<int64_t>(0));
+      return;
+    }
 
-  if (event.GetType() == EventType::kSendGetVars) {
-    this->AddEventToHandle(Event(EventType::kSendEventToClient,
-                                 client_id,
-                                 static_cast<int>(EventType::kUpdateVars),
-                                 this->GetVar(),
-                                 server_model_.GetRoomByClientId(client_id)
-                                  ->GetVar()));
-    return;
-  } else if (event.GetType() == EventType::kSetTimeDifference) {
-    // Важная каждая миллисекунда - отправляем ответ сразу без тика
-    this->ReplyWithTimeToClient(client_id,
-                                event.GetArg<int64_t>(0));
-    return;
+    std::vector<QVariant>
+        args{server_model_.GetRoomByClientId(client_id)->GetId(),
+             static_cast<int>(event.GetType())};
+    std::vector<QVariant> old_args = event.GetArgs();
+    args.insert(args.end(), old_args.begin(), old_args.end());
+
+    this->AddEventToHandle(Event(EventType::kSendEventToRoom, args));
   }
-
-  std::vector<QVariant>
-      args{server_model_.GetRoomByClientId(client_id)->GetId(),
-           static_cast<int>(event.GetType())};
-  std::vector<QVariant> old_args = event.GetArgs();
-  args.insert(args.end(), old_args.begin(), old_args.end());
-
-  this->AddEventToHandle(Event(EventType::kSendEventToRoom, args));
 }
 
 void ServerController::OnNewClient() {
@@ -158,14 +170,7 @@ void ServerController::OnSocketDisconnected() {
 }
 
 void ServerController::SendToClient(int client_id, const Event& event) {
-  auto client_ptr = server_model_.GetClientByClientId(client_id);
-  if (client_ptr) {
-    try {
-      client_ptr->socket->sendBinaryMessage(event.ToByteArray());
-    } catch (std::exception& e) {
-      qInfo() << "[SERVER] Caught exception" << e.what();
-    }
-  }
+  event_cache_[client_id].AddEvent(event);
 }
 
 void ServerController::SendToRoom(int room_id,

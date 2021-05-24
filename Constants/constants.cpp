@@ -20,7 +20,7 @@ const int kPatchVersion = 0;
 
 // Server
 const int kServerPort = 1337;
-const int kTickrate = 16;
+const int kTickrate = 64;
 const int kTimeToTick = 1000 / kTickrate;
 const QCryptographicHash::Algorithm kHashAlgorithm =
     QCryptographicHash::Algorithm::Md5;
