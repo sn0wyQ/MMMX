@@ -260,6 +260,7 @@ void ClientController::UpdateLocalPlayer(int delta_time) {
       this->GetKeyForce(), delta_time);
 
   local_player->OnTick(delta_time);
+  local_player->UpdateAnimationState();
 
   converter_->UpdateGameCenter(local_player->GetPosition());
 }
@@ -290,6 +291,10 @@ void ClientController::UpdateLocalBullets(int delta_time) {
 
 void ClientController::UpdateGameObjects() {
   for (const auto& object : model_->GetAllGameObjects()) {
+    if (object->GetId() == model_->GetLocalPlayerId()) {
+      continue;
+    }
+
     // Bullets always move, so we will only use animation state kIdle for them
     if (object->GetType() != GameObjectType::kBullet) {
       object->UpdateAnimationState();
@@ -541,11 +546,6 @@ void ClientController::ControlsHolding() {
                                  local_player->GetId(),
                                  bullet_shifts));
       local_player->SetAnimationState(AnimationState::kShoot, true);
-    }
-  } else {
-    auto local_player = model_->GetLocalPlayer();
-    if (local_player->GetAnimation()->GetState() == AnimationState::kShoot) {
-      local_player->UpdateAnimationState(true);
     }
   }
 }

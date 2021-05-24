@@ -9,4 +9,4 @@ loop
 
 shoot:
 	play_frames 9 16
-loop
+end
