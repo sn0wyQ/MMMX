@@ -124,5 +124,6 @@ KeyController* ClientView::GetKeyController() const {
 }
 
 void ClientView::QuitApp() {
+  controller_->deleteLater();
   this->deleteLater();
 }
