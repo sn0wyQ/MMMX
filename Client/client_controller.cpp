@@ -612,6 +612,11 @@ void ClientController::PlayerKilledNotificationEvent(const Event& event) {
   auto killer_id = event.GetArg<GameObjectId>(1);
   auto weapon_type = event.GetArg<WeaponType>(2);
 
+  if (model_->IsGameObjectIdTaken(victim_id)) {
+    std::dynamic_pointer_cast<Entity>(
+        model_->GetGameObjectByGameObjectId(victim_id))->SetHealthPoints(0.f);
+  }
+
   auto killer_name = this->GetEntityName(killer_id);
   auto victim_name = this->GetEntityName(victim_id);
   view_->AddKillFeedNotification(killer_name, victim_name, weapon_type);

@@ -67,10 +67,10 @@ void Entity::SetHealthPoints(float health_points) {
     if (std::fabs(health_points_) < Math::kEps) {
       is_alive_ = false;
     }
-    if (!this->IsAlive()) {
-      this->SetDisappearing();
-    } else {
+    if (this->IsAlive()) {
       this->SetAppearing();
+    } else {
+      this->SetDisappearing();
     }
   }
 }
