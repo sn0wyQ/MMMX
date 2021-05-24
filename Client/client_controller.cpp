@@ -505,13 +505,6 @@ void ClientController::ControlsHolding() {
     } else if (local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
       local_player->GetWeapon()->SetLastTimeShot(timestamp);
 
-      // Temporary nickname change
-      this->AddEventToSend(Event(
-          EventType::kSendNickname,
-          local_player->GetId(),
-          QString("Shooter#") +
-              QString::number(model_->GetLocalPlayerId())));
-
       QList<QVariant> bullet_shifts;
       static std::mt19937 generator_(QDateTime::currentMSecsSinceEpoch());
       // generate normalised accuracy
