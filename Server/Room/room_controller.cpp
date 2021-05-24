@@ -770,12 +770,12 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
     std::shared_ptr<Player> prev_player{nullptr};
     while (model_id != static_cast<int>(models_cache_.size())) {
       auto cur_model = models_cache_[model_id].model;
-      if (prev_player && cur_model->IsGameObjectIdTaken(player_id)) {
-        auto player = cur_model->GetPlayerByPlayerId(player_id);
-        player->SetLevel(prev_player->GetLevel());
-        player->SetCurrentExp(prev_player->GetCurrentExp());
-        player->SetFreeLevelingPoints(prev_player->GetFreeLevelingPoints());
-      }
+      // if (prev_player && cur_model->IsGameObjectIdTaken(player_id)) {
+      //   auto player = cur_model->GetPlayerByPlayerId(player_id);
+      //   player->SetLevel(prev_player->GetLevel());
+      //   player->SetCurrentExp(prev_player->GetCurrentExp());
+      //   player->SetFreeLevelingPoints(prev_player->GetFreeLevelingPoints());
+      // }
       auto new_bullet =
           std::dynamic_pointer_cast<Bullet>(prev_bullet->Clone());
       cur_model->AttachGameObject(bullet_id, new_bullet);
@@ -789,13 +789,13 @@ void RoomController::SendPlayerShootingEvent(const Event& event) {
       }
       new_bullet->OnTick(models_cache_[model_id].delta_time);
       prev_bullet = new_bullet;
-      if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
-        auto player = cur_model->GetPlayerByPlayerId(player_id);
-        prev_player = player;
-        player->GetWeapon()->SetLastTimeShot(timestamp);
-      } else {
-        break_player = true;
-      }
+      // if (!break_player && cur_model->IsGameObjectIdTaken(player_id)) {
+      //   auto player = cur_model->GetPlayerByPlayerId(player_id);
+      //   prev_player = player;
+      //   player->GetWeapon()->SetLastTimeShot(timestamp);
+      // } else {
+      //   break_player = true;
+      // }
 
       model_id++;
       interpolation_msecs_model_before += Constants::kTimeToTick;
