@@ -58,6 +58,7 @@ class Entity : public MovableObject {
 
  protected:
   int level_{1};
+  LinearEmulator<float> opacity_emulator_;
 
  private:
   void HideHealthPointBar() const;
@@ -70,7 +71,6 @@ class Entity : public MovableObject {
   float health_regen_rate_{};
   float max_health_points_{};
   bool is_alive_{true};
-  LinearEmulator<float> opacity_emulator_;
   mutable LinearEmulator<float> hp_bar_opacity_emulator_;
 };
 
