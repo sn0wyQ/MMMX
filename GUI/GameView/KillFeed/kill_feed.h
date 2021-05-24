@@ -45,7 +45,7 @@ class KillFeed : public QWidget {
   int next_to_disappear_index_{0};
 
   // bad kostyl
-  QString last_string_notification_{};
+  QString last_notification_string_{};
   int64_t last_notification_time_{};
 };
 
