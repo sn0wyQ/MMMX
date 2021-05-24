@@ -13,9 +13,9 @@
 #include <QWebSocket>
 #include <QWebSocketServer>
 
-#include "Event/event.h"
-#include "Server/Room/room_controller.h"
 #include "Constants/constants.h"
+#include "Event/event.h"
+#include "Room/room_controller.h"
 
 class ServerModel {
  public:

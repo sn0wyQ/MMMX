@@ -22,6 +22,11 @@ void ClientController::ConnectToRoom(RoomId room_id) {
   controls_check_timer_.start(Constants::kControlsHoldingCheck);
 }
 
+void ClientController::DisconnectFromRoom() {
+  this->AddEventToSend(Event(EventType::kDisconnectFromRoom));
+  controls_check_timer_.stop();
+}
+
 std::shared_ptr<ClientGameModel> ClientController::GetModel() {
   return model_;
 }

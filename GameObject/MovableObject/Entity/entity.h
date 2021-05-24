@@ -7,7 +7,7 @@
 
 #include <QPainterPath>
 
-#include "Client/GUI/Animations/linear_emulator.h"
+#include "GUI/Animations/linear_emulator.h"
 #include "GameObject/MovableObject/movable_object.h"
 
 class Entity : public MovableObject {

@@ -16,8 +16,8 @@
 #include <QPainter>
 #include <QWidget>
 
-#include "Client/GUI/Animations/linear_emulator.h"
 #include "Constants/constants.h"
+#include "GUI/Animations/linear_emulator.h"
 #include "key_names.h"
 
 namespace ControlsWrapper {

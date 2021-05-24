@@ -11,7 +11,7 @@
 #include <QVariant>
 
 #include "Model/game_model.h"
-#include "Server/Room/room_info.h"
+#include "Room/room_info.h"
 
 class ClientGameModel : public GameModel {
  public:

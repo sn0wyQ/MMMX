@@ -70,20 +70,6 @@ set(SOURCES
         Animation/animation_enums.h
         Animation/animations_holder.cpp
         Animation/shared_frame.cpp
-        Client/GUI/GameView/PlayerBar/player_bar.cpp
-        Client/GUI/GameView/ViewPort/viewport.cpp
-        Client/GUI/GameView/KillFeed/kill_feed.cpp
-        Client/GUI/GameView/KillFeed/kill_feed_notification.cpp
-        Client/GUI/GameView/RespawnButton/respawn_button.cpp
-        Client/GUI/GameView/ReloadingField/reloading_field.cpp
-        Client/GUI/GameView/StatsTable/stats_table.cpp
-        Client/GUI/GameView/game_view.cpp
-        Client/GUI/MainMenu/RoomsInfoList/SingleRoomInfo/single_room_info.cpp
-        Client/GUI/MainMenu/RoomsInfoList/rooms_info_list.cpp
-        Client/GUI/MainMenu/main_menu.cpp
-        Client/GUI/SettingsWindow/settings_window.cpp
-        Client/GUI/abstract_client_view.h
-        Client/GUI/client_view.cpp
         Client/KeyController/key_controller.cpp
         Client/client_controller.cpp
         Client/client_game_model.cpp
@@ -92,6 +78,20 @@ set(SOURCES
         Converter/converter.cpp
         Event/event.cpp
         Event/event_type.h
+        GUI/GameView/PlayerBar/player_bar.cpp
+        GUI/GameView/ViewPort/viewport.cpp
+        GUI/GameView/KillFeed/kill_feed.cpp
+        GUI/GameView/KillFeed/kill_feed_notification.cpp
+        GUI/GameView/RespawnButton/respawn_button.cpp
+        GUI/GameView/ReloadingField/reloading_field.cpp
+        GUI/GameView/StatsTable/stats_table.cpp
+        GUI/GameView/game_view.cpp
+        GUI/MainMenu/RoomsInfoList/SingleRoomInfo/single_room_info.cpp
+        GUI/MainMenu/RoomsInfoList/rooms_info_list.cpp
+        GUI/MainMenu/main_menu.cpp
+        GUI/SettingsWindow/settings_window.cpp
+        GUI/abstract_client_view.h
+        GUI/client_view.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp
         GameObject/MovableObject/Entity/Creep/creep_enums.h
@@ -112,13 +112,13 @@ set(SOURCES
         Math/math.cpp
         MessageHandler/message_handler.cpp
         Model/game_model.cpp
-        Server/Room/room_game_model.cpp
+        Room/room_game_model.cpp
         Server/server_model.cpp
         Painter/painter.cpp
         PlayerStats/player_stats.cpp
-        Server/Room/room_controller.cpp
-        Server/Room/room_info.h
-        Server/Room/room_settings.cpp
+        Room/room_controller.cpp
+        Room/room_info.h
+        Room/room_settings.cpp
         Server/server_controller.cpp
         Weapon/AssaultRifle/assault_rifle.cpp
         Weapon/Crossbow/crossbow.cpp

@@ -18,9 +18,9 @@
 #include <QUrl>
 #include <QWebSocket>
 
-#include "Client/GUI/abstract_client_view.h"
 #include "Controller/base_controller.h"
 #include "Converter/converter.h"
+#include "GUI/abstract_client_view.h"
 #include "GameObject/RigidBody/object_collision.h"
 #include "Interpolator/interpolator.h"
 #include "Math/math.h"
@@ -41,6 +41,7 @@ class ClientController : public BaseController {
   ~ClientController() override = default;
 
   void ConnectToRoom(RoomId room_id);
+  void DisconnectFromRoom();
 
   QString GetControllerName() const override;
 

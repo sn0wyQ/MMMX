@@ -43,6 +43,9 @@ enum class EventType {
   // [1] - <QString> wanted_nickname
   kConnectToRoomById,
 
+  // No arguments
+  kDisconnectFromRoom,
+
   // [0] - <GameObjectId> player_id
   kSetPlayerIdToClient,
 
