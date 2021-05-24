@@ -29,7 +29,9 @@ void RoomsInfoList::UpdateRoomsInfoList() {
   // Removing rooms that are no longer available
   for (const auto& [room_id, widget_ptr] : rooms_) {
     if (updated_rooms.find(room_id) == updated_rooms.end()) {
+      rooms_.erase(room_id);
       layout_->removeWidget(widget_ptr);
+      widget_ptr->setParent(nullptr);
       widget_ptr->deleteLater();
     }
   }
@@ -39,8 +41,8 @@ RoomId RoomsInfoList::GetSelectedRoom() const {
   return selected_room_id_;
 }
 
-void RoomsInfoList::SelectRoom(RoomId room_id) {
-  selected_room_id_ = room_id;
+void RoomsInfoList::SelectRoom(RoomId selected_room_id) {
+  selected_room_id_ = selected_room_id;
   for (auto&[room_id, room] : rooms_) {
     room->repaint();
   }

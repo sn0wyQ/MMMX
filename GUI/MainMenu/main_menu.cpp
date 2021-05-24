@@ -60,6 +60,7 @@ void MainMenu::OnStartGameButtonClicked() {
   }
   parent_->ConnectToRoom(selected_room);
   parent_->SetWindow(ClientWindowType::kGameView);
+  rooms_info_list_->SelectRoom(Constants::kNullRoomId);
 }
 
 void MainMenu::OnOpenSettingsButtonClicked() {
