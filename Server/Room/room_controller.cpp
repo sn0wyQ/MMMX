@@ -230,9 +230,9 @@ void RoomController::ProcessBulletHits(
       auto injured = std::dynamic_pointer_cast<Entity>(actual_object_collided);
       bool is_killed;
       auto damager =
-          model_data_bullet.model->IsGameObjectIdTaken(bullet->GetParentId()) ?
+         model_->IsGameObjectIdTaken(bullet->GetParentId()) ?
           std::dynamic_pointer_cast<Entity>(
-              model_data_bullet.model->GetGameObjectByGameObjectId(
+              model_->GetGameObjectByGameObjectId(
                   bullet->GetParentId())) : nullptr;
       EntityReceiveDamage(model_data_bullet,
                           damager, injured,
