@@ -39,6 +39,7 @@ class Entity : public MovableObject {
   int GetLevel() const;
 
   bool IsEntity() const override;
+  virtual bool IsPlayer() const;
 
   virtual void Revive(QPointF point_to_spawn);
 

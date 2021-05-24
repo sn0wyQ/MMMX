@@ -66,7 +66,7 @@ void Entity::SetHealthPoints(float health_points) {
     health_points_ = health_points;
     if (!this->IsAlive()) {
       this->SetDisappearing();
-    } else {
+    } else if (this->IsPlayer()) {
       this->SetAppearing();
     }
   }
@@ -229,4 +229,8 @@ void Entity::HideHealthPointBar() const {
 
 void Entity::ShowHealthPointBar() const {
   hp_bar_opacity_emulator_.SetPath(0.f, 1.f);
+}
+
+bool Entity::IsPlayer() const {
+  return false;
 }
