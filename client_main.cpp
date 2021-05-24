@@ -40,8 +40,6 @@ int main(int argc, char* argv[]) {
   QFile::remove("client.log");
   qInstallMessageHandler(MessageHandlerWrapper);
 
-  // auto client_controller = std::make_shared<ClientController>(
-  //     server_url, QApplication::primaryScreen()->refreshRate());
   auto* client_controller = new ClientController(
       server_url, QApplication::primaryScreen()->refreshRate());
   auto* client_view = new ClientView(client_controller);
