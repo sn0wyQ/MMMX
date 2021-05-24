@@ -1,9 +1,8 @@
 #include "viewport.h"
 
-ViewPort::ViewPort(QWidget* parent,
-                   std::shared_ptr<ClientController> controller)
+ViewPort::ViewPort(QWidget* parent, ClientController* controller)
   : QOpenGLWidget(parent),
-    controller_(std::move(controller)),
+    controller_(controller),
     model_(controller_->GetModel()),
     converter_(std::make_shared<Converter>(this)),
     camera_motion_emulator_(Constants::kCameraStiffnessRatio,

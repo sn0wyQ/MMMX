@@ -1,10 +1,10 @@
 #include "game_view.h"
 
 GameView::GameView(AbstractClientView* parent,
-                   std::shared_ptr<ClientController> controller,
-                   std::shared_ptr<KeyController> key_controller)
+                   ClientController* controller,
+                   KeyController* key_controller)
     : parent_(parent),
-      controller_(std::move(controller)),
+      controller_(controller),
       key_controller_(std::move(key_controller)) {
   model_ = controller_->GetModel();
 

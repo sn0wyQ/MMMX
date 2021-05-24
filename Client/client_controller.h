@@ -66,7 +66,7 @@ class ClientController : public BaseController {
   int64_t GetSecsToNextPossibleRevive() const;
   bool GetIsHoldingRespawnButton() const;
 
-  void SetView(std::shared_ptr<AbstractClientView> view);
+  void SetView(AbstractClientView* view);
   void UpdateView();
 
   void UpdateAnimations(int delta_time);
@@ -127,8 +127,8 @@ class ClientController : public BaseController {
   QString GetEntityName(GameObjectId game_object_id) const;
 
   std::shared_ptr<ClientGameModel> model_;
-  std::shared_ptr<AbstractClientView> view_;
-  std::shared_ptr<KeyController> key_controller_;
+  AbstractClientView* view_;
+  KeyController* key_controller_;
 
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;

@@ -1,9 +1,9 @@
 #include "settings_window.h"
 
 SettingsWindow::SettingsWindow(AbstractClientView* parent,
-                               std::shared_ptr<ClientController> controller)
+                               ClientController* controller)
     : parent_(parent),
-      controller_(std::move(controller)),
+      controller_(controller),
       model_(controller_->GetModel()) {
   back_to_main_menu_ = new QPushButton(tr("Main Menu"), this);
   connect(back_to_main_menu_,
@@ -20,7 +20,7 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
           this,
           &SettingsWindow::OnSetNicknameButtonClicked);
 
-  key_controller_ = std::make_shared<KeyController>(this);
+  key_controller_ = new KeyController(this);
   key_controller_->Hide();
 }
 
@@ -60,7 +60,7 @@ void SettingsWindow::resizeEvent(QResizeEvent* event) {
   key_controller_->resize(width / 2, height);
 }
 
-std::shared_ptr<KeyController> SettingsWindow::GetKeyController() const {
+KeyController* SettingsWindow::GetKeyController() const {
   return key_controller_;
 }
 

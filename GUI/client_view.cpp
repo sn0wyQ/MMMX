@@ -1,8 +1,8 @@
 #include "client_view.h"
 
-ClientView::ClientView(std::shared_ptr<ClientController> controller)
+ClientView::ClientView(ClientController* controller)
     : AbstractClientView(),
-      controller_(std::move(controller)),
+      controller_(controller),
       model_(controller_->GetModel()) {
   this->resize(700, 700);
   this->setMinimumSize(310, 70);
@@ -24,7 +24,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   stacked_widget_->setCurrentWidget(main_menu_);
   this->setCentralWidget(stacked_widget_);
 
-  controller_->SetView(std::shared_ptr<ClientView>(this));
+  controller_->SetView(this);
 
   this->resize(1400, 960);
 }
@@ -119,8 +119,8 @@ void ClientView::AddPlayerDisconnectedNotification(const QString& player_name) {
   game_view_->AddPlayerDisconnectedNotification(player_name);
 }
 
-std::shared_ptr<KeyController> ClientView::GetKeyController() const {
-  return std::shared_ptr<KeyController>(key_controller_);
+KeyController* ClientView::GetKeyController() const {
+  return key_controller_;
 }
 
 void ClientView::QuitApp() {

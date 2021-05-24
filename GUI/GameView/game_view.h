@@ -26,8 +26,8 @@
 class GameView : public QWidget {
  public:
   GameView(AbstractClientView* parent,
-           std::shared_ptr<ClientController> controller,
-           std::shared_ptr<KeyController> key_controller);
+           ClientController* controller,
+           KeyController* key_controller);
 
   std::shared_ptr<Converter> GetConverter();
 
@@ -52,7 +52,7 @@ class GameView : public QWidget {
   void ProcessRespawnButton();
 
   AbstractClientView* parent_;
-  std::shared_ptr<ClientController> controller_;
+  ClientController* controller_;
   std::shared_ptr<ClientGameModel> model_;
 
   KillFeed* kill_feed_;
@@ -69,7 +69,7 @@ class GameView : public QWidget {
   int64_t last_updated_time_{};
   std::deque<int64_t> last_frame_times_{};
 
-  std::shared_ptr<KeyController> key_controller_;
+  KeyController* key_controller_;
 };
 
 #endif  // GUI_GAMEVIEW_GAME_VIEW_H_

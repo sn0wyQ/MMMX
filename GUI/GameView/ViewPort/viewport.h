@@ -21,8 +21,7 @@ class ViewPort : public QOpenGLWidget {
   Q_OBJECT
 
  public:
-  ViewPort(QWidget* parent,
-           std::shared_ptr<ClientController> controller);
+  ViewPort(QWidget* parent, ClientController* controller);
 
   std::shared_ptr<Converter> GetConverter();
 
@@ -37,7 +36,7 @@ class ViewPort : public QOpenGLWidget {
   QPointF GetPlayerToCenterOffset() const;
 
  private:
-  std::shared_ptr<ClientController> controller_;
+  ClientController* controller_;
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<Converter> converter_;
 

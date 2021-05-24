@@ -18,13 +18,12 @@ class SettingsWindow : public QWidget {
   Q_OBJECT
 
  public:
-  SettingsWindow(AbstractClientView* parent,
-                 std::shared_ptr<ClientController> controller);
+  SettingsWindow(AbstractClientView* parent, ClientController* controller);
 
   void keyPressEvent(QKeyEvent* key_event) override;
   void resizeEvent(QResizeEvent* event) override;
 
-  std::shared_ptr<KeyController> GetKeyController() const;
+  KeyController* GetKeyController() const;
 
   public Q_SLOTS:
   void OnBackToMainMenuButtonClicked();
@@ -33,14 +32,14 @@ class SettingsWindow : public QWidget {
  private:
   AbstractClientView* parent_;
 
-  std::shared_ptr<ClientController> controller_;
+  ClientController* controller_;
   std::shared_ptr<ClientGameModel> model_;
 
   QPushButton* back_to_main_menu_;
   QPushButton* set_nickname_;
   QTextEdit* nickname_edit_;
 
-  std::shared_ptr<KeyController> key_controller_;
+  KeyController* key_controller_;
 };
 
 #endif  // GUI_SETTINGSWINDOW_SETTINGS_WINDOW_H_

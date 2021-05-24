@@ -30,7 +30,7 @@ class ClientView : public AbstractClientView {
   Q_OBJECT
 
  public:
-  explicit ClientView(std::shared_ptr<ClientController> controller);
+  explicit ClientView(ClientController* controller);
   ~ClientView() override = default;
 
   void ConnectToRoom(RoomId room_id) override;
@@ -43,7 +43,7 @@ class ClientView : public AbstractClientView {
                                const QString& victim_name,
                                WeaponType weapon_type) override;
 
-  std::shared_ptr<KeyController> GetKeyController() const override;
+  KeyController* GetKeyController() const override;
   void AddRespawnNotification(const QString& player_name) override;
   void AddPlayerConnectedNotification(const QString& player_name) override;
   void AddPlayerDisconnectedNotification(const QString& player_name) override;
@@ -60,7 +60,7 @@ class ClientView : public AbstractClientView {
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
-  std::shared_ptr<ClientController> controller_;
+  ClientController* controller_;
   std::shared_ptr<ClientGameModel> model_;
 
   QStackedWidget* stacked_widget_;
@@ -68,7 +68,7 @@ class ClientView : public AbstractClientView {
   MainMenu* main_menu_;
   SettingsWindow* settings_window_;
 
-  std::shared_ptr<KeyController> key_controller_;
+  KeyController* key_controller_;
 };
 
 #endif  // GUI_CLIENT_VIEW_H_

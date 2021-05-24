@@ -1,8 +1,7 @@
 #include "main_menu.h"
 
-MainMenu::MainMenu(AbstractClientView* parent,
-                   std::shared_ptr<ClientController> controller)
-    : QWidget(parent), parent_(parent), controller_(std::move(controller)) {
+MainMenu::MainMenu(AbstractClientView* parent, ClientController* controller)
+    : QWidget(parent), parent_(parent), controller_(controller) {
   rooms_info_list_ = new RoomsInfoList(this, controller_->GetModel());
 
   start_game_ = new QPushButton(tr("Start Game"), this);

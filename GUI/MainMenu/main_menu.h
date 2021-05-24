@@ -17,8 +17,7 @@ class MainMenu : public QWidget {
   Q_OBJECT
 
  public:
-  MainMenu(AbstractClientView* parent,
-           std::shared_ptr<ClientController> controller);
+  MainMenu(AbstractClientView* parent, ClientController* controller);
 
   void UpdateRoomsInfoList();
 
@@ -31,7 +30,7 @@ class MainMenu : public QWidget {
 
  private:
   AbstractClientView* parent_;
-  std::shared_ptr<ClientController> controller_;
+  ClientController* controller_;
 
   RoomsInfoList* rooms_info_list_;
   QPushButton* start_game_;

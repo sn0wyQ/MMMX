@@ -308,8 +308,8 @@ void ClientController::UpdateGameObjects() {
   }
 }
 
-void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
-  view_ = std::move(view);
+void ClientController::SetView(AbstractClientView* view) {
+  view_ = view;
   converter_ = view_->GetConverter();
   key_controller_ = view_->GetKeyController();
 }
