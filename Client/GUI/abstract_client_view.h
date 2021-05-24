@@ -14,9 +14,9 @@ namespace ClientWindowTypeWrapper {
 Q_NAMESPACE
 
 enum class ClientWindowType {
-  // First enum MUST be 0
-  kMainMenu = 0,
-  kGameView
+  kGameView,
+  kMainMenu,
+  kSettingsWindow
 };
 
 Q_ENUM_NS(ClientWindowType)

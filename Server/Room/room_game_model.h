@@ -24,7 +24,9 @@ class RoomGameModel : public GameModel {
   bool IsNeededToSendGameObjectData(GameObjectId game_object_id) const;
   void UpdateGameObjectHashes();
 
-  void AddPlayerStats(GameObjectId player_id, QString nickname, int level);
+  void AddPlayerStats(GameObjectId player_id,
+                      const QString& nickname,
+                      int level);
   bool IsNeededToSendPlayerStats(GameObjectId player_id);
   void UpdatePlayerStatsHashes();
 

@@ -269,7 +269,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
   }
 }
 
-void RoomController::AddClient(ClientId client_id) {
+void RoomController::AddClient(ClientId client_id, const QString& nickname) {
   GameObjectId player_id = AddPlayer();
   player_ids_[client_id] = player_id;
   are_controls_blocked_[player_id] = false;
@@ -282,8 +282,8 @@ void RoomController::AddClient(ClientId client_id) {
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
   auto player = model_->GetPlayerByPlayerId(player_id);
   model_->AddPlayerStats(player_id,
-                        QString("Player#") + QString::number(player_id),
-                        player->GetLevel());
+                         nickname,
+                         player->GetLevel());
   this->SendGameObjectsDataToPlayer(player_id, true);
   this->ForceSendPlayersStatsToPlayer(player_id);
   this->SendPlayersStatsToPlayers();

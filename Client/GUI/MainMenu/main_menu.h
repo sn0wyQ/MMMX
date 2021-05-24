@@ -26,6 +26,7 @@ class MainMenu : public QWidget {
 
   public Q_SLOTS:
   void OnStartGameButtonClicked();
+  void OnOpenSettingsButtonClicked();
 
  private:
   AbstractClientView* parent_;
@@ -33,6 +34,7 @@ class MainMenu : public QWidget {
 
   RoomsInfoList* rooms_info_list_;
   QPushButton* start_game_;
+  QPushButton* open_settings_;
 };
 
 #endif  // CLIENT_GUI_MAINMENU_MAIN_MENU_H_

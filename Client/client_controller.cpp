@@ -17,7 +17,8 @@ ClientController::ClientController(const QUrl& url, int fps_max)
 }
 
 void ClientController::ConnectToRoom(RoomId room_id) {
-  this->AddEventToSend(Event(EventType::kConnectToRoomById, room_id));
+  this->AddEventToSend(Event(EventType::kConnectToRoomById,
+                             room_id, model_->GetLocalPlayerNickname()));
   controls_check_timer_.start(Constants::kControlsHoldingCheck);
 }
 

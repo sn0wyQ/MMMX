@@ -78,8 +78,8 @@ void ServerModel::SetClientIdToWebSocket(
 }
 
 void ServerModel::AddClientToRoom(
-    RoomId room_id, ClientId client_id) {
-  rooms_.at(room_id)->AddClient(client_id);
+    RoomId room_id, ClientId client_id, const QString& nickname) {
+  rooms_.at(room_id)->AddClient(client_id, nickname);
 }
 
 void ServerModel::RemoveClient(ClientId client_id) {

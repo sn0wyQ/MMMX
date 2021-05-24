@@ -50,7 +50,9 @@ class ServerModel {
                           std::shared_ptr<ConnectedClient> connected_client);
   void SetClientIdToWebSocket(const std::shared_ptr<QWebSocket>& web_socket,
                               ClientId client_id);
-  void AddClientToRoom(RoomId room_id, ClientId client_id);
+  void AddClientToRoom(RoomId room_id,
+                       ClientId client_id,
+                       const QString& nickname);
 
   void RemoveClient(ClientId client_id);
 

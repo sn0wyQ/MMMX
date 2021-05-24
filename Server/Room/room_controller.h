@@ -51,7 +51,7 @@ class RoomController : public BaseController {
   void SendEvent(const Event& event) override;
   void OnTick(int delta_time) override;
 
-  void AddClient(ClientId client_id);
+  void AddClient(ClientId client_id, const QString& nickname);
   void RemoveClient(ClientId client_id);
 
   bool HasFreeSpot() const;

@@ -22,6 +22,7 @@ ClientView::ClientView(std::shared_ptr<ClientController> controller)
   stacked_widget_ = new QStackedWidget(this);
   stacked_widget_->addWidget(game_view_);
   stacked_widget_->addWidget(main_menu_);
+  stacked_widget_->addWidget(settings_window_);
   stacked_widget_->setCurrentWidget(main_menu_);
   this->setCentralWidget(stacked_widget_);
 
@@ -42,6 +43,10 @@ void ClientView::SetWindow(ClientWindowType window_type) {
 
     case ClientWindowType::kGameView:
       stacked_widget_->setCurrentWidget(game_view_);
+      break;
+
+    case ClientWindowType::kSettingsWindow:
+      stacked_widget_->setCurrentWidget(settings_window_);
       break;
   }
 }

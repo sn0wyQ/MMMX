@@ -40,6 +40,7 @@ enum class EventType {
   kSendVisibleRoomsInfo,
 
   // [0] - <RoomId> room_id
+  // [1] - <QString> wanted_nickname
   kConnectToRoomById,
 
   // [0] - <GameObjectId> player_id
