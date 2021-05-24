@@ -274,9 +274,6 @@ bool GameObject::IsNeedToDraw() const {
   if (this->IsInterpolatedOnce()) {
     return false;
   }
-  if (!IsAlive()) {
-    return false;
-  }
   return true;
 }
 

@@ -64,9 +64,12 @@ void Entity::SetHealthPoints(float health_points) {
     last_changed_hp_ = QDateTime::currentMSecsSinceEpoch();
     this->ShowHealthPointBar();
     health_points_ = health_points;
+    if (std::fabs(health_points_) < Math::kEps) {
+      is_alive_ = false;
+    }
     if (!this->IsAlive()) {
       this->SetDisappearing();
-    } else if (this->IsPlayer()) {
+    } else {
       this->SetAppearing();
     }
   }
@@ -103,7 +106,7 @@ std::shared_ptr<GameObject> Entity::Clone() const {
 void Entity::DrawHealthBar(Painter* painter) const {
   painter->save();
   auto time = QDateTime::currentMSecsSinceEpoch();
-  if (is_disappearing_ || time - last_changed_hp_ > 1000) {
+  if (!IsAlive() || time - last_changed_hp_ > 1000) {
     this->HideHealthPointBar();
   } else {
     this->ShowHealthPointBar();
@@ -119,7 +122,7 @@ void Entity::DrawHealthBar(Painter* painter) const {
   painter->drawRoundedRect(rect, 10, 10);
 
   float hp_ratio = this->GetHealthPoints() / this->GetMaxHealthPoints();
-  if (is_disappearing_) {
+  if (!this->IsAlive()) {
     hp_ratio = 0.f;
   }
   auto color = Constants::GetHealthPointsColor(hp_ratio);
@@ -144,6 +147,7 @@ void Entity::DrawHealthBar(Painter* painter) const {
 void Entity::Revive(QPointF point_to_spawn) {
   SetPosition(point_to_spawn);
   SetHealthPoints(GetMaxHealthPoints());
+  is_alive_ = true;
   this->SetAppearing();
 }
 
@@ -197,7 +201,7 @@ void Entity::DrawLevel(Painter* painter) const {
 }
 
 bool Entity::IsAlive() const {
-  return GetHealthPoints() > 0;
+  return is_alive_;
 }
 
 float Entity::GetOpacity() const {
@@ -206,17 +210,15 @@ float Entity::GetOpacity() const {
 
 void Entity::SetAppearing() {
   opacity_emulator_.SetPath(0.f, 1.f);
-  is_disappearing_ = false;
 }
 
 void Entity::SetDisappearing() {
   this->HideHealthPointBar();
   opacity_emulator_.SetPath(1.f, 0.f);
-  is_disappearing_ = true;
 }
 
 void Entity::UpdateAnimationState(bool restart) {
-  if (!is_disappearing_ && this->GetVelocity().length() > Math::kEps) {
+  if (this->IsAlive() && this->GetVelocity().length() > Math::kEps) {
     this->SetAnimationState(AnimationState::kMove, restart);
   } else {
     this->SetAnimationState(AnimationState::kIdle, restart);
