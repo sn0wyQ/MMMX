@@ -17,15 +17,7 @@ Animation::Animation(AnimationType animation_type)
     auto animation_state = static_cast<AnimationState>(0);
     while (animation_state < AnimationState::SIZE) {
       std::queue<SharedFrame> first_frames_of_state;
-      int current_frame_index = 0;
-      while ((first_frames_of_state.empty()
-              || first_frames_of_state.back().IsExists())
-             && current_frame_index < (animation_state == AnimationState::kIdle
-                               ? frames_to_preload_in_active_sequence_
-                                 : frames_to_preload_in_inactive_sequences_)) {
-          first_frames_of_state.emplace(
-              base_path_, animation_state, current_frame_index++);
-      }
+      first_frames_of_state.emplace(base_path_, animation_state, 0);
       animation_frames_.insert({animation_state, first_frames_of_state});
       ++animation_state_index;
       animation_state = static_cast<AnimationState>(animation_state_index);
@@ -270,7 +262,7 @@ void Animation::SetAnimationState(AnimationState animation_state,
 
   // We guarantee that we always already have 0th frame
   // (if it exists in storage) and we also want to preload more frames
-  int current_frame_index = frames_to_preload_in_inactive_sequences_;
+  int current_frame_index = 1;
   while (new_sequence.back().IsExists()
          && current_frame_index < frames_to_preload_in_active_sequence_) {
     SharedFrame next_frame(base_path_,
