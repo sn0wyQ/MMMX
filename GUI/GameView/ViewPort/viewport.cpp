@@ -60,6 +60,7 @@ void ViewPort::Update() {
   auto view_rect_offset =
       QPointF(this->width(), this->height()) / 2.f;
   view_rect_offset = converter_->ScaleFromScreenToGame(view_rect_offset);
+  view_rect_offset.setY(view_rect_offset.y() + 1.2f * player_bar_offset);
   auto view_rect = QRectF(local_center - view_rect_offset,
                           local_center + view_rect_offset);
 
