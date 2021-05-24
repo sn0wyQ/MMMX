@@ -132,7 +132,7 @@ const float kAccuracy = 0.9f;
 const float kBulletSpeed = 1.2f;
 const float kRateOfFire = 1.1f;
 const float kBulletRange = 1.3f;
-const float kBulletDamage = 3.f;
+const float kBulletDamage = 1.1f;
 const float kReloadingTime = 0.9f;
 
 }  // namespace LevelingSlots
