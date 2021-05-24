@@ -68,3 +68,7 @@ QColor KillFeedNotification::GetColorWithOpacity(const QColor& color,
   result.setAlpha(opacity);
   return result;
 }
+
+QString KillFeedNotification::GetMessage() const {
+  return message_;
+}

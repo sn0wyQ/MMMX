@@ -43,6 +43,10 @@ class KillFeed : public QWidget {
   SpringEmulator<float, false> notifications_y_emulator_;
   std::deque<KillFeedNotification*> notifications_;
   int next_to_disappear_index_{0};
+
+  // bad kostyl
+  QString last_string_notification_{};
+  int64_t last_notification_time_{};
 };
 
 #endif  // GUI_GAMEVIEW_KILLFEED_KILL_FEED_H_
