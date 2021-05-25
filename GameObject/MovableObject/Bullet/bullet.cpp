@@ -67,19 +67,6 @@ void Bullet::SetStartPosition(QPointF start_position) {
   start_position_ = start_position;
 }
 
-void Bullet::DrawRelatively(Painter* painter) const {
-  painter->save();
-  auto distance = Math::DistanceBetweenPoints(this->GetPosition(),
-                                              this->GetStartPosition());
-  if (distance / bullet_range_ > kBulletDisappearRatio) {
-    painter->setOpacity(1.f -
-              (distance - kBulletDisappearRatio * bullet_range_) /
-              (bullet_range_ - kBulletDisappearRatio * bullet_range_));
-  }
-
-  painter->restore();
-}
-
 std::shared_ptr<GameObject> Bullet::Clone() const {
   return std::make_shared<Bullet>(*this);
 }
@@ -106,4 +93,14 @@ void Bullet::SetBulletSpeed(float bullet_speed) {
 
 void Bullet::SetBulletRange(float bullet_range) {
   bullet_range_ = bullet_range;
+}
+
+float Bullet::GetOpacity() const {
+  auto distance = Math::DistanceBetweenPoints(this->GetPosition(),
+                                              this->GetStartPosition());
+  if (distance / bullet_range_ > kBulletDisappearRatio) {
+    return 1.f - (distance - kBulletDisappearRatio * bullet_range_) /
+        (bullet_range_ - kBulletDisappearRatio * bullet_range_);
+  }
+  return 1.f;
 }
