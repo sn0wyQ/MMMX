@@ -65,7 +65,7 @@ const float kDefaultSpeedMultiplier = 0.01f;
 
 // Entity
 const int64_t kMaxDisappearTimeMSecs = 1000.f;
-const float kOpacityChangeSpeed = 0.01f;
+const float kOpacityChangeSpeed = 0.03f;
 const float kDefaultMaxHealthPoints = 100.f;
 
 // Player
