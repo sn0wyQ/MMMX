@@ -52,7 +52,8 @@ class ServerModel {
                               ClientId client_id);
   void AddClientToRoom(RoomId room_id,
                        ClientId client_id,
-                       const QString& nickname);
+                       const QString& nickname,
+                       PlayerType player_type);
 
   void RemoveClient(ClientId client_id);
 

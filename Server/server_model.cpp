@@ -79,9 +79,11 @@ void ServerModel::SetClientIdToWebSocket(
   client_ids_.emplace(std::make_pair(web_socket.get(), client_id));
 }
 
-void ServerModel::AddClientToRoom(
-    RoomId room_id, ClientId client_id, const QString& nickname) {
-  rooms_.at(room_id)->AddClient(client_id, nickname);
+void ServerModel::AddClientToRoom(RoomId room_id,
+                                  ClientId client_id,
+                                  const QString& nickname,
+                                  PlayerType player_type) {
+  rooms_.at(room_id)->AddClient(client_id, nickname, player_type);
 }
 
 void ServerModel::RemoveClient(ClientId client_id) {

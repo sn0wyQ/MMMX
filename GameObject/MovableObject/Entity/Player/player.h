@@ -9,25 +9,12 @@
 #include <QEvent>
 
 #include "GameObject/MovableObject/Entity/entity.h"
+#include "GameObject/MovableObject/Entity/Player/player_enums.h"
 #include "Weapon/AssaultRifle/assault_rifle.h"
 #include "Weapon/Crossbow/crossbow.h"
 #include "Weapon/MachineGun/machine_gun.h"
 #include "Weapon/Shotgun/shotgun.h"
 #include "Constants/constants.h"
-
-enum class LevelingSlots {
-  kMaxHp,
-  kHealthRegenRate,
-  kSpeed,
-  kFovRadius,
-  kAccuracy,
-  kBulletSpeed,
-  kRateOfFire,
-  kBulletRange,
-  kBulletDamage,
-  kReloadingTime,
-  SIZE
-};
 
 class Player : public Entity {
  public:

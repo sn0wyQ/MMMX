@@ -273,8 +273,9 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
   }
 }
 
-void RoomController::AddClient(ClientId client_id, const QString& nickname) {
-  GameObjectId player_id = AddPlayer();
+void RoomController::AddClient(
+    ClientId client_id, const QString& nickname, PlayerType player_type) {
+  GameObjectId player_id = AddPlayer(player_type);
   player_ids_[client_id] = player_id;
   are_controls_blocked_[player_id] = false;
 
@@ -481,8 +482,7 @@ void RoomController::SendPlayersStatsToPlayers() {
   }
 }
 
-// Temporary -> AddPlayer(PlayerType)
-GameObjectId RoomController::AddPlayer() {
+GameObjectId RoomController::AddPlayer(PlayerType player_type) {
   QPointF point = model_->GetPointToSpawn(Constants::kDefaultPlayerRadius,
                                           GameObjectType::kPlayer);
 
@@ -491,23 +491,20 @@ GameObjectId RoomController::AddPlayer() {
   float width = 8.f;
   float height = 8.f;
 
-  // Temporary
-  int players_type =
-      this->GetPlayersCount() % static_cast<int>(WeaponType::SIZE);
-  switch (players_type) {
-    case 0: {
+  switch (player_type) {
+    case PlayerType::kSmasher: {
+      animation_type = AnimationType::kSmasher;
+      weapon_type = WeaponType::kShotgun;
+      break;
+    }
+
+    case PlayerType::kSoldier: {
       animation_type = AnimationType::kSoldier;
       weapon_type = WeaponType::kAssaultRifle;
       break;
     }
 
-    case 1: {
-      animation_type = AnimationType::kViking;
-      weapon_type = WeaponType::kCrossbow;
-      break;
-    }
-
-    case 2: {
+    case PlayerType::kSpider: {
       animation_type = AnimationType::kSpider;
       weapon_type = WeaponType::kMachineGun;
       width = 3.f;
@@ -515,9 +512,9 @@ GameObjectId RoomController::AddPlayer() {
       break;
     }
 
-    case 3: {
-      animation_type = AnimationType::kSmasher;
-      weapon_type = WeaponType::kShotgun;
+    case PlayerType::kViking: {
+      animation_type = AnimationType::kViking;
+      weapon_type = WeaponType::kCrossbow;
       break;
     }
 

@@ -33,7 +33,7 @@ class ClientView : public AbstractClientView {
   explicit ClientView(ClientController* controller);
   ~ClientView() override = default;
 
-  void ConnectToRoom(RoomId room_id) override;
+  void ConnectToRoom(RoomId room_id, PlayerType player_type) override;
   void SetWindow(ClientWindowType window_type) override;
   void Update() override;
   void UpdateRoomsInfoList() override;
