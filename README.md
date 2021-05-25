@@ -18,7 +18,7 @@ MMMX Game is a multiplayer 2D shooter with view from above written on C++ using 
 - Rending on graphics card using OpenGL
 - Smart creeps (IQ 200+)
 - Kill feed
-- Key rebinding
+- Key rebind ability
 
 ### Prerequisites
 
