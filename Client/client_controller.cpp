@@ -382,6 +382,7 @@ QVector2D ClientController::GetKeyForce() const {
   if (!view_) {
     return QVector2D();
   }
+
   bool is_up_pressed = key_controller_->IsHeld(Controls::kUp);
   bool is_right_pressed = key_controller_->IsHeld(Controls::kRight);
   bool is_down_pressed = key_controller_->IsHeld(Controls::kDown);

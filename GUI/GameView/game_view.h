@@ -6,6 +6,7 @@
 #include <utility>
 
 #include <QLabel>
+#include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QPushButton>
@@ -25,14 +26,14 @@
 
 class GameView : public QWidget {
  public:
-  GameView(AbstractClientView* parent,
-           ClientController* controller,
-           KeyController* key_controller);
+  GameView(AbstractClientView* parent, ClientController* controller);
 
   std::shared_ptr<Converter> GetConverter();
 
   void Update();
 
+  void keyPressEvent(QKeyEvent* key_event) override;
+  void keyReleaseEvent(QKeyEvent* key_event) override;
   void mouseMoveEvent(QMouseEvent* mouse_event) override;
   void paintEvent(QPaintEvent* event) override;
   void resizeEvent(QResizeEvent* event) override;
@@ -44,6 +45,8 @@ class GameView : public QWidget {
   void AddRespawnNotification(const QString& player_name);
   void AddPlayerConnectedNotification(const QString& player_name);
   void AddPlayerDisconnectedNotification(const QString& player_name);
+
+  KeyController* GetKeyController() const;
 
   public Q_SLOTS:
   void OnDisconnectButtonClicked();
