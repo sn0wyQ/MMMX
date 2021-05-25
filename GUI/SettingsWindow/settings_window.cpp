@@ -9,7 +9,7 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
   connect(back_to_main_menu_,
           &QPushButton::clicked,
           this,
-          &SettingsWindow::OnBackToMainMenuButtonClicked);
+          &SettingsWindow::BackToMainMenu);
 
   nickname_edit_ = new QTextEdit(this);
   nickname_edit_->setPlaceholderText(tr("Nickname (default - \"Player\")"));
@@ -50,7 +50,13 @@ void SettingsWindow::resizeEvent(QResizeEvent* event) {
       setting_height);
 }
 
-void SettingsWindow::OnBackToMainMenuButtonClicked() {
+void SettingsWindow::keyPressEvent(QKeyEvent* event) {
+  if (event->key() == Qt::Key_Escape) {
+    this->BackToMainMenu();
+  }
+}
+
+void SettingsWindow::BackToMainMenu() {
   parent_->SetWindow(ClientWindowType::kMainMenu);
   QString nickname_to_set = nickname_edit_->toPlainText().mid(0, 10);
   nickname_edit_->setText(nickname_to_set);

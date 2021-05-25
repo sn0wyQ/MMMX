@@ -20,10 +20,11 @@ class SettingsWindow : public QWidget {
  public:
   SettingsWindow(AbstractClientView* parent, ClientController* controller);
 
+  void keyPressEvent(QKeyEvent* event) override;
   void resizeEvent(QResizeEvent* event) override;
 
   public Q_SLOTS:
-  void OnBackToMainMenuButtonClicked();
+  void BackToMainMenu();
   void paintEvent(QPaintEvent*) override;
   void OnEnableSmoothFov();
 
