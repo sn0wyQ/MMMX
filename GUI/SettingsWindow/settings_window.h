@@ -24,7 +24,7 @@ class SettingsWindow : public QWidget {
   void resizeEvent(QResizeEvent* event) override;
   void paintEvent(QPaintEvent*) override;
 
- public Q_SLOTS:
+  public Q_SLOTS:
   void BackToMainMenu();
   void OnEnableSmoothFov();
 
