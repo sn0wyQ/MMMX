@@ -48,6 +48,10 @@ color: rgb(200, 20, 20);
 font: bold 15px;
 }
 
+QPushButton#red_big {
+color: rgb(200, 20, 20);
+}
+
 QTextEdit {
 font-family: Cyntho Next Thin;
 background-color: rgb(255, 255, 255);

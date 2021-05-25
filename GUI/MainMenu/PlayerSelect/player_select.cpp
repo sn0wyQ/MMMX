@@ -35,7 +35,7 @@ PlayerSelect::PlayerSelect(QWidget* parent, Qt::WindowFlags flags)
           &QPushButton::clicked,
           this,
           [this]() { this->done(static_cast<int>(PlayerType::kNone)); });
-  cancel_->setObjectName("red_small");
+  cancel_->setObjectName("red_big");
 
   layout_ = new QVBoxLayout(this);
   layout_->addWidget(label_);
