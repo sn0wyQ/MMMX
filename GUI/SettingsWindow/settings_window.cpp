@@ -13,7 +13,12 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
 
   nickname_edit_ = new QTextEdit(this);
   nickname_edit_->setPlaceholderText(tr("Nickname (default - \"Player\")"));
-  nickname_edit_->setFixedHeight(50);
+
+  enable_smooth_fov_checkbox_ = new QCheckBox(this);
+  enable_smooth_fov_checkbox_->setText(
+      tr("Enable smooth objects disappearing"));
+  connect(enable_smooth_fov_checkbox_, &QCheckBox::stateChanged,
+          this, &SettingsWindow::OnEnableSmoothFov);
 }
 
 void SettingsWindow::resizeEvent(QResizeEvent* event) {
@@ -25,10 +30,20 @@ void SettingsWindow::resizeEvent(QResizeEvent* event) {
                                   width / 2,
                                   height / 24);
 
+  int setting_height = 50;
+  int setting_width = width * 3 / 4;
+  int offset = 10;
+
   nickname_edit_->setGeometry(width / 8,
                               height / 6,
-                              width * 3 / 4,
-                              height * 2 / 3);
+                              setting_width,
+                              setting_height);
+
+  enable_smooth_fov_checkbox_->setGeometry(
+      nickname_edit_->x(),
+      nickname_edit_->y() + nickname_edit_->height() + offset,
+      setting_width,
+      setting_height);
 }
 
 void SettingsWindow::OnBackToMainMenuButtonClicked() {
@@ -47,4 +62,9 @@ void SettingsWindow::paintEvent(QPaintEvent*) {
   QRect rect_of_pixmap = background.rect();
   rect_of_pixmap.moveCenter(center_of_widget);
   painter.drawPixmap(rect_of_pixmap.topLeft(), background);
+}
+
+void SettingsWindow::OnEnableSmoothFov() {
+  Settings::GetInstance().SetValue("main/smooth_fov",
+                                   enable_smooth_fov_checkbox_->isChecked());
 }

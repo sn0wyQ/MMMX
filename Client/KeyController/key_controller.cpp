@@ -253,27 +253,22 @@ bool KeyController::IsShown() const {
 }
 
 void KeyController::ReadSettings() {
-  auto location = QStandardPaths::writableLocation(
-      QStandardPaths::StandardLocation::AppConfigLocation);
-  QSettings settings(location, QSettings::Format::IniFormat);
   for (size_t i = 0; i < kControlsNames.size(); i++) {
     auto control = static_cast<Controls>(i);
     auto settings_key =
         "key_settings/" + Constants::GetStringFromEnumValue(control);
-    if (settings.contains(settings_key)) {
+    if (Settings::GetInstance().Contains(settings_key)) {
       this->UnbindControlFromNativeButton(control);
       native_button_to_control_[
-          NativeButton(settings.value(settings_key))] = control;
+          NativeButton(Settings::GetInstance().
+              GetValueByKey<QVariant>(settings_key))] = control;
     }
   }
 }
 
 void KeyController::SaveSettings() const {
-  auto location = QStandardPaths::writableLocation(
-      QStandardPaths::StandardLocation::AppConfigLocation);
-  QSettings settings(location, QSettings::Format::IniFormat);
   for (auto&[native_button, control] : native_button_to_control_) {
-    settings.setValue("key_settings/" +
+    Settings::GetInstance().SetValue("key_settings/" +
                           Constants::GetStringFromEnumValue(control),
                       native_button.ToQVariant());
   }

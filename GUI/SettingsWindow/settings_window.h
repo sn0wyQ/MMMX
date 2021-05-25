@@ -8,6 +8,7 @@
 #include <QResizeEvent>
 #include <QTextEdit>
 #include <QWidget>
+#include <QCheckBox>
 
 #include "GUI/abstract_client_view.h"
 #include "Client/client_controller.h"
@@ -24,6 +25,7 @@ class SettingsWindow : public QWidget {
   public Q_SLOTS:
   void OnBackToMainMenuButtonClicked();
   void paintEvent(QPaintEvent*) override;
+  void OnEnableSmoothFov();
 
  private:
   AbstractClientView* parent_;
@@ -33,6 +35,7 @@ class SettingsWindow : public QWidget {
 
   QPushButton* back_to_main_menu_;
   QTextEdit* nickname_edit_;
+  QCheckBox* enable_smooth_fov_checkbox_;
 };
 
 #endif  // GUI_SETTINGSWINDOW_SETTINGS_WINDOW_H_
