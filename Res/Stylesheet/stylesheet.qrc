@@ -1,0 +1,6 @@
+<RCC>
+    <qresource>
+        <file>stylesheet.qss</file>
+        <file>background.jpg</file>
+    </qresource>
+</RCC>

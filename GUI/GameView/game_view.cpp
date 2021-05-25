@@ -21,6 +21,7 @@ GameView::GameView(AbstractClientView* parent,
                               QSize(width(), height_of_bar_));
 
   info_label_ = new QLabel(this);
+  info_label_->setObjectName("info");
   info_label_->move(10, 10);
   info_label_->setAlignment(Qt::AlignTop);
 
@@ -33,11 +34,13 @@ GameView::GameView(AbstractClientView* parent,
   stats_table_->setMouseTracking(true);
 
   disconnect_button_ = new QPushButton("Disconnect", this);
+  disconnect_button_->setFixedHeight(30);
   disconnect_button_->setFocusPolicy(Qt::NoFocus);
   connect(disconnect_button_,
           &QPushButton::clicked,
           this,
           &GameView::OnDisconnectButtonClicked);
+  disconnect_button_->setObjectName("small_btn");
 }
 
 std::shared_ptr<Converter> GameView::GetConverter() {
@@ -136,9 +139,9 @@ void GameView::resizeEvent(QResizeEvent* event) {
   kill_feed_->move(width - kill_feed_->width(), 0);
 
   disconnect_button_->setGeometry(width * 5 / 12,
-                                  height - 30,
+                                  height - 35,
                                   width / 6,
-                                  20);
+                                  30);
 }
 
 void GameView::ProcessRespawnButton() {

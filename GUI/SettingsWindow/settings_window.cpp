@@ -13,6 +13,7 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
 
   nickname_edit_ = new QTextEdit(this);
   nickname_edit_->setPlaceholderText(tr("Nickname (default - \"Player\")"));
+  nickname_edit_->setFixedHeight(50);
 
   set_nickname_ = new QPushButton(tr("Set nickname"), this);
   connect(set_nickname_,
@@ -72,4 +73,15 @@ void SettingsWindow::OnSetNicknameButtonClicked() {
   QString nickname_to_set = nickname_edit_->toPlainText();
   model_->SetLocalPlayerNickname(nickname_to_set.isEmpty() ? "Player"
                                                            : nickname_to_set);
+}
+
+void SettingsWindow::paintEvent(QPaintEvent*) {
+  QPainter painter(this);
+  static QPixmap background(":background.jpg");
+  background = background.scaled(width(), height(),
+                                 Qt::KeepAspectRatioByExpanding);
+  QPoint center_of_widget{width() / 2, height() / 2};
+  QRect rect_of_pixmap = background.rect();
+  rect_of_pixmap.moveCenter(center_of_widget);
+  painter.drawPixmap(rect_of_pixmap.topLeft(), background);
 }

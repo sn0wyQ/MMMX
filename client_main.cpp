@@ -43,6 +43,11 @@ int main(int argc, char* argv[]) {
   auto* client_controller = new ClientController(
       server_url, QApplication::primaryScreen()->refreshRate());
   auto* client_view = new ClientView(client_controller);
+  QFile style_file(":stylesheet.qss");
+  if (style_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    client_view->setStyleSheet(style_file.readAll());
+    style_file.close();
+  }
   client_view->show();
 
   return QApplication::exec();

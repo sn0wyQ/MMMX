@@ -28,6 +28,7 @@ class SettingsWindow : public QWidget {
   public Q_SLOTS:
   void OnBackToMainMenuButtonClicked();
   void OnSetNicknameButtonClicked();
+  void paintEvent(QPaintEvent*) override;
 
  private:
   AbstractClientView* parent_;
