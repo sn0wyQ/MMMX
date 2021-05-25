@@ -18,7 +18,7 @@ WeaponType AssaultRifle::GetWeaponType() const {
 }
 
 float AssaultRifle::GetBulletAngleByShift(float random_bullet_shift) const {
-  float accuracy_function = random_bullet_shift * random_bullet_shift *
-      AssaultRifle::GetAccuracy();
+  float accuracy_function =
+      random_bullet_shift * random_bullet_shift * GetAccuracy();
   return (random_bullet_shift < 0) ? -accuracy_function : accuracy_function;
 }

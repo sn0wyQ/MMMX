@@ -44,7 +44,7 @@ const RoomId kNullRoomId = -1;
 // Client
 const int kTimeToUpdateVarsAndPing = 1000;
 const int64_t kInterpolationMSecs = 200;
-const int kControlsHoldingCheck = 30;
+const int kControlsHoldingCheck = 15;
 
 // Graphics
 const int kAntiAliasingSamples = 5;
@@ -65,11 +65,11 @@ const float kDefaultSpeedMultiplier = 0.01f;
 
 // Entity
 const int64_t kMaxDisappearTimeMSecs = 1000.f;
-const float kOpacityChangeSpeed = 0.01f;
+const float kOpacityChangeSpeed = 0.03f;
 const float kDefaultMaxHealthPoints = 100.f;
 
 // Player
-const float kDefaultEntityFov = 12.f;
+const float kDefaultEntityFov = 10.f;
 const float kDefaultPlayerRotation = 0.f;
 const float kDefaultPlayerRadius = 1.f;
 const float kDefaultHealthRegenSpeed = 0.002f;
@@ -90,7 +90,7 @@ const int64_t kHoldingRespawnTime = 1000;
 const int kChunksX = 15;
 const int kChunksY = 15;
 // The less this constant is the more creeps will spawn in center
-const int kCreepSpawnShuffleRatio = 3;
+const int kCreepSpawnShuffleRatio = 4;
 const int kGenerationTries = 15;
 
 // View
@@ -120,23 +120,23 @@ float GetExpForLevel(int level) {
   return static_cast<float>(level) * 5.f;
 }
 
-const float kExpMultiplier = 5.f;
+const float kExpMultiplier = 3.5f;
 
 const int kCountOfLevels = 5;
 
 namespace LevelingSlots {
 
-const float kMaxHp = 1.5f;
-const float kHealthRegenRate = 2.1f;
+const float kMaxHp = 1.4f;
+const float kHealthRegenRate = 1.8f;
 const float kSpeed = 1.1f;
-const float kFovRadius = 1.2f;
-const float kAccuracy = 0.9f;
+const float kFovRadius = 1.1f;
+const float kAccuracy = 0.88f;
 
-const float kBulletSpeed = 1.2f;
+const float kBulletSpeed = 1.07f;
 const float kRateOfFire = 1.1f;
-const float kBulletRange = 1.3f;
-const float kBulletDamage = 1.1f;
-const float kReloadingTime = 0.9f;
+const float kBulletRange = 1.15f;
+const float kBulletDamage = 1.15f;
+const float kReloadingTime = 0.92f;
 
 }  // namespace LevelingSlots
 
