@@ -43,6 +43,11 @@ int main(int argc, char* argv[]) {
   auto* client_controller = new ClientController(
       server_url, QApplication::primaryScreen()->refreshRate());
   auto* client_view = new ClientView(client_controller);
+  QScreen *screen = QGuiApplication::screens()[0];
+  client_view->move(screen->geometry().x(), screen->geometry().y());
+  client_view->setFixedSize(screen->geometry().width(),
+                            screen->geometry().height());
+  client_view->showFullScreen();
   client_view->show();
 
   return QApplication::exec();

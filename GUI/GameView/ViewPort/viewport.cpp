@@ -79,6 +79,7 @@ void ViewPort::Update() {
   QPixmap pixmap_for_filtered(this->size());
   pixmap_for_filtered.fill(Qt::transparent);
   Painter painter_for_filtered(&pixmap_for_filtered, this->converter_);
+  painter_for_filtered.setClipRect(this->rect());
   Constants::SetPainterHints(&painter_for_filtered);
   painter_for_filtered.translate(translation.toPoint());
   if (!Constants::kSmoothFov) {
@@ -86,7 +87,6 @@ void ViewPort::Update() {
                                        local_player->GetY(),
                                        last_player_fov);
   }
-
 
   this->DrawObjects(model_->GetFilteredByFovObjects(), view_rect,
                     &drawn_objects,
@@ -103,6 +103,7 @@ void ViewPort::Update() {
   }
 
   painter.restore();
+
   if (Constants::kSmoothFov) {
     auto filtered_image = pixmap_for_filtered.toImage();
     filtered_image.setAlphaChannel(fov_for_objects_);
@@ -112,7 +113,7 @@ void ViewPort::Update() {
   }
   painter.setClipping(false);
   painter.setOpacity(Constants::kCloudsOpacity);
-  painter.drawImage(this->rect(), fov_image_);
+  painter.drawPixmap(this->rect(), fov_image_);
 
   need_to_update_ = true;
   this->update();
@@ -125,7 +126,7 @@ void ViewPort::paintEvent(QPaintEvent* paint_event) {
   need_to_update_ = false;
 }
 
-void ViewPort::resizeGL(int, int) {
+void ViewPort::resizeGL(int w, int h) {
   converter_->UpdateCoefficient();
   this->PrepareFovImage();
 }
@@ -212,5 +213,5 @@ void ViewPort::PrepareFovImage() {
   fov_for_objects_ = fov_inverted_pixmap.toImage();
 
   clouds.setAlphaChannel(fov_pixmap.toImage());
-  fov_image_ = clouds.scaled(this->size());
+  fov_image_.convertFromImage(clouds.scaled(this->size()));
 }

@@ -52,7 +52,7 @@ class ViewPort : public QOpenGLWidget {
   bool was_player_set_{false};
   SpringEmulator<QVector2D, false> camera_motion_emulator_;
   SpringEmulator<float, false> fov_change_emulator_;
-  QImage fov_image_;
+  QPixmap fov_image_;
   QImage fov_for_objects_;
 };
 
