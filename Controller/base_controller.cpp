@@ -129,7 +129,7 @@ void BaseController::HandleEvent(const Event& event) {
   try {
     function_for_event_[static_cast<uint32_t>(event.GetType())](event);
   } catch(std::exception& e) {
-    qInfo() << "Error while handling " << event << e.what();
+    qWarning() << "Error while handling " << event << e.what();
   }
 }
 
