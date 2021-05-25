@@ -22,10 +22,10 @@ class SettingsWindow : public QWidget {
 
   void keyPressEvent(QKeyEvent* event) override;
   void resizeEvent(QResizeEvent* event) override;
+  void paintEvent(QPaintEvent*) override;
 
   public Q_SLOTS:
   void BackToMainMenu();
-  void paintEvent(QPaintEvent*) override;
   void OnEnableSmoothFov();
   void OnEnableFullScreen();
 
