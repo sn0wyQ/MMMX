@@ -5,14 +5,16 @@
 using Constants::kBulletDisappearRatio;
 
 Bullet::Bullet(GameObjectId bullet_id) : MovableObject(bullet_id) {
-  static QSvgRenderer crossbow_bullet_render(QString("./Res/Icons/crossbow_bullet.svg"));
+  static QSvgRenderer crossbow_bullet_render(
+      QString("./Res/Icons/crossbow_bullet.svg"));
   crossbow_bullet_pixmap_ = QPixmap(GetWidth(), GetHeight());
   crossbow_bullet_pixmap_.fill(Qt::transparent);
   QPainter painter_for_crossbow(&crossbow_bullet_pixmap_);
   crossbow_bullet_render.render(&painter_for_crossbow,
                                 crossbow_bullet_pixmap_.rect());
 
-  static QSvgRenderer default_bullet_render(QString("./Res/Icons/filled_bullet.svg"));
+  static QSvgRenderer default_bullet_render(
+      QString("./Res/Icons/filled_bullet.svg"));
   default_bullet_pixmap_ = QPixmap(GetWidth(), GetHeight());
   default_bullet_pixmap_.fill(Qt::transparent);
   QPainter painter_for_default(&default_bullet_pixmap_);
