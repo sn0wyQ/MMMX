@@ -40,11 +40,6 @@ Github Actions use
 - cpplint - static code analysis
 - cmake - building project
 
-## Built With
-
-* QT
-* OpenGL
-
 ## Authors
 
 * **Kliment Markevich**
