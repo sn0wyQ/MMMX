@@ -5,16 +5,14 @@
 using Constants::kBulletDisappearRatio;
 
 Bullet::Bullet(GameObjectId bullet_id) : MovableObject(bullet_id) {
-  static QSvgRenderer crossbow_bullet_render("./Res/Icons/crossbow_bullet.svg");
-
+  static QSvgRenderer crossbow_bullet_render(QString("./Res/Icons/crossbow_bullet.svg"));
   crossbow_bullet_pixmap_ = QPixmap(GetWidth(), GetHeight());
   crossbow_bullet_pixmap_.fill(Qt::transparent);
   QPainter painter_for_crossbow(&crossbow_bullet_pixmap_);
   crossbow_bullet_render.render(&painter_for_crossbow,
                                 crossbow_bullet_pixmap_.rect());
 
-  static QSvgRenderer default_bullet_render("./Res/Icons/filled_bullet.svg");
-
+  static QSvgRenderer default_bullet_render(QString("./Res/Icons/filled_bullet.svg"));
   default_bullet_pixmap_ = QPixmap(GetWidth(), GetHeight());
   default_bullet_pixmap_.fill(Qt::transparent);
   QPainter painter_for_default(&default_bullet_pixmap_);
@@ -94,7 +92,13 @@ void Bullet::DrawRelatively(Painter* painter) const {
               (bullet_range_ - kBulletDisappearRatio * bullet_range_));
   }
 
-  // painter->drawPixmap(QPointF(), );
+  painter->drawPixmap(QPointF().x() - GetWidth() / 2,
+                      QPointF().y() - GetHeight() / 2,
+                      crossbow_bullet_pixmap_);
+
+  painter->drawPixmap(QPointF().x() - GetWidth() / 2,
+                      QPointF().y() - GetHeight() / 2,
+                      default_bullet_pixmap_);
 
   painter->DrawEllipse(QPointF(),
                        GetWidth() / 2.f, GetHeight() / 2.f);
