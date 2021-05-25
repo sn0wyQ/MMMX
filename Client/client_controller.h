@@ -41,7 +41,7 @@ class ClientController : public BaseController {
                             int fps_max = Constants::kDefaultFpsMax);
   ~ClientController() override = default;
 
-  void ConnectToRoom(RoomId room_id);
+  void ConnectToRoom(RoomId room_id, PlayerType player_type);
   void DisconnectFromRoom();
 
   QString GetControllerName() const override;

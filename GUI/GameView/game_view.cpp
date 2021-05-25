@@ -37,7 +37,7 @@ GameView::GameView(AbstractClientView* parent, ClientController* controller)
           &QPushButton::clicked,
           this,
           &GameView::OnDisconnectButtonClicked);
-  disconnect_button_->setObjectName("small_btn");
+  disconnect_button_->setObjectName("red_small");
 
   key_controller_ = new KeyController(this);
   key_controller_->Hide();

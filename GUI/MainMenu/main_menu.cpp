@@ -5,6 +5,7 @@ MainMenu::MainMenu(AbstractClientView* parent, ClientController* controller)
   rooms_info_list_ = new RoomsInfoList(this, controller_->GetModel());
 
   start_game_ = new QPushButton(tr("Start Game"), this);
+  player_select_ = new PlayerSelect(this, Qt::Widget | Qt::FramelessWindowHint);
   connect(start_game_,
           &QPushButton::clicked,
           this,
@@ -21,7 +22,7 @@ MainMenu::MainMenu(AbstractClientView* parent, ClientController* controller)
           &QPushButton::clicked,
           this,
           &MainMenu::OnQuitAppButtonClicked);
-  quit_app_->setObjectName("small_btn");
+  quit_app_->setObjectName("red_small");
 }
 
 void MainMenu::UpdateRoomsInfoList() {
@@ -59,7 +60,13 @@ void MainMenu::OnStartGameButtonClicked() {
   if (selected_room == Constants::kNullRoomId) {
     return;
   }
-  parent_->ConnectToRoom(selected_room);
+
+  auto player_type = static_cast<PlayerType>(player_select_->exec());
+  if (player_type == PlayerType::kNone) {
+    return;
+  }
+
+  parent_->ConnectToRoom(selected_room, player_type);
   parent_->SetWindow(ClientWindowType::kGameView);
   rooms_info_list_->SelectRoom(Constants::kNullRoomId);
 }

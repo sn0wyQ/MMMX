@@ -28,8 +28,8 @@ ClientView::ClientView(ClientController* controller)
   this->resize(1400, 960);
 }
 
-void ClientView::ConnectToRoom(RoomId room_id) {
-  controller_->ConnectToRoom(room_id);
+void ClientView::ConnectToRoom(RoomId room_id, PlayerType player_type) {
+  controller_->ConnectToRoom(room_id, player_type);
 }
 
 void ClientView::SetWindow(ClientWindowType window_type) {

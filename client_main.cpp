@@ -1,5 +1,3 @@
-#include <memory>
-
 #include <QApplication>
 #include <QFontDatabase>
 #include <QScreen>

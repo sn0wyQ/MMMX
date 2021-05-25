@@ -7,10 +7,22 @@ border-style: outset;
 border-width: 2px;
 }
 
+QLabel:hover {
+border: 2px solid rgb(169, 214, 229);
+color: rgb(255, 93, 143);
+}
+
 QLabel#info {
 font-family: Cyntho Next Bold;
 font: 15px;
 color: -1;
+border: none;
+}
+
+QLabel#player_select {
+font-family: Cyntho Next Bold;
+font: 55px;
+color: rgb(55, 120, 155);
 border: none;
 }
 
@@ -31,8 +43,13 @@ border: 2px solid rgb(169, 214, 229);
 color: rgb(255, 93, 143);
 }
 
-QPushButton#small_btn {
+QPushButton#red_small {
+color: rgb(200, 20, 20);
 font: bold 15px;
+}
+
+QPushButton#red_big {
+color: rgb(200, 20, 20);
 }
 
 QTextEdit {

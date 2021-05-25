@@ -7,6 +7,7 @@
 
 #include "Converter/converter.h"
 #include "Client/KeyController/key_controller.h"
+#include "GameObject/MovableObject/Entity/Player/player_enums.h"
 #include "Weapon/WeaponSettings/weapon_settings.h"
 
 namespace ClientWindowTypeWrapper {
@@ -31,7 +32,7 @@ class AbstractClientView : public QMainWindow {
  public:
   ~AbstractClientView() override = default;
 
-  virtual void ConnectToRoom(RoomId room_id) = 0;
+  virtual void ConnectToRoom(RoomId room_id, PlayerType player_type) = 0;
   virtual void SetWindow(ClientWindowType window_type) = 0;
   virtual void Update() = 0;
   virtual void UpdateRoomsInfoList() = 0;

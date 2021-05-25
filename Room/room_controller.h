@@ -51,7 +51,8 @@ class RoomController : public BaseController {
   void SendEvent(const Event& event) override;
   void OnTick(int delta_time) override;
 
-  void AddClient(ClientId client_id, const QString& nickname);
+  void AddClient(
+      ClientId client_id, const QString& nickname, PlayerType player_type);
   void RemoveClient(ClientId client_id);
 
   bool HasFreeSpot() const;
@@ -107,7 +108,7 @@ class RoomController : public BaseController {
                            const std::shared_ptr<Entity>& entity,
                            float damage, bool* is_killed);
 
-  GameObjectId AddPlayer();
+  GameObjectId AddPlayer(PlayerType player_type);
   void AddGarage(float x, float y, float rotation, float width, float height);
   void AddRandomGarage(float width, float height);
   void AddTree(float x, float y, float radius);

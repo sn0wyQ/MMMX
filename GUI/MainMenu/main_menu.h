@@ -10,6 +10,7 @@
 #include <QWidget>
 
 #include "GUI/MainMenu/RoomsInfoList/rooms_info_list.h"
+#include "GUI/MainMenu/PlayerSelect/player_select.h"
 #include "GUI/abstract_client_view.h"
 #include "Client/client_controller.h"
 
@@ -34,7 +35,9 @@ class MainMenu : public QWidget {
   ClientController* controller_;
 
   RoomsInfoList* rooms_info_list_;
+
   QPushButton* start_game_;
+  PlayerSelect* player_select_;
   QPushButton* open_settings_;
   QPushButton* quit_app_;
 };

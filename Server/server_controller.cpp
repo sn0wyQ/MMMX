@@ -122,12 +122,14 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
     if (room_id == Constants::kNullRoomId) {
       if (event.GetType() == EventType::kConnectToRoomById) {
         auto new_room_id = event.GetArg<RoomId>(0);
+        auto player_type = event.GetArg<PlayerType>(1);
         auto rooms = server_model_.GetRooms();
         if (rooms.find(new_room_id) == rooms.end()) {
           return;
         }
-        auto nickname = event.GetArg<QString>(1);
-        server_model_.AddClientToRoom(new_room_id, client_id, nickname);
+        auto nickname = event.GetArg<QString>(2);
+        server_model_.AddClientToRoom(
+            new_room_id, client_id, nickname, player_type);
         client->room_id = new_room_id;
         client->nickname = nickname;
       }

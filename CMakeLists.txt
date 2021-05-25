@@ -87,6 +87,7 @@ set(SOURCES
         GUI/GameView/StatsTable/stats_table.cpp
         GUI/GameView/ViewPort/viewport.cpp
         GUI/GameView/game_view.cpp
+        GUI/MainMenu/PlayerSelect/player_select.cpp
         GUI/MainMenu/RoomsInfoList/SingleRoomInfo/single_room_info.cpp
         GUI/MainMenu/RoomsInfoList/rooms_info_list.cpp
         GUI/MainMenu/main_menu.cpp
@@ -98,6 +99,7 @@ set(SOURCES
         GameObject/MovableObject/Entity/Creep/creep_enums.h
         GameObject/MovableObject/Entity/Creep/creep_settings.cpp
         GameObject/MovableObject/Entity/Player/player.cpp
+        GameObject/MovableObject/Entity/Player/player_enums.h
         GameObject/MovableObject/Entity/entity.cpp
         GameObject/MovableObject/movable_object.cpp
         GameObject/RigidBody/intersect_checker.cpp
