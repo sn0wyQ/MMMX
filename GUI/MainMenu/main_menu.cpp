@@ -3,7 +3,6 @@
 MainMenu::MainMenu(AbstractClientView* parent, ClientController* controller)
     : QWidget(parent), parent_(parent), controller_(controller) {
   rooms_info_list_ = new RoomsInfoList(this, controller_->GetModel());
-  rooms_info_list_->setObjectName("list");
 
   start_game_ = new QPushButton(tr("Start Game"), this);
   connect(start_game_,
