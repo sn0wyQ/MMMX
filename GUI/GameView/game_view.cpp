@@ -1,11 +1,7 @@
 #include "game_view.h"
 
-GameView::GameView(AbstractClientView* parent,
-                   ClientController* controller,
-                   KeyController* key_controller)
-    : parent_(parent),
-      controller_(controller),
-      key_controller_(std::move(key_controller)) {
+GameView::GameView(AbstractClientView* parent, ClientController* controller)
+    : parent_(parent), controller_(controller) {
   model_ = controller_->GetModel();
 
   view_port_ = new ViewPort(this, controller_);
@@ -21,6 +17,7 @@ GameView::GameView(AbstractClientView* parent,
                               QSize(width(), height_of_bar_));
 
   info_label_ = new QLabel(this);
+  info_label_->setObjectName("info");
   info_label_->move(10, 10);
   info_label_->setAlignment(Qt::AlignTop);
   info_label_->hide();
@@ -34,11 +31,16 @@ GameView::GameView(AbstractClientView* parent,
   stats_table_->setMouseTracking(true);
 
   disconnect_button_ = new QPushButton("Disconnect", this);
+  disconnect_button_->setFixedHeight(30);
   disconnect_button_->setFocusPolicy(Qt::NoFocus);
   connect(disconnect_button_,
           &QPushButton::clicked,
           this,
           &GameView::OnDisconnectButtonClicked);
+  disconnect_button_->setObjectName("small_btn");
+
+  key_controller_ = new KeyController(this);
+  key_controller_->Hide();
 }
 
 std::shared_ptr<Converter> GameView::GetConverter() {
@@ -59,6 +61,26 @@ void GameView::Update() {
 
   view_port_->Update();
   this->update();
+}
+
+void GameView::keyPressEvent(QKeyEvent* key_event) {
+  if (key_controller_->IsShown()) {
+    if (key_event->key() == Qt::Key_F1 || key_event->key() == Qt::Key_Escape) {
+      key_controller_->Hide();
+    }
+  } else if (key_event->key() == Qt::Key_F1) {
+    key_controller_->Show();
+  }
+
+  if (key_controller_->IsShown()) {
+    key_controller_->keyPressEvent(key_event);
+  }
+
+  controller_->KeyPressEvent(key_event);
+}
+
+void GameView::keyReleaseEvent(QKeyEvent* key_event) {
+  controller_->KeyReleaseEvent(key_event);
 }
 
 void GameView::mouseMoveEvent(QMouseEvent* mouse_event) {
@@ -147,9 +169,12 @@ void GameView::resizeEvent(QResizeEvent* event) {
   kill_feed_->move(width - kill_feed_->width(), 0);
 
   disconnect_button_->setGeometry(width * 5 / 12,
-                                  height - 30,
+                                  height - 35,
                                   width / 6,
-                                  20);
+                                  30);
+
+  key_controller_->move(width / 4, height / 4);
+  key_controller_->resize(width / 2, height);
 }
 
 void GameView::ProcessRespawnButton() {
@@ -197,4 +222,8 @@ void GameView::AddPlayerDisconnectedNotification(const QString& player_name) {
 void GameView::OnDisconnectButtonClicked() {
   parent_->SetWindow(ClientWindowType::kMainMenu);
   controller_->DisconnectFromRoom();
+}
+
+KeyController* GameView::GetKeyController() const {
+  return key_controller_;
 }

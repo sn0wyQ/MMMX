@@ -14,12 +14,13 @@ class Bullet : public MovableObject {
   GameObjectType GetType() const override;
 
   void OnTick(int delta_time) override;
-  void DrawRelatively(Painter* painter) const override;
 
   void SetParams(std::vector<QVariant> params) override;
   std::vector<QVariant> GetParams() const override;
 
   void CheckRange();
+
+  float GetOpacity() const override;
 
   void SetParentId(GameObjectId parent_id);
   GameObjectId GetParentId() const;

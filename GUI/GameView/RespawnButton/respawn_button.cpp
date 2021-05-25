@@ -61,8 +61,9 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
   QPainter painter(this);
   Constants::SetPainterHints(&painter);
 
-  static QPixmap gray_heart(":respawn_heart_gray.png");
-  static QPixmap rgb_heart(":respawn_heart.png");
+  static const QPixmap gray_heart_source(":respawn_heart_gray.png");
+  static const QPixmap rgb_heart_source(":respawn_heart.png");
+  auto rgb_heart = rgb_heart_source;
   QPixmap canvas(this->size());
   canvas.fill(Qt::transparent);
   QPainter canvas_painter(&canvas);
@@ -74,9 +75,9 @@ void RespawnButton::paintEvent(QPaintEvent* event) {
 
   QRectF draw_rect(0, 0, this->width(), this->height());
   canvas_painter.drawPixmap(draw_rect,
-                            gray_heart,
-                            QRectF(0, 0, gray_heart.width(),
-                                   gray_heart.height()));
+                            gray_heart_source,
+                            QRectF(0, 0, gray_heart_source.width(),
+                                   gray_heart_source.height()));
 
   if (wait_secs_ <= 0) {
     auto angle = 360 * value_emulator_.GetCurrentValue()

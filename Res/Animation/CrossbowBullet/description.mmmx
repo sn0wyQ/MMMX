@@ -1,0 +1,7 @@
+# Crossbow bullet
+
+move:
+loop
+
+idle:
+loop

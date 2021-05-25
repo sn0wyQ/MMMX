@@ -4,7 +4,6 @@
 #include <memory>
 #include <utility>
 
-#include <QKeyEvent>
 #include <QPushButton>
 #include <QResizeEvent>
 #include <QTextEdit>
@@ -20,14 +19,11 @@ class SettingsWindow : public QWidget {
  public:
   SettingsWindow(AbstractClientView* parent, ClientController* controller);
 
-  void keyPressEvent(QKeyEvent* key_event) override;
   void resizeEvent(QResizeEvent* event) override;
-
-  KeyController* GetKeyController() const;
 
   public Q_SLOTS:
   void OnBackToMainMenuButtonClicked();
-  void OnSetNicknameButtonClicked();
+  void paintEvent(QPaintEvent*) override;
 
  private:
   AbstractClientView* parent_;
@@ -36,10 +32,7 @@ class SettingsWindow : public QWidget {
   std::shared_ptr<ClientGameModel> model_;
 
   QPushButton* back_to_main_menu_;
-  QPushButton* set_nickname_;
   QTextEdit* nickname_edit_;
-
-  KeyController* key_controller_;
 };
 
 #endif  // GUI_SETTINGSWINDOW_SETTINGS_WINDOW_H_

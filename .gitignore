@@ -71,3 +71,6 @@ temp/
 
 # Helpers applications/files
 helpers/
+
+# Installer
+installer/
