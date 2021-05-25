@@ -1,8 +1,27 @@
 #include "bullet.h"
 
+#include <QSvgRenderer>
+
 using Constants::kBulletDisappearRatio;
 
-Bullet::Bullet(GameObjectId bullet_id) : MovableObject(bullet_id) {}
+Bullet::Bullet(GameObjectId bullet_id) : MovableObject(bullet_id) {
+  static QSvgRenderer crossbow_bullet_render("./Res/Icons/crossbow_bullet.svg");
+
+  crossbow_bullet_pixmap_ = QPixmap(GetWidth(), GetHeight());
+  crossbow_bullet_pixmap_.fill(Qt::transparent);
+  QPainter painter_for_crossbow(&crossbow_bullet_pixmap_);
+  crossbow_bullet_render.render(&painter_for_crossbow,
+                                crossbow_bullet_pixmap_.rect());
+
+  static QSvgRenderer default_bullet_render("./Res/Icons/filled_bullet.svg");
+
+  default_bullet_pixmap_ = QPixmap(GetWidth(), GetHeight());
+  default_bullet_pixmap_.fill(Qt::transparent);
+  QPainter painter_for_default(&default_bullet_pixmap_);
+  default_bullet_render.render(&painter_for_default,
+                               default_bullet_pixmap_.rect());
+
+}
 
 void Bullet::SetParams(std::vector<QVariant> params) {
   SetBulletRange(params.back().toFloat());
@@ -74,6 +93,9 @@ void Bullet::DrawRelatively(Painter* painter) const {
               (distance - kBulletDisappearRatio * bullet_range_) /
               (bullet_range_ - kBulletDisappearRatio * bullet_range_));
   }
+
+  // painter->drawPixmap(QPointF(), );
+
   painter->DrawEllipse(QPointF(),
                        GetWidth() / 2.f, GetHeight() / 2.f);
   painter->restore();
