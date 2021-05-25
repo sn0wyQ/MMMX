@@ -173,8 +173,12 @@ void PlayerBar::DrawLevelingButtons(QPainter* painter) {
                                  picture_width_,
                                  kPictureHeight);
     painter->setBrush(kColorForRondButtons);
+    painter->setPen(Qt::transparent);
     painter->drawRoundedRect(rect, 10, 10);
     painter->drawPixmap(rect.x(), rect.y(), leveling_pixmaps_[get_i]);
+    painter->setBrush(Qt::transparent);
+    painter->setPen(Qt::black);
+    painter->drawRoundedRect(rect, 10, 10);
 
     if (leveling_points[get_i] == Constants::kCountOfLevels) {
       painter->drawPixmap(rect.x(),
