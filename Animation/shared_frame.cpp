@@ -22,9 +22,10 @@ SharedFrame::SharedFrame(const QString& path_prefix,
                          int frame_index,
                          const QSize& predicted_size)
     : frame_index_(frame_index) {
+#ifndef MMMX_SERVER
   path_ = path_prefix + kAnimationStateStrings.at(animation_state)
-      + CalcLeadingZeros(frame_index_) + QString::number(frame_index_)
-      + ".svg";
+          + CalcLeadingZeros(frame_index_) + QString::number(frame_index_)
+          + ".svg";
 
   if (!QFile::exists(path_)) {
     return;
@@ -32,7 +33,6 @@ SharedFrame::SharedFrame(const QString& path_prefix,
     is_exists_ = true;
   }
 
-#ifndef MMMX_SERVER
   if (!resource_unloader_->isActive()) {
     resource_unloader_->start(Constants::kUnloadAnimationCheckTime);
     resource_unloader_->callOnTimeout(SharedFrame::UnloadUnusedResources);
@@ -84,8 +84,10 @@ std::shared_ptr<QPixmap> SharedFrame::GetRenderedPixmap(int w, int h) {
 }
 
 void SharedFrame::UnloadUnusedResources() {
-  UnloadUnusedPixmaps();
-  UnloadUnusedSvgRenderers();
+  if (Constants::kUseAnimationsBuffer) {
+    UnloadUnusedPixmaps();
+    UnloadUnusedSvgRenderers();
+  }
 }
 
 void SharedFrame::UnloadUnusedPixmaps() {

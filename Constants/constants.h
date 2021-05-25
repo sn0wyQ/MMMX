@@ -71,6 +71,7 @@ extern const float kBulletDisappearRatio;
 // Animations
 extern const int kUnloadAnimationCheckTime;
 extern const int kCountOfPixmapsInSide;
+extern const bool kUseAnimationsBuffer;  // TODO(Klim): move to settings
 
 // MovableObject
 extern const float kDefaultSpeedMultiplier;
