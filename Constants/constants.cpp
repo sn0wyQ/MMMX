@@ -58,6 +58,7 @@ const float kBulletDisappearRatio = 0.5f;
 // Animations
 const int kUnloadAnimationCheckTime = 30;
 const int kCountOfPixmapsInSide = 50;
+const bool kUseAnimationsBuffer = false;
 
 // MovableObject
 const float kDefaultSpeedMultiplier = 0.01f;
@@ -109,6 +110,8 @@ const float kCameraFrictionRatio = 0.15f;
 const float kFovStiffnessRatio = 0.007f;
 const float kFovFrictionRatio = 0.15f;
 const int kDefaultFpsMax = 60;
+extern const bool kSmoothFov = true;
+extern const float kCloudsOpacity = 0.7f;
 
 // Bullet collision
 const int kAccuracy = 10;

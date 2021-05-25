@@ -19,6 +19,7 @@ GameView::GameView(AbstractClientView* parent, ClientController* controller)
   info_label_ = new QLabel(this);
   info_label_->move(10, 10);
   info_label_->setAlignment(Qt::AlignTop);
+  info_label_->hide();
 
   reloading_field_ = new ReloadingField(this, controller_);
 
@@ -108,21 +109,31 @@ void GameView::paintEvent(QPaintEvent* event) {
     average_frame_time /= static_cast<int64_t>(last_frame_times_.size());
   }
 
-  info_label_->setText(QString(tr("Server Var: %1\n"
-                                  "Room Var: %2\n"
-                                  "Client Var: %3\n"
-                                  "Ping: %4\n"
-                                  "X: %5, \tY: %6\n"
-                                  "Fps: %7 (%8ms)\n"))
-                           .arg(controller_->GetServerVar())
-                           .arg(controller_->GetRoomVar())
-                           .arg(controller_->GetClientVar())
-                           .arg(controller_->GetPing())
-                           .arg(local_player_position.x())
-                           .arg(local_player_position.y())
-                           .arg(fps)
-                           .arg(average_frame_time));
-  info_label_->adjustSize();
+  if (key_controller_->WasPressed(Controls::kShowNetGraph)) {
+    key_controller_->ClearKeyPress(Controls::kShowNetGraph);
+    if (info_label_->isHidden()) {
+      info_label_->show();
+    } else {
+      info_label_->hide();
+    }
+  }
+  if (!info_label_->isHidden()) {
+    info_label_->setText(QString(tr("Server Var: %1\n"
+                                    "Room Var: %2\n"
+                                    "Client Var: %3\n"
+                                    "Ping: %4\n"
+                                    "X: %5, \tY: %6\n"
+                                    "Fps: %7 (%8ms)\n"))
+                             .arg(controller_->GetServerVar())
+                             .arg(controller_->GetRoomVar())
+                             .arg(controller_->GetClientVar())
+                             .arg(controller_->GetPing())
+                             .arg(local_player_position.x())
+                             .arg(local_player_position.y())
+                             .arg(fps)
+                             .arg(average_frame_time));
+    info_label_->adjustSize();
+  }
 }
 
 void GameView::resizeEvent(QResizeEvent* event) {

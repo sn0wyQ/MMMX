@@ -48,15 +48,13 @@ Q_ENUM_NS(AnimationInstructionType)
 
 // Animation currently has 4 states:
 // 1) kAttack (creep attacking and possibly moving)
-// 2) kDestroy (after object is destroyed)
-// 3) kIdle (when not moving or doing anything)
-// 4) kMove (when only moving)
-// 5) kShoot (when shooting and possibly moving)
+// 2) kIdle (when not moving or doing anything)
+// 3) kMove (when only moving)
+// 4) kShoot (when shooting and possibly moving)
 enum class AnimationState {
   // First one MUST be equal to 0!!!
   // (so later we could easily iterate through all animation states)
   kAttack = 0,
-  kDestroy,
   kIdle,
   kMove,
   kShoot,
