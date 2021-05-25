@@ -20,6 +20,8 @@ using Constants::PlayerBar::kLevelingToolTips;
 using Constants::PlayerBar::kUpdatePixmapHeight;
 using Constants::PlayerBar::kBasePath;
 
+using Constants::PlayerBar::kColorForRondButtons;
+
 PlayerBar::PlayerBar(QWidget* parent, std::shared_ptr<ClientGameModel> model,
                      QPoint position, QSize size)
     : QWidget(parent), hp_emulator_(0.5f, 0.8f), xp_emulator_(0.5f, 0.8f),
@@ -170,7 +172,8 @@ void PlayerBar::DrawLevelingButtons(QPainter* painter) {
                                  kPaddingU,
                                  picture_width_,
                                  kPictureHeight);
-    painter->drawRect(rect);
+    painter->setBrush(kColorForRondButtons);
+    painter->drawRoundedRect(rect, 10, 10);
     painter->drawPixmap(rect.x(), rect.y(), leveling_pixmaps_[get_i]);
 
     if (leveling_points[get_i] == Constants::kCountOfLevels) {
