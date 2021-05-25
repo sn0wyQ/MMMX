@@ -44,7 +44,7 @@ const RoomId kNullRoomId = -1;
 // Client
 const int kTimeToUpdateVarsAndPing = 1000;
 const int64_t kInterpolationMSecs = 200;
-const int kControlsHoldingCheck = 30;
+const int kControlsHoldingCheck = 15;
 
 // Graphics
 const int kAntiAliasingSamples = 5;
