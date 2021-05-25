@@ -21,7 +21,6 @@
 
 const std::unordered_map<AnimationState, QString> kAnimationStateStrings {
     { AnimationState::kAttack, "attack" },
-    { AnimationState::kDestroy, "destroy" },
     { AnimationState::kIdle, "idle" },
     { AnimationState::kMove, "move" },
     { AnimationState::kShoot, "shoot" }
