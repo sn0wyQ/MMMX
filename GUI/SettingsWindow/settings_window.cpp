@@ -13,6 +13,8 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
 
   nickname_edit_ = new QTextEdit(this);
   nickname_edit_->setPlaceholderText(tr("Nickname (default - \"Player\")"));
+  nickname_edit_->setText(
+      Settings::GetInstance().GetValueByKey<QString>("main/nickname"));
 
   enable_smooth_fov_checkbox_ = new QCheckBox(this);
   enable_smooth_fov_checkbox_->setText(
@@ -50,9 +52,11 @@ void SettingsWindow::resizeEvent(QResizeEvent* event) {
 
 void SettingsWindow::OnBackToMainMenuButtonClicked() {
   parent_->SetWindow(ClientWindowType::kMainMenu);
-  QString nickname_to_set = nickname_edit_->toPlainText();
+  QString nickname_to_set = nickname_edit_->toPlainText().mid(0, 10);
+  nickname_edit_->setText(nickname_to_set);
   model_->SetLocalPlayerNickname(nickname_to_set.isEmpty() ? "Player"
                                                            : nickname_to_set);
+  Settings::GetInstance().SetValue("main/nickname", nickname_to_set);
 }
 
 void SettingsWindow::paintEvent(QPaintEvent*) {
