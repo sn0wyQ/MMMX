@@ -21,6 +21,7 @@ MainMenu::MainMenu(AbstractClientView* parent, ClientController* controller)
           &QPushButton::clicked,
           this,
           &MainMenu::OnQuitAppButtonClicked);
+  quit_app_->setObjectName("small_btn");
 }
 
 void MainMenu::UpdateRoomsInfoList() {
@@ -37,19 +38,19 @@ void MainMenu::resizeEvent(QResizeEvent* event) {
                                 height * 3 / 5);
 
   start_game_->setGeometry(width * 2 / 5,
-                           height * 4 / 5,
+                           height * 15 / 20,
                            width / 5,
                            height / 10);
 
   open_settings_->setGeometry(width * 2 / 5,
-                           height * 23 / 25,
+                           height * 43 / 50,
                            width / 5,
-                           height / 25);
+                           height / 20);
 
   quit_app_->setGeometry(width * 9 / 20,
-                              height * 24 / 25,
+                              height * 95 / 100,
                               width / 10,
-                              height / 50);
+                              height / 40);
 }
 
 void MainMenu::OnStartGameButtonClicked() {
@@ -69,4 +70,15 @@ void MainMenu::OnOpenSettingsButtonClicked() {
 
 void MainMenu::OnQuitAppButtonClicked() {
   parent_->QuitApp();
+}
+
+void MainMenu::paintEvent(QPaintEvent*) {
+  QPainter painter(this);
+  static QPixmap background(":background.jpg");
+  background = background.scaled(width(), height(),
+                                 Qt::KeepAspectRatioByExpanding);
+  QPoint center_of_widget{width() / 2, height() / 2};
+  QRect rect_of_pixmap = background.rect();
+  rect_of_pixmap.moveCenter(center_of_widget);
+  painter.drawPixmap(rect_of_pixmap.topLeft(), background);
 }

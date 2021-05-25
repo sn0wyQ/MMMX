@@ -1,0 +1,58 @@
+QLabel {
+font-family: Cyntho Next Bold;
+font: bold 20px;
+color: rgb(55, 120, 155);
+border-color: black;
+border-style: outset;
+border-width: 2px;
+}
+
+QLabel#info {
+font-family: Cyntho Next Bold;
+font: 15px;
+color: -1;
+border: none;
+}
+
+QPushButton {
+border: none;
+font-family: Cyntho Next Thin;
+background-color: rgb(255, 255, 255);
+border-style: solid;
+border-width: 1px;
+border-radius: 5px;
+border-color: beige;
+font: bold 35px;
+color: rgb(55, 120, 155);
+}
+
+QPushButton:hover:!pressed {
+border: 2px solid rgb(169, 214, 229);
+color: rgb(255, 93, 143);
+}
+
+QPushButton#small_btn {
+font: bold 15px;
+}
+
+QTextEdit {
+font-family: Cyntho Next Thin;
+background-color: rgb(255, 255, 255);
+border-style: outset;
+border-width: 1px;
+border-radius: 5px;
+border-color: black;
+font: bold 30px;
+color: rgb(55, 120, 155);
+}
+
+QMessageBox QLabel {
+color: black;
+}
+
+QRadioButton {
+font-family: Cyntho Next Thin;
+font: bold 35px;
+height: 35px;
+color: black;
+}
