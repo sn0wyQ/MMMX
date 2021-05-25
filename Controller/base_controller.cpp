@@ -126,7 +126,11 @@ void BaseController::AddEventToSend(const Event& event) {
 void BaseController::HandleEvent(const Event& event) {
   qDebug().noquote().nospace() << "[" << GetControllerName()
                                << "] Handling " << event;
-  function_for_event_[static_cast<uint32_t>(event.GetType())](event);
+  try {
+    function_for_event_[static_cast<uint32_t>(event.GetType())](event);
+  } catch(std::exception& e) {
+    qInfo() << "Error while handling " << event << e.what();
+  }
 }
 
 void BaseController::LogEvent(const Event& event) const {
