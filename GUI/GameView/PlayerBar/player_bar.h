@@ -19,7 +19,7 @@ namespace Constants::PlayerBar {
   const float kHealthBarHeight = 25.f;
   const float kHealthBarWidth = 30.f;
   const float kHealthBarX = 50.f - kHealthBarWidth / 2.f;
-  const float kHealthBarY = 10.f;
+  const float kHealthBarY = 15.f;
 
   const float kExpBarHeight = 25.f;
   const float kExpBarWidth = 30.f;
@@ -28,12 +28,14 @@ namespace Constants::PlayerBar {
 
   const float kIntervalLr = 2.f;
   const float kSmallIntervalLr = 0.3f;
-  const float kPaddingU = 25.f;
+  const float kPaddingU = 40.f;
   const float kSmallPaddingU = 2.f;
   const float kPictureHeight = 45.f;
 
   const float kUpdatePixmapHeight = 10.f;
   const QString kBasePath = "./Res/Icons/";
+
+  const QColor kColorForRondButtons = QColor(255, 228, 255, 140);
 
   const std::vector<QString> kLevelingNames = {
       "player_health",

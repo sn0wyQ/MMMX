@@ -27,6 +27,7 @@ class MainMenu : public QWidget {
   void OnStartGameButtonClicked();
   void OnOpenSettingsButtonClicked();
   void OnQuitAppButtonClicked();
+  void paintEvent(QPaintEvent*) override;
 
  private:
   AbstractClientView* parent_;

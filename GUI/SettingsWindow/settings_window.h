@@ -23,7 +23,7 @@ class SettingsWindow : public QWidget {
 
   public Q_SLOTS:
   void OnBackToMainMenuButtonClicked();
-  void OnSetNicknameButtonClicked();
+  void paintEvent(QPaintEvent*) override;
 
  private:
   AbstractClientView* parent_;
@@ -32,7 +32,6 @@ class SettingsWindow : public QWidget {
   std::shared_ptr<ClientGameModel> model_;
 
   QPushButton* back_to_main_menu_;
-  QPushButton* set_nickname_;
   QTextEdit* nickname_edit_;
 };
 
