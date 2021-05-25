@@ -1,11 +1,7 @@
 #include "game_view.h"
 
-GameView::GameView(AbstractClientView* parent,
-                   ClientController* controller,
-                   KeyController* key_controller)
-    : parent_(parent),
-      controller_(controller),
-      key_controller_(std::move(key_controller)) {
+GameView::GameView(AbstractClientView* parent, ClientController* controller)
+    : parent_(parent), controller_(controller) {
   model_ = controller_->GetModel();
 
   view_port_ = new ViewPort(this, controller_);
@@ -38,6 +34,9 @@ GameView::GameView(AbstractClientView* parent,
           &QPushButton::clicked,
           this,
           &GameView::OnDisconnectButtonClicked);
+
+  key_controller_ = new KeyController(this);
+  key_controller_->Hide();
 }
 
 std::shared_ptr<Converter> GameView::GetConverter() {
@@ -58,6 +57,24 @@ void GameView::Update() {
 
   view_port_->Update();
   this->update();
+}
+
+void GameView::keyPressEvent(QKeyEvent* key_event) {
+  if (key_controller_->IsShown()) {
+    if (key_event->key() == Qt::Key_F1 || key_event->key() == Qt::Key_Escape) {
+      key_controller_->Hide();
+    }
+  } else if (key_event->key() == Qt::Key_F1) {
+    key_controller_->Show();
+  }
+  if (key_controller_->IsShown()) {
+    key_controller_->keyPressEvent(key_event);
+  }
+  controller_->KeyPressEvent(key_event);
+}
+
+void GameView::keyReleaseEvent(QKeyEvent* key_event) {
+  controller_->KeyReleaseEvent(key_event);
 }
 
 void GameView::mouseMoveEvent(QMouseEvent* mouse_event) {
@@ -139,6 +156,9 @@ void GameView::resizeEvent(QResizeEvent* event) {
                                   height - 30,
                                   width / 6,
                                   20);
+
+  key_controller_->move(width / 4, height / 4);
+  key_controller_->resize(width / 2, height);
 }
 
 void GameView::ProcessRespawnButton() {
@@ -186,4 +206,8 @@ void GameView::AddPlayerDisconnectedNotification(const QString& player_name) {
 void GameView::OnDisconnectButtonClicked() {
   parent_->SetWindow(ClientWindowType::kMainMenu);
   controller_->DisconnectFromRoom();
+}
+
+KeyController* GameView::GetKeyController() const {
+  return key_controller_;
 }

@@ -8,13 +8,13 @@ ClientView::ClientView(ClientController* controller)
   this->setWindowTitle(Constants::kWindowTitle);
   this->setFocusPolicy(Qt::StrongFocus);
 
-  settings_window_ = new SettingsWindow(this, controller_);
-  key_controller_ = settings_window_->GetKeyController();
-
-  game_view_ = new GameView(this, controller_, key_controller_);
+  game_view_ = new GameView(this, controller_);
   game_view_->setMouseTracking(true);
+  key_controller_ = game_view_->GetKeyController();
 
   main_menu_ = new MainMenu(this, controller_);
+
+  settings_window_ = new SettingsWindow(this, controller_);
 
   stacked_widget_ = new QStackedWidget(this);
   stacked_widget_->addWidget(game_view_);
@@ -62,14 +62,6 @@ std::shared_ptr<Converter> ClientView::GetConverter() {
 
 void ClientView::focusOutEvent(QFocusEvent* focus_event) {
   controller_->FocusOutEvent(focus_event);
-}
-
-void ClientView::keyPressEvent(QKeyEvent* key_event) {
-  controller_->KeyPressEvent(key_event);
-}
-
-void ClientView::keyReleaseEvent(QKeyEvent* key_event) {
-  controller_->KeyReleaseEvent(key_event);
 }
 
 void ClientView::mouseMoveEvent(QMouseEvent* mouse_event) {

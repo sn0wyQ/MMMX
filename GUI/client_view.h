@@ -52,8 +52,6 @@ class ClientView : public AbstractClientView {
  private:
   void closeEvent(QCloseEvent* close_event) override;
   void focusOutEvent(QFocusEvent* focus_event) override;
-  void keyPressEvent(QKeyEvent* key_event) override;
-  void keyReleaseEvent(QKeyEvent* key_event) override;
   void mouseMoveEvent(QMouseEvent* mouse_event) override;
   void mousePressEvent(QMouseEvent* mouse_event) override;
   void mouseReleaseEvent(QMouseEvent* mouse_event) override;

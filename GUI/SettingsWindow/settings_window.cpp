@@ -19,22 +19,6 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
           &QPushButton::clicked,
           this,
           &SettingsWindow::OnSetNicknameButtonClicked);
-
-  key_controller_ = new KeyController(this);
-  key_controller_->Hide();
-}
-
-void SettingsWindow::keyPressEvent(QKeyEvent* key_event) {
-  if (key_controller_->IsShown()) {
-    if (key_event->key() == Qt::Key_F1 || key_event->key() == Qt::Key_Escape) {
-      key_controller_->Hide();
-    }
-  } else if (key_event->key() == Qt::Key_F1) {
-    key_controller_->Show();
-  }
-  if (key_controller_->IsShown()) {
-    key_controller_->keyPressEvent(key_event);
-  }
 }
 
 void SettingsWindow::resizeEvent(QResizeEvent* event) {
@@ -55,13 +39,6 @@ void SettingsWindow::resizeEvent(QResizeEvent* event) {
                              height * 11 / 12,
                              width / 2,
                              height / 24);
-
-  key_controller_->move(width / 4, height / 4);
-  key_controller_->resize(width / 2, height);
-}
-
-KeyController* SettingsWindow::GetKeyController() const {
-  return key_controller_;
 }
 
 void SettingsWindow::OnBackToMainMenuButtonClicked() {
