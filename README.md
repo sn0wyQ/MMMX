@@ -26,7 +26,7 @@ To run project you need at least 5.15.2 QT.
 
 ### Installing
 
-Clone project from repository. Build project using MINGW by QT and CMake.
+Clone project from repository. Build project with Cmake on MINGW, QMINGW or Clang, link it with QT.
 
 Run MMMX-Server. By default, the game server will be running on localhost:1337.
 After you need to run MMMX-Client with -local flag to connect to localhost, otherwise client will try to connect to global server in Moscow.
