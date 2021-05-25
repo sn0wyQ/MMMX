@@ -22,36 +22,34 @@ SharedFrame::SharedFrame(const QString& path_prefix,
                          int frame_index,
                          const QSize& predicted_size)
     : frame_index_(frame_index) {
-  if (Constants::kUseAnimationsBuffer) {
-    path_ = path_prefix + kAnimationStateStrings.at(animation_state)
-        + CalcLeadingZeros(frame_index_) + QString::number(frame_index_)
-        + ".svg";
-
-    if (!QFile::exists(path_)) {
-      return;
-    } else {
-      is_exists_ = true;
-    }
-
 #ifndef MMMX_SERVER
-    if (!resource_unloader_->isActive()) {
-      resource_unloader_->start(Constants::kUnloadAnimationCheckTime);
-      resource_unloader_->callOnTimeout(SharedFrame::UnloadUnusedResources);
-    }
+  path_ = path_prefix + kAnimationStateStrings.at(animation_state)
+          + CalcLeadingZeros(frame_index_) + QString::number(frame_index_)
+          + ".svg";
 
-    auto svg_iter = loaded_svgs_.find(path_);
-    if (svg_iter == loaded_svgs_.end()) {
-      svg_renderer_ = std::make_shared<QSvgRenderer>(path_);
-      loaded_svgs_[path_] = svg_renderer_;
-    } else {
-      svg_renderer_ = svg_iter->second;
-    }
-
-    if (predicted_size.isValid()) {
-      GetRenderedPixmap(predicted_size.width(), predicted_size.height());
-    }
-#endif  // MMMX_SERVER
+  if (!QFile::exists(path_)) {
+    return;
+  } else {
+    is_exists_ = true;
   }
+
+  if (!resource_unloader_->isActive()) {
+    resource_unloader_->start(Constants::kUnloadAnimationCheckTime);
+    resource_unloader_->callOnTimeout(SharedFrame::UnloadUnusedResources);
+  }
+
+  auto svg_iter = loaded_svgs_.find(path_);
+  if (svg_iter == loaded_svgs_.end()) {
+    svg_renderer_ = std::make_shared<QSvgRenderer>(path_);
+    loaded_svgs_[path_] = svg_renderer_;
+  } else {
+    svg_renderer_ = svg_iter->second;
+  }
+
+  if (predicted_size.isValid()) {
+    GetRenderedPixmap(predicted_size.width(), predicted_size.height());
+  }
+#endif  // MMMX_SERVER
 }
 
 bool SharedFrame::IsExists() const {
@@ -86,8 +84,10 @@ std::shared_ptr<QPixmap> SharedFrame::GetRenderedPixmap(int w, int h) {
 }
 
 void SharedFrame::UnloadUnusedResources() {
-  UnloadUnusedPixmaps();
-  UnloadUnusedSvgRenderers();
+  if (Constants::kUseAnimationsBuffer) {
+    UnloadUnusedPixmaps();
+    UnloadUnusedSvgRenderers();
+  }
 }
 
 void SharedFrame::UnloadUnusedPixmaps() {
