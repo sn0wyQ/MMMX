@@ -40,12 +40,11 @@ Github Actions use
 ## Authors
 
 * **Kliment Markevich**
-    - *Initial server-client work*
+    - *Server-rooms-clients connection*
     - *Animations*
 
     [sn0wyQ](https://github.com/sn0wyQ)
 * **Konstantin Mekhovich** 
-    - *Server-room-client connection system rework*
     - *Collisions*
     - *Leveling System*
     - *Interpolation and lag compensation*
@@ -58,6 +57,10 @@ Github Actions use
     - *Creep Settings*
     - *All smooth UI animations*
     - *Spawn Generator*
+    - *Packet collector*
+    - *Rendering on graphics card using Open GL*
+    - *Key controller*
+    - *Kill feed*
 
     [OS-M](https://github.com/OS-M)
 * **Alexander Khrapko** 
