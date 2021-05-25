@@ -58,6 +58,7 @@ const float kBulletDisappearRatio = 0.5f;
 // Animations
 const int kUnloadAnimationCheckTime = 30;
 const int kCountOfPixmapsInSide = 50;
+const bool kUseAnimationsBuffer = false;
 
 // MovableObject
 const float kDefaultSpeedMultiplier = 0.01f;

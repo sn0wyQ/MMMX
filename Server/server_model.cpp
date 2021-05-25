@@ -53,7 +53,9 @@ ClientId ServerModel::GetNextUnusedClientId() const {
 QList<QVariant> ServerModel::GetVisibleRoomsInfo(ClientId client_id) const {
   QList<QVariant> rooms_info;
   for (const auto& [id, room] : rooms_) {
-    rooms_info.push_back(room->GetRoomInfo().GetVariantList());
+    if (room) {  // Better safe than sorry
+      rooms_info.push_back(room->GetRoomInfo().GetVariantList());
+    }
   }
   return rooms_info;
 }

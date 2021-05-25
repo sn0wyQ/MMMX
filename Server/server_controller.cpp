@@ -102,6 +102,12 @@ void ServerController::ProcessEventsFromRoom(
 void ServerController::OnByteArrayReceived(const QByteArray& message) {
   auto client_socket_ptr = qobject_cast<QWebSocket*>(sender());
   auto client_id = server_model_.GetClientIdByWebSocket(client_socket_ptr);
+  auto client = server_model_.GetClientByClientId(client_id);
+  if (!client) {
+    return;
+  }
+  auto room_id = client->room_id;
+
   auto events = PackedEvent(message).GetEvents();
   for (const auto& event : events) {
     qDebug().noquote() << "[SERVER] Received" << event
@@ -109,30 +115,26 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
 
     if (event.GetType() == EventType::kSetTimeDifference) {
       // Важная каждая миллисекунда - отправляем ответ сразу без тика
-      this->ReplyWithTimeToClient(client_id,
-                                  event.GetArg<int64_t>(0));
+      this->ReplyWithTimeToClient(client_id, event.GetArg<int64_t>(0));
       return;
     }
 
-    if (server_model_.GetRoomIdByClientId(client_id)
-        == Constants::kNullRoomId) {
+    if (room_id == Constants::kNullRoomId) {
       if (event.GetType() == EventType::kConnectToRoomById) {
-        auto room_id = event.GetArg<RoomId>(0);
+        auto new_room_id = event.GetArg<RoomId>(0);
         auto rooms = server_model_.GetRooms();
-        if (rooms.find(room_id) == rooms.end()) {
+        if (rooms.find(new_room_id) == rooms.end()) {
           return;
         }
         auto nickname = event.GetArg<QString>(1);
-        server_model_.AddClientToRoom(room_id, client_id, nickname);
-        auto client = server_model_.GetClientByClientId(client_id);
-        client->room_id = room_id;
+        server_model_.AddClientToRoom(new_room_id, client_id, nickname);
+        client->room_id = new_room_id;
         client->nickname = nickname;
       }
       return;
     }
 
     if (event.GetType() == EventType::kDisconnectFromRoom) {
-      auto client = server_model_.GetClientByClientId(client_id);
       auto rooms = server_model_.GetRooms();
       auto room_iter = rooms.find(client->room_id);
       if (room_iter != rooms.end()) {
@@ -159,8 +161,7 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
     }
 
     std::vector<QVariant>
-        args{server_model_.GetRoomByClientId(client_id)->GetId(),
-             static_cast<int>(event.GetType())};
+        args{room_id, static_cast<int>(event.GetType())};
     std::vector<QVariant> old_args = event.GetArgs();
     args.insert(args.end(), old_args.begin(), old_args.end());
 
@@ -221,16 +222,27 @@ void ServerController::SendToClient(int client_id, const Event& event) {
 
 void ServerController::SendToRoom(int room_id,
                                   const Event& event) {
-  server_model_.GetRoomByRoomId(room_id)->AddEventToHandle(event);
+  auto rooms = server_model_.GetRooms();
+  auto room_iter = rooms.find(room_id);
+  if (room_iter != rooms.end()) {
+    room_iter->second->AddEventToHandle(event);
+  } else {
+    qWarning() << "Trying to send event to removed room";
+  }
 }
 
 void ServerController::ClientDisconnectedEvent(const Event& event) {
-  auto client_id = event.GetArg<ClientId>(0);
-  if (server_model_.GetRoomIdByClientId(client_id) != Constants::kNullRoomId) {
-    auto room_ptr = server_model_.GetRoomByClientId(client_id);
-    room_ptr->RemoveClient(client_id);
+  try {
+    auto client_id = event.GetArg<ClientId>(0);
+    if (server_model_.GetRoomIdByClientId(client_id)
+        != Constants::kNullRoomId) {
+      auto room_ptr = server_model_.GetRoomByClientId(client_id);
+      room_ptr->RemoveClient(client_id);
+    }
+    server_model_.RemoveClient(client_id);
+  } catch(std::exception& e) {
+    qWarning() << e.what() << "Maybe client was already removed?";
   }
-  server_model_.RemoveClient(client_id);
 }
 
 void ServerController::SendEventToClientEvent(const Event& event) {
