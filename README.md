@@ -29,14 +29,14 @@ To run project you need at least 5.15.2 QT.
 Clone project from repository. Build project with Cmake on MINGW, QMINGW or Clang, link it with QT.
 
 Run MMMX-Server. By default, the game server will be running on localhost:1337.
-After you need to run MMMX-Client with -local flag to connect to localhost, otherwise client will try to connect to global server in Moscow.
+Then run MMMX-Client with -local flag to connect to localhost, otherwise client will try to connect to global server in Moscow.
 
 ### Master branch build status
 [![Build Status](https://github.com/sn0wyQ/MMMX/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/sn0wyQ/MMMX/actions/workflows/ci.yml)
 
 ## Running the codding style tests
 
-Github Actions use 
+Github Actions in use 
 - cppcheck - static code analysis
 - cpplint - static code analysis
 - cmake - building project
@@ -56,15 +56,15 @@ Github Actions use
     [kmekhovich](https://github.com/kmekhovich)
 * **Matvey Maximov** 
     - *FOV*
-    - *Player Stats*
+    - *Player stats*
     - *Creep intelligence*
-    - *Creep Settings*
     - *All smooth UI animations*
-    - *Spawn Generator*
+    - *Spawn generator*
     - *Packet collector*
     - *Rendering on graphics card using Open GL*
-    - *Key controller*
+    - *Key rebinds*
     - *Kill feed*
+    - *Savable settings*
 
     [OS-M](https://github.com/OS-M)
 * **Alexander Khrapko** 
