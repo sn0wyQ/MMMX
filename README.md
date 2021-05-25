@@ -12,12 +12,13 @@ MMMX Game is a multiplayer 2D shooter with view from above written on C++ using 
 - Smooth UI animations
 - Animations on svg with own language to play them variatively
 - Optimized data packets
-- Player statistics in game
-- 4 modes of shooting
+- In-game player statistics
+- 4 heroes with unique weapons
 - Smart spawn point generation
 - Rending on graphics card using OpenGL
 - Smart creeps (IQ 200+)
 - Kill feed
+- Key rebinding
 
 ### Prerequisites
 
