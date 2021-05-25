@@ -14,12 +14,6 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
   nickname_edit_ = new QTextEdit(this);
   nickname_edit_->setPlaceholderText(tr("Nickname (default - \"Player\")"));
 
-  set_nickname_ = new QPushButton(tr("Set nickname"), this);
-  connect(set_nickname_,
-          &QPushButton::clicked,
-          this,
-          &SettingsWindow::OnSetNicknameButtonClicked);
-
   key_controller_ = new KeyController(this);
   key_controller_->Hide();
 }
@@ -51,11 +45,6 @@ void SettingsWindow::resizeEvent(QResizeEvent* event) {
                               width * 3 / 4,
                               height * 2 / 3);
 
-  set_nickname_->setGeometry(width / 4,
-                             height * 11 / 12,
-                             width / 2,
-                             height / 24);
-
   key_controller_->move(width / 4, height / 4);
   key_controller_->resize(width / 2, height);
 }
@@ -66,9 +55,6 @@ KeyController* SettingsWindow::GetKeyController() const {
 
 void SettingsWindow::OnBackToMainMenuButtonClicked() {
   parent_->SetWindow(ClientWindowType::kMainMenu);
-}
-
-void SettingsWindow::OnSetNicknameButtonClicked() {
   QString nickname_to_set = nickname_edit_->toPlainText();
   model_->SetLocalPlayerNickname(nickname_to_set.isEmpty() ? "Player"
                                                            : nickname_to_set);
