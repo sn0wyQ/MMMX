@@ -6,7 +6,7 @@ ClientView::ClientView(ClientController* controller)
       model_(controller_->GetModel()) {
   this->setMinimumSize(1400, 960);
   this->setWindowTitle(Constants::kWindowTitle);
-  this->setFocusPolicy(Qt::StrongFocus);
+  this->setFocusPolicy(Qt::NoFocus);
 
   game_view_ = new GameView(this, controller_);
   game_view_->setMouseTracking(true);

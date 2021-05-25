@@ -48,7 +48,6 @@ int main(int argc, char* argv[]) {
   client_view->setFixedSize(screen->geometry().width(),
                             screen->geometry().height());
   client_view->showFullScreen();
-  client_view->show();
 
   return QApplication::exec();
 }

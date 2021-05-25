@@ -18,6 +18,7 @@ KeyController::KeyController(QWidget* parent) :
     hide_timer_(this),
     opacity_effect(new QGraphicsOpacityEffect(this)) {
   this->setMouseTracking(true);
+  this->setFocusPolicy(Qt::NoFocus);
   this->ReadSettings();
   for (auto[native_button, control] : native_button_to_control_) {
     control_to_key_name_[control] = native_button.GetButtonName();
