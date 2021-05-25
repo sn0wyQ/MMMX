@@ -22,8 +22,11 @@ QString SingleRoomInfo::ParseRoomInfo() const {
            : QString::number(room_info_.owners_client_id))
       .arg(room_info_.max_clients);
 
-  return (parent_->GetSelectedRoom() == room_info_.id ? "----> " : QString())
-         + (room_info_.is_public ? "[PUBLIC] " : "[PRIVATE] ") + text;
+  QString result = (room_info_.is_public ? "[PUBLIC] " : "[PRIVATE] ") + text;
+  if (parent_->GetSelectedRoom() == room_info_.id) {
+    result = "----> " + result + " <----";
+  }
+  return result;
 }
 
 void SingleRoomInfo::SetRoomInfo(const RoomInfo& room_info) {
