@@ -1,5 +1,5 @@
-#ifndef PLAYER_SELECT_H_
-#define PLAYER_SELECT_H_
+#ifndef GUI_MAINMENU_PLAYERSELECT_PLAYER_SELECT_H_
+#define GUI_MAINMENU_PLAYERSELECT_PLAYER_SELECT_H_
 
 #include <QDialog>
 #include <QLabel>
@@ -25,4 +25,4 @@ class PlayerSelect : public QDialog {
   QVBoxLayout* layout_;
 };
 
-#endif  // PLAYER_SELECT_H_
+#endif  // GUI_MAINMENU_PLAYERSELECT_PLAYER_SELECT_H_

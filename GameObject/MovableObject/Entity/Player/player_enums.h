@@ -1,5 +1,5 @@
-#ifndef PLAYER_ENUMS_H_
-#define PLAYER_ENUMS_H_
+#ifndef GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_ENUMS_H_
+#define GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_ENUMS_H_
 
 #include <QMetaObject>
 #include <QMetaType>
@@ -42,4 +42,4 @@ Q_DECLARE_METATYPE(LevelingSlots)
 using PlayerType = PlayerEnumsWrapper::PlayerType;
 Q_DECLARE_METATYPE(PlayerType)
 
-#endif  // PLAYER_ENUMS_H_
+#endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_PLAYER_PLAYER_ENUMS_H_
