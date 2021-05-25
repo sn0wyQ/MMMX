@@ -1,0 +1,7 @@
+<RCC>
+    <qresource>
+        <file>clouds.png</file>
+        <file>fov.png</file>
+        <file>fov_inverted.png</file>
+    </qresource>
+</RCC>

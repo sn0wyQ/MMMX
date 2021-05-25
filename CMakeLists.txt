@@ -141,7 +141,8 @@ endif (WIN32)
 qt5_add_big_resources(RESOURCES_CLIENT
         Res/Icons/icons.qrc
         Res/Fonts/fonts.qrc
-        Res/Stylesheet/stylesheet.qrc)
+        Res/Stylesheet/stylesheet.qrc
+        Res/Images/images.qrc)
 qt5_add_big_resources(RESOURCES_SERVER
         )
 qt5_add_big_resources(RESOURCES_COMMON

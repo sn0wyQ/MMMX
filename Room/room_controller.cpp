@@ -682,6 +682,7 @@ void RoomController::SendControlsEvent(const Event& event) {
     if (!cur_model->IsGameObjectIdTaken(player_id)) {
       break;
     }
+
     auto player_in_model
         = cur_model->GetPlayerByPlayerId(player_id);
     player_in_model->SetPosition(position_to_set);

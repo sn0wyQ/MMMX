@@ -48,6 +48,11 @@ int main(int argc, char* argv[]) {
     client_view->setStyleSheet(style_file.readAll());
     style_file.close();
   }
+  QScreen *screen = QGuiApplication::screens()[0];
+  client_view->move(screen->geometry().x(), screen->geometry().y());
+  client_view->setFixedSize(screen->geometry().width(),
+                            screen->geometry().height());
+  client_view->showFullScreen();
   client_view->show();
 
   return QApplication::exec();

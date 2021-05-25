@@ -3,7 +3,8 @@
 Entity::Entity(GameObjectId id) :
     MovableObject(id),
     opacity_emulator_(Constants::kOpacityChangeSpeed),
-    hp_bar_opacity_emulator_(0.02f) {
+    hp_bar_opacity_emulator_(0.02f),
+    hp_emulator_(0.02f, 0.1f) {
   opacity_emulator_.SetStopOnMax(true);
   opacity_emulator_.SetStopOnMin(true);
   opacity_emulator_.SetCurrentValue(0.f);
@@ -13,13 +14,16 @@ Entity::Entity(GameObjectId id) :
   hp_bar_opacity_emulator_.SetCurrentValue(0.f);
   hp_bar_opacity_emulator_.SetPath(1.f, 0.f);
   last_changed_hp_ = QDateTime::currentMSecsSinceEpoch();
+  hp_emulator_.SetBounds(0.f, 100.f);
+  hp_emulator_.SetCurrentValue(0.f);
   this->HideHealthPointBar();
 }
 
 Entity::Entity(const Entity& other) :
     MovableObject(other),
     opacity_emulator_(other.opacity_emulator_),
-    hp_bar_opacity_emulator_(other.hp_bar_opacity_emulator_) {
+    hp_bar_opacity_emulator_(other.hp_bar_opacity_emulator_),
+    hp_emulator_(other.hp_emulator_) {
   fov_radius_ = other.fov_radius_;
   health_points_ = other.health_points_;
   health_regen_rate_ = other.health_regen_rate_;
@@ -69,6 +73,7 @@ void Entity::SetHealthPoints(float health_points) {
       is_alive_ = false;
     } else if (std::fabs(health_points_ - max_health_points_) < Math::kEps) {
       is_alive_ = true;
+      hp_emulator_.SetCurrentValue(health_points_);
     }
     if (this->IsAlive()) {
       this->SetAppearing();
@@ -83,6 +88,7 @@ float Entity::GetHealthPoints() const {
 }
 
 void Entity::SetMaxHealthPoints(float max_health_points) {
+  hp_emulator_.SetBounds(0.f, max_health_points);
   max_health_points_ = max_health_points;
 }
 
@@ -124,7 +130,8 @@ void Entity::DrawHealthBar(Painter* painter) const {
   painter->setPen(Qt::transparent);
   painter->drawRoundedRect(rect, 10, 10);
 
-  float hp_ratio = this->GetHealthPoints() / this->GetMaxHealthPoints();
+  hp_emulator_.MakeStepTo(this->GetHealthPoints());
+  float hp_ratio = hp_emulator_.GetCurrentValue() / this->GetMaxHealthPoints();
   if (!this->IsAlive()) {
     hp_ratio = 0.f;
   }
