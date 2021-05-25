@@ -19,6 +19,7 @@
 class GameModel {
  public:
   GameModel() = default;
+  virtual ~GameModel() = default;
   GameModel(const GameModel& other);
   std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
   std::shared_ptr<GameObject> GetGameObjectByGameObjectId(
