@@ -69,15 +69,15 @@ CreepSettings::CreepSettings() {
         GetValueFromVariantMap<int>(current_creep_params, "min_level");
     auto max_level =
         GetValueFromVariantMap<int>(current_creep_params, "max_level");
-    float base_xp =
-        GetValueFromVariantMap<float>(current_creep_params, "base_xp");
+    float base_exp =
+        GetValueFromVariantMap<float>(current_creep_params, "base_exp");
     float xp_multiplier =
         GetValueFromVariantMap<float>(current_creep_params,
                                       "xp_multiplier");
 
-    float min_level_xp = std::pow(xp_multiplier, min_level) * base_xp;
+    float min_level_xp = std::pow(xp_multiplier, min_level) * base_exp;
     current_creep_params.insert("min_level_xp", min_level_xp);
-    float max_level_xp = std::pow(xp_multiplier, max_level) * base_xp;
+    float max_level_xp = std::pow(xp_multiplier, max_level) * base_exp;
     current_creep_params.insert("max_level_xp", max_level_xp);
     min_creep_xp_ = std::min(min_creep_xp_, min_level_xp);
     max_creep_xp_ = std::max(max_creep_xp_, max_level_xp);
@@ -115,12 +115,12 @@ std::pair<int, CreepType>
         * GetCreepSetting<float>(creep_type, "xp_multiplier");
     if (min_suitable_xp <= suitable_xp && suitable_xp <= max_suitable_xp) {
       int best_lvl = GetCreepSetting<int>(creep_type, "min_level");
-      float best_xp_diff = std::abs(GetXp(creep_type, best_lvl)
+      float best_xp_diff = std::abs(GetExp(creep_type, best_lvl)
                                     - suitable_xp);
       int cur_lvl = best_lvl + 1;
       int max_lvl = GetCreepSetting<int>(creep_type, "max_level");
       while (cur_lvl <= max_lvl) {
-        float cur_xp_diff = std::abs(GetXp(creep_type, cur_lvl)
+        float cur_xp_diff = std::abs(GetExp(creep_type, cur_lvl)
                                      - suitable_xp);
         if (best_xp_diff > cur_xp_diff) {
           best_xp_diff = cur_xp_diff;
@@ -180,14 +180,14 @@ std::vector<QVariant>
   // Creep params
   params.emplace_back(level_and_type.first);
   params.emplace_back(static_cast<int>(level_and_type.second));
-  params.emplace_back(GetXp(level_and_type.second, level_and_type.first));
+  params.emplace_back(GetExp(level_and_type.second, level_and_type.first));
   return params;
 }
 
-float CreepSettings::GetXp(CreepType creep_type, int level) const {
-  auto base_xp = GetCreepSetting<float>(creep_type, "base_xp");
+float CreepSettings::GetExp(CreepType creep_type, int level) const {
+  auto base_exp = GetCreepSetting<float>(creep_type, "base_exp");
   auto xp_multiplier = GetCreepSetting<float>(creep_type, "xp_multiplier");
-  return std::pow(xp_multiplier, level - 1) * base_xp;
+  return std::pow(xp_multiplier, level - 1) * base_exp;
 }
 
 float CreepSettings::GetWidth(CreepType creep_type) const {
@@ -215,11 +215,11 @@ AnimationType CreepSettings::GetAnimationType(CreepType creep_type) const {
   return Constants::GetEnumValueFromString<AnimationType>(
       GetCreepSetting<QString>(creep_type, "animation"));
 }
-
+// TODO(Everybody) Creep speed
 float CreepSettings::GetSpeed(CreepType creep_type, int level) const {
   auto base_speed = GetCreepSetting<float>(creep_type, "base_speed");
   auto
-      speed_multiplier = GetCreepSetting<float>(creep_type, "speed_multiplier");
+    speed_multiplier = GetCreepSetting<float>(creep_type, "speed_multiplier");
   return std::pow(speed_multiplier, level - 1) * base_speed;
 }
 

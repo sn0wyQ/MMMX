@@ -3,7 +3,7 @@
 Player::Player(GameObjectId player_id)
     : Entity(player_id),
       leveling_points_(static_cast<int>(LevelingSlots::SIZE)) {
-  free_leveling_points_ = 5;
+  free_leveling_points_ = 3;
 }
 
 Player::Player(const Player& other) : Entity(other) {

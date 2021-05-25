@@ -59,7 +59,7 @@ class CreepSettings {
     return setting_iter->value<T>();
   }
 
-  float GetXp(CreepType creep_type, int level) const;
+  float GetExp(CreepType creep_type, int level) const;
   float GetWidth(CreepType creep_type) const;
   float GetHeight(CreepType creep_type) const;
   RigidBodyType GetRigidBodyType(CreepType creep_type) const;

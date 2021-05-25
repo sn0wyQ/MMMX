@@ -22,7 +22,7 @@ WeaponType Crossbow::GetWeaponType() const {
 }
 
 float Crossbow::GetBulletAngleByShift(float random_bullet_shift) const {
-  float accuracy_function = random_bullet_shift * random_bullet_shift *
-      Crossbow::GetAccuracy();
+  auto temp = random_bullet_shift * random_bullet_shift;
+  float accuracy_function = temp * temp * GetAccuracy();
   return (random_bullet_shift < 0) ? -accuracy_function : accuracy_function;
 }
