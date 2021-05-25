@@ -5,7 +5,7 @@ MainMenu::MainMenu(AbstractClientView* parent, ClientController* controller)
   rooms_info_list_ = new RoomsInfoList(this, controller_->GetModel());
 
   start_game_ = new QPushButton(tr("Start Game"), this);
-  player_select_ = new PlayerSelect(this, Qt::Popup);
+  player_select_ = new PlayerSelect(this, Qt::Widget | Qt::FramelessWindowHint);
   connect(start_game_,
           &QPushButton::clicked,
           this,
@@ -62,7 +62,6 @@ void MainMenu::OnStartGameButtonClicked() {
   }
 
   auto player_type = static_cast<PlayerType>(player_select_->exec());
-  qInfo() << player_type;
   if (player_type == PlayerType::kNone) {
     return;
   }

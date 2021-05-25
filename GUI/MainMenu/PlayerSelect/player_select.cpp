@@ -3,26 +3,28 @@
 PlayerSelect::PlayerSelect(QWidget* parent, Qt::WindowFlags flags)
     : QDialog(parent, flags) {
   label_ = new QLabel("Select player:", this);
+  label_->setAlignment(Qt::AlignCenter);
+  label_->setObjectName("player_select");
 
-  select_smasher_ = new QPushButton("Shenandoah (Shotgun + Girl)", this);
+  select_smasher_ = new QPushButton("Shenandoah (Shotgun, Girl)", this);
   connect(select_smasher_,
           &QPushButton::clicked,
           this,
           [this]() { this->done(static_cast<int>(PlayerType::kSmasher)); });
 
-  select_soldier_ = new QPushButton("Jo Cost (Rifle + Easy2Play)", this);
+  select_soldier_ = new QPushButton("Jo Cost (Rifle, Easy2Play)", this);
   connect(select_soldier_,
           &QPushButton::clicked,
           this,
           [this]() { this->done(static_cast<int>(PlayerType::kSoldier)); });
 
-  select_spider_ = new QPushButton("Spider 3.0 (Machine Gun + 8 Legs)", this);
+  select_spider_ = new QPushButton("Spider 3.0 (Machine Gun, 8 Legs)", this);
   connect(select_spider_,
           &QPushButton::clicked,
           this,
           [this]() { this->done(static_cast<int>(PlayerType::kSpider)); });
 
-  select_viking_ = new QPushButton("Alex Kokhrap (Crossbow + #1)", this);
+  select_viking_ = new QPushButton("Alex Kokhrap (Crossbow, The Best)", this);
   connect(select_viking_,
           &QPushButton::clicked,
           this,
