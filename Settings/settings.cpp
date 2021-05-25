@@ -1,5 +1,3 @@
-#include <QStandardPaths>
-#include <QSettings>
 #include "settings.h"
 
 Settings* Settings::instance_ = nullptr;

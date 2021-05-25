@@ -1,6 +1,10 @@
 #ifndef SETTINGS_SETTINGS_H_
 #define SETTINGS_SETTINGS_H_
 
+#include <unordered_map>
+
+#include <QSettings>
+#include <QStandardPaths>
 #include <QString>
 
 class Settings {
