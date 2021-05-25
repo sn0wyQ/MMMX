@@ -496,20 +496,12 @@ void ClientController::ControlsHolding() {
     // Reload if Bullets In Clips is empty
     if (local_player->GetWeapon()->GetCurrentBulletsInClip() <= 0 &&
         local_player->GetWeapon()->IsPossibleToReload(timestamp)) {
-      local_player->UpdateAnimationState(true);
       local_player->GetWeapon()->Reload(timestamp);
       this->AddEventToSend(Event(EventType::kSendPlayerReloading,
                                  static_cast<qint64>(timestamp),
                                  local_player->GetId()));
     } else if (local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
       local_player->GetWeapon()->SetLastTimeShot(timestamp);
-
-      // Temporary nickname change
-      this->AddEventToSend(Event(
-          EventType::kSendNickname,
-          local_player->GetId(),
-          QString("Shooter#") +
-              QString::number(model_->GetLocalPlayerId())));
 
       QList<QVariant> bullet_shifts;
       static std::mt19937 generator_(QDateTime::currentMSecsSinceEpoch());
@@ -540,12 +532,12 @@ void ClientController::ControlsHolding() {
           local_player->GetWeapon()->GetCurrentBulletsInClip()
               - bullet_shifts.size());
 
+      local_player->SetAnimationState(AnimationState::kShoot, true);
       model_->AddLocalBullets(timestamp, bullet_shifts);
       this->AddEventToSend(Event(EventType::kSendPlayerShooting,
                                  static_cast<qint64>(timestamp),
                                  local_player->GetId(),
                                  bullet_shifts));
-      local_player->SetAnimationState(AnimationState::kShoot, true);
     }
   }
 }
