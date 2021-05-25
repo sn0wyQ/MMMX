@@ -1,5 +1,5 @@
-#ifndef SETTINGS_H_
-#define SETTINGS_H_
+#ifndef SETTINGS_SETTINGS_H_
+#define SETTINGS_SETTINGS_H_
 
 #include <QString>
 
@@ -40,4 +40,4 @@ void Settings::SetValue(const QString& setting_name, const T& value) {
   settings_.setValue(setting_name, value);
 }
 
-#endif  // SETTINGS_H_
+#endif  // SETTINGS_SETTINGS_H_

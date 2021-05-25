@@ -17,6 +17,8 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
   enable_smooth_fov_checkbox_ = new QCheckBox(this);
   enable_smooth_fov_checkbox_->setText(
       tr("Enable smooth objects disappearing"));
+  enable_smooth_fov_checkbox_->setChecked(
+      Settings::GetInstance().GetValueByKey<bool>("main/smooth_fov"));
   connect(enable_smooth_fov_checkbox_, &QCheckBox::stateChanged,
           this, &SettingsWindow::OnEnableSmoothFov);
 }
