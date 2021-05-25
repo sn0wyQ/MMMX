@@ -1,11 +1,23 @@
 # MMMX GAME
 
-Multiplayer 2D shooter with view from above.
+MMMX Game is a multiplayer 2D shooter with view from above written on C++ using QT framework and OpenGL.
 ![image](https://user-images.githubusercontent.com/45922618/119276771-99327f00-bc24-11eb-864a-9105292ec3d2.png)
+ 
+## Features
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+- Server-rooms-clients connection
+- Collisions
+- Interpolation and lag compensation
+- Hero leveling
+- Smooth UI animations
+- Animations on svg with own language to play them variatively
+- Optimized data packets
+- Player statistics in game
+- 4 modes of shooting
+- Smart spawn point generation
+- Rending on graphics card using OpenGL
+- Smart creeps (IQ 200+)
+- Kill feed
 
 ### Prerequisites
 
@@ -13,11 +25,7 @@ To run project you need at least 5.15.2 QT.
 
 ### Installing
 
-```
-git pull origin master
-```
-
-Build project using MINGW by QT and CMake.
+Clone project from repository. Build project using MINGW by QT and CMake.
 
 Run MMMX-Server. By default, the game server will be running on localhost:1337.
 After you need to run MMMX-Client with -local flag to connect to localhost, otherwise client will try to connect to global server in Moscow.
