@@ -41,7 +41,7 @@ GameView::GameView(AbstractClientView* parent,
           &QPushButton::clicked,
           this,
           &GameView::OnDisconnectButtonClicked);
-  disconnect_button_->setObjectName("small_btn");
+  disconnect_button_->setObjectName("red_small");
 }
 
 std::shared_ptr<Converter> GameView::GetConverter() {

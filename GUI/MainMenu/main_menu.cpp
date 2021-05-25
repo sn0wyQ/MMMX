@@ -22,7 +22,7 @@ MainMenu::MainMenu(AbstractClientView* parent, ClientController* controller)
           &QPushButton::clicked,
           this,
           &MainMenu::OnQuitAppButtonClicked);
-  quit_app_->setObjectName("small_btn");
+  quit_app_->setObjectName("red_small");
 }
 
 void MainMenu::UpdateRoomsInfoList() {
