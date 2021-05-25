@@ -97,15 +97,19 @@ int64_t Weapon::GetLastTimePressedReload() const {
 std::vector<QVariant> Weapon::GetBulletParams(GameObjectId parent_id,
                               float x, float y, float rotation,
                               float radius, float random_bullet_shift) const {
-  QVector2D velocity = Math::GetVectorByAngle(Math::GetNormalizeAngle(
-      rotation + GetBulletAngleByShift(random_bullet_shift)));
+  auto angle = Math::GetNormalizeAngle(
+      rotation + GetBulletAngleByShift(random_bullet_shift));
+  QVector2D velocity = Math::GetVectorByAngle(angle);
   float start_x = x + velocity.x();
   float start_y = y + velocity.y();
   velocity *= this->GetBulletSpeed();
-  return {start_x, start_y, 0.f, radius * 2.f, radius * 2.f,
+  auto animation_type = GetWeaponType() == WeaponType::kCrossbow ?
+      AnimationType::kCrossbowBullet : AnimationType::kFilledBullet;
+  return {start_x, start_y, Math::GetNormalizeAngle(angle - 90),
+          radius * 2.f, radius * 6.f,
           static_cast<int>(RigidBodyType::kCircle),
           radius * 2.f, radius * 2.f,
-          static_cast<int>(AnimationType::kNone),
+          static_cast<int>(animation_type),
           static_cast<float>(velocity.x()),
           static_cast<float>(velocity.y()),
           Constants::kDefaultSpeedMultiplier,

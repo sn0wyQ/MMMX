@@ -42,7 +42,5 @@ class Bullet : public MovableObject {
   float bullet_damage_{};
   float bullet_speed_{};
   float bullet_range_{};
-  QPixmap default_bullet_pixmap_;
-  QPixmap crossbow_bullet_pixmap_;
 };
 #endif  // GAMEOBJECT_MOVABLEOBJECT_BULLET_BULLET_H_

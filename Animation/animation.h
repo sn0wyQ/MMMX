@@ -31,7 +31,9 @@ const std::unordered_map<AnimationType, QString> kAnimationTypeStrings {
     { AnimationType::kSpider, "Spider" },
     { AnimationType::kTreeGreen, "TreeGreen" },
     { AnimationType::kViking, "Viking" },
-    { AnimationType::kMap, "Map" }
+    { AnimationType::kMap, "Map" },
+    { AnimationType::kCrossbowBullet, "CrossbowBullet" },
+    { AnimationType::kFilledBullet, "FilledBullet" }
 };
 
 const std::unordered_map<QString, AnimationState> kAnimationStateLabels {
