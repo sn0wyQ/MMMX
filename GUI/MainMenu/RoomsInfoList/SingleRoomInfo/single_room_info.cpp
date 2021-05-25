@@ -24,7 +24,7 @@ QString SingleRoomInfo::ParseRoomInfo() const {
 
   QString result = (room_info_.is_public ? "[PUBLIC] " : "[PRIVATE] ") + text;
   if (parent_->GetSelectedRoom() == room_info_.id) {
-    result = "----> " + result + " <----";
+    result = "> " + result + " <";
   }
   return result;
 }
