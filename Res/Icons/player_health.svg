@@ -42,29 +42,23 @@
      showgrid="false"
      inkscape:zoom="6.5049362"
      inkscape:cx="57.627764"
-     inkscape:cy="54.073532"
+     inkscape:cy="42.750627"
      inkscape:window-x="-8"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer3" />
+     inkscape:current-layer="layer1"
+     inkscape:document-rotation="0" />
   <g
      inkscape:groupmode="layer"
      id="layer1"
      inkscape:label="Layer 1"
-     style="display:inline">
-    <rect
-       style="fill:#ffffff;stroke-width:0.0390839"
-       id="rect13"
-       width="4.1764445"
-       height="3.6575363"
-       x="-0.047289781"
-       y="-0.050449412" />
-  </g>
+     style="display:inline" />
   <g
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="Layer 2"
-     style="display:inline">
+     style="display:inline"
+     sodipodi:insensitive="true">
     <path
        d="m 1.6185077,2.8151036 c 0.018,0.018 0.042,0.028 0.068,0.028 0.026,0 0.05,-0.01 0.068,-0.028 l 1.213,-1.2110001 a 0.81,0.81 0 0 0 -0.574,-1.37699994 c -0.432,0 -0.631,0.31300003 -0.708,0.37100003 -0.077,-0.058 -0.274,-0.37100003 -0.70699992,-0.37100003 a 0.81,0.81 0 0 0 -0.574,1.37699994 z"
        fill="#f44336"

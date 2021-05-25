@@ -35,6 +35,8 @@ namespace Constants::PlayerBar {
   const float kUpdatePixmapHeight = 10.f;
   const QString kBasePath = "./Res/Icons/";
 
+  const QColor kColorForRondButtons = QColor(255, 228, 255, 140);
+
   const std::vector<QString> kLevelingNames = {
       "player_health",
       "regeneration",
