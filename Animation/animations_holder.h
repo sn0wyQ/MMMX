@@ -21,7 +21,9 @@ const std::unordered_map<AnimationType, bool> kIsSynchronizedAllOfThisType {
     { AnimationType::kSpider, false },
     { AnimationType::kTreeGreen, true },
     { AnimationType::kViking, false },
-    { AnimationType::kMap, false }
+    { AnimationType::kMap, false },
+    { AnimationType::kCrossbowBullet, false },
+    { AnimationType::kFilledBullet, false }
 };
 
 class AnimationsHolder {

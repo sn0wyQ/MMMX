@@ -79,7 +79,9 @@ enum class AnimationType {
   kSpider,
   kTreeGreen,
   kViking,
-  kMap
+  kMap,
+  kCrossbowBullet,
+  kFilledBullet
 };
 
 Q_ENUM_NS(AnimationType)
