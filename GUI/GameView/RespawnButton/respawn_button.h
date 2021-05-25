@@ -7,9 +7,9 @@
 #include <QGraphicsOpacityEffect>
 #include <QWidget>
 
-#include "Constants/constants.h"
 #include "GUI/Animations/spring_emulator.h"
 #include "GUI/Animations/linear_emulator.h"
+#include "Constants/constants.h"
 
 namespace Constants::RespawnButton {
 

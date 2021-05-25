@@ -1,5 +1,5 @@
-#ifndef SERVER_ROOM_ROOM_CONTROLLER_H_
-#define SERVER_ROOM_ROOM_CONTROLLER_H_
+#ifndef ROOM_ROOM_CONTROLLER_H_
+#define ROOM_ROOM_CONTROLLER_H_
 
 #include <algorithm>
 #include <deque>
@@ -18,8 +18,9 @@
 #include "Controller/base_controller.h"
 #include "GameObject/MovableObject/Entity/Creep/creep_settings.h"
 #include "GameObject/RigidBody/object_collision.h"
-#include "Model/room_game_model.h"
-#include "Server/Room/room_settings.h"
+#include "room_game_model.h"
+#include "room_info.h"
+#include "room_settings.h"
 #include "Constants/constants.h"
 
 enum class RoomState {
@@ -50,13 +51,17 @@ class RoomController : public BaseController {
   void SendEvent(const Event& event) override;
   void OnTick(int delta_time) override;
 
-  void AddClient(ClientId client_id);
+  void AddClient(ClientId client_id, const QString& nickname);
   void RemoveClient(ClientId client_id);
 
   bool HasFreeSpot() const;
   bool HasPlayers() const;
   bool IsGameInProgress() const;
   bool IsWaitingForClients() const;
+  bool IsPublic() const;
+
+  void SetRoomState(RoomState room_state);
+  void StartGame();
 
   int GetPlayersCount() const;
 
@@ -68,6 +73,8 @@ class RoomController : public BaseController {
 
   ClientId PlayerIdToClientId(GameObjectId player_id) const;
   std::vector<Event> ClaimEventsForServer();
+
+  RoomInfo GetRoomInfo() const;
 
  private:
   RoomId id_;
@@ -134,4 +141,4 @@ class RoomController : public BaseController {
   void RequestRespawnEvent(const Event& event) override;
 };
 
-#endif  // SERVER_ROOM_ROOM_CONTROLLER_H_
+#endif  // ROOM_ROOM_CONTROLLER_H_

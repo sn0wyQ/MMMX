@@ -5,6 +5,7 @@ namespace EventTypeWrapper {
 
 Q_NAMESPACE
 
+// TODO(Klim): sort by alphabet
 enum class EventType {
   // MUST always stay in alphabet order
   // Also MUST have comments with arguments list
@@ -33,6 +34,17 @@ enum class EventType {
 
   // No arguments
   kSendGetVars,
+
+  // [0] - <QList<QList<QVariant>>> rooms_infos
+  // More in room_info.h
+  kSendVisibleRoomsInfo,
+
+  // [0] - <RoomId> room_id
+  // [1] - <QString> wanted_nickname
+  kConnectToRoomById,
+
+  // No arguments
+  kDisconnectFromRoom,
 
   // [0] - <GameObjectId> player_id
   kSetPlayerIdToClient,

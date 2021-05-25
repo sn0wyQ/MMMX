@@ -1,5 +1,5 @@
-#ifndef GUI_GAMEVIEW_STATS_TABLE_H_
-#define GUI_GAMEVIEW_STATS_TABLE_H_
+#ifndef GUI_GAMEVIEW_STATSTABLE_STATS_TABLE_H_
+#define GUI_GAMEVIEW_STATSTABLE_STATS_TABLE_H_
 
 #include <algorithm>
 #include <memory>
@@ -10,9 +10,9 @@
 #include <QPaintEvent>
 #include <QWidget>
 
+#include "GUI/Animations/spring_emulator.h"
 #include "Client/client_controller.h"
 #include "Painter/painter.h"
-#include "GUI/Animations/spring_emulator.h"
 
 namespace Constants::StatsTable {
 
@@ -74,4 +74,4 @@ class StatsTable : public QWidget {
   SpringEmulator<float, true> opacity_emulator_;
 };
 
-#endif  // GUI_GAMEVIEW_STATS_TABLE_H_
+#endif  // GUI_GAMEVIEW_STATSTABLE_STATS_TABLE_H_

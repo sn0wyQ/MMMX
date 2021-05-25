@@ -18,14 +18,14 @@
 #include <QUrl>
 #include <QWebSocket>
 
-#include "Client/abstract_client_view.h"
+#include "Client/client_game_model.h"
 #include "Controller/base_controller.h"
 #include "Converter/converter.h"
-#include "GameObject/RigidBody/object_collision.h"
-#include "Math/math.h"
-#include "Model/client_game_model.h"
 #include "Event/packed_event.h"
+#include "GUI/abstract_client_view.h"
+#include "GameObject/RigidBody/object_collision.h"
 #include "Interpolator/interpolator.h"
+#include "Math/math.h"
 
 enum class GameState {
   kGameFinished,
@@ -40,6 +40,9 @@ class ClientController : public BaseController {
   explicit ClientController(const QUrl& url,
                             int fps_max = Constants::kDefaultFpsMax);
   ~ClientController() override = default;
+
+  void ConnectToRoom(RoomId room_id);
+  void DisconnectFromRoom();
 
   QString GetControllerName() const override;
 
@@ -63,7 +66,7 @@ class ClientController : public BaseController {
   int64_t GetSecsToNextPossibleRevive() const;
   bool GetIsHoldingRespawnButton() const;
 
-  void SetView(std::shared_ptr<AbstractClientView> view);
+  void SetView(AbstractClientView* view);
   void UpdateView();
 
   void UpdateAnimations(int delta_time);
@@ -98,6 +101,7 @@ class ClientController : public BaseController {
   void EndGameEvent(const Event& event) override;
   void PlayerConnectedEvent(const Event& event) override;
   void PlayerDisconnectedEvent(const Event& event) override;
+  void SendVisibleRoomsInfoEvent(const Event& event) override;
   void SetPlayerIdToClient(const Event& event) override;
   void SetTimeDifferenceEvent(const Event& event) override;
   void StartGameEvent(const Event& event) override;
@@ -122,12 +126,13 @@ class ClientController : public BaseController {
 
   QString GetEntityName(GameObjectId game_object_id) const;
 
+  std::shared_ptr<ClientGameModel> model_;
+  AbstractClientView* view_;
+  KeyController* key_controller_;
+
   GameState game_state_ = GameState::kGameNotStarted;
   QUrl url_;
   QWebSocket web_socket_;
-  std::shared_ptr<ClientGameModel> model_;
-  std::shared_ptr<AbstractClientView> view_;
-  std::shared_ptr<KeyController> key_controller_;
   int server_var_{0};
   int room_var_{0};
   int client_var_{0};

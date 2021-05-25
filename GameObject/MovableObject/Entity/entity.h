@@ -7,8 +7,8 @@
 
 #include <QPainterPath>
 
-#include "GameObject/MovableObject/movable_object.h"
 #include "GUI/Animations/linear_emulator.h"
+#include "GameObject/MovableObject/movable_object.h"
 
 class Entity : public MovableObject {
  public:
@@ -58,6 +58,7 @@ class Entity : public MovableObject {
 
  protected:
   int level_{1};
+  LinearEmulator<float> opacity_emulator_;
 
  private:
   void HideHealthPointBar() const;
@@ -69,8 +70,7 @@ class Entity : public MovableObject {
   float health_points_{0.f};
   float health_regen_rate_{};
   float max_health_points_{};
-  bool is_disappearing_{false};
-  LinearEmulator<float> opacity_emulator_;
+  bool is_alive_{true};
   mutable LinearEmulator<float> hp_bar_opacity_emulator_;
 };
 

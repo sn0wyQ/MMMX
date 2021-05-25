@@ -1,5 +1,5 @@
-#ifndef GUI_GAMEVIEW_RELOADING_FIELD_H_
-#define GUI_GAMEVIEW_RELOADING_FIELD_H_
+#ifndef GUI_GAMEVIEW_RELOADINGFIELD_RELOADING_FIELD_H_
+#define GUI_GAMEVIEW_RELOADINGFIELD_RELOADING_FIELD_H_
 
 #include <memory>
 #include <utility>
@@ -24,19 +24,19 @@ class ReloadingField : public QWidget {
   Q_OBJECT
 
  public:
-  ReloadingField(QWidget* parent,
-                 std::shared_ptr<ClientController> controller);
+  ReloadingField(QWidget* parent, ClientController* controller);
 
   void paintEvent(QPaintEvent* event) override;
 
  private:
-  std::shared_ptr<ClientController> controller_;
   void Draw(QPainter* painter);
   void DrawReload(QPainter* painter,
                   int64_t delta_time,
                   int64_t reloading_time);
   void DrawPixmaps(QPainter* painter, int bullets_in_clip);
   void RecalculateFields();
+
+  ClientController* controller_;
   QPixmap filled_bullet_pixmap_;
   QPixmap unfilled_bullet_pixmap_;
   int bullet_columns_;
@@ -44,4 +44,4 @@ class ReloadingField : public QWidget {
   int clip_size_;
 };
 
-#endif  // GUI_GAMEVIEW_RELOADING_FIELD_H_
+#endif  // GUI_GAMEVIEW_RELOADINGFIELD_RELOADING_FIELD_H_

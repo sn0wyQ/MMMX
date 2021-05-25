@@ -43,15 +43,30 @@ void ServerController::SendEvent(const Event& event) {
 
 void ServerController::OnTick(int delta_time) {
   std::vector<RoomId> rooms_to_delete;
-  for (auto& room_iter : server_model_.GetRooms()) {
-    if (!room_iter.second->HasPlayers()
-        && !room_iter.second->IsWaitingForClients()) {
-      rooms_to_delete.push_back(room_iter.second->GetId());
+  for (const auto& [room_id, room] : server_model_.GetRooms()) {
+    if (!room->HasPlayers() && !room->IsWaitingForClients()) {
+      rooms_to_delete.push_back(room_id);
     }
   }
 
   for (const auto& room_id : rooms_to_delete) {
     server_model_.DeleteRoom(room_id);
+  }
+
+  int number_of_rooms_to_create =
+      Constants::ServerController::kMinimumNumberOfPublicRoomsWithFreePlace;
+  for (const auto& [room_id, room] : server_model_.GetRooms()) {
+    if (room->IsWaitingForClients() && room->IsPublic()) {
+      if (room->HasFreeSpot()) {
+        --number_of_rooms_to_create;
+      } else {
+        room->StartGame();
+      }
+    }
+  }
+
+  while (number_of_rooms_to_create--) {
+    server_model_.AddNewRoom();
   }
 
   this->ProcessEventsFromRooms();
@@ -87,10 +102,52 @@ void ServerController::ProcessEventsFromRoom(
 void ServerController::OnByteArrayReceived(const QByteArray& message) {
   auto client_socket_ptr = qobject_cast<QWebSocket*>(sender());
   auto client_id = server_model_.GetClientIdByWebSocket(client_socket_ptr);
-
   auto events = PackedEvent(message).GetEvents();
-  // Event event(message);
   for (const auto& event : events) {
+    qDebug().noquote() << "[SERVER] Received" << event
+                       << "from Client ID:" << client_id;
+
+    if (event.GetType() == EventType::kSetTimeDifference) {
+      // Важная каждая миллисекунда - отправляем ответ сразу без тика
+      this->ReplyWithTimeToClient(client_id,
+                                  event.GetArg<int64_t>(0));
+      return;
+    }
+
+    if (server_model_.GetRoomIdByClientId(client_id)
+        == Constants::kNullRoomId) {
+      if (event.GetType() == EventType::kConnectToRoomById) {
+        auto room_id = event.GetArg<RoomId>(0);
+        auto rooms = server_model_.GetRooms();
+        if (rooms.find(room_id) == rooms.end()) {
+          return;
+        }
+        auto nickname = event.GetArg<QString>(1);
+        server_model_.AddClientToRoom(room_id, client_id, nickname);
+        auto client = server_model_.GetClientByClientId(client_id);
+        client->room_id = room_id;
+        client->nickname = nickname;
+      }
+      return;
+    }
+
+    if (event.GetType() == EventType::kDisconnectFromRoom) {
+      auto client = server_model_.GetClientByClientId(client_id);
+      auto rooms = server_model_.GetRooms();
+      auto room_iter = rooms.find(client->room_id);
+      if (room_iter != rooms.end()) {
+        room_iter->second->RemoveClient(client_id);
+      }
+      client->room_id = Constants::kNullRoomId;
+
+      // We need to wait a bit,
+      // because sometimes server can not update server list fast enough
+      QTimer::singleShot(50, this, [this, client_id] () {
+        this->SendVisibleRoomsInfo(client_id);
+      });
+      return;
+    }
+
     if (event.GetType() == EventType::kSendGetVars) {
       this->AddEventToHandle(Event(EventType::kSendEventToClient,
                                    client_id,
@@ -98,11 +155,6 @@ void ServerController::OnByteArrayReceived(const QByteArray& message) {
                                    this->GetVar(),
                                    server_model_.GetRoomByClientId(client_id)
                                        ->GetVar()));
-      return;
-    } else if (event.GetType() == EventType::kSetTimeDifference) {
-      // Важная каждая миллисекунда - отправляем ответ сразу без тика
-      this->ReplyWithTimeToClient(client_id,
-                                  event.GetArg<int64_t>(0));
       return;
     }
 
@@ -124,29 +176,12 @@ void ServerController::OnNewClient() {
   //  disconnected during last X seconds
 
   ClientId new_client_id = server_model_.GetNextUnusedClientId();
-  RoomId room_id;
-  bool is_correct_room_found = false;
-
-  for (auto& [current_room_id, room_ptr] : server_model_.GetRooms()) {
-    if (room_ptr->HasFreeSpot() && room_ptr->IsWaitingForClients()) {
-      room_id = current_room_id;
-      is_correct_room_found = true;
-      break;
-    }
-  }
-  if (!is_correct_room_found) {
-    room_id = server_model_.AddNewRoom();
-  }
 
   auto new_client =
-      std::make_shared<ServerModel::ConnectedClient>(current_socket, room_id);
+      std::make_shared<ServerModel::ConnectedClient>(current_socket);
 
   server_model_.SetConnectedClient(new_client_id, new_client);
   server_model_.SetClientIdToWebSocket(current_socket, new_client_id);
-  server_model_.AddClientToRoom(room_id, new_client_id);
-
-  qInfo().noquote().nospace() << "[SERVER] New Client: ID - " << new_client_id
-                    << ", RoomController - " << room_id;
 
   connect(new_client->socket.get(),
           &QWebSocket::binaryMessageReceived,
@@ -157,6 +192,17 @@ void ServerController::OnNewClient() {
           &QWebSocket::disconnected,
           this,
           &ServerController::OnSocketDisconnected);
+
+  this->SendVisibleRoomsInfo(new_client_id);
+  qInfo().noquote().nospace() << "[SERVER] New Client: ID - " << new_client_id;
+}
+
+void ServerController::SendVisibleRoomsInfo(ClientId client_id) {
+  auto visible_rooms_info = server_model_.GetVisibleRoomsInfo(client_id);
+  this->AddEventToSend(Event(EventType::kSendEventToClient,
+                             client_id,
+                             static_cast<int>(EventType::kSendVisibleRoomsInfo),
+                             visible_rooms_info));
 }
 
 void ServerController::OnSocketDisconnected() {
@@ -180,8 +226,10 @@ void ServerController::SendToRoom(int room_id,
 
 void ServerController::ClientDisconnectedEvent(const Event& event) {
   auto client_id = event.GetArg<ClientId>(0);
-  auto room_ptr = server_model_.GetRoomByClientId(client_id);
-  room_ptr->RemoveClient(client_id);
+  if (server_model_.GetRoomIdByClientId(client_id) != Constants::kNullRoomId) {
+    auto room_ptr = server_model_.GetRoomByClientId(client_id);
+    room_ptr->RemoveClient(client_id);
+  }
   server_model_.RemoveClient(client_id);
 }
 

@@ -130,7 +130,9 @@ void Creep::TickIntelligence(
     if (game_object->GetType() == GameObjectType::kMapBorder) {
       map_border = game_object;
     } else if ((!game_object->IsEntity() ||
-        game_object->GetType() == GameObjectType::kCreep) &&
+        game_object->GetType() == GameObjectType::kCreep ||
+        (game_object->GetType() == GameObjectType::kPlayer &&
+            !game_object->IsAlive())) &&
         Math::DistanceBetweenPoints(this->GetSpawnPoint(),
                                     game_object->GetPosition())
             < this->GetFovRadius() +
@@ -214,6 +216,9 @@ GameObjectId Creep::GetPlayerToDamage(
   std::shared_ptr<Player> closer_player{nullptr};
   float best_distance = std::numeric_limits<float>::max();
   for (const auto& player : players) {
+    if (!player->IsAlive()) {
+      continue;
+    }
     auto distance = Math::DistanceBetweenPoints(this->GetPosition(),
                                                 player->GetPosition());
     if (distance < best_distance) {

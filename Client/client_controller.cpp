@@ -1,10 +1,9 @@
 #include "client_controller.h"
 
-ClientController::ClientController(const QUrl& url,
-                                   int fps_max) :
-    url_(url),
-    model_(std::make_shared<ClientGameModel>()),
-    fps_max_(fps_max) {
+ClientController::ClientController(const QUrl& url, int fps_max)
+    : model_(std::make_shared<ClientGameModel>()),
+      url_(url),
+      fps_max_(fps_max) {
   qInfo().noquote() << "[CLIENT] Connecting to" << url.host();
   qInfo() << "[CLIENT] Set fps_max to" << fps_max;
   connect(&web_socket_, &QWebSocket::connected, this,
@@ -14,8 +13,19 @@ ClientController::ClientController(const QUrl& url,
   web_socket_.open(url);
   connect(&controls_check_timer_, &QTimer::timeout, this,
           &ClientController::ControlsHolding);
-  controls_check_timer_.start(Constants::kControlsHoldingCheck);
   this->StartTicking();
+}
+
+void ClientController::ConnectToRoom(RoomId room_id) {
+  this->AddEventToSend(Event(EventType::kConnectToRoomById,
+                             room_id, model_->GetLocalPlayerNickname()));
+  controls_check_timer_.start(Constants::kControlsHoldingCheck);
+}
+
+void ClientController::DisconnectFromRoom() {
+  controls_check_timer_.stop();
+  this->AddEventToSend(Event(EventType::kDisconnectFromRoom));
+  model_->Clear();
 }
 
 std::shared_ptr<ClientGameModel> ClientController::GetModel() {
@@ -120,6 +130,7 @@ void ClientController::OnTick(int delta_time) {
   if (!is_time_difference_set_) {
     return;
   }
+
   switch (game_state_) {
     case GameState::kGameFinished:
       this->OnTickGameFinished(delta_time);
@@ -297,8 +308,8 @@ void ClientController::UpdateGameObjects() {
   }
 }
 
-void ClientController::SetView(std::shared_ptr<AbstractClientView> view) {
-  view_ = std::move(view);
+void ClientController::SetView(AbstractClientView* view) {
+  view_ = view;
   converter_ = view_->GetConverter();
   key_controller_ = view_->GetKeyController();
 }
@@ -387,6 +398,11 @@ QVector2D ClientController::GetKeyForce() const {
 
   key_force.normalize();
   return key_force;
+}
+
+void ClientController::SendVisibleRoomsInfoEvent(const Event& event) {
+  model_->SetRoomsInfo(event.GetArg<QList<QVariant>>(0));
+  view_->UpdateRoomsInfoList();
 }
 
 void ClientController::SetTimeDifferenceEvent(const Event& event) {
@@ -499,13 +515,6 @@ void ClientController::ControlsHolding() {
     } else if (local_player->GetWeapon()->IsPossibleToShoot(timestamp)) {
       local_player->GetWeapon()->SetLastTimeShot(timestamp);
 
-      // Temporary nickname change
-      this->AddEventToSend(Event(
-          EventType::kSendNickname,
-          local_player->GetId(),
-          QString("Shooter#") +
-              QString::number(model_->GetLocalPlayerId())));
-
       QList<QVariant> bullet_shifts;
       static std::mt19937 generator_(QDateTime::currentMSecsSinceEpoch());
       // generate normalised accuracy
@@ -602,6 +611,11 @@ void ClientController::PlayerKilledNotificationEvent(const Event& event) {
   auto victim_id = event.GetArg<GameObjectId>(0);
   auto killer_id = event.GetArg<GameObjectId>(1);
   auto weapon_type = event.GetArg<WeaponType>(2);
+
+  if (model_->IsGameObjectIdTaken(victim_id)) {
+    std::dynamic_pointer_cast<Entity>(
+        model_->GetGameObjectByGameObjectId(victim_id))->SetHealthPoints(0.f);
+  }
 
   auto killer_name = this->GetEntityName(killer_id);
   auto victim_name = this->GetEntityName(victim_id);
