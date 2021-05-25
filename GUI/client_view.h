@@ -49,6 +49,10 @@ class ClientView : public AbstractClientView {
   void AddPlayerDisconnectedNotification(const QString& player_name) override;
   void QuitApp() override;
 
+  void SetFullScreen();
+  void SetWindowed();
+  void ResetScreenState() override;
+
  private:
   void closeEvent(QCloseEvent* close_event) override;
   void focusOutEvent(QFocusEvent* focus_event) override;

@@ -27,6 +27,7 @@ class SettingsWindow : public QWidget {
   void BackToMainMenu();
   void paintEvent(QPaintEvent*) override;
   void OnEnableSmoothFov();
+  void OnEnableFullScreen();
 
  private:
   AbstractClientView* parent_;
@@ -37,6 +38,7 @@ class SettingsWindow : public QWidget {
   QPushButton* back_to_main_menu_;
   QTextEdit* nickname_edit_;
   QCheckBox* enable_smooth_fov_checkbox_;
+  QCheckBox* enable_full_screen_;
 };
 
 #endif  // GUI_SETTINGSWINDOW_SETTINGS_WINDOW_H_

@@ -23,6 +23,13 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
       Settings::GetInstance().GetValueByKey<bool>("main/smooth_fov"));
   connect(enable_smooth_fov_checkbox_, &QCheckBox::stateChanged,
           this, &SettingsWindow::OnEnableSmoothFov);
+
+  enable_full_screen_ = new QCheckBox(this);
+  enable_full_screen_->setText(tr("Fullscreen"));
+  enable_full_screen_->setChecked(
+      Settings::GetInstance().GetValueByKey<bool>("main/fullscreen"));
+  connect(enable_full_screen_, &QCheckBox::stateChanged,
+          this, &SettingsWindow::OnEnableFullScreen);
 }
 
 void SettingsWindow::resizeEvent(QResizeEvent* event) {
@@ -34,9 +41,9 @@ void SettingsWindow::resizeEvent(QResizeEvent* event) {
                                   width / 2,
                                   height / 24);
 
-  int setting_height = 50;
+  static const int setting_height = 50;
+  static const int offset = 10;
   int setting_width = width * 3 / 4;
-  int offset = 10;
 
   nickname_edit_->setGeometry(width / 8,
                               height / 6,
@@ -46,6 +53,13 @@ void SettingsWindow::resizeEvent(QResizeEvent* event) {
   enable_smooth_fov_checkbox_->setGeometry(
       nickname_edit_->x(),
       nickname_edit_->y() + nickname_edit_->height() + offset,
+      setting_width,
+      setting_height);
+
+  enable_full_screen_->setGeometry(
+      enable_smooth_fov_checkbox_->x(),
+      enable_smooth_fov_checkbox_->y()
+          + enable_smooth_fov_checkbox_->height() + offset,
       setting_width,
       setting_height);
 }
@@ -79,4 +93,10 @@ void SettingsWindow::paintEvent(QPaintEvent*) {
 void SettingsWindow::OnEnableSmoothFov() {
   Settings::GetInstance().SetValue("main/smooth_fov",
                                    enable_smooth_fov_checkbox_->isChecked());
+}
+
+void SettingsWindow::OnEnableFullScreen() {
+  Settings::GetInstance().SetValue("main/fullscreen",
+                                   enable_full_screen_->isChecked());
+  parent_->ResetScreenState();
 }
