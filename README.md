@@ -17,7 +17,7 @@ MMMX Game is a multiplayer 2D shooter with view from above written on C++ using 
 - Smart spawn point generation
 - Rending on graphics card using OpenGL
 - Smart creeps (IQ 200+)
-- Kill feed
+- Event feed
 - Key rebind ability
 
 ### Prerequisites
@@ -63,7 +63,7 @@ Github Actions in use
     - *Packet collector*
     - *Rendering on graphics card using Open GL*
     - *Key rebinds*
-    - *Kill feed*
+    - *Event feed*
     - *Savable settings*
 
     [OS-M](https://github.com/OS-M)
