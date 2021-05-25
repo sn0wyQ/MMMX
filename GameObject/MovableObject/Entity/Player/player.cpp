@@ -250,6 +250,7 @@ float Player::GetExpIncrementForKill() const {
 void Player::DrawNickname(Painter* painter,
                           const QString& nickname) const {
   painter->save();
+  painter->setOpacity(opacity_emulator_.GetCurrentValue());
   QPointF translation(0.f, -4.8f);
   painter->Translate(translation);
   painter->setBrush(Qt::red);
@@ -272,4 +273,8 @@ void Player::Revive(QPointF point_to_spawn) {
   Entity::Revive(point_to_spawn);
   this->GetWeapon()->SetCurrentBulletsInClip(
       this->GetWeapon()->GetClipSize());
+}
+
+bool Player::IsPlayer() const {
+  return true;
 }

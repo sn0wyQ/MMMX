@@ -221,3 +221,8 @@ std::vector<std::shared_ptr<Player>> GameModel::GetAlivePlayers() const {
   }
   return result;
 }
+
+void GameModel::Clear() {
+  players_stats_.clear();
+  game_objects_.clear();
+}

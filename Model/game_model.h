@@ -19,6 +19,7 @@
 class GameModel {
  public:
   GameModel() = default;
+  virtual ~GameModel() = default;
   GameModel(const GameModel& other);
   std::shared_ptr<Player> GetPlayerByPlayerId(GameObjectId player_id) const;
   std::shared_ptr<GameObject> GetGameObjectByGameObjectId(
@@ -54,6 +55,8 @@ class GameModel {
       const std::shared_ptr<GameObject>& game_object) const;
   std::vector<std::shared_ptr<GameObject>>
     GetGameObjectsToMoveWithSliding() const;
+
+  virtual void Clear();
 
  protected:
   std::unordered_map<GameObjectId, std::shared_ptr<PlayerStats>> players_stats_;

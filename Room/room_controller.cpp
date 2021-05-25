@@ -35,8 +35,12 @@ void RoomController::AddEventToSendToAllClients(const Event& event) {
 
 void RoomController::AddEventToSendToSinglePlayer(const Event& event,
                                                   GameObjectId player_id) {
-  this->AddEventToSendToSingleClient(
-      event, this->PlayerIdToClientId(player_id));
+  try {
+    ClientId client_id = this->PlayerIdToClientId(player_id);
+    this->AddEventToSendToSingleClient(event, client_id);
+  } catch (std::exception& e) {
+    qWarning() << e.what() << "Maybe original player already disconnected?";
+  }
 }
 
 void RoomController::AddEventToSendToPlayerList(
@@ -269,7 +273,7 @@ void RoomController::ProcessBulletsHits(const ModelData& model_data) {
   }
 }
 
-void RoomController::AddClient(ClientId client_id) {
+void RoomController::AddClient(ClientId client_id, const QString& nickname) {
   GameObjectId player_id = AddPlayer();
   player_ids_[client_id] = player_id;
   are_controls_blocked_[player_id] = false;
@@ -282,8 +286,8 @@ void RoomController::AddClient(ClientId client_id) {
       Event(EventType::kSetPlayerIdToClient, player_id), client_id);
   auto player = model_->GetPlayerByPlayerId(player_id);
   model_->AddPlayerStats(player_id,
-                        QString("Player#") + QString::number(player_id),
-                        player->GetLevel());
+                         nickname,
+                         player->GetLevel());
   this->SendGameObjectsDataToPlayer(player_id, true);
   this->ForceSendPlayersStatsToPlayer(player_id);
   this->SendPlayersStatsToPlayers();
@@ -333,6 +337,19 @@ bool RoomController::IsWaitingForClients() const {
   return room_state_ == RoomState::kWaitingForClients;
 }
 
+bool RoomController::IsPublic() const {
+  return room_settings_.IsPublic();
+}
+
+void RoomController::SetRoomState(RoomState room_state) {
+  room_state_ = room_state;
+}
+
+void RoomController::StartGame() {
+  this->SetRoomState(RoomState::kGameInProgress);
+  this->AddEventToHandle(Event(EventType::kStartGame));
+}
+
 int RoomController::GetPlayersCount() const {
   return static_cast<int>(player_ids_.size());
 }
@@ -380,6 +397,19 @@ ClientId RoomController::PlayerIdToClientId(GameObjectId player_id) const {
 
 std::vector<Event> RoomController::ClaimEventsForServer() {
   return std::move(events_for_server_);
+}
+
+RoomInfo RoomController::GetRoomInfo() const {
+  RoomInfo room_info;
+  room_info.id = id_;
+  room_info.name = room_settings_.GetName();
+  room_info.max_clients = room_settings_.GetMaxClients();
+  room_info.owners_client_id = room_settings_.GetOwnersClientId();
+  room_info.is_public = room_settings_.IsPublic();
+  for (const auto& [client_id, player_id] : player_ids_) {
+    room_info.clients.push_back(client_id);
+  }
+  return room_info;
 }
 
 Event RoomController::GetEventOfGameObjectData(
@@ -652,6 +682,7 @@ void RoomController::SendControlsEvent(const Event& event) {
     if (!cur_model->IsGameObjectIdTaken(player_id)) {
       break;
     }
+
     auto player_in_model
         = cur_model->GetPlayerByPlayerId(player_id);
     player_in_model->SetPosition(position_to_set);

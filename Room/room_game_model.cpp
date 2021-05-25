@@ -43,10 +43,20 @@ void RoomGameModel::UpdateGameObjectHashes() {
   }
 }
 
-void RoomGameModel::AddPlayerStats(GameObjectId player_id, QString nickname,
-                               int level) {
+void RoomGameModel::AddPlayerStats(GameObjectId player_id,
+                                   const QString& nickname,
+                                   int level) {
+  int same_nicknames = 0;
+  QString prefix;
+  for (const auto&[id, stats] : players_stats_) {
+    if (stats->GetNickname() == prefix + nickname) {
+      ++same_nicknames;
+      prefix = QString("[%1] ").arg(same_nicknames);
+    }
+  }
+
   players_stats_[player_id] = std::make_shared<PlayerStats>(
-      PlayerStats(player_id, std::move(nickname), level));
+      PlayerStats(player_id, prefix + nickname, level));
 }
 
 bool RoomGameModel::IsNeededToSendPlayerStats(GameObjectId player_id) {

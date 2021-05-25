@@ -71,6 +71,7 @@ extern const float kBulletDisappearRatio;
 // Animations
 extern const int kUnloadAnimationCheckTime;
 extern const int kCountOfPixmapsInSide;
+extern const bool kUseAnimationsBuffer;  // TODO(Klim): move to settings
 
 // MovableObject
 extern const float kDefaultSpeedMultiplier;
@@ -113,6 +114,8 @@ extern const float kCameraFrictionRatio;
 extern const float kFovStiffnessRatio;
 extern const float kFovFrictionRatio;
 extern const int kDefaultFpsMax;
+extern const bool kSmoothFov;
+extern const float kCloudsOpacity;
 
 // Bullet collision
 extern const int kAccuracy;

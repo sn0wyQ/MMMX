@@ -20,6 +20,8 @@ BaseController::BaseController() {
     std::bind(&BaseController::SendEventToRoomEvent, this, _1));
   SetFunctionForEventType(EventType::kSendNickname,
     std::bind(&BaseController::SendNicknameEvent, this, _1));
+  SetFunctionForEventType(EventType::kSendVisibleRoomsInfo,
+    std::bind(&BaseController::SendVisibleRoomsInfoEvent, this, _1));
   SetFunctionForEventType(EventType::kStartGame,
     std::bind(&BaseController::StartGameEvent, this, _1));
   SetFunctionForEventType(EventType::kUpdateVars,
@@ -124,7 +126,11 @@ void BaseController::AddEventToSend(const Event& event) {
 void BaseController::HandleEvent(const Event& event) {
   qDebug().noquote().nospace() << "[" << GetControllerName()
                                << "] Handling " << event;
-  function_for_event_[static_cast<uint32_t>(event.GetType())](event);
+  try {
+    function_for_event_[static_cast<uint32_t>(event.GetType())](event);
+  } catch(std::exception& e) {
+    qWarning() << "Error while handling " << event << e.what();
+  }
 }
 
 void BaseController::LogEvent(const Event& event) const {

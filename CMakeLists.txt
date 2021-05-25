@@ -71,9 +71,8 @@ set(SOURCES
         Animation/animations_holder.cpp
         Animation/shared_frame.cpp
         Client/KeyController/key_controller.cpp
-        Client/abstract_client_view.h
         Client/client_controller.cpp
-        Client/client_view.cpp
+        Client/client_game_model.cpp
         Constants/constants.cpp
         Controller/base_controller.cpp
         Converter/converter.cpp
@@ -82,11 +81,18 @@ set(SOURCES
         Event/packed_event.cpp
         GUI/GameView/KillFeed/kill_feed.cpp
         GUI/GameView/KillFeed/kill_feed_notification.cpp
+        GUI/GameView/PlayerBar/player_bar.cpp
         GUI/GameView/RespawnButton/respawn_button.cpp
+        GUI/GameView/ReloadingField/reloading_field.cpp
+        GUI/GameView/StatsTable/stats_table.cpp
+        GUI/GameView/ViewPort/viewport.cpp
         GUI/GameView/game_view.cpp
-        GUI/GameView/player_bar.cpp
-        GUI/GameView/reloading_field.cpp
-        GUI/GameView/stats_table.cpp
+        GUI/MainMenu/RoomsInfoList/SingleRoomInfo/single_room_info.cpp
+        GUI/MainMenu/RoomsInfoList/rooms_info_list.cpp
+        GUI/MainMenu/main_menu.cpp
+        GUI/SettingsWindow/settings_window.cpp
+        GUI/abstract_client_view.h
+        GUI/client_view.cpp
         GameObject/MovableObject/Bullet/bullet.cpp
         GameObject/MovableObject/Entity/Creep/creep.cpp
         GameObject/MovableObject/Entity/Creep/creep_enums.h
@@ -106,14 +112,14 @@ set(SOURCES
         Interpolator/interpolator.cpp
         Math/math.cpp
         MessageHandler/message_handler.cpp
-        Model/client_game_model.cpp
         Model/game_model.cpp
-        Model/room_game_model.cpp
-        Model/server_model.cpp
+        Room/room_game_model.cpp
+        Server/server_model.cpp
         Painter/painter.cpp
         PlayerStats/player_stats.cpp
-        Server/Room/room_controller.cpp
-        Server/Room/room_settings.cpp
+        Room/room_controller.cpp
+        Room/room_info.h
+        Room/room_settings.cpp
         Server/server_controller.cpp
         Weapon/AssaultRifle/assault_rifle.cpp
         Weapon/Crossbow/crossbow.cpp
@@ -134,7 +140,8 @@ endif (WIN32)
 # If necessary, add resources files
 qt5_add_big_resources(RESOURCES_CLIENT
         Res/Icons/icons.qrc
-        Res/Fonts/fonts.qrc)
+        Res/Fonts/fonts.qrc
+        Res/Images/images.qrc)
 qt5_add_big_resources(RESOURCES_SERVER
         )
 qt5_add_big_resources(RESOURCES_COMMON

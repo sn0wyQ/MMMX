@@ -1,5 +1,5 @@
-#ifndef MODEL_SERVER_MODEL_H_
-#define MODEL_SERVER_MODEL_H_
+#ifndef SERVER_SERVER_MODEL_H_
+#define SERVER_SERVER_MODEL_H_
 
 #include <map>
 #include <memory>
@@ -7,13 +7,15 @@
 #include <utility>
 
 #include <QAbstractSocket>
+#include <QList>
 #include <QObject>
+#include <QVariant>
 #include <QWebSocket>
 #include <QWebSocketServer>
 
-#include "Event/event.h"
-#include "Server/Room/room_controller.h"
 #include "Constants/constants.h"
+#include "Event/event.h"
+#include "Room/room_controller.h"
 
 class ServerModel {
  public:
@@ -27,17 +29,20 @@ class ServerModel {
     RoomId room_id = Constants::kNullRoomId;
   };
 
-  RoomId AddNewRoom();
+  RoomId AddNewRoom(RoomSettings room_settings = RoomSettings());
 
   std::shared_ptr<ConnectedClient>
     GetClientByClientId(ClientId client_id) const;
   std::map<RoomId, std::shared_ptr<RoomController>>& GetRooms();
   std::shared_ptr<RoomController> GetRoomByRoomId(RoomId room_id) const;
   std::shared_ptr<RoomController> GetRoomByClientId(ClientId client_id) const;
+  RoomId GetRoomIdByClientId(ClientId client_id) const;
 
   ClientId GetClientIdByWebSocket(QWebSocket* web_socket) const;
 
   ClientId GetNextUnusedClientId() const;
+
+  QList<QVariant> GetVisibleRoomsInfo(ClientId client_id) const;
 
   void DeleteRoom(RoomId room_id);
 
@@ -45,7 +50,9 @@ class ServerModel {
                           std::shared_ptr<ConnectedClient> connected_client);
   void SetClientIdToWebSocket(const std::shared_ptr<QWebSocket>& web_socket,
                               ClientId client_id);
-  void AddClientToRoom(RoomId room_id, ClientId client_id);
+  void AddClientToRoom(RoomId room_id,
+                       ClientId client_id,
+                       const QString& nickname);
 
   void RemoveClient(ClientId client_id);
 
@@ -55,4 +62,4 @@ class ServerModel {
   std::map<RoomId, std::shared_ptr<RoomController>> rooms_;
 };
 
-#endif  // MODEL_SERVER_MODEL_H_
+#endif  // SERVER_SERVER_MODEL_H_

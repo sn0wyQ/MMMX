@@ -1,158 +1,200 @@
 #include "game_view.h"
 
-GameView::GameView(QWidget* parent, std::shared_ptr<ClientGameModel> model)
-    : QOpenGLWidget(parent),
-      model_(std::move(model)),
-      converter_(std::make_shared<Converter>(this)),
-      camera_motion_emulator_(Constants::kCameraStiffnessRatio,
-                              Constants::kCameraFrictionRatio),
-      fov_change_emulator_(Constants::kFovStiffnessRatio,
-                           Constants::kFovFrictionRatio) {}
+GameView::GameView(AbstractClientView* parent,
+                   ClientController* controller,
+                   KeyController* key_controller)
+    : parent_(parent),
+      controller_(controller),
+      key_controller_(std::move(key_controller)) {
+  model_ = controller_->GetModel();
+
+  view_port_ = new ViewPort(this, controller_);
+  view_port_->move(0, 0);
+  view_port_->setMouseTracking(true);
+
+  kill_feed_ = new KillFeed(this);
+
+  height_of_bar_ = static_cast<int>(
+      Constants::kPlayerBarHeightRatio * static_cast<float>(parent_->height()));
+  player_bar_ = new PlayerBar(this, model_,
+                              QPoint(0, height() - height_of_bar_),
+                              QSize(width(), height_of_bar_));
+
+  info_label_ = new QLabel(this);
+  info_label_->move(10, 10);
+  info_label_->setAlignment(Qt::AlignTop);
+  info_label_->hide();
+
+  reloading_field_ = new ReloadingField(this, controller_);
+
+  respawn_button_ = new RespawnButton(this);
+  respawn_button_->Hide();
+
+  stats_table_ = new StatsTable(this, controller_->GetModel());
+  stats_table_->setMouseTracking(true);
+
+  disconnect_button_ = new QPushButton("Disconnect", this);
+  disconnect_button_->setFocusPolicy(Qt::NoFocus);
+  connect(disconnect_button_,
+          &QPushButton::clicked,
+          this,
+          &GameView::OnDisconnectButtonClicked);
+}
 
 std::shared_ptr<Converter> GameView::GetConverter() {
-  return converter_;
+  return view_port_->GetConverter();
 }
 
 void GameView::Update() {
-  Painter painter(this, this->GetConverter());
-  painter.setBrush(QBrush(Qt::white));
-  painter.drawRect(0, 0, this->width(), this->height());
-  painter.setBrush(QBrush(Qt::transparent));
-  Constants::SetPainterHints(&painter);
-
-  // If LocalPlayer isn't set we don't want to draw anything
-  if (!model_->IsLocalPlayerSet()) {
-    was_player_set_ = false;
-    return;
+  auto time = QDateTime::currentMSecsSinceEpoch();
+  if (last_frame_times_.empty()) {
+    last_updated_time_ = time;
   }
-
-  const auto& local_player = model_->GetLocalPlayer();
-  auto player_pos = local_player->GetPosition();
-  if (!was_player_set_) {
-    was_player_set_ = true;
-    camera_motion_emulator_.SetCurrentValue(
-        QVector2D(local_player->GetPosition()));
-    fov_change_emulator_.SetCurrentValue(local_player->GetFovRadius() / 1.2f);
+  last_frame_times_.push_back(time - last_updated_time_);
+  if (static_cast<int>(last_frame_times_.size()) >
+      Constants::kAverageFpsFrames) {
+    last_frame_times_.pop_front();
   }
+  last_updated_time_ = time;
 
-  camera_motion_emulator_.MakeStepTo(QVector2D(player_pos));
-  auto local_center = camera_motion_emulator_.GetCurrentValue().toPointF();
-  fov_change_emulator_.MakeStepTo(local_player->GetFovRadius());
-  auto last_player_fov = fov_change_emulator_.GetCurrentValue();
-
-  auto player_bar_offset =
-      this->GetConverter()->ScaleFromScreenToGame(
-          Constants::kPlayerBarHeightRatio * this->height() / 2.f);
-  converter_->UpdateCoefficient(last_player_fov + player_bar_offset);
-
-  // Setting screen centre to Player's position
-  auto translation = QPointF(this->width(), this->height()) / 2.f
-      - converter_->ScaleFromGameToScreen(
-          local_center + QPointF(0, player_bar_offset));
-  painter.translate(translation.toPoint());
-
-  auto view_rect_offset =
-      QPointF(this->width(), this->height()) / 2.f;
-  view_rect_offset = converter_->ScaleFromScreenToGame(view_rect_offset);
-  view_rect_offset.setY(view_rect_offset.y() + player_bar_offset);
-  auto view_rect = QRectF(local_center - view_rect_offset,
-                          local_center + view_rect_offset);
-
-  std::vector<std::shared_ptr<GameObject>> drawn_objects;
-  this->DrawObjects(model_->GetNotFilteredByFovObjects(), view_rect,
-                    &drawn_objects,
-                    &painter);
-
-  // Temporary FOV show
-  view_rect_offset = QPointF(this->height(), this->height()) / 2.f;
-  view_rect_offset = converter_->ScaleFromScreenToGame(view_rect_offset);
-  view_rect = QRectF(local_center - view_rect_offset,
-                     local_center + view_rect_offset);
-  painter.DrawEllipse(local_player->GetPosition(),
-                      last_player_fov,
-                      last_player_fov);
-  painter.SetClipCircle(local_player->GetX(),
-                        local_player->GetY(),
-                        last_player_fov);
-
-  this->DrawObjects(model_->GetFilteredByFovObjects(), view_rect,
-                    &drawn_objects,
-                    &painter);
-
-  for (const auto& object : model_->GetLocalBullets()) {
-    if (view_rect.intersects(object->GetBoundingRect())) {
-      object->Draw(&painter);
-    }
-  }
-
-  for (const auto& object : drawn_objects) {
-    DrawBars(object, &painter);
-  }
-  need_to_update_ = true;
+  view_port_->Update();
   this->update();
 }
 
-void GameView::paintEvent(QPaintEvent* paint_event) {
-  if (!need_to_update_) {
-    return;
-  }
-  need_to_update_ = false;
+void GameView::mouseMoveEvent(QMouseEvent* mouse_event) {
+  controller_->MouseMoveEvent(mouse_event);
 }
 
-void GameView::resizeGL(int w, int h) {
-  converter_->UpdateCoefficient();
+void GameView::paintEvent(QPaintEvent* event) {
+  if (!model_->IsLocalPlayerSet()) {
+    return;
+  }
+
+  if (key_controller_->IsHeld(Controls::kShowStatistics)) {
+    stats_table_->Show();
+  } else {
+    stats_table_->Hide();
+  }
+
+  this->ProcessRespawnButton();
+
+  auto local_player_position = model_->IsLocalPlayerSet()
+                               ? model_->GetLocalPlayer()->GetPosition()
+                               : QPointF(0.f, 0.f);
+  int64_t average_frame_time = 0;
+  int64_t fps = 0;
+  if (!last_frame_times_.empty()) {
+    // Weird maths with divide to avoid accuracy loss
+    average_frame_time = std::accumulate(
+        last_frame_times_.begin(), last_frame_times_.end(), 0LL);
+    fps = static_cast<int64_t>(last_frame_times_.size()) * 1000 /
+        (average_frame_time + 1);
+    average_frame_time /= static_cast<int64_t>(last_frame_times_.size());
+  }
+
+  if (key_controller_->WasPressed(Controls::kShowNetGraph)) {
+    key_controller_->ClearKeyPress(Controls::kShowNetGraph);
+    if (info_label_->isHidden()) {
+      info_label_->show();
+    } else {
+      info_label_->hide();
+    }
+  }
+  if (!info_label_->isHidden()) {
+    info_label_->setText(QString(tr("Server Var: %1\n"
+                                    "Room Var: %2\n"
+                                    "Client Var: %3\n"
+                                    "Ping: %4\n"
+                                    "X: %5, \tY: %6\n"
+                                    "Fps: %7 (%8ms)\n"))
+                             .arg(controller_->GetServerVar())
+                             .arg(controller_->GetRoomVar())
+                             .arg(controller_->GetClientVar())
+                             .arg(controller_->GetPing())
+                             .arg(local_player_position.x())
+                             .arg(local_player_position.y())
+                             .arg(fps)
+                             .arg(average_frame_time));
+    info_label_->adjustSize();
+  }
+}
+
+void GameView::resizeEvent(QResizeEvent* event) {
+  int width = event->size().width();
+  int height = event->size().height();
+
+  respawn_button_->Resize(QSize(150, 150));
+  respawn_button_default_position_ =
+      QPoint(10,
+             this->height() - height_of_bar_ - respawn_button_->height() - 10);
+  respawn_button_->Move(respawn_button_default_position_);
+
+  view_port_->resize(event->size());
+
+  player_bar_->resize(width, height_of_bar_);
+  player_bar_->move(0, height - height_of_bar_);
+
+  stats_table_->Resize(QSize(width * 0.9f, (height - height_of_bar_) * 0.9f));
+  stats_table_->move((width - stats_table_->width()) / 2.f,
+                     (height - stats_table_->height() - height_of_bar_) / 2.f);
+
+  reloading_field_->resize(width / 3, height / 2);
+  reloading_field_->move(width - reloading_field_->width(),
+                         (height - height_of_bar_
+                          - reloading_field_->height()));
+
+  kill_feed_->resize(width / 3, height);
+  kill_feed_->move(width - kill_feed_->width(), 0);
+
+  disconnect_button_->setGeometry(width * 5 / 12,
+                                  height - 30,
+                                  width / 6,
+                                  20);
+}
+
+void GameView::ProcessRespawnButton() {
+  respawn_button_->SetWaitValue(controller_->GetSecsToNextPossibleRevive());
+  respawn_button_->SetValue(controller_->GetHoldingRespawnButtonMsecs());
+
+  if (controller_->GetIsHoldingRespawnButton() ||
+      controller_->GetHoldingRespawnButtonMsecs() != 0) {
+    respawn_button_->Show();
+  } else {
+    respawn_button_->Hide();
+  }
+
+  if (model_->IsLocalPlayerSet() && model_->GetLocalPlayer()->IsAlive()) {
+    respawn_button_->Move(respawn_button_default_position_);
+  } else {
+    respawn_button_->Move(QPointF(
+        this->width() / 2 - respawn_button_->width() / 2,
+        (this->height() - height_of_bar_) / 2 - respawn_button_->height() / 2));
+  }
 }
 
 QPointF GameView::GetPlayerToCenterOffset() const {
-  if (model_->IsLocalPlayerSet()) {
-    auto player_bar_offset = converter_->ScaleFromScreenToGame(
-        Constants::kPlayerBarHeightRatio * this->height() / 2.f);
-    auto local_center = camera_motion_emulator_.GetCurrentValue().toPointF();
-    return (local_center - model_->GetLocalPlayer()->GetPosition() +
-        QPointF(0, player_bar_offset));
-  }
-  return QPoint();
+  return view_port_->GetPlayerToCenterOffset();
 }
 
-void GameView::DrawObjects(
-    const std::vector<std::shared_ptr<GameObject>>& objects,
-    const QRectF& view_rect,
-    std::vector<std::shared_ptr<GameObject>>* drawn_objects,
-    Painter* painter) {
-  for (const auto& object : objects) {
-    if (!object->IsMovable()) {
-      if (view_rect.intersects(object->GetBoundingRect())) {
-        if (object->IsNeedToDraw()) {
-          object->Draw(painter);
-          drawn_objects->emplace_back(object);
-        }
-      }
-    }
-  }
-  for (const auto& object : objects) {
-    if (object->IsMovable()) {
-      if (view_rect.intersects(object->GetBoundingRect())) {
-        if (object->IsNeedToDraw()) {
-          object->Draw(painter);
-          drawn_objects->emplace_back(object);
-        }
-      }
-    }
-  }
+void GameView::AddKillNotification(const QString& killer_name,
+                                   const QString& victim_name,
+                                   WeaponType weapon_type) {
+  kill_feed_->AddKillNotification(killer_name, victim_name, weapon_type);
 }
 
-void GameView::DrawBars(const std::shared_ptr<GameObject>& object,
-                        Painter* painter) {
-  painter->save();
-  painter->Translate(object->GetPosition());
-  if (object->GetId() != model_->GetLocalPlayer()->GetId()) {
-    object->DrawHealthBar(painter);
-    object->DrawLevel(painter);
-    if (object->GetType() == GameObjectType::kPlayer) {
-      QString nickname =
-          model_->GetPlayerStatsByPlayerId(object->GetId())->GetNickname();
-      object->DrawNickname(painter, nickname);
-    }
-  }
-  painter->restore();
+void GameView::AddRespawnNotification(const QString& player_name) {
+  kill_feed_->AddSpawnNotification(player_name);
+}
+
+void GameView::AddPlayerConnectedNotification(const QString& player_name) {
+  kill_feed_->AddPlayerConnectedNotification(player_name);
+}
+
+void GameView::AddPlayerDisconnectedNotification(const QString& player_name) {
+  kill_feed_->AddPlayerDisconnectedNotification(player_name);
+}
+
+void GameView::OnDisconnectButtonClicked() {
+  parent_->SetWindow(ClientWindowType::kMainMenu);
+  controller_->DisconnectFromRoom();
 }

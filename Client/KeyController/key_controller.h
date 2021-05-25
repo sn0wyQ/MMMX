@@ -31,6 +31,7 @@ enum class Controls {
   kRight,
   kReload,
   kShowStatistics,
+  kShowNetGraph,
   kRespawn,
   kShoot
 };
@@ -52,6 +53,7 @@ const std::vector<QString> kControlsNames{
   "Right",
   "Reload",
   "Show Statistics",
+  "Show Net Graph",
   "Respawn",
   "Shoot"
 };
@@ -125,6 +127,7 @@ class KeyController : public QWidget {
       {{true, 32}, Controls::kRight},
       {{true, 19}, Controls::kReload},
       {{true, 15}, Controls::kShowStatistics},
+      {{true, 61}, Controls::kShowNetGraph},
       {{true, 46}, Controls::kRespawn},
       {{false, 1}, Controls::kShoot}
 #else
@@ -134,6 +137,7 @@ class KeyController : public QWidget {
       {{true, 40}, Controls::kRight},
       {{true, 27}, Controls::kReload},
       {{true, 23}, Controls::kShowStatistics},
+      {{true, 69}, Controls::kShowNetGraph},
       {{true, 54}, Controls::kRespawn},
       {{false, 1}, Controls::kShoot}
 #endif

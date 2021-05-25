@@ -1,5 +1,5 @@
-#ifndef GUI_GAMEVIEW_PLAYER_BAR_H_
-#define GUI_GAMEVIEW_PLAYER_BAR_H_
+#ifndef GUI_GAMEVIEW_PLAYERBAR_PLAYER_BAR_H_
+#define GUI_GAMEVIEW_PLAYERBAR_PLAYER_BAR_H_
 
 #include <memory>
 #include <utility>
@@ -104,4 +104,4 @@ class PlayerBar : public QWidget {
   float small_height_;
 };
 
-#endif  // GUI_GAMEVIEW_PLAYER_BAR_H_
+#endif  // GUI_GAMEVIEW_PLAYERBAR_PLAYER_BAR_H_

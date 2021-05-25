@@ -24,6 +24,14 @@ void ClientGameModel::SetLocalPlayerId(GameObjectId player_id) {
   this->GetLocalPlayer()->SetIsLocalPlayer(true);
 }
 
+void ClientGameModel::SetLocalPlayerNickname(const QString& nickname) {
+  local_player_nickname_ = nickname;
+}
+
+QString ClientGameModel::GetLocalPlayerNickname() const {
+  return local_player_nickname_;
+}
+
 void ClientGameModel::AddInterpolateInfo(GameObjectId game_object_id,
                                          GameObjectType game_object_type,
                                          int64_t server_time) {
@@ -85,7 +93,7 @@ void ClientGameModel::AddLocalBullets(
     local_bullets_.emplace(std::make_pair(bullet_id_to_set_, bullet));
     qDebug().noquote() << "[MODEL] Added new local bullet:"
                        << bullet_id_to_set_;
-    bullet_id_to_set_++;
+    ++bullet_id_to_set_;
   }
 }
 
@@ -104,4 +112,24 @@ void ClientGameModel::DeleteLocalBullet(GameObjectId bullet_id) {
   }
   local_bullets_.erase(iter);
   qDebug().noquote() << "[MODEL] Removed local bullet:" << bullet_id;
+}
+
+const QList<RoomInfo>& ClientGameModel::GetRoomsInfo() const {
+  return rooms_info_;
+}
+
+void ClientGameModel::SetRoomsInfo(const QList<QVariant>& rooms_info) {
+  rooms_info_.clear();
+  for (const auto& variant : rooms_info) {
+    rooms_info_.push_back(
+        RoomInfo::GetRoomInfoFromVariantList(variant.toList()));
+  }
+}
+
+void ClientGameModel::Clear() {
+  GameModel::Clear();
+  interpolator_.clear();
+  local_bullets_.clear();
+  local_player_id_ = Constants::kNullGameObjectId;
+  bullet_id_to_set_ = 1;
 }

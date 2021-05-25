@@ -1,5 +1,5 @@
-#ifndef MODEL_ROOM_GAME_MODEL_H_
-#define MODEL_ROOM_GAME_MODEL_H_
+#ifndef ROOM_ROOM_GAME_MODEL_H_
+#define ROOM_ROOM_GAME_MODEL_H_
 
 #include <algorithm>
 #include <random>
@@ -24,7 +24,9 @@ class RoomGameModel : public GameModel {
   bool IsNeededToSendGameObjectData(GameObjectId game_object_id) const;
   void UpdateGameObjectHashes();
 
-  void AddPlayerStats(GameObjectId player_id, QString nickname, int level);
+  void AddPlayerStats(GameObjectId player_id,
+                      const QString& nickname,
+                      int level);
   bool IsNeededToSendPlayerStats(GameObjectId player_id);
   void UpdatePlayerStatsHashes();
 
@@ -38,4 +40,4 @@ class RoomGameModel : public GameModel {
   std::unordered_map<GameObjectId, QByteArray> last_player_stats_hash_;
 };
 
-#endif  // MODEL_ROOM_GAME_MODEL_H_
+#endif  // ROOM_ROOM_GAME_MODEL_H_

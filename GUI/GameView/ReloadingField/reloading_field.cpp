@@ -4,9 +4,8 @@ using Constants::ReloadingField::kBulletWidth;
 using Constants::ReloadingField::kBulletHeight;
 using Constants::ReloadingField::kMinSpaceBetweenBullets;
 
-ReloadingField::ReloadingField(QWidget* parent,
-                               std::shared_ptr<ClientController> controller)
-    : QWidget(parent), controller_{std::move(controller)} {
+ReloadingField::ReloadingField(QWidget* parent, ClientController* controller)
+    : QWidget(parent), controller_(controller) {
   QString base_path = "./Res/Icons/";
   QSvgRenderer unfilled_bullet_renderer(base_path + "unfilled_bullet.svg");
   QSvgRenderer filled_bullet_renderer(base_path + "filled_bullet.svg");

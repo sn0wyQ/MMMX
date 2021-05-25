@@ -5,8 +5,8 @@
 
 #include <QWidget>
 
-#include "GUI/GameView/KillFeed/kill_feed_notification.h"
 #include "GUI/Animations/spring_emulator.h"
+#include "kill_feed_notification.h"
 
 namespace Constants::KillFeed {
 

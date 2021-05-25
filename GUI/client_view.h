@@ -1,51 +1,56 @@
-#ifndef CLIENT_CLIENT_VIEW_H_
-#define CLIENT_CLIENT_VIEW_H_
+#ifndef GUI_CLIENT_VIEW_H_
+#define GUI_CLIENT_VIEW_H_
 
 #include <deque>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include <QCloseEvent>
 #include <QFocusEvent>
 #include <QKeyEvent>
 #include <QLabel>
+#include <QLayout>
 #include <QMainWindow>
 #include <QMouseEvent>
-#include <QPushButton>
 #include <QPaintEvent>
 #include <QPainter>
+#include <QPushButton>
+#include <QStackedWidget>
 
-#include "Client/KeyController/key_controller.h"
-#include "Client/abstract_client_view.h"
-#include "Client/client_controller.h"
-#include "Event/event.h"
-#include "GUI/GameView/KillFeed/kill_feed.h"
-#include "GUI/GameView/RespawnButton/respawn_button.h"
 #include "GUI/GameView/game_view.h"
-#include "GUI/GameView/player_bar.h"
-#include "GUI/GameView/reloading_field.h"
-#include "GUI/GameView/stats_table.h"
+#include "GUI/MainMenu/main_menu.h"
+#include "GUI/SettingsWindow/settings_window.h"
+#include "abstract_client_view.h"
+#include "Client/client_controller.h"
+#include "Client/client_game_model.h"
+#include "Event/event.h"
 
 class ClientView : public AbstractClientView {
   Q_OBJECT
 
  public:
-  explicit ClientView(std::shared_ptr<ClientController> controller);
+  explicit ClientView(ClientController* controller);
   ~ClientView() override = default;
 
+  void ConnectToRoom(RoomId room_id) override;
+  void SetWindow(ClientWindowType window_type) override;
   void Update() override;
+  void UpdateRoomsInfoList() override;
   std::shared_ptr<Converter> GetConverter() override;
   QPointF GetPlayerToCenterOffset() const override;
   void AddKillFeedNotification(const QString& killer_name,
                                const QString& victim_name,
                                WeaponType weapon_type) override;
 
-  std::shared_ptr<KeyController> GetKeyController() const override;
+  KeyController* GetKeyController() const override;
   void AddRespawnNotification(const QString& player_name) override;
   void AddPlayerConnectedNotification(const QString& player_name) override;
   void AddPlayerDisconnectedNotification(const QString& player_name) override;
+  void QuitApp() override;
 
  private:
+  void closeEvent(QCloseEvent* close_event) override;
   void focusOutEvent(QFocusEvent* focus_event) override;
   void keyPressEvent(QKeyEvent* key_event) override;
   void keyReleaseEvent(QKeyEvent* key_event) override;
@@ -55,23 +60,15 @@ class ClientView : public AbstractClientView {
   void paintEvent(QPaintEvent* paint_event) override;
   void resizeEvent(QResizeEvent* resize_event) override;
 
-  void ProcessRespawnButton();
-
-  std::shared_ptr<ClientController> controller_;
+  ClientController* controller_;
   std::shared_ptr<ClientGameModel> model_;
-  GameView* game_view_;
-  PlayerBar* player_bar_;
-  ReloadingField* reloading_field_;
-  StatsTable* stats_table_;
-  QLabel* info_label_;
-  int height_of_bar_{};
 
-  int64_t last_updated_time_{};
-  std::deque<int64_t> last_frame_times_{};
-  KillFeed* kill_feed_;
-  std::shared_ptr<KeyController> key_controller_;
-  RespawnButton* respawn_button_;
-  QPoint respawn_button_default_position_;
+  QStackedWidget* stacked_widget_;
+  GameView* game_view_;
+  MainMenu* main_menu_;
+  SettingsWindow* settings_window_;
+
+  KeyController* key_controller_;
 };
 
-#endif  // CLIENT_CLIENT_VIEW_H_
+#endif  // GUI_CLIENT_VIEW_H_
