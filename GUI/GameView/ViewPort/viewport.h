@@ -40,6 +40,7 @@ class ViewPort : public QOpenGLWidget {
   std::shared_ptr<ClientGameModel> model_;
   std::shared_ptr<Converter> converter_;
 
+  void PrepareFovImage();
   void DrawObjects(
       const std::vector<std::shared_ptr<GameObject>>& objects,
       const QRectF& view_rect,
@@ -51,6 +52,8 @@ class ViewPort : public QOpenGLWidget {
   bool was_player_set_{false};
   SpringEmulator<QVector2D, false> camera_motion_emulator_;
   SpringEmulator<float, false> fov_change_emulator_;
+  QPixmap fov_image_;
+  QImage fov_for_objects_;
 };
 
 #endif  // GUI_GAMEVIEW_VIEWPORT_VIEWPORT_H_

@@ -8,7 +8,9 @@ ViewPort::ViewPort(QWidget* parent, ClientController* controller)
     camera_motion_emulator_(Constants::kCameraStiffnessRatio,
                             Constants::kCameraFrictionRatio),
     fov_change_emulator_(Constants::kFovStiffnessRatio,
-                         Constants::kFovFrictionRatio) {}
+                         Constants::kFovFrictionRatio) {
+  this->PrepareFovImage();
+}
 
 std::shared_ptr<Converter> ViewPort::GetConverter() {
   return converter_;
@@ -26,6 +28,7 @@ void ViewPort::Update() {
   }
 
   Painter painter(this, this->GetConverter());
+  painter.save();
   painter.setBrush(QBrush(Qt::white));
   painter.drawRect(0, 0, this->width(), this->height());
   painter.setBrush(QBrush(Qt::transparent));
@@ -68,31 +71,50 @@ void ViewPort::Update() {
                     &drawn_objects,
                     &painter);
 
-  // Temporary FOV show
   view_rect_offset = QPointF(this->height(), this->height()) / 2.f;
   view_rect_offset = converter_->ScaleFromScreenToGame(view_rect_offset);
   view_rect = QRectF(local_center - view_rect_offset,
                      local_center + view_rect_offset);
-  painter.DrawEllipse(local_player->GetPosition(),
-                      last_player_fov,
-                      last_player_fov);
-  painter.SetClipCircle(local_player->GetX(),
-                        local_player->GetY(),
-                        last_player_fov);
+
+  QPixmap pixmap_for_filtered(this->size());
+  pixmap_for_filtered.fill(Qt::transparent);
+  Painter painter_for_filtered(&pixmap_for_filtered, this->converter_);
+  painter_for_filtered.setClipRect(this->rect());
+  Constants::SetPainterHints(&painter_for_filtered);
+  painter_for_filtered.translate(translation.toPoint());
+  if (!Constants::kSmoothFov) {
+    painter_for_filtered.SetClipCircle(local_player->GetX(),
+                                       local_player->GetY(),
+                                       last_player_fov);
+  }
 
   this->DrawObjects(model_->GetFilteredByFovObjects(), view_rect,
                     &drawn_objects,
-                    &painter);
+                    &painter_for_filtered);
 
   for (const auto& object : model_->GetLocalBullets()) {
     if (view_rect.intersects(object->GetBoundingRect())) {
-      object->Draw(&painter);
+      object->Draw(&painter_for_filtered);
     }
   }
 
   for (const auto& object : drawn_objects) {
-    DrawBars(object, &painter);
+    DrawBars(object, &painter_for_filtered);
   }
+
+  painter.restore();
+
+  if (Constants::kSmoothFov) {
+    auto filtered_image = pixmap_for_filtered.toImage();
+    filtered_image.setAlphaChannel(fov_for_objects_);
+    painter.drawImage(this->rect(), filtered_image);
+  } else {
+    painter.drawPixmap(this->rect(), pixmap_for_filtered);
+  }
+  painter.setClipping(false);
+  painter.setOpacity(Constants::kCloudsOpacity);
+  painter.drawPixmap(this->rect(), fov_image_);
+
   need_to_update_ = true;
   this->update();
 }
@@ -104,8 +126,9 @@ void ViewPort::paintEvent(QPaintEvent* paint_event) {
   need_to_update_ = false;
 }
 
-void ViewPort::resizeGL(int, int) {
+void ViewPort::resizeGL(int w, int h) {
   converter_->UpdateCoefficient();
+  this->PrepareFovImage();
 }
 
 QPointF ViewPort::GetPlayerToCenterOffset() const {
@@ -160,4 +183,35 @@ void ViewPort::DrawBars(const std::shared_ptr<GameObject>& object,
     }
   }
   painter->restore();
+}
+
+void ViewPort::PrepareFovImage() {
+  QImage clouds(":clouds.png");
+  clouds = clouds.scaled(this->size(),
+                         Qt::AspectRatioMode::IgnoreAspectRatio,
+                         Qt::TransformationMode::SmoothTransformation);
+  QImage fov(":fov.png");
+  QImage fov_inverted(":fov_inverted.png");
+  auto player_bar_offset =
+          Constants::kPlayerBarHeightRatio * this->height() / 2.f;
+  auto fov_height = this->height() - player_bar_offset;
+
+  QPixmap fov_pixmap(clouds.size());
+  fov_pixmap.fill(Qt::white);
+  QPainter fov_painter(&fov_pixmap);
+
+  QPixmap fov_inverted_pixmap(clouds.size());
+  fov_inverted_pixmap.fill(Qt::black);
+  QPainter fov_inverted_painter(&fov_inverted_pixmap);
+
+  fov_painter.drawImage(QRectF((this->width() - fov_height) / 2.f, 0,
+                               fov_height, fov_height), fov);
+
+  fov_inverted_painter.drawImage(QRectF((this->width() - fov_height) / 2.f, 0,
+                                   fov_height, fov_height), fov_inverted);
+
+  fov_for_objects_ = fov_inverted_pixmap.toImage();
+
+  clouds.setAlphaChannel(fov_pixmap.toImage());
+  fov_image_.convertFromImage(clouds.scaled(this->size()));
 }

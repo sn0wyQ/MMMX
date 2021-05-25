@@ -8,6 +8,7 @@
 #include <QPainterPath>
 
 #include "GUI/Animations/linear_emulator.h"
+#include "GUI/Animations/spring_emulator.h"
 #include "GameObject/MovableObject/movable_object.h"
 
 class Entity : public MovableObject {
@@ -72,6 +73,7 @@ class Entity : public MovableObject {
   float max_health_points_{};
   bool is_alive_{true};
   mutable LinearEmulator<float> hp_bar_opacity_emulator_;
+  mutable SpringEmulator<float, true> hp_emulator_;
 };
 
 #endif  // GAMEOBJECT_MOVABLEOBJECT_ENTITY_ENTITY_H_
