@@ -49,7 +49,7 @@ void RoomGameModel::AddPlayerStats(GameObjectId player_id,
   int same_nicknames = 0;
   QString prefix;
   for (const auto&[id, stats] : players_stats_) {
-    if (stats->GetNickname() == nickname) {
+    if (stats->GetNickname() == prefix + nickname) {
       ++same_nicknames;
       prefix = QString("[%1] ").arg(same_nicknames);
     }

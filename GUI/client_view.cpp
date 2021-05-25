@@ -4,8 +4,7 @@ ClientView::ClientView(ClientController* controller)
     : AbstractClientView(),
       controller_(controller),
       model_(controller_->GetModel()) {
-  this->resize(700, 700);
-  this->setMinimumSize(310, 70);
+  this->setMinimumSize(1400, 960);
   this->setWindowTitle(Constants::kWindowTitle);
   this->setFocusPolicy(Qt::StrongFocus);
 
