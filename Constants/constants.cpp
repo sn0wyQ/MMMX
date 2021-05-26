@@ -101,7 +101,7 @@ QColor GetHealthPointsColor(float hp_ratio) {
 }
 void SetPainterHints(QPainter* painter) {
   if (Settings::GetInstance().GetValueByKey<bool>("main/fullscreen")
-      == AntialiasingType::kDisableInGame) {
+      == AntialiasingType::kDisableAll) {
     return;
   }
   painter->setRenderHints(

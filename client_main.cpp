@@ -28,16 +28,15 @@ int main(int argc, char* argv[]) {
       QUrl(QString("ws://") + server_ip + ":" +
       QString::number(Constants::kServerPort));
 
-  QSurfaceFormat surface_format = QSurfaceFormat::defaultFormat();
-  surface_format.setSamples(Settings::GetInstance().GetAntialiasingSamples());
-  QSurfaceFormat::setDefaultFormat(surface_format);
-
   QApplication app(argc, argv);
   QFontDatabase::addApplicationFont(":Res/Fonts/CynthoNext-Bold.ttf");
   QFontDatabase::addApplicationFont(":Res/Fonts/RobotoMono-Regular.ttf");
   QFontDatabase::addApplicationFont(":Res/Fonts/RobotoMono-Bold.ttf");
   QFile::remove("client.log");
   qInstallMessageHandler(MessageHandlerWrapper);
+  QSurfaceFormat surface_format = QSurfaceFormat::defaultFormat();
+  surface_format.setSamples(Settings::GetInstance().GetAntialiasingSamples());
+  QSurfaceFormat::setDefaultFormat(surface_format);
 
   auto* client_controller = new ClientController(
       server_url, QApplication::primaryScreen()->refreshRate());
