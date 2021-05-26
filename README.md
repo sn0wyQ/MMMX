@@ -4,6 +4,11 @@ MMMX Game is a multiplayer 2D shooter with view from above written on C++ using 
 <br>
 
 ![image](https://user-images.githubusercontent.com/45922618/119581911-3845ab00-bdcc-11eb-9c24-4cb20e41550f.png)
+![image](https://user-images.githubusercontent.com/45922618/119588524-aba1e980-bdd9-11eb-9e44-046bbc16c0e6.png)
+![image](https://user-images.githubusercontent.com/45922618/119588561-bceaf600-bdd9-11eb-9cda-895c77514632.png)
+![image](https://user-images.githubusercontent.com/45922618/119588585-c7a58b00-bdd9-11eb-9bc1-7a1cca4d8c6c.png)
+![image](https://user-images.githubusercontent.com/45922618/119588606-d2602000-bdd9-11eb-9e8e-18d45bc94532.png)
+
  
 ## Features
 
