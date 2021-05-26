@@ -10,9 +10,7 @@
 enum AntialiasingType {
   kDisableAll = 0,  // MUST stay 0
   kDisableInGame,
-  k2x,
-  k3x,
-  k4x,
+  k6x,
   k8x,
   k16x
 };
