@@ -152,8 +152,13 @@ qt5_add_big_resources(RESOURCES_COMMON
         Res/Json/weapon_settings.qrc
         )
 
-add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
-        ${RESOURCES_COMMON} ${SYSTEM_DEPENDENT_SOURCES})
+if (WIN32)
+    add_executable(MMMX-Client WIN32 client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
+            ${RESOURCES_COMMON} ${SYSTEM_DEPENDENT_SOURCES})
+else()
+    add_executable(MMMX-Client client_main.cpp ${SOURCES} ${RESOURCES_CLIENT}
+            ${RESOURCES_COMMON} ${SYSTEM_DEPENDENT_SOURCES})
+endif(WIN32)
 target_link_libraries(MMMX-Client ${REQUIRED_LIBS_QUALIFIED})
 
 add_executable(MMMX-Server server_main.cpp ${SOURCES} ${RESOURCES_SERVER}
