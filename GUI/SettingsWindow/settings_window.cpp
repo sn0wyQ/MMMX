@@ -131,5 +131,4 @@ void SettingsWindow::OnEnableFullScreen() {
 
 void SettingsWindow::OnSetAntialiasing(int new_index) {
   Settings::GetInstance().SetValue("main/antialiasing", new_index);
-
 }
