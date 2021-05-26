@@ -37,9 +37,7 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
   antialiasing_types_ = new QComboBox(this);
   antialiasing_types_->addItem("Disable ALL antialiasing");
   antialiasing_types_->addItem("Disable in-game antialiasing");
-  antialiasing_types_->addItem("2x in-game antialiasing");
-  antialiasing_types_->addItem("3x in-game antialiasing");
-  antialiasing_types_->addItem("4x in-game antialiasing");
+  antialiasing_types_->addItem("6x in-game antialiasing");
   antialiasing_types_->addItem("8x in-game antialiasing");
   antialiasing_types_->addItem("16x in-game antialiasing");
   if (!Settings::GetInstance().Contains("main/antialiasing")) {
@@ -51,6 +49,14 @@ SettingsWindow::SettingsWindow(AbstractClientView* parent,
           "main/antialiasing"));
   connect(antialiasing_types_, SIGNAL(currentIndexChanged(int)),
           this, SLOT(OnSetAntialiasing(int)));
+}
+
+void SettingsWindow::ResetNickname() {
+  QString nickname_to_set = nickname_edit_->toPlainText().mid(0, 10);
+  nickname_edit_->setText(nickname_to_set);
+  model_->SetLocalPlayerNickname(nickname_to_set.isEmpty() ? "Player"
+                                                           : nickname_to_set);
+  Settings::GetInstance().SetValue("main/nickname", nickname_to_set);
 }
 
 void SettingsWindow::resizeEvent(QResizeEvent* event) {
@@ -85,9 +91,9 @@ void SettingsWindow::resizeEvent(QResizeEvent* event) {
       setting_height);
 
   antialiasing_types_->setGeometry(
-      enable_smooth_fov_checkbox_->x(),
-      enable_smooth_fov_checkbox_->y()
-          + enable_smooth_fov_checkbox_->height() + offset,
+      enable_full_screen_->x(),
+      enable_full_screen_->y()
+          + enable_full_screen_->height() + offset,
       setting_width,
       setting_height);
 }
@@ -99,12 +105,8 @@ void SettingsWindow::keyPressEvent(QKeyEvent* event) {
 }
 
 void SettingsWindow::BackToMainMenu() {
+  this->ResetNickname();
   parent_->SetWindow(ClientWindowType::kMainMenu);
-  QString nickname_to_set = nickname_edit_->toPlainText().mid(0, 10);
-  nickname_edit_->setText(nickname_to_set);
-  model_->SetLocalPlayerNickname(nickname_to_set.isEmpty() ? "Player"
-                                                           : nickname_to_set);
-  Settings::GetInstance().SetValue("main/nickname", nickname_to_set);
 }
 
 void SettingsWindow::paintEvent(QPaintEvent*) {

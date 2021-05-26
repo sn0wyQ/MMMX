@@ -14,8 +14,8 @@ const bool kServerEnableIgnoreLevel = true;
 const QtMsgType kServerMessageIgnoreLevel = QtDebugMsg;
 
 // Version
-const int kMajorVersion = 0;
-const int kMinorVersion = 1;
+const int kMajorVersion = 1;
+const int kMinorVersion = 0;
 const int kPatchVersion = 0;
 
 // Server

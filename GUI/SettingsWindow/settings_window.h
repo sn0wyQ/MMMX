@@ -26,6 +26,8 @@ class SettingsWindow : public QWidget {
   void resizeEvent(QResizeEvent* event) override;
   void paintEvent(QPaintEvent*) override;
 
+  void ResetNickname();
+
   public Q_SLOTS:
   void BackToMainMenu();
   void OnEnableSmoothFov();
