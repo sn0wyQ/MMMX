@@ -4,7 +4,7 @@ Entity::Entity(GameObjectId id) :
     MovableObject(id),
     opacity_emulator_(Constants::kOpacityChangeSpeed),
     hp_bar_opacity_emulator_(0.02f),
-    hp_emulator_(0.02f, 0.1f) {
+    hp_emulator_(0.02f, 0.3f) {
   opacity_emulator_.SetStopOnMax(true);
   opacity_emulator_.SetStopOnMin(true);
   opacity_emulator_.SetCurrentValue(0.f);

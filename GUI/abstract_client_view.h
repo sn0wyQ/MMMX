@@ -47,6 +47,7 @@ class AbstractClientView : public QMainWindow {
   virtual void AddPlayerDisconnectedNotification(
       const QString& player_name) = 0;
   virtual void QuitApp() = 0;
+  virtual void ResetScreenState() = 0;
 };
 
 #endif  // GUI_ABSTRACT_CLIENT_VIEW_H_

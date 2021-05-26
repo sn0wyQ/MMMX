@@ -100,6 +100,10 @@ QColor GetHealthPointsColor(float hp_ratio) {
   return color;
 }
 void SetPainterHints(QPainter* painter) {
+  if (Settings::GetInstance().GetValueByKey<bool>("main/fullscreen")
+      == AntialiasingType::kDisableAll) {
+    return;
+  }
   painter->setRenderHints(
       QPainter::Antialiasing |
       QPainter::SmoothPixmapTransform|
@@ -110,7 +114,6 @@ const float kCameraFrictionRatio = 0.15f;
 const float kFovStiffnessRatio = 0.007f;
 const float kFovFrictionRatio = 0.15f;
 const int kDefaultFpsMax = 60;
-extern const bool kSmoothFov = true;
 extern const float kCloudsOpacity = 0.7f;
 
 // Bullet collision

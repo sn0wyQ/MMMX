@@ -73,3 +73,20 @@ font: bold 35px;
 height: 35px;
 color: black;
 }
+
+QCheckBox {
+    font-family: Cyntho Next Thin;
+    color: rgb(55, 120, 155);
+    font: bold 35px;
+    spacing: 5px;
+}
+
+QCheckBox::indicator {
+    width: 40px;
+    height: 40px;
+}
+
+QCheckBox::indicator:checked {
+    image: url(':check.png');
+    background: transparent;
+}

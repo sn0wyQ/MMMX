@@ -118,3 +118,27 @@ void ClientView::QuitApp() {
   controller_->deleteLater();
   this->deleteLater();
 }
+
+void ClientView::SetFullScreen() {
+  if (this->isFullScreen()) {
+    return;
+  }
+
+  this->setWindowState(Qt::WindowFullScreen);
+}
+
+void ClientView::SetWindowed() {
+  if (!this->isFullScreen()) {
+    return;
+  }
+
+  this->setWindowState(Qt::WindowNoState);
+}
+
+void ClientView::ResetScreenState() {
+  if (Settings::GetInstance().GetValueByKey<bool>("main/fullscreen")) {
+    this->SetFullScreen();
+  } else {
+    this->SetWindowed();
+  }
+}

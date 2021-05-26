@@ -82,7 +82,7 @@ void ViewPort::Update() {
   painter_for_filtered.setClipRect(this->rect());
   Constants::SetPainterHints(&painter_for_filtered);
   painter_for_filtered.translate(translation.toPoint());
-  if (!Constants::kSmoothFov) {
+  if (!Settings::GetInstance().GetValueByKey<bool>("main/smooth_fov")) {
     painter_for_filtered.SetClipCircle(local_player->GetX(),
                                        local_player->GetY(),
                                        last_player_fov);
@@ -104,7 +104,7 @@ void ViewPort::Update() {
 
   painter.restore();
 
-  if (Constants::kSmoothFov) {
+  if (Settings::GetInstance().GetValueByKey<bool>("main/smooth_fov")) {
     auto filtered_image = pixmap_for_filtered.toImage();
     filtered_image.setAlphaChannel(fov_for_objects_);
     painter.drawImage(this->rect(), filtered_image);

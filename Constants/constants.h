@@ -9,6 +9,8 @@
 #include <QPainter>
 #include <QUrl>
 
+#include "Settings/settings.h"
+
 // code_readability++;
 using ClientId = int;
 using GameObjectId = int;
@@ -114,7 +116,6 @@ extern const float kCameraFrictionRatio;
 extern const float kFovStiffnessRatio;
 extern const float kFovFrictionRatio;
 extern const int kDefaultFpsMax;
-extern const bool kSmoothFov;
 extern const float kCloudsOpacity;
 
 // Bullet collision

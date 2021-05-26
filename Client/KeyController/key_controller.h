@@ -18,6 +18,7 @@
 
 #include "Constants/constants.h"
 #include "GUI/Animations/linear_emulator.h"
+#include "Settings/settings.h"
 #include "key_names.h"
 
 namespace ControlsWrapper {

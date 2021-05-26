@@ -26,14 +26,18 @@ void RoomsInfoList::UpdateRoomsInfoList() {
     updated_rooms.insert(room_info.id);
   }
 
+  std::vector<RoomId> to_delete;
   // Removing rooms that are no longer available
   for (const auto& [room_id, widget_ptr] : rooms_) {
     if (updated_rooms.find(room_id) == updated_rooms.end()) {
-      rooms_.erase(room_id);
+      to_delete.push_back(room_id);
       layout_->removeWidget(widget_ptr);
       widget_ptr->setParent(nullptr);
       widget_ptr->deleteLater();
     }
+  }
+  for (auto room_id : to_delete) {
+    rooms_.erase(room_id);
   }
 }
 
