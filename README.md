@@ -50,15 +50,17 @@ Github Actions in use
 
 ## Authors
 
-* **Kliment Markevich**
-    - *Server-rooms-clients connection*
+* **Klimentsi Markevich**
+    - *Server-room-clients connection (+@kmehovich)*
     - *Animations*
+    - *Menu*
 
     [sn0wyQ](https://github.com/sn0wyQ)
 * **Konstantin Mekhovich** 
     - *Collisions*
     - *Leveling System*
     - *Interpolation and lag compensation*
+    - *Menu design*
     
     [kmekhovich](https://github.com/kmekhovich)
 * **Matvey Maximov** 
@@ -69,7 +71,7 @@ Github Actions in use
     - *Spawn generator*
     - *Packet collector*
     - *Rendering on graphics card using Open GL*
-    - *Key rebinds*
+    - *Key controller*
     - *Event feed*
     - *Savable settings*
 
