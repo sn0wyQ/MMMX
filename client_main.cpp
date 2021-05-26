@@ -29,7 +29,7 @@ int main(int argc, char* argv[]) {
       QString::number(Constants::kServerPort));
 
   QSurfaceFormat surface_format = QSurfaceFormat::defaultFormat();
-  surface_format.setSamples(Constants::kAntiAliasingSamples);
+  surface_format.setSamples(Settings::GetInstance().GetAntialiasingSamples());
   QSurfaceFormat::setDefaultFormat(surface_format);
 
   QApplication app(argc, argv);

@@ -7,6 +7,18 @@
 #include <QStandardPaths>
 #include <QString>
 
+enum AntialiasingType {
+  kDisableAll = 0,  // MUST stay 0
+  kDisableInGame,
+  k2x,
+  k3x,
+  k4x,
+  k8x,
+  k16x
+};
+
+Q_DECLARE_METATYPE(AntialiasingType)
+
 class Settings {
  public:
   static Settings& GetInstance();
@@ -18,6 +30,8 @@ class Settings {
   void SetValue(const QString& setting_name, const T& value);
 
   bool Contains(const QString& setting_name);
+
+  int GetAntialiasingSamples();
 
  private:
   Settings();

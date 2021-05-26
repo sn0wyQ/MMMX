@@ -9,6 +9,8 @@
 #include <QPainter>
 #include <QUrl>
 
+#include "Settings/settings.h"
+
 // code_readability++;
 using ClientId = int;
 using GameObjectId = int;
