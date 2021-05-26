@@ -100,14 +100,14 @@ QColor GetHealthPointsColor(float hp_ratio) {
   return color;
 }
 void SetPainterHints(QPainter* painter) {
-  if (Settings::GetInstance().GetValueByKey<bool>("main/fullscreen")
-      == AntialiasingType::kDisableAll) {
+  if (Settings::GetInstance().GetValueByKey<AntialiasingType>(
+      "main/antialiasing") == AntialiasingType::kDisableAll) {
     return;
   }
   painter->setRenderHints(
       QPainter::Antialiasing |
-      QPainter::SmoothPixmapTransform|
-      QPainter::TextAntialiasing);
+          QPainter::SmoothPixmapTransform |
+          QPainter::TextAntialiasing);
 }
 const float kCameraStiffnessRatio = 0.008f;
 const float kCameraFrictionRatio = 0.15f;
